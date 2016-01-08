@@ -1,0 +1,29 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Pamela code that represents a simple choice TPN, with 2 activities, 1 activity is bounded and other unbounded.
+
+(defpclass plant []
+           :meta {:doc "The Plant API"}
+
+           :methods [(defpmethod bounded
+                                 {:doc    "Bounded"
+                                  :bounds [1 5]} [])
+                     (defpmethod unbounded
+                                 {:doc "Unbounded"}
+                                 [])
+                     ])
+
+(defpclass choice-tpn [plant]
+           :meta {:doc "Simple Choice with 2 Activities"}
+           :methods [(defpmethod simple-choice-tpn
+                                 {:doc "Simple Choice TPN"}
+                                 []
+                                 (choose
+                                   (choice (plant$bounded))
+                                   (choice (plant$unbounded)))
+                                 )]
+           )

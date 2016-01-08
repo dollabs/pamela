@@ -1,0 +1,360 @@
+#!/bin/sh
+# pamelad
+# pamelad start/stop script
+#
+# Copyright © 2016 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+
+# set -x
+
+program="$(basename $0)"
+dir="$(dirname $0)"
+cd "$dir"
+# dir="$(pwd -P)"
+# run from the top directory
+cd ..
+# top="$(pwd -P)"
+top="."
+logs="$top/logs"
+
+if [ ! -d "$logs" ]; then
+    mkdir "$logs"
+fi
+
+# platform inspection
+case "$(uname -a)" in
+    (Linux*)
+      os="linux"
+      ;;
+    (Darwin*)
+      os="mac"
+      ;;
+    (*)
+      os="unknown"
+      ;;
+esac
+
+get_command() {
+    local cmd cmdline pid=$1
+    if [ "$os" = "linux" ]; then
+	cmdline=$(tr '\0' '@' < /proc/$pid/cmdline)
+	cmd=$(echo $cmdline | cut -d@ -f1)
+    else
+	cmd=$(ps -c -p $pid | awk -v p=$pid '{if ($1 == p) print $NF;}')
+    fi
+    echo $cmd
+}
+
+get_pid_with_parent() {
+    local pid parent=$1 pattern=$2
+    pid=""
+    if [ "$os" = "linux" ]; then
+	pid=$(pgrep -P $parent $pattern)
+    else
+	pid=$(ps -ef -c | awk -v parent="$parent" -v pattern="$pattern" '{if (($3 == parent) && ((pattern == "") || ($NF == pattern))) {print $2; exit}}')
+    fi
+    echo $pid
+}
+
+envfile="$dir/$program.env"
+logconf="$dir/logrotate.conf"
+
+pidfile="$logs/$program.pid"
+launcherfile="$logs/launcher.pid"
+logfile="$logs/$program.log"
+logstate="$logs/logrotate.state"
+pid=""
+jstatpidfile="$logs/jstat.pid"
+jstatlogfile="$logs/jstat.log"
+jstatpid=""
+
+if [ -e "$envfile" ]; then
+    . $envfile
+fi
+export SERVER_COMMITTER=${SERVER_COMMITTER:-"anonymous"}
+export SERVER_TIMESTAMP=${SERVER_TIMESTAMP:-"now"}
+export SERVER_PROJECT=${SERVER_PROJECT:-$program}
+export SERVER_HOST=${SERVER_HOST:-localhost}
+export SERVER_PORT=${SERVER_PORT:-9100}
+# host is the "safe" version of SERVER_HOST
+host="$SERVER_HOST"
+if [ "$SERVER_HOST" = "0.0.0.0" ]; then
+    host="localhost"
+fi
+PAMELAD="${host}:${SERVER_PORT}"
+JVM_OPTS=${JVM_OPTS:-"-server -Xms128m -Xmx512m"}
+
+vecho() {
+    [ -z "$verbose" ] || echo >&2 "$@"
+}
+
+vprintf() {
+    [ -z "$verbose" ] || printf "$@"
+}
+
+vcmd () {
+    vecho $*
+    $*
+}
+
+err()
+{
+    echo "${program}: $*"
+}
+
+do_usage() {
+    cat >&2 << EOF
+usage: $program [OPTIONS] ACTION
+       ACTIONS
+         start
+         stop
+         restart
+         check
+       OPTIONS
+  	 [-v]	verbose
+	 [-h]	help
+EOF
+}
+
+# returns true == 0 if running
+do_check() {
+    local rc=1
+    vecho "--- $program check ---"
+    if [ -e "$pidfile" ]; then
+        pid=$(cat "$pidfile")
+        if [ -n "$pid" ]; then
+            if kill -0 $pid > /dev/null 2>&1; then
+                rc=0
+            else
+                if [ -e $launcherfile ]; then
+                    javapid=$(cat "$launcherfile")
+                    pid=$(pgrep -P $javapid java)
+                    if kill -0 $pid > /dev/null 2>&1; then
+                        rc=0
+                        echo >&2 "pid changed to $pid"
+                        echo $pid > "$pidfile"
+                    fi
+                fi
+            fi
+        fi
+    fi
+    if [ $rc -eq 0 ]; then
+        vecho "$SERVER_PROJECT is running as $pid"
+    else
+        vecho "$SERVER_PROJECT is not running"
+        rm -f "$pidfile"
+    fi
+    return $rc
+}
+
+do_start() {
+    logger -t $SERVER_PROJECT "start"
+    vecho "--- $program start ---"
+    oldverbose=$verbose
+    verbose=""
+    if do_check; then
+        verbose=$oldverbose
+        vecho "$SERVER_PROJECT is already running as $pid"
+    else
+        # rotate log files, as needed
+        if [ -e "$logconf" ]; then
+            logrotate -v -s "$logstate" "$logconf"
+        else
+            if [ -e $logfile ]; then
+	        # mv $logfile $logfile.$(date +%s)
+	        mv $logfile $logfile.1
+            fi
+        fi
+        verbose=$oldverbose
+        args="--verbose --daemonize $SERVER_PORT"
+        echo "-- starting $program at $(date) --" >> $logfile
+        javapid=""
+        if [ -e "$SERVER_JAR" ]; then
+            jargs=""
+            jargs="-jar $SERVER_JAR"
+            jargs="$jargs $args"
+            vecho java $JVM_OPTS $jargs '>>' $logfile
+            echo java $JVM_OPTS $jargs >> $logfile
+            java $JVM_OPTS $jargs >> $logfile 2>&1 &
+            pid=$!
+        else
+            # get the pid for java, not lein
+            PAMELAD="" "$dir/pamela" $args >> $logfile 2>&1 &
+            pamelapid=$!
+            sleep 2
+            # give the pamela script a chance to exec java or lein
+	    if [ "$os" = "linux" ]; then
+		pamelacmdline=$(tr '\0' '@' < /proc/$pamelapid/cmdline)
+		pamelacmd=$(echo $pamelacmdline | cut -d@ -f1)
+	    else
+		pamelacmd=$(ps -c -p $pamelapid | awk -v p=$pamelapid '{if ($1 == p) print $NF;}')
+	    fi
+            if [ "$pamelacmd" = "java" ]; then
+                pid=$pamelapid
+            else
+                vecho "started pamela as $pamelapid"
+                # get the great grandchild pid where the cmd is java
+                leinpid=""
+                pid=""
+                i=0
+                max=60
+                while [ $i -lt $max ]; do
+                    if [ -z "$leinpid" ]; then
+                        leinpid=$(get_pid_with_parent $pamelapid)
+                        if [ -n "$leinpid" ]; then
+                            vprintf "(lein %s)" $leinpid
+                        fi
+                    fi
+                    if [ -z "$javapid" ] && [ -n "$leinpid" ]; then
+                        javapid=$(get_pid_with_parent $leinpid java)
+                        if [ -n "$javapid" ]; then
+                            vprintf "(launcher %s)" $javapid
+                        fi
+                    fi
+                    if [ -z "$pid" ] && [ -n "$javapid" ]; then
+                        pid=$(get_pid_with_parent $javapid java)
+                    fi
+                    if [ -n "$pid" ] && kill -0 $pid > /dev/null 2>&1; then
+                        vprintf "(pamelad %s)" $pid
+                        break
+                    else
+                        vprintf .
+                    fi
+                    sleep 1
+                    i=$(( $i + 1 ))
+                done
+                if [ $i -eq $max ]; then
+                    vecho " unable to find pamelad pid"
+                    exit 1
+                fi
+            fi
+        fi
+        echo $pid > "$pidfile"
+        if [ -n "$javapid" ]; then
+            echo $javapid > "$launcherfile"
+        fi
+        vecho " "
+        # verify that pamelad is ready to get requests
+        # DEBUG
+        # ps -ef > "$logs/before.txt"
+        i=0
+        max=60
+        while [ $i -lt $max ]; do
+            if nc -z -w 1 $host $SERVER_PORT < /dev/null > /dev/null 2>&1; then
+                break
+            else
+                vprintf .
+            fi
+            sleep 1
+            i=$(( $i + 1 ))
+        done
+        if [ $i -eq $max ]; then
+            vecho " unable to connect to $SERVER_PROJECT on $PAMELAD"
+            exit 1
+        fi
+        # DEBUG
+        # ps -ef > "$logs/after.txt"
+        vecho " now $SERVER_PROJECT is ready for requests"
+        oldverbose=$verbose
+        verbose=""
+        if do_check; then
+            verbose=$oldverbose
+        else
+            vecho "$SERVER_PROJECT not running??"
+        fi
+        vecho "started $SERVER_PROJECT as $pid"
+        if [ -n "$JSTAT_INTERVAL" ]; then
+            if [ -e "$jstatlogfile" ]; then
+                mv "$jstatlogfile" "$jstatlogfile.1"
+            fi
+            jstat -gcutil -t $pid $JSTAT_INTERVAL > "$jstatlogfile" &
+            jstatpid=$!
+            echo $jstatpid > "$jstatpidfile"
+            vecho "started jstat as $jstatpid"
+        fi
+        vecho "export PAMELAD=$PAMELAD"
+    fi
+    return 0
+}
+
+do_stop() {
+    logger -t $SERVER_PROJECT "stop"
+    vecho "--- $program stop ---"
+    oldverbose=$verbose
+    verbose=""
+    if do_check; then
+        verbose=$oldverbose
+        vecho "asking $SERVER_PROJECT to shut down gracefully.."
+        PAMELAD=$PAMELAD "$dir/pamela" -d 65535 > /dev/null 2>&1 &
+        i=0
+        max=30
+        while [ $i -lt $max ]; do
+            if kill -0 $pid > /dev/null 2>&1; then
+                vprintf .
+            else
+                break
+            fi
+            sleep 1
+            i=$(( $i + 1 ))
+        done
+        if [ $i -eq $max ]; then
+            vecho "FORCE STOP $SERVER_PROJECT"
+            kill $pid
+        fi
+        vecho "$SERVER_PROJECT pid $pid stopped"
+    else
+        verbose=$oldverbose
+        vecho "cannot stop $SERVER_PROJECT: not running"
+    fi
+    rm -rf "$pidfile" "$launcherfile"
+    return 0
+}
+
+do_restart() {
+    logger -t $SERVER_PROJECT "restart"
+    vecho "--- $program restart ---"
+    do_stop || true
+    sleep 3
+    do_start
+}
+
+validaction() {
+    for a in $actions; do
+        if [ "$1" = "$a" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+args=""
+verbose=""
+actions="start stop restart check"
+action="check"
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -v|--verbose)
+	    verbose="--verbose"
+            ;;
+        -h|-?|--help)
+            action="usage"
+            ;;
+        -*)
+            action="usage"
+            ;;
+        *)
+            args="$1"
+	    if [ $# -gt 1 ] || ! validaction $args; then
+                action="usage"
+            else
+                action="$args"
+            fi
+	    ;;
+    esac
+    shift
+done
+
+do_$action

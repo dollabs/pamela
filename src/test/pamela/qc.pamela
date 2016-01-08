@@ -1,0 +1,36 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Pamela code with a single sequence of a choice and parallel node.
+
+;; (defpclass quadcopter-plant []
+(defpclass qc []
+  :meta {:version "0.2.1"
+         :doc "The Plant API"}
+  :methods [(defpmethod location
+              {:doc    "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)"}
+              [lat lon alt yaw])
+            (defpmethod wp1
+              {:doc    "Waypoint 1"
+               :bounds [10 50]}
+              []
+              (this$location 42.445370 -71.227891 1.0 80))
+            (defpmethod wp2
+              {:doc    "Waypoint 2"
+               :bounds [10 50]}
+              []
+              (this$location 42.445435 -71.227843 2.0 170))
+            (defpmethod wp3
+              {:doc    "Waypoint 3"
+               :bounds [10 50]}
+              []
+              (this$location 42.445389 -71.227734 3.0 260))
+            (defpmethod wp4
+              {:doc    "Waypoint 4"
+               :bounds [10 50]}
+              []
+              (this$location 42.445327 -71.227788 4.0 350))
+            ])

@@ -1,0 +1,80 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Work-in-progress planning example
+
+(defpclass plant []
+  :meta {:version "0.2.0"
+         :doc "The Plant API"}
+  :methods [(defpmethod move
+              {:doc "Move a disc"}
+              [disc from to])])
+
+(defpclass peg [has]
+  :meta {:version "0.2.0"
+         :doc "peg"}
+  :fields {:has has} ;; nil for clear, else :pegN or :dM
+  :modes {:clear (condition (field= :has nil))
+          :covered (condition (not (field= :has nil)))}
+  :observable true)
+
+(defpclass disc [has]
+  :meta {:version "0.2.0"
+         :doc "disc"}
+  :fields {:has has} ;; nil for clear, else :pegN or :dM
+  :modes {:clear (condition (field= :has nil))
+          :covered (condition (not (field= :has nil)))}
+  :observable true)
+
+(defpclass hanoi [plant]
+  :meta {:version "0.2.0"
+         :doc "PDDL Demo"}
+  :fields {:peg1 (peg (lvar "peg1-has" :d1))
+           :peg2 (peg (lvar "peg2-has"))
+           :peg3 (peg (lvar "peg3-has"))
+           :d1 (disc (lvar "d1-has" :d2))
+           :d2 (disc (lvar "d2-has" :d3))
+           :d3 (disc (lvar "d3-has"))}
+  :methods [(defpmethod move
+              {:doc "Move a disc"
+               :pre (condition
+                      (and
+                        (in-fact? disc :smaller to)
+                        (field= (get-field this from) :has disc)
+                        (in-mode? (get-field this disc) :clear)
+                        (in-mode? (get-field this to) :clear)))
+               :post (condition
+                       (and
+                        (field= (get-field this to) :has disc)
+                        (in-mode? (get-field this from) :clear)
+                        (in-mode? (get-field this to) :covered)))}
+              [disc from to]
+              (sequence
+                (plant$move disc from to)
+                (set-mode! (get-field (get-field this from) :has nil))
+                (set-mode! (get-field (get-field this to) :has disc))))
+            (defpmethod plan
+              {:doc "figure out the plan"
+               :pre (sequence
+                      (set-fact! :peg1 :smaller :d1)
+                      (set-fact! :peg1 :smaller :d2)
+                      (set-fact! :peg1 :smaller :d3)
+                      (set-fact! :peg2 :smaller :d1)
+                      (set-fact! :peg2 :smaller :d2)
+                      (set-fact! :peg2 :smaller :d3)
+                      (set-fact! :peg3 :smaller :d1)
+                      (set-fact! :peg3 :smaller :d2)
+                      (set-fact! :peg3 :smaller :d3)
+                      (set-fact! :d2 :smaller :d1)
+                      (set-fact! :d3 :smaller :d1)
+                      (set-fact! :d3 :smaller :d2))
+               :post (condition
+                       (and
+                        (field= (get-field this :peg3) :has :d3)
+                        (field= (get-field this :d3) :has :d2)
+                        (field= (get-field this :d2) :has :d1)))}
+              []
+              (noop))])

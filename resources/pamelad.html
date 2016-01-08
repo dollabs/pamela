@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<!-- Copyright © 2016 Dynamic Object Language Labs Inc.
+
+     This software is licensed under the terms of the
+     Apache License, Version 2.0 which can be found in
+     the file LICENSE at the root of this distribution. -->
+<html>
+  <head>
+    <meta content="NO-CACHE" http_equiv="CACHE-CONTROL"/>
+    <title>pamelad</title>
+    <style type="text/css">
+table {
+    border-width: 1px;
+    border-spacing: 0px;
+    border-style: none;
+    border-color: gray;
+    border-collapse: separate;
+    background-color: white;
+}
+table th {
+    border-width: 1px;
+    padding: 3px;
+    border-style: solid;
+    border-color: gray;
+    background-color: white;
+}
+table td {
+    border-width: 1px;
+    padding: 3px;
+    border-style: solid;
+    border-color: gray;
+    background-color: white;
+    text-align: center;
+    valign: middle;
+}
+table td.first {
+    width: 40px;
+    font-weight:bold;
+}
+table td.firstval {
+    width: 500px;
+    text-align: left;
+    font-weight:bold;
+}
+table td.value {
+    width: 40px;
+    text-align: left;
+}
+div {
+    display: none;
+}
+    </style>
+    <script>
+function argtype(n, t) {
+  file = document.getElementById(n + ".file");
+  select = document.getElementById(n + ".select");
+  text = document.getElementById(n + ".text");
+  if (t == "file") {
+    file.style.display = 'block';
+    select.style.display = 'none';
+    text.style.display = 'none';
+  } else if (t == "select") {
+    file.style.display = 'none';
+    select.style.display = 'block';
+    text.style.display = 'none';
+  } else {
+    file.style.display = 'none';
+    select.style.display = 'none';
+    text.style.display = 'block';
+  }
+}
+function clearargs() {
+  for (i = 1; i <= 9; i++) {
+    file = document.getElementById("00" + i + ".file");
+    select = document.getElementById("00" + i + ".select");
+    text = document.getElementById("00" + i + ".text");
+    file.style.display = 'none';
+    select.style.display = 'none';
+    text.style.display = 'block';
+  }
+}
+    </script>
+  </head>
+  <body>
+    <h1>pamelad</h1>
+    Action: one of <b>cat, delete, describe, export, import, list</b>
+    <br/>
+    <br/>
+    <form action="http://localhost:9100/pamela" enctype="multipart/form-data" method="POST">
+      <table>
+        <tr>
+          <td style="width: 640px;text-align: left; border-style: none;">Arguments:</td>
+          <td style="border-style: none;"><input type="reset" name="reset" value="Clear" onclick='clearargs();'></input></td>
+        </tr>
+        <table>
+          <table>
+            <tr>
+              <td class="first">Arg#</td>
+              <td class="first">File</td>
+
+              <td class="first">Option</td>
+              <td class="first">String</td>
+              <td class="firstval">Value</td>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td><input type="radio" name="001" value="file" onclick='argtype("001","file");'></input></td>
+              <td><input type="radio" name="001" value="select" onclick='argtype("001","select");'></input></td>
+              <td><input type="radio" name="001" value="text" CHECKED onclick='argtype("001","text");'></input></td>
+              <td class="value">
+                <div id="001.file">
+                  <input type="file" name="001.f" size="50"></input>
+                </div>
+                <div id="001.select">
+                  <select name="001.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="001.text" class="text" style='display:block'>
+                  <input type="text" name="001.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td><input type="radio" name="002" value="file" onclick='argtype("002","file");'></input></td>
+              <td><input type="radio" name="002" value="select" onclick='argtype("002","select");'></input></td>
+              <td><input type="radio" name="002" value="text" CHECKED onclick='argtype("002","text");'></input></td>
+              <td class="value">
+                <div id="002.file">
+                  <input type="file" name="002.f" size="50"></input>
+                </div>
+                <div id="002.select">
+                  <select name="002.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="002.text" class="text" style='display:block'>
+                  <input type="text" name="002.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td><input type="radio" name="003" value="file" onclick='argtype("003","file");'></input></td>
+              <td><input type="radio" name="003" value="select" onclick='argtype("003","select");'></input></td>
+              <td><input type="radio" name="003" value="text" CHECKED onclick='argtype("003","text");'></input></td>
+              <td class="value">
+                <div id="003.file">
+                  <input type="file" name="003.f" size="50"></input>
+                </div>
+                <div id="003.select">
+                  <select name="003.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="003.text" class="text" style='display:block'>
+                  <input type="text" name="003.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td><input type="radio" name="004" value="file" onclick='argtype("004","file");'></input></td>
+              <td><input type="radio" name="004" value="select" onclick='argtype("004","select");'></input></td>
+              <td><input type="radio" name="004" value="text" CHECKED onclick='argtype("004","text");'></input></td>
+              <td class="value">
+                <div id="004.file">
+                  <input type="file" name="004.f" size="50"></input>
+                </div>
+                <div id="004.select">
+                  <select name="004.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="004.text" class="text" style='display:block'>
+                  <input type="text" name="004.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td><input type="radio" name="005" value="file" onclick='argtype("005","file");'></input></td>
+              <td><input type="radio" name="005" value="select" onclick='argtype("005","select");'></input></td>
+              <td><input type="radio" name="005" value="text" CHECKED onclick='argtype("005","text");'></input></td>
+              <td class="value">
+                <div id="005.file">
+                  <input type="file" name="005.f" size="50"></input>
+                </div>
+                <div id="005.select">
+                  <select name="005.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="005.text" class="text" style='display:block'>
+                  <input type="text" name="005.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td><input type="radio" name="006" value="file" onclick='argtype("006","file");'></input></td>
+              <td><input type="radio" name="006" value="select" onclick='argtype("006","select");'></input></td>
+              <td><input type="radio" name="006" value="text" CHECKED onclick='argtype("006","text");'></input></td>
+              <td class="value">
+                <div id="006.file">
+                  <input type="file" name="006.f" size="50"></input>
+                </div>
+                <div id="006.select">
+                  <select name="006.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="006.text" class="text" style='display:block'>
+                  <input type="text" name="006.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td><input type="radio" name="007" value="file" onclick='argtype("007","file");'></input></td>
+              <td><input type="radio" name="007" value="select" onclick='argtype("007","select");'></input></td>
+              <td><input type="radio" name="007" value="text" CHECKED onclick='argtype("007","text");'></input></td>
+              <td class="value">
+                <div id="007.file">
+                  <input type="file" name="007.f" size="50"></input>
+                </div>
+                <div id="007.select">
+                  <select name="007.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="007.text" class="text" style='display:block'>
+                  <input type="text" name="007.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td><input type="radio" name="008" value="file" onclick='argtype("008","file");'></input></td>
+              <td><input type="radio" name="008" value="select" onclick='argtype("008","select");'></input></td>
+              <td><input type="radio" name="008" value="text" CHECKED onclick='argtype("008","text");'></input></td>
+              <td class="value">
+                <div id="008.file">
+                  <input type="file" name="008.f" size="50"></input>
+                </div>
+                <div id="008.select">
+                  <select name="008.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="008.text" class="text" style='display:block'>
+                  <input type="text" name="008.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td><input type="radio" name="009" value="file" onclick='argtype("009","file");'></input></td>
+              <td><input type="radio" name="009" value="select" onclick='argtype("009","select");'></input></td>
+              <td><input type="radio" name="009" value="text" CHECKED onclick='argtype("009","text");'></input></td>
+              <td class="value">
+                <div id="009.file">
+                  <input type="file" name="009.f" size="50"></input>
+                </div>
+                <div id="009.select">
+                  <select name="009.s">
+                    <option>--help</option>
+                    <option>--version</option>
+                    <option>--verbose</option>
+                    <option>--database</option>
+                    <option>--input</option>
+                    <option>--model</option>
+                    <option>--recursive</option>
+                    <option>--simple</option>
+                  </select>
+                </div>
+                <div id="009.text" class="text" style='display:block'>
+                  <input type="text" name="009.t" size="60"></input>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </table>
+      </table>
+      <br/>
+      <br/>
+      <input type="submit" name="submit" value="Run"></input>
+      <br/>
+    </form>
+  </body>
+</html>

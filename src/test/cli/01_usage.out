@@ -1,0 +1,31 @@
+
+Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)
+
+Usage: pamela [options] action
+
+Options:
+  -h, --help                       Print usage
+  -V, --version                    Print PAMELA version
+  -v, --verbose                    Increase verbosity
+  -c, --construct-tpn CFM          Construct TPN using class C field F method M (as C:F:M)
+  -d, --daemonize PORT      0      Run PAMELA as a daemon on the given PORT
+  -e, --database DATABASE          Remote database server name (ES_SERVER)
+  -f, --file-format FORMAT  dot    Output file format
+  -i, --input INPUT         ["-"]  Input file (or - for STDIN)
+  -l, --load                       List models in memory only
+  -o, --output OUTPUT       -      Output file (or - for STDOUT)
+  -m, --model MODEL                Model name
+  -r, --recursive                  Recursively process model
+  -s, --simple                     Simple operation
+  -g, --visualize                  Render TPN as SVG (set -f dot)
+  -w, --web WEB                    Web request hints (internal use only)
+
+Actions:
+  cat	Simply copies the input to output (for debugging)
+  delete	Deletes given model from the database
+  describe	Analyze and describe the given model
+  export	Export model source from the database
+  import	Import model into the database
+  list	List models (--simple for names only, --load for memory only)
+  load	Load model(s) in memory only
+  tpn	Load model(s) in memory only, process as a TPN

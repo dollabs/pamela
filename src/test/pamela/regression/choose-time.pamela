@@ -1,0 +1,16 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+(defpclass choose-time []
+  :meta {:version "0.2.0"
+         :doc "choose example with time bounds"}
+  :methods [(defpmethod example
+              {:doc "choose based on time"}
+              []
+              (choose
+                (choice :bounds [1 100] (noop))
+                (choice :bounds [101 200] (noop))
+                (choice :bounds [201 300] (noop))))])

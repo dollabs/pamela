@@ -1,0 +1,19 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Pamela code that represents a simple parallel TPN, with 2 activities, 1 activity is bounded and other unbounded.
+
+(defpclass parallel-tpn [plant]
+  :meta {:version "0.2.0"
+         :depends [[plant "0.2.0"]]
+         :doc "Simple Parallel with 2 Activities"}
+  :methods [(defpmethod simple-parallel-tpn
+              {:doc "Simple Parallel TPN"}
+              []
+              (parallel
+                (plant$bounded)
+                (plant$unbounded))
+              )])

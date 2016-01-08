@@ -1,0 +1,32 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+(defpclass qc-waypoints [qc1 qc2 qc3]
+  :meta {:version "0.2.1"
+         :doc "Quadcopter test waypoints"}
+  :methods [(defpmethod waypoints
+              {:doc "QC waypoints for 3 quad copters"}
+              []
+              (parallel
+                (sequence
+                  (qc1$location 42.445370 -71.227891 1.0 80 :bounds [5 20])
+                  (qc1$location 42.445435 -71.227843 2.0 170 :bounds [5 20])
+                  (qc1$location 42.445389 -71.227734 3.0 260 :bounds [5 20])
+                  (qc1$location 42.445327 -71.227788 4.0 350 :bounds [5 20])
+                  (qc1$location 42.445370 -71.227891 1.0 80 :bounds [5 20]))
+                (sequence
+                  (qc2$wp2)
+                  (qc2$wp3)
+                  (qc2$wp4)
+                  (qc2$wp1)
+                  (qc2$wp2))
+                (sequence
+                  (qc3$wp3)
+                  (qc3$wp4)
+                  (qc3$wp1)
+                  (qc3$wp2)
+                  (qc3$wp3))))
+            ])

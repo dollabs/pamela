@@ -1,0 +1,93 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; PAMELA example -------------------------------------------
+
+(defpclass pwrvals []
+  :meta {:version "0.2.0"
+         :doc "Enum for power values"}
+  :modes [:high :none])
+
+(defpclass psw [gnd pwr]
+  :meta {:version "0.2.0"
+         :depends [[pwrvals "0.2.0"]]
+         :doc "Power Switch"}
+
+  :fields {:TP1 gnd
+           :TP2 pwr
+           :pwr (pwrvals :initial :none)}
+  :modes {:on (condition (field= :pwr :high))
+          :off (condition (field= :pwr :none))
+          :fail true}
+  :methods [(defpmethod turn-on
+              {:pre :off :post :on :delay [1 3]
+               :doc "turns on the power supply"}
+              [])
+            (defpmethod turn-off
+              {:pre :on :post :off :delay [1 3]
+               :doc "turns off the power supply"}
+              [])
+            (defpmethod reset
+              {:post :off
+               :doc "resets the power supply"}
+              [])]
+  :transitions {:off:on {:pre :off :post :on
+                         :doc "turning on"}
+                :on:off {:pre :on :post :off
+                         :doc "turning off"}
+                :*:fail {:probability 0.0000001
+                         :doc "spontaneous switch failure"}})
+
+(defpclass lightvals []
+  :meta {:version "0.2.0"
+         :doc "Enum for lighting values"}
+  :modes [:bright :dark])
+
+(defpclass bulb [vcc vdd]
+  :meta {:version "0.2.0"
+         :depends [[lightvals "0.2.0"]]
+         :doc "A light bulb"
+         :icon "bulb.svg"}
+
+  :fields {:anode vcc
+           :cathode vdd
+           :illumination (lightvals :initial :dark :access :public)
+           :sensed-illumination (lightvals :observable true
+                                  :access :public :initial :dark)}
+  :modes {:on (condition (and
+                (field= :illumination :bright)
+                (field= :sensed-illumination :bright)))
+          :off (condition (and
+                 (field= :illumination :dark)
+                 (field= :sensed-illumination :dark)))
+          :fail true}
+  :transitions {:off:on {:pre (condition (and
+                                (mode= :off)
+                                (field= :anode :none)
+                                (field= :sensed-illumination :dark)))
+                         :post :on
+                         :delay [1 3]
+                         :doc "turning on bulb"}
+                :on:off {:pre (condition (and
+                                (mode= :on)
+                                (field= :anode :high)
+                                (field= :sensed-illumination :bright)))
+                         :post :off
+                         :delay [1 3]
+                         :doc "turning on bulb"}
+                :*:fail {:probability (lvar "pfbulb")
+                         :doc "spontaneous bulb failure"}})
+
+(defpclass circuit1 []
+  :meta {:version "0.2.0"
+         :depends [[psw "0.2.0"]
+                   [bulb "0.2.0"]]
+         :doc "An example circuit with a power switch and light bulb"}
+
+  :fields {:source (lvar "source")
+           :drain (lvar "drain")
+           :bulb1 (pclass bulb :source :drain)
+           :switchedpower (pclass psw :source :drain)})

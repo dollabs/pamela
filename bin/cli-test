@@ -1,0 +1,77 @@
+#!/bin/sh
+# cli-test [test1 [test2 ...]]
+# run tests in src/test/cli
+# specify test name(s) to limit which scripts are run
+#
+# Copyright © 2016 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+
+program=$(basename $0)
+code=$(dirname $0)
+cd "$code/.."
+code="$(pwd -P)"
+
+cd "src/test/cli"
+
+export PATH=${PATH}:"$code/bin"
+export CODE="$code"
+export RESULTS="$code/target/cli-test"
+
+mkdir -p "$RESULTS"
+
+scripts=$(ls -1 [0-9]*.sh)
+fail=0
+tests=0
+runonly="$*"
+only="$1"
+for script in $scripts; do
+    name=$(echo $script | cut -d_ -f2 | sed 's/.sh$//')
+    if [ -n "$runonly" ]; then
+        if [ "$name" = "$only" ]; then
+            # echo "DO THIS ONE"
+            shift
+            only="$1"
+        else
+            # echo "DO not do THIS ONE"
+            continue
+        fi
+    fi
+    echo "$program $name"
+    goodout=$(echo $script | sed 's/.sh$/.out/')
+    out="$RESULTS/$name.out"
+    err="$RESULTS/$name.err"
+    # NOTE: lein-cljsbuild pollutes the output (when run from lein run)
+    if ./$script < /dev/null > "$out.raw" 2> "$err"; then
+        echo "PASSED"
+        grep -v "^Compiling" "$out.raw" > "$out"
+        rm "$out.raw"
+        if [ -e "$goodout" ]; then
+            if diff -u $goodout $out; then
+                echo "LOG MATCHED"
+            else
+                echo "LOG DID NOT MATCH"
+                fail=$(($fail + 1))
+            fi
+        fi
+    else
+        echo "FAILED"
+        grep -v "^Compiling" "$out.raw" > "$out"
+        rm "$out.raw"
+        fail=$(($fail + 1))
+    fi
+    echo " "
+    tests=$(($tests + 1))
+    sync
+done
+
+echo "Ran $tests tests"
+echo "$fail failures"
+
+if [ $fail -gt 0 ]; then
+    exit 1
+fi
+
+exit 0

@@ -1,0 +1,29 @@
+#!/bin/sh
+# cytoscape-load
+#
+# Copyright © 2016 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+
+program=$(basename $0)
+json="$1"
+
+log() {
+  # echo $* >> "$logfile"
+  echo $*
+}
+
+err() {
+  log "${program}: $*"
+}
+
+if [ ! -e "$json" ]; then
+    err "input file not found: $json"
+    exit 1
+fi
+
+(printf "%08x" $(wc -c $json | awk '{print $1}'); cat $json) > $json.cyto
+
+nc localhost 34170 < $json.cyto

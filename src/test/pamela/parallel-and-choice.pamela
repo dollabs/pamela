@@ -1,0 +1,36 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Pamela code with a single sequence of a choice and parallel node.
+
+(defpclass plant []
+           :meta {:doc "The Plant API"}
+
+           :methods [(defpmethod bounded
+                                 {:doc    "Bounded"
+                                  :bounds [1 5]} [])
+                     (defpmethod unbounded
+                                 {:doc "Unbounded"}
+                                 [])
+                     ])
+
+(defpclass parallel-choice-tpn [plant]
+           :meta {:doc "Simple Parallel with 2 Activities"}
+           :methods [(defpmethod simple-parallel-tpn
+                                 {:doc "Simple Parallel TPN"}
+                                 []
+
+                                 (sequence
+                                   (parallel
+                                     (plant$bounded)
+                                     (plant$unbounded))
+                                   (choose
+                                     (choice (plant$bounded))
+                                     (choice (plant$unbounded)))
+                                   )
+
+                                 )]
+           )

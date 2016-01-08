@@ -1,0 +1,73 @@
+# Project specific files
+/data
+/dev-resources
+/logs
+/pom.xml
+/bin/pamelad.env
+/resources/public/js/compiled
+/resources/public/downloads
+/src/test/pamela/*.txt
+/src/test/pamela/*.png
+/test
+
+/grammar/dev-resources
+/grammar/logs
+/grammar/test
+/grammar/target
+
+# Emacs backup files
+*~
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+*.coverage
+
+# Vagrant
+*.vagrant
+
+# Berksfile
+*.lock
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Java
+/lib
+/pom.xml
+*.class
+
+# Clojure
+classes
+/target
+.lein-*
+.nrepl*
+
+# LibreOffice locks
+.~lock.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
