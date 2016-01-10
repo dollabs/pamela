@@ -6,6 +6,13 @@
 
 ;; Example of primitive and non primitive method.
 
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
 (defpclass plant-methods []
            :meta {:version "0.2.1"
                   :doc "The Plant API"}

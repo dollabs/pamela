@@ -62,4 +62,13 @@ The invocation of the `pamela` command line script is provided in the
 API documentation for [usage](http://lispmachine/pamela/code/doc/pamela.core.html#var-usage).
 
 *NOTE:* as the `pamela` script running in development mode must invoke
-both `lein` and start the PAMELA program the startup time is very slow.
+both `lein` and start the PAMELA program the startup time is very
+slow.
+
+
+### Acknowledgement and Disclaimer:
+This material is based upon work supported by the Army Contracting
+and DARPA under contract No. W911NF-15-C-0005.
+Any opinions, findings and conclusions or recommendations expressed
+in this material are those of the author(s) and do necessarily reflect the
+views of the Army Contracting Command and DARPA.
