@@ -27,13 +27,29 @@ top="$(pwd -P)"
 echo "Startup Dir: $top"
 export PATH=${PATH}:$code/bin
 
+# NOTE we will be testing the client here so we need to have
+# firefox available to run in a real X session, a Mac "X" session,
+# VNC (or similar) or Xvfb
+
+if [ -z "$DISPLAY" ]; then
+    if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
+        # jenkins@LispMachine has VNC running on :1
+        export DISPLAY=:1
+        # do NOT encourage ANSI colorization
+        export TERM=dumb
+    else
+        echo "ERROR: please start X, VNC, or Xvfb and set DISPLAY"
+        exit 1
+    fi
+fi
+
 cd "$code"
 echo "-- $program running in $code at $(date) --"
 
 echo " "
 echo "-- environment --"
 
-env
+env | sort
 
 echo " "
 echo "-- pamela dependencies --"
@@ -52,19 +68,6 @@ lein doc
 
 echo " "
 echo "-- run clojure tests -- "
-# NOTE we will be testing the client here so we need to have
-# firefox available to run in a real X session, a Mac "X" session,
-# VNC (or similar) or Xvfb
-
-if [ -z "$DISPLAY" ]; then
-    if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
-        # jenkins@LispMachine has VNC running on :1
-        export DISPLAY=:1
-    else
-        echo "ERROR: please start X, VNC, or Xvfb and set DISPLAY"
-        exit 1
-    fi
-fi
 
 lein test
 
