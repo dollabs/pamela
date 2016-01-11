@@ -16,7 +16,7 @@
             [environ.core :refer [env]]
             [pamela.log :as plog]
             [pamela.db :refer :all]
-            [pamela.utils :refer [sleep assoc-if]]
+            [pamela.utils :refer [sleep assoc-if remove-clojure-comments]]
             [clojurewerkz.elastisch.native :as es]
             [clojurewerkz.elastisch.native.index :as esi]
             [clojurewerkz.elastisch.native.document :as doc]
@@ -108,19 +108,23 @@
       ;; describe-model
       (is (= "DESCRIBE MODEL: three\n  doc: Third\n  icon: \n  type: pclass-enumeration\n  version: \"0.2.0\"\n  depends: [[two \"0.2.0\"]]\n  rdepends: [[four \"0.2.0\"]]\nfields:\nmodes:\n  :e is an unconditional or enumeration mode\n  :f is an unconditional or enumeration mode\nmethods:\ntransitions:\nlvars:\n"
             (with-out-str (describe-model {:model "three"}))))
-      (is (= (slurp (str (:user-dir env)
-                      "/src/test/pamela/four.pamela"))
+      (is (= (remove-clojure-comments
+               (slurp (str (:user-dir env)
+                        "/src/test/pamela/four.pamela")))
             (do
               (export-model {:model "four" :output "target/four.pamela"})
-              (slurp (str (:user-dir env) "/target/four.pamela")))))
-      (is (= (slurp (str (:user-dir env)
-                      "/src/test/pamela/four-all.pamela"))
+              (remove-clojure-comments
+                (slurp (str (:user-dir env) "/target/four.pamela"))))))
+      (is (= (remove-clojure-comments
+               (slurp (str (:user-dir env)
+                        "/src/test/pamela/four-all.pamela")))
             (do
               (export-model {:model "four"
                              :output "target/four-all.pamela"
                              :recursive true})
-              (slurp (str (:user-dir env)
-                       "/target/four-all.pamela")))))
+              (remove-clojure-comments
+                (slurp (str (:user-dir env)
+                         "/target/four-all.pamela"))))))
       (is (= "ERROR: cannot delete model \"two\" without --recursive due to these reverse dependencies: [[three \"0.2.0\"]]\n"
             (with-out-str (delete-model {:model "two"}))))
       (is (= "delete-model two\ndelete reverse dependencies: [[three 0.2.0]]\ndelete-model three\ndelete reverse dependencies: [[four 0.2.0]]\ndelete-model four\n"

@@ -6,8 +6,6 @@
 # This software is licensed under the terms of the
 # Apache License, Version 2.0 which can be found in
 # the file LICENSE at the root of this distribution.
-#
-# Tasks to run in jenkins http://lispmachine:8080
 
 # NOTE this script will exit on the first failure
 
@@ -31,6 +29,14 @@ export PATH=${PATH}:$code/bin
 
 cd "$code"
 echo "-- $program running in $code at $(date) --"
+
+echo " "
+echo "-- environment --"
+
+env
+
+echo " "
+echo "-- pamela dependencies --"
 
 lein deps :tree
 

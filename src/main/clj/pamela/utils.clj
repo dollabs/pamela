@@ -15,7 +15,8 @@
   "Utility helper functions."
 
   (:refer-clojure :exclude [update]) ;; clj-http
-  (:require [clojure.java.io :refer :all] ;; for as-file
+  (:require [clojure.string :as string]
+            [clojure.java.io :refer :all] ;; for as-file
             [clojure.pprint :as pp]
             ;; to be replaced with aleph
             ;; [clj-http.client :as http]
@@ -28,6 +29,16 @@
 
 ;; will contain file data iff set by daemon
 (defonce input-data (atom nil))
+
+;; remove Clojure style comments
+(defn remove-clojure-comments
+  "Remove Clojure comments from s"
+  {:added "0.2.2"}
+  [s]
+  (string/join "\n"
+    (remove empty?
+      (map #(string/replace % #";.*$" "")
+        (string/split-lines s)))))
 
 ;; helper to grow the input data strings (NOT binary)
 (defn str-append

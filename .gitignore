@@ -10,6 +10,9 @@
 /src/test/pamela/*.png
 /test
 
+# auto generated documentation
+/doc/clj
+
 /grammar/dev-resources
 /grammar/logs
 /grammar/test
