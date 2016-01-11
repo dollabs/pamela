@@ -33,6 +33,7 @@ export PATH=${PATH}:$code/bin
 
 if [ -z "$DISPLAY" ]; then
     if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
+        echo "Running on LispMachine"
         # jenkins@LispMachine has VNC running on :1
         export DISPLAY=:1
         # do NOT encourage ANSI colorization
@@ -44,6 +45,7 @@ if [ -z "$DISPLAY" ]; then
 fi
 
 cd "$code"
+echo " "
 echo "-- $program running in $code at $(date) --"
 
 echo " "
