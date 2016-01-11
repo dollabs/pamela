@@ -31,17 +31,19 @@ export PATH=${PATH}:/bin:$code/bin
 # firefox available to run in a real X session, a Mac "X" session,
 # VNC (or similar) or Xvfb
 
-if [ -z "$DISPLAY" ]; then
-    if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
-        echo "Running on LispMachine"
-        # jenkins@LispMachine has VNC running on :1
+if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
+    echo "Running on LispMachine"
+    # do NOT encourage ANSI colorization
+    export TERM=dumb
+    # jenkins@LispMachine has VNC running on :1
+    if [ -z "$DISPLAY" ]; then
         export DISPLAY=:1
-        # do NOT encourage ANSI colorization
-        export TERM=dumb
-    else
-        echo "ERROR: please start X, VNC, or Xvfb and set DISPLAY"
-        exit 1
     fi
+fi
+
+if [ -z "$DISPLAY" ]; then
+    echo "ERROR: please start X, VNC, or Xvfb and set DISPLAY"
+    exit 1
 fi
 
 cd "$code"
