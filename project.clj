@@ -84,6 +84,7 @@
   :main pamela.core
   ;; comment out aot when running lein doc
   :aot [pamela.core]
+  :test-paths ["src/test"]
 
   :aliases {"clean-test" ^{:doc "Clean and run all tests."}
             ["do" "clean" ["test"]]
@@ -93,7 +94,8 @@
             ["do" "clean" ["with-profile" "-dev,+prod" "uberjar"]]}
 
   :profiles
-  {:dev {:env {:program-mode :dev}
+  {:dev {:resource-paths ^:replace ["resources"]}
+         :env {:program-mode :dev}
          :dependencies [[org.seleniumhq.selenium/selenium-java "2.48.2"
                          :exclusions [org.eclipse.jetty/jetty-io
                                       org.eclipse.jetty/jetty-util
