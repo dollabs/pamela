@@ -25,7 +25,7 @@ code="$(pwd -P)"
 cd ".."
 top="$(pwd -P)"
 echo "Startup Dir: $top"
-export PATH=${PATH}:$code/bin
+export PATH=${PATH}:/bin:$code/bin
 
 # NOTE we will be testing the client here so we need to have
 # firefox available to run in a real X session, a Mac "X" session,
