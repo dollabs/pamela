@@ -94,7 +94,7 @@
             ["do" "clean" ["with-profile" "-dev,+prod" "uberjar"]]}
 
   :profiles
-  {:dev {:resource-paths ^:replace ["resources"]}
+  {:dev {:resource-paths ^:replace ["resources"]
          :env {:program-mode :dev}
          :dependencies [[org.seleniumhq.selenium/selenium-java "2.48.2"
                          :exclusions [org.eclipse.jetty/jetty-io
