@@ -17,19 +17,19 @@
   :scm {:url "https://github.com/dollabs/pamela.git"}
   :license {:name "Apache License, Version 2.0"
             :url "http://opensource.org/licenses/Apache-2.0"}
-  :dependencies [[org.clojure/clojure "1.8.0-RC4" :scope "provided"]
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.2.0"]
+                 [com.taoensso/timbre "4.2.1"]
                  [com.fzakaria/slf4j-timbre "0.2.2"]
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
                  ;; -------
-                 [org.clojure/clojurescript "1.7.189" :scope "provided"]
+                 [org.clojure/clojurescript "1.7.228" :scope "provided"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.3"]
                  [riddley "0.1.12"]
                  [environ "1.0.1"]
-                 [clojurewerkz/elastisch "2.2.0"]
+                 [clojurewerkz/elastisch "2.2.1"]
                  [aleph "0.4.1-SNAPSHOT"]
                  [clj-time "0.11.0"]
                  [ring "1.4.0" :exclusions [clj-time]]
@@ -49,7 +49,7 @@
   :plugins [[lein-environ "1.0.1"]
             [codox "0.8.13" :exclusions [org.clojure/clojure]]
             [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]
-            [lein-figwheel "0.5.0-2"
+            [lein-figwheel "0.5.0-3"
              :exclusions [org.clojure/clojure
                           org.clojure/tools.reader
                           ring/ring-core]]]
@@ -96,7 +96,7 @@
   :profiles
   {:dev {:resource-paths ^:replace ["resources"]
          :env {:program-mode :dev}
-         :dependencies [[org.seleniumhq.selenium/selenium-java "2.48.2"
+         :dependencies [[org.seleniumhq.selenium/selenium-java "2.49.1"
                          :exclusions [org.eclipse.jetty/jetty-io
                                       org.eclipse.jetty/jetty-util
                                       org.apache.httpcomponents/httpcore
