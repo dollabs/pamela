@@ -12,7 +12,7 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (ns testing.pamela.pclass
-  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence]) ;; try catch
   (:require [clojure.test :refer :all]
             [pamela.pclass :refer :all]
             [pamela.models :refer :all]))

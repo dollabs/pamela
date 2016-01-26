@@ -15,7 +15,7 @@
   "The defpclass macro (and ancillary helper functions)
   are defined here to implement the PAMELA lanuage DSL."
 
-  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence]) ;; try catch
 
   (:require [clojure.core :as clj]
             [clojure.set :as set]
@@ -54,6 +54,8 @@
   (atom []))
 
 (def valid-meta-keys #{:version :icon :depends :doc})
+
+(def default-bounds [0 :infinity])
 
 (defn get-model-vars
   "Return models."
@@ -169,9 +171,9 @@
   ([lvar-name] (lvar lvar-name nil))
   ([lvar-name meta] (lvar lvar-name meta nil))
   ([lvar-name meta extra] (LVar.
-                       (name lvar-name)
-                       (merge meta {:pamela :lvar})
-                       extra)))
+                            (name lvar-name)
+                            (merge meta {:pamela :lvar})
+                            extra)))
 
 (defn lvar?
   "Returns true if v is an LVar"
@@ -358,8 +360,8 @@
       (when-not (string? v)
         (throw (AssertionError. (str "defpclass meta :icon must be a pathname string (not \"" v "\")"))))
       (let [abs-path (if (.startsWith v "/")
-                   v ;; absolute
-                   (str (:user-dir env) "/" v)) ;; relative
+                       v ;; absolute
+                       (str (:user-dir env) "/" v)) ;; relative
             path-file (as-file abs-path)
             icon (if (.exists path-file)
                    (str (as-url path-file))
@@ -493,20 +495,76 @@
        pclass)
       pclass)))
 
+(defn validate-label-fn
+  "Validate label"
+  {:added "0.2.2"}
+  [pclass-name m labels]
+  (fn [form]
+    (let [[method label-kw label bounds-kw bounds & args] form]
+      (clj/when label
+        (swap! labels update-in [label]
+          (fn [count]
+            (if (zero? count)
+              1
+              (throw (AssertionError.
+                       (str "label " label " defined multiple times "
+                         " in pclass: " pclass-name " method: " m "\n")))))))
+      form)))
+
+(defn list-or-cons?
+  "Returns true of x is a list"
+  {:added "0.2.0"}
+  [x]
+  (or (instance? clojure.lang.PersistentList x)
+    (instance? clojure.lang.Cons x)))
+
+(defn validate-labels
+  "Validate labels"
+  {:added "0.2.2"}
+  [pclass-name methods]
+  (doseq [method methods]
+    (let [mf (eval method)
+          [m f] (first (seq mf))
+          {:keys [args pre post bounds doc betweens body]} f]
+      (when-not (empty? betweens)
+        (let [labels (atom {})
+              all-labels (set (doall
+                                (apply concat
+                                  (map
+                                    #(vector (second %) (nth % 2)) betweens))))
+              validate-label (validate-label-fn pclass-name m labels)]
+          (doseq [label all-labels]
+            (swap! labels assoc label 0))
+          (prewalk #(if (list-or-cons? %) (validate-label %) %) body)
+          (let [labels-undefined
+                (map first (filter #(zero? (second %)) (seq @labels)))]
+            (if-not (empty? labels-undefined)
+              (throw (AssertionError.
+                       (str "pclass: " pclass-name " method: " m
+                         " has the following undefined labels: "
+                         (string/join " " labels-undefined)
+                         "\n"))))))))))
+
 (defn build-method
   "A defpclass helper: build the method."
   {:pamela :pclass-builder-fn :added "0.2.0"}
   [pclass method]
   (let [[m f] (first (seq method))
-        metaf (meta f)
-        pre (:pre metaf)
-        post (:post metaf)]
+        {:keys [pre post bounds doc betweens body]} f]
     (clj/when (and pre (or (not (keyword? pre))
-                     (nil? (get-in pclass [:modes pre]))))
-      (throw (AssertionError. (str "pclass: " (:pclass pclass) " method: " m " has :pre condition \"" pre "\" which is not one of the modes: " (vec (keys (:modes pclass)))))))
+                         (nil? (get-in pclass [:modes pre]))))
+      (throw (AssertionError.
+               (str "pclass: " (:pclass pclass) " method: " m
+                 " has :pre condition \"" pre
+                 "\" which is not one of the modes: "
+                 (vec (keys (:modes pclass)))))))
     (clj/when (and post (or (not (keyword? post))
-                      (nil? (get-in pclass [:modes post]))))
-      (throw (AssertionError. (str "pclass: " (:pclass pclass) " method: " m " has :post condition \"" post "\" which is not one of the modes: " (vec (keys (:modes pclass)))))))
+                          (nil? (get-in pclass [:modes post]))))
+      (throw (AssertionError.
+               (str "pclass: " (:pclass pclass) " method: " m
+                 " has :post condition \"" post
+                 "\" which is not one of the modes: "
+                 (vec (keys (:modes pclass)))))))
     [m f]))
 
 (defn fuse-methods
@@ -520,7 +578,7 @@
                  (if-not (vector? bodies) ;; second body
                    (vector bodies method-body)
                    (conj bodies method-body)))]
-  (assoc methods method-name bodies)))
+    (assoc methods method-name bodies)))
 
 (defn build-methods
   "A defpclass helper: build the methods"
@@ -532,7 +590,7 @@
             (reduce fuse-methods {}
               (map #(build-method pclass %) methods))]
         (assoc pclass :methods new-methods))
-       pclass)))
+      pclass)))
 
 (defn build-condition
   "A defpclass helper: build the tranistion condition."
@@ -562,18 +620,18 @@
         (doseq [fromto fromtos]
           (let [[from to] (map keyword (string/split (name fromto) #":"))]
             (clj/when (and from
-                    (not= from :*)
-                    (nil? (get-in pclass [:modes from])))
+                        (not= from :*)
+                        (nil? (get-in pclass [:modes from])))
               (throw (AssertionError. (str "pclass: " (:pclass pclass) " has transition :FROM:TO \"" fromto "\" where the :FROM is not one of: " (vec (keys (:modes pclass)))))))
             (clj/when (and to
-                    ;; (not= to :*) doesn't make sense!
-                    (nil? (get-in pclass [:modes to])))
+                        ;; (not= to :*) doesn't make sense!
+                        (nil? (get-in pclass [:modes to])))
               (throw (AssertionError. (str "pclass: " (:pclass pclass) " has transition :FROM:TO \"" fromto "\" where the :TO is not one of: " (vec (keys (:modes pclass)))))))
             ))
         (assoc pclass :transitions
           (reduce-kv build-transition {} transitions))
         )
-       pclass)))
+      pclass)))
 
 (defn- add-to-pclasses [pclass]
   (if-not (vector? @*pclasses*)
@@ -588,41 +646,41 @@
 
   **(defpclass name [args*] meta? fields? modes? methods? transitions?)**
 
-*where*
+  *where*
 
-**args** are a vector of optional LVar's to be passed in when instanciating the pclass.
+  **args** are a vector of optional LVar's to be passed in when instanciating the pclass.
 
-*... and the options take the form of a keyword value pairs...*
+  *... and the options take the form of a keyword value pairs...*
 
-**:meta** {:version \"0.2.0\" :icon \"myclass.svg\"}
+  **:meta** {:version \"0.2.0\" :icon \"myclass.svg\"}
 
-**:fields** {:fieldname arg-lvar-or-pclass ...}
+  **:fields** {:fieldname arg-lvar-or-pclass ...}
 
-**:modes** {:mode0 mode-fn} *or* [:mode0 :mode1 ...]
+  **:modes** {:mode0 mode-fn} *or* [:mode0 :mode1 ...]
 
-where mode-fn is either a constant **true** *or* a fn taking the pclass
-and returning a truthy value if in that mode or a vector where each
-mode-fn is assigned **true**.
+  where mode-fn is either a constant **true** *or* a fn taking the pclass
+  and returning a truthy value if in that mode or a vector where each
+  mode-fn is assigned **true**.
 
-**:methods** [(defpmethod method0 ...) (defpmethod method1 ...) ...]
+  **:methods** [(defpmethod method0 ...) (defpmethod method1 ...) ...]
 
-*see defpmethod for detailed signature*
+  *see defpmethod for detailed signature*
 
-**:transitions** {:from-mode:to-mode
+  **:transitions** {:from-mode:to-mode
                  {:pre pre-condition
                   :post post-condition
                   :probability probability
                   :doc docstring}
                 ...}
 
-*where*
+  *where*
 
-* **:from-mode** may be :* meaning from any mode (otherwise :from-mode and :to-mode must be defined in modes).
-* **pre-condition** is the mode prior to this transition
-* **post-condition** is the mode after this transition
-* **probability** is the real number [0.0 .. 1.0] for spontaneous transitions
-* **docstring** is the documentation for the transition
-"
+  * **:from-mode** may be :* meaning from any mode (otherwise :from-mode and :to-mode must be defined in modes).
+  * **pre-condition** is the mode prior to this transition
+  * **post-condition** is the mode after this transition
+  * **probability** is the real number [0.0 .. 1.0] for spontaneous transitions
+  * **docstring** is the documentation for the transition
+  "
   {:added "0.2.0" :doc/format :markdown}
   [name args & opts]
   (let [{:keys [meta fields modes methods transitions observable access id]} opts
@@ -630,12 +688,13 @@ mode-fn is assigned **true**.
         pclass-type (if (or (empty? modes) (map? modes)) :pclass :pclass-enumeration)
         modesmap (if-not (nil? modes)
                    (if (map? modes) modes
-                      (zipmap modes (repeat true))))
+                       (zipmap modes (repeat true))))
         ;; arglists (list 'list (list 'quote args))
         _ (validate-args "defpclass" args)
         argstrs (mapv str args)
         url *url*] ;; bound in models.clj
     (validate-fields args fields)
+    (validate-labels name methods)
     (add-to-pclasses name)
     `(def ~(with-meta name
              (merge {;; :arglists arglists
@@ -686,13 +745,42 @@ mode-fn is assigned **true**.
   [x]
   (and (instance? clojure.lang.PersistentList x) (unknown? (first x))))
 
+(defn legal-bounds? [bounds]
+  (and
+    (vector? bounds)
+    (= 2 (count bounds))
+    (number? (first bounds))
+    (or (= :infinity (second bounds)) (number? (second bounds)))))
+
 (defn pamela-method
   "Return a function for the pamela method name"
   {:added "0.2.0"}
-  [name]
+  [method]
   (fn [& args]
-    ;; (cons :pamela-method (cons name args))))
-    (cons name args)))
+    (loop [label nil bounds nil args args]
+      (cond
+        (= :label (first args))
+        (if (not (keyword? (second args)))
+          (throw (AssertionError.
+                   (str "label: not a keyword for method: " method "\n")))
+          (if (not (nil? label))
+            (throw (AssertionError.
+                     (str "label: may only be specified once for method: " method "\n")))
+            (recur (second args) bounds (nthrest args 2))))
+        (= :bounds (first args))
+        (if (not (legal-bounds? (second args)))
+          (throw (AssertionError.
+                   (str "bounds: not a vector for method: " method "\n")))
+          (if (not (nil? bounds))
+            (throw (AssertionError.
+                     (str "bounds: may only be specified once for method: " method "\n")))
+            (recur label (second args) (nthrest args 2))))
+        :else
+        (cons method
+          (cons :label
+            (cons label
+              (cons :bounds
+                (cons (or bounds default-bounds) args)))))))))
 
 (defn pamela-call
   "Create a pamela method call"
@@ -741,35 +829,72 @@ mode-fn is assigned **true**.
   (if body
     (prewalk #(if (pamela-arg? %) (un-pamela-arg %) %) body)))
 
-;; takes name pre-post-delay-conditions args body
+(defn prepare-betweens [betweens]
+  (let [b (atom {:betweens []
+                 :labels {}})]
+    (doseq [between betweens]
+      (cond
+        (not= 4 (count between))
+        (throw (AssertionError.
+                 (str "between form invalid")))
+        (not (symbol? (first between)))
+        (throw (AssertionError.
+                 (str "expected between symbol: " (first between) "\n")))
+        (nil? (#{'between 'between-starts 'between-ends} (first between)))
+        (throw (AssertionError.
+                 (str "invalid symbol (expected between): " (first between) "\n")))
+        (not (keyword? (second between)))
+        (throw (AssertionError.
+                 (str "first " (first between)
+                   " argument is not a keyword" (second between) "\n")))
+        (not (keyword? (nth between 2)))
+        (throw (AssertionError.
+                 (str "second " (first between)
+                   " argument is not a keyword" (nth between 2) "\n")))
+        (not (legal-bounds? (nth between 3)))
+        (throw (AssertionError.
+                 (str "bounds for " (first between)
+                   " not legal " (nth between 3) "\n")))
+        :else
+        (do
+          (swap! b update-in [:betweens]
+            conj (vec (cons (keyword (first between)) (rest between))))
+          (swap! b update-in [:labels]
+            assoc (second between) 0 (nth between 2) 0))))
+    b))
+
 ;; NOTE: these :pre and :post conditions are NOT clojure fn conditions
 (defmacro defpmethod
   "Define a pclass method (within a defpclass body).
 
-**(defpmethod name conds [args*] body)**
+  **(defpmethod name conds [args*] body)**
 
-*where*
+  *where*
 
- **conds** is a map of conditions:
+  **conds** is a map of conditions:
   {:pre pre-conditions
    :post post-conditions
-   :delay [from to]
+   :bounds [lb ub]
    :doc docstring}
 
-**args** is a list of method arguments (currently no arguments are supported)
+  **args** is a list of method arguments (currently no arguments are supported)
 
   **body** is the method body which may either be :primitive
   for primitive methods or comprised of PAMELA functions."
   {:added "0.2.0" :doc/format :markdown}
-  [name conds args & [body]]
-  (let [safe-body (restore-pamela-args (replace-pamela-calls body))
+  [name conds args & body-betweens]
+  (let [body (first body-betweens)
+        betweens (prepare-betweens (rest body-betweens))
+        b (:betweens @betweens)
+        safe-body (restore-pamela-args (replace-pamela-calls body))
         argstrs (mapv str args)]
     `(apply
        (fn [~@args]
-        {'~name
-         (assoc ~conds
-           :args (quote ~args)
-           :body ~safe-body)})
+         {'~name
+          (assoc ~conds
+            :args (quote ~args)
+            :body ~safe-body
+            :betweens ~b)})
        (map symbol ~argstrs))))
 
 (defn describe-pclass-methods
@@ -785,13 +910,13 @@ mode-fn is assigned **true**.
           (str "method" (if (> n 1) "s")))
         (doseq [m ms]
           (let [method (get methods m)
-                {:keys [pre post delay doc body]} method
+                {:keys [pre post bounds doc body]} method
                 primitive? (= body :primitive)]
             (println m (str " (" (if primitive? "primitive" "pamela") ")"))
             (if doc (println " :doc\t" doc))
             (if pre (println " :pre\t" pre))
             (if post (println " :post\t" post))
-            (if delay (println " :delay\t" delay))
+            (if bounds (println " :bounds\t" bounds))
             ))))))
 
 (defn describe-pclass-transitions
@@ -910,9 +1035,9 @@ mode-fn is assigned **true**.
                          (assoc %1 %2 (assoc %3 :rdepends rdeps))))
         rdepends (reduce-kv merge-rdeps model-rdeps model-rdeps)
         ]
-        ;; model-indexes (apply merge
-        ;;                 (for [i (range (count models))
-        ;;                       :let [m (get models i)]]
+    ;; model-indexes (apply merge
+    ;;                 (for [i (range (count models))
+    ;;                       :let [m (get models i)]]
     ;;                   {(:lvar m) {:i i :depends (:depends m)}}))
     (dissoc rdepends :rdepends)))
 
@@ -988,20 +1113,20 @@ mode-fn is assigned **true**.
   (clj/when fields
     (->> (cons ""
            (for [field (keys fields)]
-           (let [value (get fields field)]
-             ;; (str "  " field "=" value)
-             (str "  " field " is "
-               (cond
-                 (nil? value)
-                 "nil ERROR"
-                 (lvar? value)
-                 (str "lvar \"" (:lvar value) "\"")
-                 (enumeration-pclass? value)
-                 (str "an enumeration \"" (:pclass value)
+             (let [value (get fields field)]
+               ;; (str "  " field "=" value)
+               (str "  " field " is "
+                 (cond
+                   (nil? value)
+                   "nil ERROR"
+                   (lvar? value)
+                   (str "lvar \"" (:lvar value) "\"")
+                   (enumeration-pclass? value)
+                   (str "an enumeration \"" (:pclass value)
                      "\" currently: " (:mode value))
-                 (pclass? value)
-                 (str "an instance of pclass \"" (:pclass value) "\"")
-                 :else (str "unknown: " value))))))
+                   (pclass? value)
+                   (str "an instance of pclass \"" (:pclass value) "\"")
+                   :else (str "unknown: " value))))))
       (string/join \newline))
     ))
 
@@ -1032,7 +1157,7 @@ mode-fn is assigned **true**.
     (->> (cons ""
            (for [method-name (keys methods)]
              (let [method (get methods method-name)
-                   {:keys [pre post delay doc body]} method
+                   {:keys [pre post bounds doc body]} method
                    primitive? (= body :primitive)]
                (str "  " method-name " is a "
                  (if primitive? "primitive" "pamela")
@@ -1101,10 +1226,10 @@ mode-fn is assigned **true**.
           ptransitions (str "transitions:" (describe-transitions transitions))
           pvars (str "lvars:" (describe-lvars pclass))
           lines [header pdoc picon ptype
-                           pversion pdepends prdepends-options
-                           pfields pmodes pmethods ptransitions
-                           pvars
-                           ""]
+                 pversion pdepends prdepends-options
+                 pfields pmodes pmethods ptransitions
+                 pvars
+                 ""]
           model-desc (string/join \newline lines)]
       model-desc)))
 

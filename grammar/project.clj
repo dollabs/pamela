@@ -17,7 +17,7 @@
   :scm {:url "https://github.com/dollabs/pamela.git"}
   :license {:name "Apache License, Version 2.0"
             :url "http://opensource.org/licenses/Apache-2.0"}
-  :dependencies [[org.clojure/clojure "1.8.0-RC4" :scope "provided"]
+  :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [instaparse "1.4.1"]
                  [rhizome "0.2.5"]
                  [environ "1.0.1"]]

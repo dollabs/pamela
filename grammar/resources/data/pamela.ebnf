@@ -26,34 +26,42 @@ field = keyword field-init
 field-init = ( symbol | lvar-ctor| pclass-ctor | pclass-helper )
 
 methods = <METHODS> <LB> defpmethod* <RB>
-defpmethod = <LP> <DEFPMETHOD> symbol cond-map? args fn? <RP>
+defpmethod = <LP> <DEFPMETHOD> symbol cond-map? args fn? between-opt* <RP>
 
 transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword cond-map
 cond-map =  <LM> cond* <RM>
 cond = keyword ( keyword | string | number | symbol | lvar-ctor | cond-fn | bounds )
 
-fn = ( ask | assert | between | between-ends | between-starts | choose | maintain | noop | parallel | plant-fn | sequence | tell | try-form | unless | when | whenever )
+fn = ( ask | assert | choose | maintain | noop | parallel | plant-fn | sequence | tell | try-form | unless | when | whenever )
+
 ask = <LP> <ASK> cond-fn opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-fn opt-bounds? <RP>
-between = <LP> <BETWEEN> keyword keyword bounds <RP>
-between-ends = <LP> <BETWEEN-ENDS> keyword keyword bounds <RP>
-between-starts = <LP> <BETWEEN-STARTS> keyword keyword bounds <RP>
 choice = <LP> <CHOICE> choice-opt* fn <RP>
-choose = <LP> <CHOOSE> choice+ <RP>
+choose = <LP> <CHOOSE> fn-opt* choice+ <RP>
 maintain = <LP> <MAINTAIN> cond-fn opt-bounds? fn <RP>
 noop = <LP> <NOOP> <RP>
-parallel = <LP> <PARALLEL> opt-bounds? fn+ <RP>
-plant-fn = <LP> symbol <'$'> symbol literal* opt-bounds? <RP>
-sequence = <LP> <SEQUENCE> opt-bounds? fn+ <RP>
+parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
+plant-fn = <LP> symbol <'$'> symbol fn-opt* argval* <RP>
+sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 tell = <LP> <TELL> cond-fn <RP>
 try-form = <LP> <TRY-FORM> opt-bounds? fn <LP> <CATCH> fn <RP> <RP>
 unless = <LP> <UNLESS> cond-fn opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-fn opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-fn opt-bounds? fn <RP>
 
-choice-opt = ( opt-bounds | opt-probability | opt-cost | opt-reward | opt-guard )
+between-opt = (between | between-ends | between-starts)
+
+between = <LP> <BETWEEN> keyword keyword bounds <RP>
+between-ends = <LP> <BETWEEN-ENDS> keyword keyword bounds <RP>
+between-starts = <LP> <BETWEEN-STARTS> keyword keyword bounds <RP>
+
+fn-opt = ( opt-bounds | opt-label )
+
+choice-opt = ( opt-bounds | opt-probability | opt-cost | opt-reward | opt-guard | opt-label )
+
 opt-bounds = <BOUNDS> bounds
+opt-label = <LABEL> keyword
 opt-probability = <PROBABILITY> number-ref
 opt-cost = <COST> number-ref
 opt-reward = <REWARD> number-ref
@@ -74,6 +82,7 @@ pclass-ctor-option = ( initial | observable | access | id )
 
 bounds = <LB> number ( number | INFINITY ) <RB>
 
+argval = ( symbol | literal )
 symbol = #'[A-Za-z0-9-]+'
 literal = ( boolean | string | keyword | number )
 keyword = #':[A-Za-z0-9:*-]+'
@@ -109,6 +118,7 @@ ID = <':id'>
 IMPLIES = <'implies'>
 INFINITY = <':infinity'>
 INITIAL = <':initial'>
+LABEL = <':label'>
 LVAR = <'lvar'>
 MAINTAIN = <'maintain'>
 META = <':meta'>

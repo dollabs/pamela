@@ -16,14 +16,47 @@
 
 program=$(basename $0)
 dir=$(dirname $0)
+export PAMELA_CWD="$(pwd -P)"
 cd "$dir/.."
 dir="$(pwd -P)"
 analysis="$dir/target/analysis"
 regression="$dir/../src/test/pamela/regression"
 
-if [ ! -d "$analysis" ]; then
+log() {
+  echo >&2 "$*"
+}
+
+err() {
+  log "${program}: $*"
+}
+
+file="$1"
+args=""
+if [ -n "$file" ]; then
+    if [ ! -e "$file" ]; then
+        if [ -e "$PAMELA_CWD/$file" ]; then
+            file="$PAMELA_CWD/$file"
+        else
+            err "input file does not exist: $file"
+            exit 1
+        fi
+    fi
+    args="-- $file"
+fi
+
+if [ -n "$file" ]; then
+    echo "Analyzing PAMELA file: $file"
+else
     echo "Analyzing PAMELA regression files..."
-    lein run
+fi
+lein run $args
+
+if [ ! -d "$analysis" ]; then
+    exit 1
+fi
+
+if [ -n "$file" ]; then
+    exit 0
 fi
 
 cd "$analysis"

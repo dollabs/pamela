@@ -12,7 +12,7 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (ns testing.pamela.models
-  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence]) ;; try catch
   (:require [clojure.test :refer :all]
             [pamela.pclass :refer :all]
             [pamela.models :refer :all]))
@@ -41,7 +41,7 @@
               [['psw "0.2.0"] ['bulb "0.2.0"]])))
 
       (is (= (with-out-str (describe-pclass-methods switchedpower))
-            "pclass psw has 3 methods\nturn-on  (pamela)\n :doc\t turns on the power supply\n :pre\t :off\n :post\t :on\n :delay\t [1 3]\nturn-off  (pamela)\n :doc\t turns off the power supply\n :pre\t :on\n :post\t :off\n :delay\t [1 3]\nreset  (pamela)\n :doc\t resets the power supply\n :post\t :off\n"))
+            "pclass psw has 3 methods\nturn-on  (pamela)\n :doc\t turns on the power supply\n :pre\t :off\n :post\t :on\n :bounds\t [1 3]\nturn-off  (pamela)\n :doc\t turns off the power supply\n :pre\t :on\n :post\t :off\n :bounds\t [1 3]\nreset  (pamela)\n :doc\t resets the power supply\n :post\t :off\n"))
       (is (= (with-out-str (describe-pclass-transitions switchedpower))
             "pclass psw has 3 transitions\n:off -> :on     turning on\n:on -> :off     turning off\n:* -> :fail     spontaneous switch failure\n"))
 

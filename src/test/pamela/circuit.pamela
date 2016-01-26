@@ -30,11 +30,11 @@
           :off (condition (field= :pwr :none))
           :fail true}
   :methods [(defpmethod turn-on
-              {:pre :off :post :on :delay [1 3]
+              {:pre :off :post :on :bounds [1 3]
                :doc "turns on the power supply"}
               [])
             (defpmethod turn-off
-              {:pre :on :post :off :delay [1 3]
+              {:pre :on :post :off :bounds [1 3]
                :doc "turns off the power supply"}
               [])
             (defpmethod reset
@@ -76,14 +76,14 @@
                                 (field= :anode :none)
                                 (field= :sensed-illumination :dark)))
                          :post :on
-                         :delay [1 3]
+                         :bounds [1 3]
                          :doc "turning on bulb"}
                 :on:off {:pre (condition (and
                                 (mode= :on)
                                 (field= :anode :high)
                                 (field= :sensed-illumination :bright)))
                          :post :off
-                         :delay [1 3]
+                         :bounds [1 3]
                          :doc "turning on bulb"}
                 :*:fail {:probability (lvar "pfbulb")
                          :doc "spontaneous bulb failure"}})

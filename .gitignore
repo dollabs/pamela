@@ -17,6 +17,10 @@
 /grammar/logs
 /grammar/test
 /grammar/target
+/grammar/index.html
+
+# Ignore files suffixed with .old
+*.old
 
 # Emacs backup files
 *~

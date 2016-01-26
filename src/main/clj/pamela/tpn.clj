@@ -55,13 +55,6 @@
   [form]
   (and (list? form) (argmethod? (first form))))
 
-(defn list-or-cons?
-  "Returns true of x is a list"
-  {:added "0.2.0"}
-  [x]
-  (or (instance? clojure.lang.PersistentList x)
-    (instance? clojure.lang.Cons x)))
-
 (defn safe-nth
   "Verion of nth which will simply return nil if n exceeds collection"
   {:added "0.2.0"}
@@ -81,7 +74,9 @@
       (let [f (first form)]
         (if-not (argmethod? f)
           form
-          (let [[arg method-name] (string/split (name f) #"\$")
+          (let [[arg-method label-kw label bounds-kw fbounds & argvals] form
+                ;; _ (println "arg-method" arg-method "label-kw" label-kw "label" label "bounds-kw" bounds-kw "fbounds" fbounds "argvals" argvals)
+                [arg method-name] (string/split (name arg-method) #"\$")
                 f' (symbol (str arg "." method-name))
                 method-sym (symbol method-name)
                 ;; _ (println "GET PLANT " (type arg) " = " arg "$" method-name)  ;; DEBUG
@@ -92,37 +87,35 @@
                     (throw (AssertionError. (str "cannot find plant for arg: " arg))))
                 {:keys [pclass id]} plant
                 method (get-in plant [:methods method-sym])
-                {:keys [args doc bounds body]} method
+                {:keys [args bounds pre post doc betweens body]} method
                 [lb ub] bounds
                 doc (or doc "") ;; doc (or doc method-name)
                 lb (or lb 0)
                 ub (or ub :infinity)
-                fbounds (let [[kw-bounds vec-bounds] (take-last 2 form)]
-                          (if (and (= kw-bounds :bounds) (vector? vec-bounds))
-                            vec-bounds))
                 [flb fub] fbounds
                 flb (if flb
                       (if (>= flb lb) flb
-                          (str "invalid lower bound"))
+                          lb) ;; (str "invalid lower bound")
                       lb)
                 fub (if fub
                       (if (= ub :infinity)
                         fub
-                        (if (<= fub ub) fub
-                            (str "invalid upper bound")))
+                        (if (= fub :infinity) ;; constrain by ub
+                          ub
+                          (if (<= fub ub) fub
+                              ub))) ;; (str "invalid upper bound")
                       ub)
                 bounds [flb fub]
-                argvals (rest form)
-                argvals (if fbounds (drop-last 2 argvals) argvals)
                 av (mapv hash-map (map keyword args) argvals)
-                body (if body
+                body (if body ;; plant-fn body is NOT primitive
                        (do
                          ;; (println "SUB prewalk")  ;; DEBUG
                          (prewalk (replace-plant-functions plant tpn-args) body) ;
                          ))
                 ;; _ (println "PREP plant-fn")  ;; DEBUG
                 plant-fn (list f' :pclass pclass :id id :method method-name
-                           :doc doc :bounds bounds :args av
+                           :doc doc
+                           :label label :bounds bounds :args av
                            ;; :tpn tpn
                            ;; :tpn-args tpn-args
                            :non-primitive body
@@ -137,7 +130,10 @@
   [bounds]
   (and (vector? bounds)
     (or (zero? (count bounds))
-      (and (= 2 (count bounds)) (= 0 (first bounds)) (= :infinity (second bounds))))))
+      (and
+        (= 2 (count bounds))
+        (= 0 (first bounds))
+        (= :infinity (second bounds))))))
 
 (defn constraint-from-bounds
   "Returns a new constraint if the bounds are non-default bounds"
@@ -168,8 +164,10 @@
   "sequence helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [bounds (safe-nth form 2)
-        activities (nthrest form 3)]
+  (let [label (safe-nth form 2)
+        ;; _ (println "BUILD-SEQUENCE label" label)
+        bounds (safe-nth form 4)
+        activities (nthrest form 5)]
     (loop [first-act nil prev nil activity (first activities)
            more (rest activities) objects {}]
       (if (empty? more)
@@ -226,17 +224,21 @@
                                     (:constraints first-act-sb-obj)
                                     (:uid constraint))
                                   (:constraints first-act-sb-obj))
-                first-act-sb-obj (assoc-if first-act-sb-obj
-                                   :constraints new-constraints)
+                first-act-sb-obj (-> first-act-sb-obj
+                                   (assoc-if :constraints new-constraints)
+                                   (assoc-if :sequence-label label)
+                                   (assoc-if :sequence-end (if label se)))
                 objects (-> objects
                           (assoc first-act-sb first-act-sb-obj)
                           (assoc-if (:uid constraint) constraint))
                 ;; _ (println "OBJECTS sequence") ;; DEBUG
                 ;; _ (pp/pprint objects)
-                graph {:sb first-act-sb :se se :objects objects}
+                graph (assoc-if {:sb first-act-sb :se se :objects objects}
+                        :label label)
                 new-form {:graph graph :function (first form)
                           ;; :activities activities
                           }]
+            ;; (println "BUILD-SEQUENCE new-form" new-form)
             new-form))
         ;; there are more activities
         (let [first-act (or first-act activity)
@@ -286,8 +288,9 @@
   "choice helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [bounds (safe-nth form 2)
-        activities (nthrest form 3)
+  (let [label (safe-nth form 2)
+        bounds (safe-nth form 4)
+        activities (nthrest form 5)
         first-act (first activities)
         {:keys [sb act se objects]} (:graph first-act)
         first-act-sb-obj (get objects sb)
@@ -301,7 +304,8 @@
         objects (assoc-if
                   (assoc objects sb first-act-sb-obj)
                   (:uid constraint) constraint)
-        graph {:sb sb :se se :objects objects}
+        graph (assoc-if {:sb sb :se se :objects objects}
+                :label label)
         new-form {:graph graph :function (first form)
                   ;; :activities activities
                   }]
@@ -339,11 +343,20 @@
   "choose helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [choices (rest form)
-        cb (tpns/make-c-begin {})
+  (let [label (safe-nth form 2)
+        ;; _ (println "BUILD-CHOOSE label" label)
+        bounds (safe-nth form 4)
+        choices (nthrest form 5)
         ce (tpns/make-c-end {})
+        constraint (constraint-from-bounds bounds (:uid ce))
+        cb (tpns/make-c-begin
+             (assoc-if {}
+               :label label)
+             :constraints (union-items (:uid constraint)))
         ;; each se of the choice must now have a null activity pointing to ce
-        objects (atom {(:uid cb) cb (:uid ce) ce})
+        objects (atom (assoc-if
+                        {(:uid cb) cb (:uid ce) ce}
+                        (:uid constraint) constraint))
         begin-ids (make-null-activities objects cb ce choices)
         cb (get @objects (:uid cb))
         ce (get @objects (:uid ce))
@@ -351,22 +364,28 @@
              :end-node (:uid ce)
              :activities begin-ids)
         _ (swap! objects assoc (:uid cb) cb (:uid ce) ce)
-        graph {:sb (:uid cb) :se (:uid ce) :objects @objects}
+        graph (assoc-if {:sb (:uid cb) :se (:uid ce) :objects @objects}
+                :label label)
         new-form {:graph graph :function (first form)
                   ;; :choices choices
                   }]
+    ;; (println "BUILD-CHOOSE new-form" new-form)
     new-form))
 
 (defn build-parallel
   "parallel helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [bounds (safe-nth form 2)
-        constraint (constraint-from-bounds bounds)
-        options (nthrest form 3)
-        pb (tpns/make-p-begin {}
-             :constraints (union-items (:uid constraint)))
+  (let [label (safe-nth form 2)
+        ;; _ (println "BUILD-PARALLEL label" label)
+        bounds (safe-nth form 4)
+        options (nthrest form 5)
         pe (tpns/make-p-end {})
+        constraint (constraint-from-bounds bounds (:uid pe))
+        pb (tpns/make-p-begin
+             (assoc-if {}
+               :label label)
+             :constraints (union-items (:uid constraint)))
         ;; each se of the parallel must now have a null activity pointing to pe
         objects (atom (assoc-if
                         {(:uid pb) pb (:uid pe) pe}
@@ -380,10 +399,12 @@
         _ (swap! objects assoc (:uid pb) pb (:uid pe) pe)
         ;; _ (println "OBJECTS for parallel") ;; DEBUG
         ;; _ (pp/pprint @objects)
-        graph {:sb (:uid pb) :se (:uid pe) :objects @objects}
+        graph (assoc-if {:sb (:uid pb) :se (:uid pe) :objects @objects}
+                :label label)
         new-form {:graph graph :function (first form)
                   ;; :options options
                   }]
+    ;; (println "BUILD-PARALLEL new-form" new-form)
     new-form))
 
 (defn build-non-primitive
@@ -399,8 +420,8 @@
       (assoc objects
         :network-id (:uid network)
         (:uid network) network))
-      ;; {:network-id :net-00000
-      ;;  :net-00000 :fake-network}
+    ;; {:network-id :net-00000
+    ;;  :net-00000 :fake-network}
     ))
 
 (defn build-graph
@@ -410,35 +431,42 @@
   (if (list-or-cons? form)
     ;; (if (argmethod? (first form))
     (if (dotmethod? (first form))
-      (let [{:keys [bounds doc pclass id method args non-primitive]}
-              (apply hash-map (rest form))
-            constraint (constraint-from-bounds bounds)
-            constraint-ids (if constraint #{(:uid constraint)} #{})
+      (let [{:keys [label bounds doc pclass id method args non-primitive]}
+            (apply hash-map (rest form))
             se (tpns/make-state {})
+            constraint (constraint-from-bounds bounds (:uid se))
             ;; remove doc -- it's too verbose!
             ;; label (str "(" pclass ":" id ":" method ") " doc)
             ;; label (str "(" pclass ":" id ":" method
             ;;         (if-not (empty? args) " ")
             ;;         (if-not (empty? args) (string/join " " (map str args)))
             ;;         ")")
-            label method
+            edge-label method
             net-objects (build-non-primitive non-primitive)
             network-id (:network-id net-objects)
             non-primitive (or network-id false)
-            act-details (apply merge
-                          {:plant (str pclass)
-                           :plantid (or id "")
-                           :command method
-                           :non-primitive non-primitive}
-                          args)
+            act-details {:plant (str pclass)
+                         :plantid (or id "")
+                         :command method
+                         :non-primitive non-primitive}
+            act-details (assoc-if act-details
+                          :label label)
+            ;; TBD
+            ;; act-details (apply merge act-details
+            ;;               args)
             act (tpns/make-activity act-details
-                  :constraints constraint-ids
-                  :name label
+                  ;; :uid uid
+                  :name edge-label
+                  ;; :cost cost
+                  ;; :reward reward
+                  :constraints (union-items (:uid constraint))
                   :end-node (:uid se))
-            ;; _ (print "act: ") ;; DEBUG
+            ;; _ (println "act: " (type act)) ;; DEBUG
             ;; _ (pp/pprint act)
             se (assoc se :incidence-set #{(:uid act)})
+            ;; _ (println "se: " (type se) "=" se) ;; DEBUG
             sb (tpns/make-state {} :activities #{(:uid act)})
+            ;; _ (println "sb: " (type sb) "=" sb) ;; DEBUG
             objects [sb act se]
             objects (if constraint (conj objects constraint) objects)
             objects (zipmap (map :uid objects) objects) ;; convert to map
@@ -447,7 +475,9 @@
             objects (if network-id
                       (merge (dissoc net-objects :network-id) objects)
                       objects)
-            graph {:sb (:uid sb) :act (:uid act) :se (:uid se) :objects objects}
+            graph (assoc-if {:sb (:uid sb) :act (:uid act) :se (:uid se)
+                             :objects objects}
+                    :label label)
             new-form (apply hash-map :graph graph :function (first form) (rest form))]
         new-form)
       (case (keyword (first form))
@@ -460,6 +490,64 @@
       )
     ;; not list
     form))
+
+(defn find-begin-for-activity [objects uid]
+  (let [object-vals (vals objects)]
+    (loop [object (first object-vals) more (rest object-vals)]
+      (let [activities (or (:activities object) #{})]
+        (if object
+          (if (activities uid)
+            (:uid object)
+            (recur (first more) (rest more)))
+          nil))))) ;; NOT FOUND
+
+(defn add-between-constraints [objects betweens]
+  (if (empty? betweens)
+    objects
+    (let [labels (atom {})
+          objs (atom objects)]
+      (doseq [[uid object] (seq objects)]
+        (let [{:keys [label end-node sequence-label sequence-end]} object]
+          (when label
+            (swap! labels
+              assoc label [uid end-node]))
+          (when sequence-label
+            (swap! labels
+              assoc sequence-label [uid sequence-end]))))
+      (doseq [between betweens]
+        (let [[between-type from to bounds] between
+              [from-uid from-end] (get @labels from)
+              from-obj (get @objs from-uid)
+              from-begin (if (= (:tpn-type from-obj) :activity)
+                           (find-begin-for-activity @objs from-uid)
+                           from-uid)
+              [to-uid to-end] (get @labels to)
+              to-obj (get @objs to-uid)
+              to-begin (if (= (:tpn-type to-obj) :activity)
+                           (find-begin-for-activity @objs to-uid)
+                           to-uid)
+              ;; :between ;; from-end -> to-begin
+              ;; :between-starts ;; from-begin -> to-begin
+              ;; :between-ends ;; from-end -> to-end
+              object (get @objs
+                       (if (= between-type :between-starts)
+                         from-begin from-end))
+              constraint (constraint-from-bounds bounds
+                           (if (= between-type :between-ends)
+                             to-end to-begin))
+              constraint (assoc constraint
+                           between-type [from to])
+              object (assoc object
+                       :constraints
+                       (union-items
+                         (:constraints object)
+                         (:uid constraint)))]
+          (swap! objs
+            (fn [o]
+              (-> o
+                (assoc (:uid object) object)
+                (assoc (:uid constraint) constraint))))))
+      @objs)))
 
 (defn create-tpn
   "Create TPN as a Clojure map given a pclass instance,
@@ -479,10 +567,11 @@
         field-vals (map #(get-in pclass [:fields %]) field-args)
         tpn-params (map keyword (:args tpn))
         tpn-args (apply merge (map hash-map tpn-params field-vals))
-        body (:body method)
+        {:keys [args bounds pre post doc betweens body]} method
         ;; _ (println "BODY before------------------------------------")
         ;; _ (pp/pprint body)
         ;; _ (do (println "tpn-args:") (pp/pprint tpn-args)) ;; DEBUG
+        ;; _ (println "betweens:" betweens)
         body (prewalk (replace-plant-functions tpn tpn-args) body)
         ;; _ (println "BODY AFTER------------------------------------")
         ;; _ (pp/pprint body)
@@ -490,7 +579,8 @@
         ;; _ (println "TPN-MAP ------------------------------------")
         ;; _ (pp/pprint tpn-map)
         {:keys [sb objects]} (:graph tpn-map)
-        network (tpns/make-network {} :begin-node sb)]
+        network (tpns/make-network {} :begin-node sb)
+        objects (add-between-constraints objects betweens)]
     (assoc objects
       :network-id (:uid network)
       (:uid network) network)))
@@ -838,9 +928,9 @@
         tpn-field (cond
                     (keyword? tpn-field) tpn-field
                     (string? tpn-field) (keywordize tpn-field)
-                     :else
-                     (throw (AssertionError.
-                              (str "construct-tpn called with bad type for tpn-field: " (type tpn-field)))))
+                    :else
+                    (throw (AssertionError.
+                             (str "construct-tpn called with bad type for tpn-field: " (type tpn-field)))))
         tpn-method (cond
                      (symbol? tpn-method) tpn-method
                      (string? tpn-method) (symbol tpn-method)
