@@ -53,6 +53,23 @@ view the regression files with...
 open target/analysis/index.html
 ````
 
+## insta2w3c
+
+It may be useful to convert from the flavor of EBNF used by
+Instaparse to the flavor used by the [W3C](https://www.w3.org/TR/xquery/#EBNFNotation). The script `insta2w3c` will convert the PAMELA EBNF
+(or another Instaparse EBNF file given as an argument)
+to the w3c flavor of EBNF.
+
+For example this w3c EBNF flavor is useful in generating
+a "railroad diagram" using the
+[Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui).
+
+In the case of PAMELA this conversion has already been done:
+
+* [pamela.ebnf](resources/data/pamela.ebnf) PAMELA Instaparse EBNF
+* [pamela.ebnf.w3c](resources/data/pamela.ebnf.w3c) PAMELA w3c EBNF
+* [pamela.railroad.xhtml](resources/data/pamela.railroad.xhtml) PAMELA Railroad Diagram
+
 ### Acknowledgement and Disclaimer:
 This material is based upon work supported by the Army Contracting
 and DARPA under contract No. W911NF-15-C-0005.

@@ -501,6 +501,9 @@
             (recur (first more) (rest more)))
           nil))))) ;; NOT FOUND
 
+;; :between ;; from-end -> to-begin
+;; :between-starts ;; from-begin -> to-begin
+;; :between-ends ;; from-end -> to-end
 (defn add-between-constraints [objects betweens]
   (if (empty? betweens)
     objects
@@ -526,9 +529,6 @@
               to-begin (if (= (:tpn-type to-obj) :activity)
                            (find-begin-for-activity @objs to-uid)
                            to-uid)
-              ;; :between ;; from-end -> to-begin
-              ;; :between-starts ;; from-begin -> to-begin
-              ;; :between-ends ;; from-end -> to-end
               object (get @objs
                        (if (= between-type :between-starts)
                          from-begin from-end))
