@@ -70,7 +70,7 @@ In the case of PAMELA this conversion has already been done:
 * [pamela.ebnf.w3c](resources/data/pamela.ebnf.w3c) PAMELA w3c EBNF
 * [pamela.railroad.svg](resources/data/pamela.railroad.svg) PAMELA Railroad Diagram
 
-![PAMELA Railroad Diagram](http://dollabs.github.io/pamela/grammar/resources/data/pamela.railroad.svg")
+![PAMELA Railroad Diagram](http://dollabs.github.io/pamela/doc/pamela.railroad.svg)
 
 ### Acknowledgement and Disclaimer:
 This material is based upon work supported by the Army Contracting
