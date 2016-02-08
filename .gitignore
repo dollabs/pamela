@@ -11,7 +11,8 @@
 /test
 
 # auto generated documentation
-/doc/clj
+# /doc/clj
+# /doc/cljs
 
 /grammar/dev-resources
 /grammar/logs
