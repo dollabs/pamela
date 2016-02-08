@@ -1,5 +1,7 @@
 a.doll {
     border: 2px solid blue;
+    width: 0px;
+    height: 0px;
 }
 
 img.doll {
