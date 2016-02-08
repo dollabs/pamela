@@ -11,7 +11,7 @@ img.doll {
     background: white;
     /* margin: 10px 0 10px 0; */
     /* border: 1px solid #ebebeb; */
-    border: none;
+    border: 2px solid #007edf;
     box-shadow: none
 
     /* box-shadow: 0 0 5px #ebebeb; */
@@ -19,4 +19,8 @@ img.doll {
     /* -moz-box-shadow: 0 0 5px #ebebeb; */
     /* -o-box-shadow: 0 0 5px #ebebeb; */
     /* -ms-box-shadow: 0 0 5px #ebebeb; */
+}
+
+a.doll:hover img.doll {
+    border: 2px solid lightblue;
 }
