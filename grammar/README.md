@@ -68,9 +68,7 @@ In the case of PAMELA this conversion has already been done:
 
 * [pamela.ebnf](resources/data/pamela.ebnf) PAMELA Instaparse EBNF
 * [pamela.ebnf.w3c](resources/data/pamela.ebnf.w3c) PAMELA w3c EBNF
-* [pamela.railroad.svg](resources/data/pamela.railroad.svg) PAMELA Railroad Diagram
-
-![PAMELA Railroad Diagram](http://dollabs.github.io/pamela/doc/pamela.railroad.xhtml)
+* [pamela.railroad.xhtml](http://dollabs.github.io/pamela/doc/pamela.railroad.xhtml) PAMELA Railroad Diagram
 
 ### Acknowledgement and Disclaimer:
 This material is based upon work supported by the Army Contracting
