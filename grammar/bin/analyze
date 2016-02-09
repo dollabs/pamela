@@ -44,19 +44,25 @@ if [ -n "$file" ]; then
     args="-- $file"
 fi
 
+parsetree=""
 if [ -n "$file" ]; then
     echo "Analyzing PAMELA file: $file"
+    parsetree="${file%%.pamela}.txt"
 else
     echo "Analyzing PAMELA regression files..."
 fi
 lein run $args
 
-if [ ! -d "$analysis" ]; then
-    exit 1
-fi
-
-if [ -n "$file" ]; then
-    exit 0
+if [ -n "$parsetree" ]; then
+    if [ -e "$parsetree" ]; then
+        exit 0
+    else
+        exit 1
+    fi
+else
+    if [ ! -d "$analysis" ]; then
+        exit 1
+    fi
 fi
 
 cd "$analysis"

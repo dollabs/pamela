@@ -1,0 +1,89 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
+(defpclass plant []
+  :meta {:version "0.2.0"
+         :doc "The Plant API"}
+  :methods [(defpmethod track-elephant
+              {:doc "Track Elephant"
+               :bounds [150 180]}
+              [])
+            (defpmethod watch-right-hemisphere
+              {:doc "Watch Right Hemisphere"
+               :bounds [10 20]}
+              [])
+            (defpmethod watch-left-hemisphere
+              {:doc "Watch Left Hemisphere"}
+              [])
+            (defpmethod take-move-low-res-images
+              {:doc "Take and Move Low Res Image"
+               :bounds [0 3]}
+              [])
+            (defpmethod take-high-res-images
+              {:doc "Take High Res Image"
+               :bounds [0 3]}
+              [])
+            (defpmethod move-high-res-images
+              {:doc "Move High Res Image"
+               :bounds [0 4]}
+              [])
+            (defpmethod take-medium-res-images
+              {:doc "Take Medium Res Image"
+               :bounds [0 3]}
+              [])
+            (defpmethod move-medium-res-images
+              {:doc "Move Medium Res Image"
+               :bounds [0 4]}
+              [])
+            (defpmethod picture-analysis-type-1
+              {:doc "Picture Analysis Type-1"
+               :bounds [0 6]}
+              [])
+            (defpmethod picture-analysis-type-2-fast
+              {:doc "Picture Analysis Type-2: Fast"
+               :bounds [0 10]}
+              [])
+            (defpmethod picture-analysis-type-2-slow
+              {:doc "Picture Analysis Type-2: Slow"
+               :bounds [0 10]}
+              [])
+            (defpmethod picture-analysis-type-3
+              {:doc "Picture Analysis Type-3"
+               :bounds [0 7]}
+              [])
+            (defpmethod picture-distribution
+              {:doc "Picture Distribution"
+               :bounds [0 5]}
+              [])
+            ])
+
+(defpclass tpn [plant]
+  :meta {:version "0.2.0"
+         :doc "TPN Demo"}
+  :methods [(defpmethod elephant
+              {:doc "the tpn"}
+              []
+              (parallel
+                (choose
+                  (choice :cost 3.0 :reward 10
+                    (plant$take-high-res-images))
+                  (choice :cost 2.0 :reward 4
+                    (plant$take-medium-res-images))
+                  (choice :cost 1.0 :reward 1
+                    (plant$take-move-low-res-images)))
+                (choose
+                  (choice :probability 0.66
+                    (plant$picture-analysis-type-2-slow))
+                  (choice :probability 0.33
+                    (plant$picture-analysis-type-2-fast))))
+              )])

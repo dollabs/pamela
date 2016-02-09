@@ -288,11 +288,20 @@
   "choice helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [label (safe-nth form 2)
-        bounds (safe-nth form 4)
-        activities (nthrest form 5)
-        first-act (first activities)
+  (let [;; bounds (safe-nth form 2)
+        ;; label (safe-nth form 4)
+        ;; probability (safe-nth form 6)
+        ;; cost (safe-nth form 8)
+        ;; reward (safe-nth form 10)
+        choice-opts (safe-nth form 1)
+        {:keys [bounds label probability cost reward]} choice-opts
+        first-act (first (nthrest form 2))
         {:keys [sb act se objects]} (:graph first-act)
+        act-obj (-> (get objects act)
+                  (assoc-if :probability probability)
+                  (assoc-if :cost cost)
+                  (assoc-if :reward reward))
+        ;; _ (println "BUILD-CHOICE ACT-OBJ" act-obj)
         first-act-sb-obj (get objects sb)
         first-act-se-obj (get objects se)
         constraint (constraint-from-bounds bounds se)
@@ -302,13 +311,16 @@
         first-act-sb-obj (assoc first-act-sb-obj
                            :constraints new-constraints)
         objects (assoc-if
-                  (assoc objects sb first-act-sb-obj)
+                  (assoc objects sb first-act-sb-obj act act-obj)
                   (:uid constraint) constraint)
-        graph (assoc-if {:sb sb :se se :objects objects}
-                :label label)
-        new-form {:graph graph :function (first form)
-                  ;; :activities activities
-                  }]
+        graph (-> {:sb sb :se se :objects objects}
+                (assoc-if :label label)
+                (assoc-if :probability probability)
+                (assoc-if :cost cost)
+                (assoc-if :reward reward))
+        new-form {:graph graph :function (first form)}]
+    ;; (println "CHOICE ---------------------------") ;; DEBUG
+    ;; (pp/pprint new-form) ;; DEBUG
     new-form))
 
 (defn make-null-activities
@@ -347,11 +359,17 @@
         ;; _ (println "BUILD-CHOOSE label" label)
         bounds (safe-nth form 4)
         choices (nthrest form 5)
+        probability (remove nil?
+                      (for [choice choices]
+                        (get-in choice [:graph :probability])))
+        ;; here this represents the sum of all choice probabilities
+        probability (if (pos? (count probability)) (reduce + 0 probability))
         ce (tpns/make-c-end {})
         constraint (constraint-from-bounds bounds (:uid ce))
         cb (tpns/make-c-begin
-             (assoc-if {}
-               :label label)
+             (-> {}
+               (assoc-if :label label)
+               (assoc-if :probability probability))
              :constraints (union-items (:uid constraint)))
         ;; each se of the choice must now have a null activity pointing to ce
         objects (atom (assoc-if
@@ -364,12 +382,14 @@
              :end-node (:uid ce)
              :activities begin-ids)
         _ (swap! objects assoc (:uid cb) cb (:uid ce) ce)
-        graph (assoc-if {:sb (:uid cb) :se (:uid ce) :objects @objects}
-                :label label)
+        graph (-> {:sb (:uid cb) :se (:uid ce) :objects @objects}
+                (assoc-if :label label)
+                (assoc-if :probability probability))
         new-form {:graph graph :function (first form)
                   ;; :choices choices
                   }]
-    ;; (println "BUILD-CHOOSE new-form" new-form)
+    ;; (println "BUILD-CHOOSE ---------------------") ;; debug
+    ;; (pp/pprint new-form) ;; DEBUG
     new-form))
 
 (defn build-parallel
@@ -696,7 +716,10 @@
   (let [nodeid (:uid activity)
         toid (:end-node activity)
         cyto-tpn-type (get cytoscape-tpn-types (:tpn-type activity) "UNKNOWN")
-        node (assoc node-default :nodeid nodeid :tpn-type cyto-tpn-type)
+        ;; FIXME: trial
+        ;; node (assoc node-default :nodeid nodeid :tpn-type cyto-tpn-type)
+        node (-> (merge node-default activity)
+               (assoc :nodeid nodeid :tpn-type cyto-tpn-type))
         nodes [node]
         activities (mapv #(get tpn %) (:activities activity))
         edgesets (mapv (partial make-edges tpn nodeid) activities)

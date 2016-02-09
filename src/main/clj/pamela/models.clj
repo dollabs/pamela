@@ -22,7 +22,8 @@
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
-            [pamela.pclass :refer :all]))
+            [pamela.pclass :refer :all]
+            [pamela.utils :refer [assoc-if]]))
 
 (defn new-pclass
   "Instanciate a predefined pclass."
@@ -61,6 +62,56 @@
           (recur label (second body) (nthrest body 2))))
       :else
       [label (or bounds default-bounds) body])))
+
+(defn get-choice-opts-body
+  "Return the choice-opt(s) as a map and the body"
+  {:pamela :models-helper :added "0.2.0"}
+  [body]
+  (loop [bounds nil label nil probability nil cost nil reward nil body body]
+    (cond
+      (= :bounds (first body))
+      (if (not (legal-bounds? (second body)))
+        (throw (AssertionError. (str "bounds: not a vector\n")))
+        (if (not (nil? bounds))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur (second body) label probability cost reward (nthrest body 2))))
+      (= :label (first body))
+      (if (not (keyword? (second body)))
+        (throw (AssertionError. (str "label: not a keyword\n")))
+        (if (not (nil? label))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds (second body) probability cost reward (nthrest body 2))))
+      (= :probability (first body))
+      (if (not (number? (second body))) ;; FIXME support number-ref
+        (throw (AssertionError. (str "probability: not a number\n")))
+        (if (not (nil? probability))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds label (second body) cost reward (nthrest body 2))))
+      (= :cost (first body))
+      (if (not (number? (second body)))
+        (throw (AssertionError. (str "cost: not a number\n")))
+        (if (not (nil? cost))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds label probability (second body) reward (nthrest body 2))))
+      (= :reward (first body))
+      (if (not (number? (second body)))
+        (throw (AssertionError. (str "reward: not a number\n")))
+        (if (not (nil? reward))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds label probability cost (second body) (nthrest body 2))))
+      :else
+      (let [choice-opts (-> {}
+                          (assoc-if :bounds (or bounds default-bounds))
+                          (assoc-if :label label)
+                          (assoc-if :probability probability)
+                          (assoc-if :cost cost)
+                          (assoc-if :reward reward))]
+        [choice-opts body]))))
 
 (defmacro condition
   "Define a condition.
@@ -254,21 +305,16 @@
   "Define a choice (see also choose)."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (let [[label bounds body] (get-label-bounds-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
-    (cons 'list
-      (cons (quote (symbol "choice"))
-        (cons :label
-          (cons label
-            (cons :bounds (cons bounds safe-body))))))))
-  ;; (let [safe-body (walk-exprs method-call? pamela-call body)]
-  ;;   (if (empty? params)
-  ;;     `(list (symbol "choice") ~safe-body)
-  ;;     (let [time-bounds (first params)]
-  ;;       (if (vector? time-bounds)
-  ;;         (check-choice-params (rest params))
-  ;;         (check-choice-params params))
-  ;;       `(list (symbol "choice") ~safe-body ~@params)))))
+  (let [[choice-opts body] (get-choice-opts-body body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))
+        ;; {:keys [bounds label probability cost reward]} choice-opts
+        ;; body (cons :reward (cons reward safe-body))
+        ;; body (cons :cost (cons cost body))
+        ;; body (cons :probability (cons probability body))
+        ;; body (cons :label (cons label body))
+        ;; body (cons :bounds (cons bounds body))
+        body (cons choice-opts safe-body)]
+    (cons 'list (cons (quote (symbol "choice")) body))))
 
 ;; NOTE due to a clojure limitation we CANNOT redfine try
 (defn try-form
