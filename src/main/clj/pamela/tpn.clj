@@ -364,7 +364,9 @@
                         (get-in choice [:graph :probability])))
         ;; here this represents the sum of all choice probabilities
         probability (if (pos? (count probability)) (reduce + 0 probability))
-        ce (tpns/make-c-end {})
+        ce (tpns/make-c-end
+             (-> {}
+               (assoc-if :probability probability)))
         constraint (constraint-from-bounds bounds (:uid ce))
         cb (tpns/make-c-begin
              (-> {}
