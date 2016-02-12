@@ -600,8 +600,9 @@
         tpn-map (postwalk build-graph body)
         ;; _ (println "TPN-MAP ------------------------------------")
         ;; _ (pp/pprint tpn-map)
-        {:keys [sb objects]} (:graph tpn-map)
-        network (tpns/make-network {} :begin-node sb)
+        {:keys [sb se objects]} (:graph tpn-map)
+        network (assoc (tpns/make-network {} :begin-node sb)
+                  :end-node se)
         objects (add-between-constraints objects betweens)]
     (assoc objects
       :network-id (:uid network)
