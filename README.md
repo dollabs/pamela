@@ -91,10 +91,12 @@ In order to speed up execution you can compile the PAMELA uberjar with `lein pro
 
 Copyright © 2016 Dynamic Object Language Labs Inc.
 
-Licensed under the [Apache License 2.0](http://opensource.org/licenses/http://opensource.org/licenses/Apache-2.0) [LICENSE](LICENSE)
+Licensed under the [Apache License 2.0](http://opensource.org/licenses/Apache-2.0) [LICENSE](LICENSE)
 
+## Acknowledgement and Disclaimer
 
-#Acknowledgement and Disclaimer
-This material is based upon work supported by the Army Contracting and DARPA under contract No. W911NF-15-C-0005.
-Any opinions, findings and conclusions or recommendations expressed in this material are those of the author(s) and do
-not necessarily reflect the views of the Army Contracting Command and DARPA.
+This material is based upon work supported by the Army Contracting and
+DARPA under contract No. W911NF-15-C-0005.  Any opinions, findings and
+conclusions or recommendations expressed in this material are those of
+the author(s) and do not necessarily reflect the views of the Army
+Contracting Command and DARPA.
