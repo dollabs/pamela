@@ -35,6 +35,16 @@
 
 ;; -----------------------------------------------------------------------
 
+;; DEBUG
+(defn map-has-nil-key? [m]
+  (pos?
+    (count
+      (remove nil?
+        (for [[k v] (seq m)]
+          (do
+            ;; (println "MHNK" k "v" v)
+            (if (nil? k) true)))))))
+
 (defn argmethod?
   "Returns true if symbol is a method on an argument (i.e. contains $)"
   {:added "0.2.0"}
@@ -233,6 +243,8 @@
                           (assoc-if (:uid constraint) constraint))
                 ;; _ (println "OBJECTS sequence") ;; DEBUG
                 ;; _ (pp/pprint objects)
+                ;; _ (if (map-has-nil-key? objects)
+                ;;     (println "MHNK sequence (1)" objects))
                 graph (assoc-if {:sb first-act-sb :se se :objects objects}
                         :label label)
                 new-form {:graph graph :function (first form)
@@ -281,6 +293,8 @@
               objects (merge objects objs)
               ;; _ (println "OBJECTS sequence MORE") ;; DEBUG
               ;; _ (pp/pprint objects)
+              ;; _ (if (map-has-nil-key? objects)
+              ;;     (println "MHNK sequence (2)" objects))
               ]
           (recur first-act activity (first more) (rest more) objects))))))
 
@@ -297,10 +311,18 @@
         {:keys [bounds label probability cost reward]} choice-opts
         first-act (first (nthrest form 2))
         {:keys [sb act se objects]} (:graph first-act)
-        act-obj (-> (get objects act)
-                  (assoc-if :probability probability)
-                  (assoc-if :cost cost)
-                  (assoc-if :reward reward))
+        ;; _ (if (map-has-nil-key? objects)
+        ;;     (println "MHNK choice (1)" objects))
+        ;; _ (if (nil? sb)
+        ;;     (println "MHNK choice (2)" sb))
+        ;; NOTE there is no act for a sequence!
+        ;; _ (if (nil? act)
+        ;;     (println "MHNK choice (3)" form))
+        act-obj (when act
+                  (-> (get objects act)
+                    (assoc-if :probability probability)
+                    (assoc-if :cost cost)
+                    (assoc-if :reward reward)))
         ;; _ (println "BUILD-CHOICE ACT-OBJ" act-obj)
         first-act-sb-obj (get objects sb)
         first-act-se-obj (get objects se)
@@ -310,9 +332,12 @@
                           (:uid constraint))
         first-act-sb-obj (assoc first-act-sb-obj
                            :constraints new-constraints)
-        objects (assoc-if
-                  (assoc objects sb first-act-sb-obj act act-obj)
-                  (:uid constraint) constraint)
+        objects (-> objects
+                  (assoc-if sb first-act-sb-obj)
+                  (assoc-if act act-obj)
+                  (assoc-if (:uid constraint) constraint))
+        ;; _ (if (map-has-nil-key? objects)
+        ;;     (println "MHNK choice (0)" objects))
         graph (-> {:sb sb :se se :objects objects}
                 (assoc-if :label label)
                 (assoc-if :probability probability)
@@ -384,6 +409,8 @@
              :end-node (:uid ce)
              :activities begin-ids)
         _ (swap! objects assoc (:uid cb) cb (:uid ce) ce)
+        ;; _ (if (map-has-nil-key? @objects)
+        ;;     (println "MHNK choose" @objects))
         graph (-> {:sb (:uid cb) :se (:uid ce) :objects @objects}
                 (assoc-if :label label)
                 (assoc-if :probability probability))
@@ -421,6 +448,8 @@
         _ (swap! objects assoc (:uid pb) pb (:uid pe) pe)
         ;; _ (println "OBJECTS for parallel") ;; DEBUG
         ;; _ (pp/pprint @objects)
+        ;; _ (if (map-has-nil-key? @objects)
+        ;;     (println "MHNK parallel" @objects))
         graph (assoc-if {:sb (:uid pb) :se (:uid pe) :objects @objects}
                 :label label)
         new-form {:graph graph :function (first form)
@@ -429,6 +458,8 @@
     ;; (println "BUILD-PARALLEL new-form" new-form)
     new-form))
 
+;; {:network-id :net-00000
+;;  :net-00000 :fake-network}
 (defn build-non-primitive
   "Replace non-primitive body with a sub-TPN"
   {:added "0.2.0"}
@@ -438,13 +469,13 @@
     (let [ ;; _ (println "BNP body:") ;; DEBUG
           ;; _ (pp/pprint body)
           {:keys [sb objects]} (:graph body)
-          network (tpns/make-network {} :begin-node sb)]
-      (assoc objects
-        :network-id (:uid network)
-        (:uid network) network))
-    ;; {:network-id :net-00000
-    ;;  :net-00000 :fake-network}
-    ))
+          network (tpns/make-network {} :begin-node sb)
+          non-primitive (assoc objects
+                          :network-id (:uid network)
+                          (:uid network) network)]
+      ;; (if (map-has-nil-key? non-primitive)
+      ;;   (println "MHNK build-non-primitive" non-primitive))
+      non-primitive)))
 
 (defn build-graph
   "Convert form to a graph"
@@ -497,6 +528,7 @@
             objects (if network-id
                       (merge (dissoc net-objects :network-id) objects)
                       objects)
+            ;; _ (if (map-has-nil-key? objects) (println "MHNK activity" act))
             graph (assoc-if {:sb (:uid sb) :act (:uid act) :se (:uid se)
                              :objects objects}
                     :label label)

@@ -36,7 +36,7 @@ LEIN_JVM_OPTS="${LEIN_JVM_OPTS:--server}"
 JVM_OPTS="${JVM_OPTS:-$LEIN_JVM_OPTS}"
 PAMELA_OPTS="${PAMELA_OPTS:-$JVM_OPTS}"
 PAMELA_MODE="${PAMELA_MODE:-dev}"
-PAMELA_VERBOSE="${PAMELA_VERBOSE:-2}"
+PAMELA_VERBOSE="${PAMELA_VERBOSE:-0}"
 
 # attempt to silence leiningen unless the user has set LEIN_SILENT=false
 if [ "$LEIN_SILENT" = "false" ]; then
