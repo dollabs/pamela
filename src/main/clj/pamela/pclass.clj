@@ -26,8 +26,8 @@
             [clojure.pprint :as pp]
             [clojure.set :as set]
             [environ.core :refer [env]]
-            [cheshire.core :as json]
-            [pamela.utils :refer [and-f assoc-if make-url get-url]])
+            [pamela.utils :refer [make-url get-url]]
+            [avenir.utils :refer [and-fn assoc-if]])
   (:import [clojure.lang Symbol PersistentList]))
 
 ;; current values of lvar's -------------------------------
@@ -397,7 +397,7 @@
   [call args]
   (when-not (vector? args)
     (throw (AssertionError. (str call " expects a vector of args."))))
-  (clj/when (not (or (empty? args) (reduce and-f (map symbol? args))))
+  (clj/when (not (or (empty? args) (reduce and-fn (map symbol? args))))
     (throw (AssertionError. (str "All " call " args must be symbols")))))
 
 (defn validate-fields
@@ -425,7 +425,7 @@
   "A defpclass helper: validate (at instanciation time) args are lvars."
   {:added "0.2.0"}
   [args]
-  (clj/when (not (or (empty? args) (reduce and-f (map lvar-or-pclass? args))))
+  (clj/when (not (or (empty? args) (reduce and-fn (map lvar-or-pclass? args))))
     (throw (AssertionError. "All pclass args must be LVars or pclasses."))))
 
 ;; NOTE: because this function *must* have metadata on the

@@ -23,7 +23,7 @@
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [pamela.pclass :refer :all]
-            [pamela.utils :refer [assoc-if]]))
+            [avenir.utils :refer [assoc-if]]))
 
 (defn new-pclass
   "Instanciate a predefined pclass."

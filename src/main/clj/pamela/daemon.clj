@@ -24,12 +24,12 @@
             [compojure.route :refer [resources not-found]]
             [ring.util.response :refer [content-type response redirect]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [cheshire.core :refer [generate-string]]
             [aleph.http :refer [start-server]]
             [pamela.mode :refer :all]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
-            [pamela.utils :refer [sleep repl? input-data str-append]]
+            [pamela.utils :refer [sleep repl? input-data]]
+            [avenir.utils :refer [str-append]]
             [pamela.web :as web])
   (:import [java.net.InetSocketAddress]))
 

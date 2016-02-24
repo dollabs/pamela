@@ -29,7 +29,8 @@
             [clojurewerkz.elastisch.native.document :as doc]
             [clojurewerkz.elastisch.query :as q]
             [clojurewerkz.elastisch.native.response :as esrsp]
-            [pamela.utils :refer [and-f assoc-if get-input sleep repl? http-get]]
+            [pamela.utils :refer [get-input sleep repl? http-get]]
+            [avenir.utils :refer [and-fn assoc-if]]
             [clojure.tools.logging :as log]
             [pamela.daemon :as daemon]
             [pamela.pclass :as pclass]
@@ -216,7 +217,7 @@
           needs (subvec dep 2)]
       ;; (println "solved:" solved "deps:" deps "\ndep:" dep "needs:" needs)
       ;; if all the needs are solved then this dep is solved
-      (if (reduce and-f (map (fn [need] (some #(= need %) solved)) needs))
+      (if (reduce and-fn (map (fn [need] (some #(= need %) solved)) needs))
         (recur (conj solved (first dep)) (subvec deps 1))
         ;; try again in a different order
         (recur solved (conj (subvec deps 1) dep))))))

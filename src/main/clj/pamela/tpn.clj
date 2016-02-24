@@ -24,11 +24,11 @@
             [pamela.tpnrecords :as tpns]
             [pamela.pclass :refer :all]
             [pamela.models :refer [load-pamela-project load-pamela-string]]
-            [pamela.utils :refer [concatv assoc-if keywordize]]
+            [avenir.utils :refer [concatv assoc-if keywordize]]
             [pamela.web :as web]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
-            [cheshire.core :as json]
+            [clojure.data.json :as json]
             [manifold.deferred :as d]
             [manifold.stream :as s]
             [aleph.tcp :as tcp]))
@@ -1004,8 +1004,8 @@
         out-format (or out-format "tpn")
         out (case out-format
               "tpn" (with-out-str (pp/pprint tpn))
-              "json" (json/generate-string tpn)
-              "cytoscape" (json/generate-string (tpn->cytoscape tpn))
+              "json" (with-out-str (json/pprint tpn))
+              "cytoscape" (with-out-str (json/pprint (tpn->cytoscape tpn)))
               "dot" (tpn->dot tpn)
               ;; default
               (str "ERROR: unknown format: " out-format))]
@@ -1066,8 +1066,8 @@
                 "tpn" tpn
                 ;; consider...
                 ;; "tpn" (with-out-str (pp/pprint tpn))
-                "json" (json/generate-string tpn)
-                "cytoscape" (json/generate-string (tpn->cytoscape tpn))
+                "json" (with-out-str (json/pprint tpn))
+                "cytoscape" (with-out-str (json/pprint (tpn->cytoscape tpn)))
                 "dot" (tpn->dot tpn)
                 ;; default
                 (str "ERROR: unknown format: " out-format))]

@@ -21,6 +21,7 @@
                  ;; logging
                  [com.taoensso/timbre "4.2.1"]
                  [com.fzakaria/slf4j-timbre "0.2.2"]
+                 [avenir "0.2.0"]
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
                  ;; -------
@@ -36,7 +37,7 @@
                  [ring/ring-defaults "0.1.5"]
                  [compojure "1.4.0" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
-                 [cheshire "5.5.0"]
+                 [org.clojure/data.json "0.2.6"]
                  [cljsjs/react-dom-server "0.14.3-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha28"]
                  [sablono "0.5.3"]

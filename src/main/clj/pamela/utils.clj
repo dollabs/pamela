@@ -21,8 +21,10 @@
             ;; to be replaced with aleph
             ;; [clj-http.client :as http]
             [environ.core :refer [env]]
-            [cheshire.core :as json]
+            ;; [cheshire.core :as json]
+            [clojure.data.json :as json]
             [pamela.mode :as mode]
+            [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
             URL]))
@@ -39,157 +41,6 @@
     (remove empty?
       (map #(string/replace % #";.*$" "")
         (string/split-lines s)))))
-
-;; helper to grow the input data strings (NOT binary)
-(defn str-append
-  "Append b to a (if a is not nil), else return b"
-  {:added "0.2.0"}
-  [a b]
-  (if a
-    (str a b)
-    b))
-
-(defn ppmeta
-  "Pretty print with metadata"
-  {:added "0.2.0"}
-  [body]
-  (binding [*print-meta* true]
-    (pp/pprint body)))
-
-;; and as a function
-(defn and-f
-  "and as a function (to be used with reduce)"
-  {:tag Boolean :added "0.2.0"}
-  [& args]
-  (when-let [[a & more-as] (not-empty args)]
-    (if (and a more-as)
-      (recur more-as)
-      a)))
-
-;; or as a function
-(defn or-f
-  "or as a function (to be used with reduce)"
-  {:tag Boolean :added "0.2.0"}
-  [& args]
-  (when (not-empty args)
-    (if-let [a (first args)]
-      a
-      (recur (rest args)))))
-
-;; not as a function
-(defn not-f
-  "not as a function (to be used with reduce)"
-  {:tag Boolean :added "0.2.0"}
-  [arg]
-  (when-not arg true))
-
-(defn implies
-  "logical implies"
-  {:tag Boolean :added "0.2.0"}
-  ([] true)
-  ([a] true)
-  ([a b] (or (not a) b))
-  ([a b & more] (if-not b
-                  (if a
-                    false
-                    (case (count more)
-                      1 true
-                      2 (implies (first more) (second more))
-                      (apply implies (implies (first more) (second more)) (rest (rest more)))))
-                  (apply and-f more))))
-
-;; concat returns a vector
-(defn concatv
-  "Return the concat of args as a vector"
-  {:added "0.2.0"}
-  [& args]
-  (vec (apply concat args)))
-
-(declare assoc-if)
-
-(defn prototype-map-fn
-  "returns a a function like hash-map that undersands the prototype-defaults"
-  {:added "0.2.0"}
-  ([prototype-defaults]
-   (prototype-map-fn prototype-defaults nil))
-  ([prototype-defaults prototype-json-fns]
-   (prototype-map-fn prototype-defaults prototype-json-fns nil))
-  ([prototype-defaults prototype-json-fns prototype-name]
-   (fn [& {:keys [only-meta-data] :as init-kvs}]
-    (let [name (or prototype-name "prototype-map")
-          meta-data (assoc-if {:prototype prototype-defaults :prototype-name name}
-                      :prototype-json-fns prototype-json-fns)
-          m (with-meta {} meta-data)]
-      (if only-meta-data
-        meta-data
-        (if init-kvs
-          (merge m init-kvs)
-          m))))))
-
-(defn hash-map-defaults
-  "fill in all the defaults for m (verbosely)"
-  {:added "0.2.0"}
-  [m]
-  (let [meta-data (meta m)
-        prototype (:prototype meta-data)]
-    (if prototype
-      (merge (with-meta prototype meta-data) m)
-      m)))
-
-(defn get-default
-  "get the default value for k in m"
-  {:added "0.2.0"}
-  [m k]
-  (let [prototype (:prototype (meta m))
-        default (get prototype k)]
-    default))
-
-(defn assoc-if
-  "associate k v in m iff v (is not a default!)"
-  {:added "0.2.0"}
-  [m k v]
-  (let [prototype (:prototype (meta m))
-        default (get prototype k)]
-    (if (= v default)
-      m ;; do NOT explicity assoc on a default value!
-      (assoc m k v))))
-
-(defn hash-map-compact
-  "remove all the defaults for m"
-  {:added "0.2.0"}
-  [m & [meta-data]]
-  (let [meta-data (or (meta m) meta-data)
-        prototype (:prototype meta-data)]
-    (if prototype
-      (reduce #(assoc-if %1 (first %2) (second %2)) (with-meta {} meta-data) m)
-      (with-meta m meta-data))))
-
-(defn hash-map-compact-json
-  "Make a compact json form of m"
-  {:added "0.2.0"}
-  [m]
-  (json/encode (hash-map-compact m)))
-
-(defn hash-map-defaults-json
-  "Make a default json form of m"
-  {:added "0.2.0"}
-  [m]
-  (json/encode (hash-map-defaults m)))
-
-;; NOTE the meta-data is required to properly decode from JSON
-;; you can get that by using the specialized hashmap function you created
-;; (def simple-map (prototype-map-fn {:a 123})
-;; thus
-;; (hash-map-from-compact-json simple-map-as-json (simple-map :only-meta-data true))
-(defn hash-map-from-compact-json
-  "Use prototype to convert from compact JSON to a hash map"
-  {:added "0.2.0"}
-  [j meta-data]
-  (let [m (json/decode j true)
-        fns (:prototype-json-fns meta-data)
-        fix-json #(assoc %1 %2 (if-let [f (get fns %2)] (f %3) %3))
-        m (reduce-kv fix-json {} m)]
-    (hash-map-compact m meta-data)))
 
 (defn repl?
   "Helper function returns true if on the REPL (for development)"
@@ -297,16 +148,3 @@
   {:pamela :utils :added "0.2.0"}
   [s]
   (Thread/sleep (* 1000 s)))
-
-(defn keywordize [k]
-  "coerce k to a keyword"
-  {:pamela :utils :added "0.2.0"}
-  (cond
-    (keyword? k) k
-    (string? k)(let [k-str (if (.startsWith k ":") (subs k 1) k)]
-                 (keyword k-str))
-    (number? k) (keyword (str k))
-    (symbol? k) (keyword (name k))
-    :else
-    (throw (AssertionError.
-             (str "keywordize called with bad type for k: " (type k))))))
