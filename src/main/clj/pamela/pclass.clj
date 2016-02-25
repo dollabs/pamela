@@ -33,7 +33,7 @@
 ;; current values of lvar's -------------------------------
 
 (def #^{:dynamic true :added "0.2.0" :doc/format :markdown}
-  world
+  *world*
   "The state of the world (i.e. lvar values)
 
   NOTE: as this is a dynamic var it can be used with **binding**"
@@ -194,9 +194,16 @@
   "Set the value for an LVar in the **world**."
   {:added "0.2.0"}
   [v value]
-  (let [name (if (lvar? v) (:lvar v) v)]
-    (if (string? name)
-      (swap! world #(assoc-in % [:lvars name] value)))))
+  (let [lvar-name (if (lvar? v) (:lvar v) v)
+        lvar-value (get-in @*world* [:lvars lvar-name])]
+    ;; (println "set-mode!" lvar-name "(lvar?" (lvar? lvar-value)
+    ;;   ") from" lvar-value "to" value)
+    (if (lvar? lvar-value)
+      (set-mode! lvar-value value)
+      (let []
+        ;; (println "set-mode!" lvar-name value)
+        (if (string? lvar-name)
+          (swap! *world* assoc-in [:lvars lvar-name] value))))))
 
 ;; get an lvar value or pclass mode
 (defn mode
@@ -205,9 +212,9 @@
   [x]
   (let [value
         (if (or (lvar? x) (string? x))
-          (let [name (if (lvar? x) (:lvar x) x)]
-            (get-in @world [:lvars name]))
-          (if (map? x)
+          (let [lvar-name (if (lvar? x) (:lvar x) x)]
+            (get-in @*world* [:lvars lvar-name]))
+          (if (pclass? x)
             (:mode x)))]
     (if (lvar? value)
       (mode value)

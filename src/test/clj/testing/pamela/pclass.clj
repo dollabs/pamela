@@ -35,6 +35,9 @@
       (set-mode! testing2 testing)
       (is (= (mode testing) 123))
       (is (= (mode testing2) 123))
+      (set-mode! testing2 3.14)
+      (is (= (mode testing) 3.14))
+      (is (= (mode testing2) 3.14))
 
       ;; verify construction of a pclass
       (is (fn? enumvals))
