@@ -67,7 +67,8 @@
   "Return the choice-opt(s) as a map and the body"
   {:pamela :models-helper :added "0.2.0"}
   [body]
-  (loop [bounds nil label nil probability nil cost nil reward nil body body]
+  (loop [bounds nil label nil probability nil cost nil reward nil guard nil
+         body body]
     (cond
       (= :bounds (first body))
       (if (not (legal-bounds? (second body)))
@@ -75,42 +76,54 @@
         (if (not (nil? bounds))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur (second body) label probability cost reward (nthrest body 2))))
+          (recur (second body) label probability cost reward guard
+            (nthrest body 2))))
       (= :label (first body))
       (if (not (keyword? (second body)))
         (throw (AssertionError. (str "label: not a keyword\n")))
         (if (not (nil? label))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds (second body) probability cost reward (nthrest body 2))))
+          (recur bounds (second body) probability cost reward guard
+            (nthrest body 2))))
       (= :probability (first body))
       (if (not (number? (second body))) ;; FIXME support number-ref
         (throw (AssertionError. (str "probability: not a number\n")))
         (if (not (nil? probability))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds label (second body) cost reward (nthrest body 2))))
+          (recur bounds label (second body) cost reward guard
+            (nthrest body 2))))
       (= :cost (first body))
       (if (not (number? (second body)))
         (throw (AssertionError. (str "cost: not a number\n")))
         (if (not (nil? cost))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds label probability (second body) reward (nthrest body 2))))
+          (recur bounds label probability (second body) reward guard
+            (nthrest body 2))))
       (= :reward (first body))
       (if (not (number? (second body)))
         (throw (AssertionError. (str "reward: not a number\n")))
         (if (not (nil? reward))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds label probability cost (second body) (nthrest body 2))))
+          (recur bounds label probability cost (second body) guard
+            (nthrest body 2))))
+      (= :guard (first body))
+      (if (not (nil? guard))
+        (throw (AssertionError.
+                 (str (first body) " may only be specified once\n")))
+        (recur bounds label probability cost reward (second body)
+          (nthrest body 2)))
       :else
       (let [choice-opts (-> {}
                           (assoc-if :bounds (or bounds default-bounds))
                           (assoc-if :label label)
                           (assoc-if :probability probability)
                           (assoc-if :cost cost)
-                          (assoc-if :reward reward))]
+                          (assoc-if :reward reward)
+                          (assoc-if :guard guard))]
         [choice-opts body]))))
 
 (defmacro condition

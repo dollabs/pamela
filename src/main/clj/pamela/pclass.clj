@@ -507,11 +507,14 @@
   {:added "0.2.2"}
   [pclass-name m labels]
   (fn [form]
-    (let [[method label-kw label bounds-kw bounds & args] form]
+    (let [method (first form)
+          label (if (= method 'choice) (:label (second form))
+                    (nth form 2))]
       (clj/when label
         (swap! labels update-in [label]
+          ;; NOTE count could be nil if the label was not used in a between
           (fn [count]
-            (if (zero? count)
+            (if (or (nil? count) (zero? count))
               1
               (throw (AssertionError.
                        (str "label " label " defined multiple times "
@@ -544,7 +547,8 @@
             (swap! labels assoc label 0))
           (prewalk #(if (list-or-cons? %) (validate-label %) %) body)
           (let [labels-undefined
-                (map first (filter #(zero? (second %)) (seq @labels)))]
+                (if (pos? (count @labels))
+                  (map first (filter #(zero? (second %)) (seq @labels))))]
             (if-not (empty? labels-undefined)
               (throw (AssertionError.
                        (str "pclass: " pclass-name " method: " m
@@ -868,7 +872,7 @@
             conj (vec (cons (keyword (first between)) (rest between))))
           (swap! b update-in [:labels]
             assoc (second between) 0 (nth between 2) 0))))
-    b))
+    @b))
 
 ;; NOTE: these :pre and :post conditions are NOT clojure fn conditions
 (defmacro defpmethod
@@ -891,8 +895,7 @@
   {:added "0.2.0" :doc/format :markdown}
   [name conds args & body-betweens]
   (let [body (first body-betweens)
-        betweens (prepare-betweens (rest body-betweens))
-        b (:betweens @betweens)
+        b (:betweens (prepare-betweens (rest body-betweens)))
         safe-body (restore-pamela-args (replace-pamela-calls body))
         argstrs (mapv str args)]
     `(apply

@@ -91,7 +91,8 @@
                   (parallel :label :analyze
                     (plant$picture-analysis-type-1 :bounds [0 6])
                     (choose :bounds [0 15] ;; :label :analyze ;; dup label
-                      (choice (plant$picture-analysis-type-2-slow :bounds [0 10]))
+                      (choice :label :slow-path
+                        (plant$picture-analysis-type-2-slow :bounds [0 10]))
                       (choice (plant$picture-analysis-type-2-fast :bounds [0 10])))
                     (plant$picture-analysis-type-3 :label :phase-3 :bounds [0 7]))
                   (plant$picture-distribution :bounds [0 5])))

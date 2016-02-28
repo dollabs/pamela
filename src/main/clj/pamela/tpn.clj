@@ -264,6 +264,9 @@
               sb-obj (get objs sb)
               na (if (and prev-se (not (and prev-act act))) ;; not simple
                    (tpns/make-null-activity {} :end-node sb)) ;; make na!
+              ;; _ (println "ACTIVITY" activity)
+              ;; _ (println "MORE" more)
+              ;; _ (println "NA" na "SB" sb "PREV-SE" prev-se)
               objs (if na
                      (assoc objs
                        (:uid na) na ;; add na
@@ -272,6 +275,8 @@
                      (if prev-se
                        (dissoc objs sb) ;; remove sb
                        objs))
+              ;; _ (if (map-has-nil-key? objs)
+              ;;     (println "MHNK sequence (1.6)" objs))
               new-activities (if na
                                (union-items
                                  (:activities prev-se-obj)
@@ -290,6 +295,8 @@
               objs (if prev-se ;; if we need to update prev-se
                      (assoc objs prev-se prev-se-obj)
                      objs)
+              ;; _ (if (map-has-nil-key? objs)
+              ;;     (println "MHNK sequence (1.8)" objs))
               objects (merge objects objs)
               ;; _ (println "OBJECTS sequence MORE") ;; DEBUG
               ;; _ (pp/pprint objects)
@@ -308,7 +315,7 @@
         ;; cost (safe-nth form 8)
         ;; reward (safe-nth form 10)
         choice-opts (safe-nth form 1)
-        {:keys [bounds label probability cost reward]} choice-opts
+        {:keys [bounds label probability cost reward guard]} choice-opts
         first-act (first (nthrest form 2))
         {:keys [sb act se objects]} (:graph first-act)
         ;; _ (if (map-has-nil-key? objects)
@@ -318,11 +325,13 @@
         ;; NOTE there is no act for a sequence!
         ;; _ (if (nil? act)
         ;;     (println "MHNK choice (3)" form))
-        act-obj (when act
-                  (-> (get objects act)
-                    (assoc-if :probability probability)
-                    (assoc-if :cost cost)
-                    (assoc-if :reward reward)))
+        ;; NO, put choice-opts (except bounds) on null-activity
+        ;; act-obj (when act
+        ;;           (-> (get objects act)
+        ;;             (assoc-if :probability probability)
+        ;;             (assoc-if :cost cost)
+        ;;             (assoc-if :reward reward)))
+        act-obj (if act (get objects act))
         ;; _ (println "BUILD-CHOICE ACT-OBJ" act-obj)
         first-act-sb-obj (get objects sb)
         first-act-se-obj (get objects se)
@@ -342,7 +351,8 @@
                 (assoc-if :label label)
                 (assoc-if :probability probability)
                 (assoc-if :cost cost)
-                (assoc-if :reward reward))
+                (assoc-if :reward reward)
+                (assoc-if :guard (if guard (str guard)))) ;; TBD
         new-form {:graph graph :function (first form)}]
     ;; (println "CHOICE ---------------------------") ;; DEBUG
     ;; (pp/pprint new-form) ;; DEBUG
@@ -351,15 +361,19 @@
 (defn make-null-activities
   "Wire up null activities"
   {:added "0.2.0"}
-  [objs ob oe options]
+  [objs ob oe options &[choice?]]
   (let [ob-id (:uid ob)
         oe-id (:uid oe)
         begin-ids
         (for [option options
-              :let [{:keys [sb se objects]} (:graph option)
+              :let [g (:graph option)
+                    {:keys [sb se objects]} g
                     sb-obj (get objects sb)
                     se-obj (get objects se)
-                    begin-na (tpns/make-null-activity {} :end-node sb)
+                    choice-opts (if choice?
+                                  (dissoc g :sb :se :objects)
+                                  {})
+                    begin-na (tpns/make-null-activity choice-opts :end-node sb)
                     end-na (tpns/make-null-activity {} :end-node oe-id)
                     ob (get @objs ob-id)
                     oe (get @objs oe-id)
@@ -384,25 +398,26 @@
         ;; _ (println "BUILD-CHOOSE label" label)
         bounds (safe-nth form 4)
         choices (nthrest form 5)
-        probability (remove nil?
-                      (for [choice choices]
-                        (get-in choice [:graph :probability])))
-        ;; here this represents the sum of all choice probabilities
-        probability (if (pos? (count probability)) (reduce + 0 probability))
-        ce (tpns/make-c-end
-             (-> {}
-               (assoc-if :probability probability)))
+        ;; probability (remove nil?
+        ;;               (for [choice choices]
+        ;;                 (get-in choice [:graph :probability])))
+        ;; ;; here this represents the sum of all choice probabilities
+        ;; probability (if (pos? (count probability)) (reduce + 0 probability))
+        ce (tpns/make-c-end {})
+        ;; (-> {}
+        ;;   (assoc-if :probability probability)))
         constraint (constraint-from-bounds bounds (:uid ce))
         cb (tpns/make-c-begin
              (-> {}
                (assoc-if :label label)
-               (assoc-if :probability probability))
+               ;; (assoc-if :probability probability)
+               )
              :constraints (union-items (:uid constraint)))
         ;; each se of the choice must now have a null activity pointing to ce
         objects (atom (assoc-if
                         {(:uid cb) cb (:uid ce) ce}
                         (:uid constraint) constraint))
-        begin-ids (make-null-activities objects cb ce choices)
+        begin-ids (make-null-activities objects cb ce choices true)
         cb (get @objects (:uid cb))
         ce (get @objects (:uid ce))
         cb (assoc cb
@@ -413,7 +428,8 @@
         ;;     (println "MHNK choose" @objects))
         graph (-> {:sb (:uid cb) :se (:uid ce) :objects @objects}
                 (assoc-if :label label)
-                (assoc-if :probability probability))
+                ;; (assoc-if :probability probability)
+                )
         new-form {:graph graph :function (first form)
                   ;; :choices choices
                   }]
@@ -500,7 +516,10 @@
             non-primitive (or network-id false)
             act-details {:plant (str pclass)
                          :plantid (or id "")
-                         :command method
+                         ;; :command method
+                         :command (if (pos? (count args))
+                                    (apply str method " " args)
+                                    method)
                          :non-primitive non-primitive}
             act-details (assoc-if act-details
                           :label label)
@@ -985,7 +1004,7 @@
                               (str "construct-tpn called with bad type for demo-class: " (type demo-class)))))
         tpn-field (cond
                     (keyword? tpn-field) tpn-field
-                    (string? tpn-field) (keywordize tpn-field)
+                    (string? tpn-field) (keyword tpn-field)
                     :else
                     (throw (AssertionError.
                              (str "construct-tpn called with bad type for tpn-field: " (type tpn-field)))))
@@ -1000,6 +1019,9 @@
                                     (str "construct-tpn undefined demo-class: "
                                       demo-class))))
         demo (demo-class)
+        ;; _ (println "demo-class" demo-class "tpn-field" tpn-field
+        ;;     "tpn-method" tpn-method)
+        ;; _ (pp/pprint demo)
         tpn (create-tpn demo tpn-field tpn-method)
         out-format (or out-format "tpn")
         out (case out-format
