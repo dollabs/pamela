@@ -54,20 +54,15 @@ Running PAMELA requires the following to be installed
 
 ## Development status and Contributing
 
-_NOTE: during the pre-release period contributions will not be accepted_
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details on
+how to make a contribution.
 
-PAMELA is currently under heavy development and has not been tagged an
-official "release". In this *pre-release* status the PAMELA API and
-functionality is subject to change. All early users are encouraged to
-file issues for any bugs or missing functionality they encounter.
+PAMELA is currently under heavy development and has not yet been tagged with
+official "release". In this *pre-release* state the PAMELA API and
+functionality is subject to change.
 
 Currently there is no mailing list setup for PAMELA (but will be
 at some point soon)!
-
-PAMELA is licensed under the [Apache License 2.0](LICENSE). By making
-contributions to PAMELA via issues, pull requests, mailing list patches, etc.
-you are agreeing such contributions are made under the same
-[Apache License 2.0](LICENSE).
 
 ## Further Documentation
 
