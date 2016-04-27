@@ -16,6 +16,20 @@ freeing the programmer to write models that employ probability values.
 One of our initial focuses has been on developing language constructs to support Temporal
 Planning Network (TPN) for consumption by a suitable TPN execution engine.
 
+## News
+
+The [DOLL](http://dollabs.com/) team (including
+[Paul Robertson](https://twitter.com/DrPaulRobertson),
+[Dan Cerys](https://twitter.com/dcerys),
+[Prakash Manghwani](https://twitter.com/manghwani), and
+[Tom Marble](https://twitter.com/tmarble)) recently presented
+a talk **Model based programming in PAMELA**at
+[Clojure/west](http://clojurewest.org/speakers#tmarble).
+Check out the [ClojureTV](https://youtu.be/WLovW6hlYHM) video
+and the [slides](doc/slides/ClojureWestHelloPamela.pdf).
+
+For more details visit the [PAMELA project page](http://dollabs.com/projects/pamela).
+
 ## TPN Example
 
 Consider a simple mission to be performed by a quadcopter equipped with video cameras and
