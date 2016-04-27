@@ -23,7 +23,7 @@ The [DOLL](http://dollabs.com/) team (including
 [Dan Cerys](https://twitter.com/dcerys),
 [Prakash Manghwani](https://twitter.com/manghwani), and
 [Tom Marble](https://twitter.com/tmarble)) recently presented
-a talk **Model based programming in PAMELA**at
+the talk **Model based programming in PAMELA** at
 [Clojure/west](http://clojurewest.org/speakers#tmarble).
 Check out the [ClojureTV](https://youtu.be/WLovW6hlYHM) video
 and the [slides](doc/slides/ClojureWestHelloPamela.pdf).
