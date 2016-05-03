@@ -84,7 +84,7 @@
     (case (count args)
       0 (test-grammar-all)
       1 (if-not (test-grammar-one (first args)) (exit 1 "Failure!"))
-      (println "pgrammar: usage pgrammar [pamela-file]"))
+      (println "analyze: usage analyze [pamela-file]"))
     (catch Throwable e ;; note AssertionError not derived from Exception
       (exit 1 "ERROR caught exception:" (.getMessage e))))
   (exit 0))

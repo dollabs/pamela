@@ -42,7 +42,7 @@ choose = <LP> <CHOOSE> fn-opt* choice+ <RP>
 maintain = <LP> <MAINTAIN> cond-fn opt-bounds? fn <RP>
 noop = <LP> <NOOP> <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> symbol <'$'> symbol fn-opt* argval* <RP>
+plant-fn = <LP> symbol <'$'> symbol plant-opt* argval* <RP>
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 tell = <LP> <TELL> cond-fn <RP>
 try-form = <LP> <TRY-FORM> opt-bounds? fn <LP> <CATCH> fn <RP> <RP>
@@ -56,8 +56,8 @@ between = <LP> <BETWEEN> keyword keyword bounds <RP>
 between-ends = <LP> <BETWEEN-ENDS> keyword keyword bounds <RP>
 between-starts = <LP> <BETWEEN-STARTS> keyword keyword bounds <RP>
 
-fn-opt = ( opt-bounds | opt-label )
-
+fn-opt = ( opt-bounds | opt-label)
+plant-opt = ( opt-bounds | opt-label | opt-cost | opt-reward )
 choice-opt = ( opt-bounds | opt-probability | opt-cost | opt-reward | opt-guard | opt-label )
 
 opt-bounds = <BOUNDS> bounds
@@ -82,7 +82,7 @@ pclass-ctor-option = ( initial | observable | access | id )
 
 bounds = <LB> number ( number | INFINITY ) <RB>
 
-argval = ( symbol | literal )
+argval = ( symbol | boolean | string | number )
 symbol = #'[A-Za-z][A-Za-z0-9-]+'
 literal = ( boolean | string | keyword | number )
 keyword = <':'> #'[A-Za-z0-9:*-]+'

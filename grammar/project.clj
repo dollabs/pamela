@@ -18,15 +18,15 @@
   :license {:name "Apache License, Version 2.0"
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
-                 [instaparse "1.4.1"]
+                 [instaparse "1.4.2"]
                  [rhizome "0.2.5"]
-                 [environ "1.0.1"]]
+                 [environ "1.0.2"]]
 
-  :plugins [[lein-environ "1.0.1"]]
+  :plugins [[lein-environ "1.0.2"]]
 
   :main pamela-grammar.parser
 
   :source-paths ["src/main/clj"]
   :profiles
-  {:dev {:env {:program-mode :dev}
+  {:dev {:env {:program-mode "dev"}
          :test-paths ["src/test/clj"]}})

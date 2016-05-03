@@ -84,9 +84,26 @@
       (let [f (first form)]
         (if-not (argmethod? f)
           form
-          (let [[arg-method label-kw label bounds-kw fbounds & argvals] form
-                ;; _ (println "arg-method" arg-method "label-kw" label-kw "label" label "bounds-kw" bounds-kw "fbounds" fbounds "argvals" argvals)
+          (let [arg-method (first form)
                 [arg method-name] (string/split (name arg-method) #"\$")
+                plant-opts (rest form)
+                {:keys [bounds label cost reward argvals]}
+                (loop [m {} k nil
+                       v (first plant-opts) more (rest plant-opts)]
+                  (if (empty? more)
+                    (if k
+                      (assoc m k v)
+                      m)
+                    (cond
+                      (and (nil? k) (not (keyword? v))) ;; argvals
+                      (recur (assoc m :argvals (cons v more)) nil nil nil)
+                      (and (nil? k) (keyword? v))
+                      (recur m v (first more) (rest more))
+                      (#{:bounds :label :cost :reward} k)
+                      (recur (assoc m k v) nil (first more) (rest more))
+                      :else
+                      m)))
+                fbounds bounds
                 f' (symbol (str arg "." method-name))
                 method-sym (symbol method-name)
                 ;; _ (println "GET PLANT " (type arg) " = " arg "$" method-name)  ;; DEBUG
@@ -98,11 +115,11 @@
                 {:keys [pclass id]} plant
                 method (get-in plant [:methods method-sym])
                 {:keys [args bounds pre post doc betweens body]} method
-                [lb ub] bounds
                 doc (or doc "") ;; doc (or doc method-name)
+                [flb fub] fbounds
+                [lb ub] bounds
                 lb (or lb 0)
                 ub (or ub :infinity)
-                [flb fub] fbounds
                 flb (if flb
                       (if (>= flb lb) flb
                           lb) ;; (str "invalid lower bound")
@@ -123,15 +140,19 @@
                          (prewalk (replace-plant-functions plant tpn-args) body) ;
                          ))
                 ;; _ (println "PREP plant-fn")  ;; DEBUG
-                plant-fn (list f' :pclass pclass :id id :method method-name
+                plant-fn (list f'
+                           :pclass pclass
+                           :id id
+                           :method method-name
                            :doc doc
-                           :label label :bounds bounds :args av
-                           ;; :tpn tpn
-                           ;; :tpn-args tpn-args
-                           :non-primitive body
-                           )]
-            ;; (println "plant-fn:")
-            ;; (pp/pprint plant-fn) ;; DEBUG
+                           :bounds bounds
+                           :label label
+                           :cost cost
+                           :reward reward
+                           :args av
+                           :non-primitive body)]
+            ;; (println "DEBUG plant-fn:")
+            ;; (pp/pprint plant-fn)
             plant-fn))))))
 
 (defn default-bounds?
@@ -500,7 +521,9 @@
   (if (list-or-cons? form)
     ;; (if (argmethod? (first form))
     (if (dotmethod? (first form))
-      (let [{:keys [label bounds doc pclass id method args non-primitive]}
+      (let [{:keys [pclass id method doc
+                    bounds label cost reward
+                    args non-primitive]}
             (apply hash-map (rest form))
             se (tpns/make-state {})
             constraint (constraint-from-bounds bounds (:uid se))
@@ -522,18 +545,15 @@
                                     method)
                          :non-primitive non-primitive}
             act-details (assoc-if act-details
-                          :label label)
-            ;; TBD
-            ;; act-details (apply merge act-details
-            ;;               args)
+                          :label label
+                          :cost cost
+                          :reward reward)
             act (tpns/make-activity act-details
                   ;; :uid uid
                   :name edge-label
-                  ;; :cost cost
-                  ;; :reward reward
                   :constraints (union-items (:uid constraint))
                   :end-node (:uid se))
-            ;; _ (println "act: " (type act)) ;; DEBUG
+            ;; _ (println "DEBUG act: " (type act))
             ;; _ (pp/pprint act)
             se (assoc se :incidence-set #{(:uid act)})
             ;; _ (println "se: " (type se) "=" se) ;; DEBUG

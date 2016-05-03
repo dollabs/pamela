@@ -21,13 +21,13 @@
             [ring.util.response :refer [response content-type]]
             [pamela.mode :refer :all]))
 
-(def top "../../")
+(def top "../..")
 
-(def public "resources/public")
+(def public "/resources/public")
 
 (def downloads (str public "/downloads"))
 
-(def app-css-uri "css/pamela.css")
+(def app-css-uri "/css/pamela.css")
 
 (def app-css (str top public app-css-uri))
 

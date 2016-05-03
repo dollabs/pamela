@@ -20,7 +20,7 @@
 ;; profile in project.clj
 (def #^{:added "0.2.0"} program-mode
   "Current program state (one of :dev :test or :prod)."
-  (atom (or (:program-mode env) :prod)))
+  (atom (or (keyword (:program-mode env)) :prod)))
 
 (defn development?
   "Returns true if in :dev mode"

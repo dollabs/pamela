@@ -11,7 +11,7 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-(defproject pamela "0.2.3-SNAPSHOT"
+(defproject pamela "0.2.4-SNAPSHOT"
   :description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)"
   :url "https://github.com/dollabs/pamela"
   :scm {:url "https://github.com/dollabs/pamela.git"}
@@ -21,33 +21,34 @@
                  ;; logging
                  [com.taoensso/timbre "4.2.1"]
                  [com.fzakaria/slf4j-timbre "0.2.2"]
-                 [avenir "0.2.0"]
+                 [avenir "0.2.1"]
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
                  ;; -------
-                 [org.clojure/clojurescript "1.7.228" :scope "provided"]
+                 [org.clojure/clojurescript "1.8.51" :scope "provided"]
                  [org.clojure/core.async "0.2.374"]
-                 [org.clojure/tools.cli "0.3.3"]
+                 [org.clojure/tools.cli "0.3.4"]
                  [riddley "0.1.12"]
-                 [environ "1.0.1"]
+                 [environ "1.0.2"]
                  [clojurewerkz/elastisch "2.2.1"]
-                 [aleph "0.4.1-SNAPSHOT"]
+                 [aleph "0.4.2-alpha1"]
                  [clj-time "0.11.0"]
                  [ring "1.4.0" :exclusions [clj-time]]
-                 [ring/ring-defaults "0.1.5"]
-                 [compojure "1.4.0" :exclusions [commons-codec]]
+                 [ring/ring-defaults "0.2.0"]
+                 [compojure "1.5.0" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
                  [cljsjs/react-dom-server "0.14.3-0"] ;; for sablono
-                 [org.omcljs/om "1.0.0-alpha28"]
-                 [sablono "0.5.3"]
-                 [cljs-http "0.1.39"]
+                 [cljsjs/react-dom "0.14.3-1"] ;; for sablono
+                 [org.omcljs/om "1.0.0-alpha34"]
+                 [sablono "0.7.1"]
+                 [cljs-http "0.1.40"]
                  ;; the following are to resolve dependency conflicts
                  [org.clojure/tools.reader "1.0.0-alpha3"] ;; figwheel
                  [commons-codec "1.10"] ;; compojure
                  ]
 
-  :plugins [[lein-environ "1.0.1"]
+  :plugins [[lein-environ "1.0.2"]
             [codox "0.8.13" :exclusions [org.clojure/clojure]]
             [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]
             [lein-figwheel "0.5.0-3"
@@ -96,12 +97,13 @@
 
   :profiles
   {:dev {:resource-paths ^:replace ["resources"]
-         :env {:program-mode :dev}
+         :env {:program-mode "dev"}
          :dependencies [[org.seleniumhq.selenium/selenium-java "2.49.1"
                          :exclusions [org.eclipse.jetty/jetty-io
                                       org.eclipse.jetty/jetty-util
                                       org.apache.httpcomponents/httpcore
-                                      org.apache.httpcomponents/httpclient]]
+                                      org.apache.httpcomponents/httpclient
+                                      ]]
                         [clj-webdriver "0.7.2"]]
          :test-paths ["src/test/clj"]
          :cljsbuild
@@ -120,12 +122,14 @@
                        :cache-analysis true
                        :optimizations :none
                        :pretty-print false}}}
-          :test-commands
-          {;; "phantomjs" ["phantomjs" "src/test/phantomjs/unit-test.js"
-           ;;              "target/test/index.html"]
-           "selenium" ["lein-selenium"]}}}
+          ;; :test-commands
+          ;; {"phantomjs" ["phantomjs" "src/test/phantomjs/unit-test.js"
+          ;;               "target/test/index.html"]
+          ;;  "selenium" ["lein-selenium"]}
+          ;;  }
+          }}
 
-   :test {:env {:program-mode :test}
+   :test {:env {:program-mode "test"}
           :cljsbuild
           {:builds
            {:app
@@ -142,7 +146,7 @@
                         :optimizations :none
                         :pretty-print  false}}}}}
 
-   :prod {:env {:program-mode :prod}
+   :prod {:env {:program-mode "prod"}
           :cljsbuild
           {:builds
            {:app

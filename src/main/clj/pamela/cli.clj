@@ -242,7 +242,7 @@
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.2.3-SNAPSHOT"}
+   :version "0.2.4-SNAPSHOT"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))
