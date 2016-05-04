@@ -43,7 +43,8 @@
               {:doc "TPN method"}
               []
               (parallel :bounds [1 100]
-                (sequence (plnt$do-a)
+                (sequence
+                  (plnt$do-a)
                   (plnt$do-b :label :b))
                 (sequence
                   (choose :label :choice ;:max-cost 10 :min-reward 5
