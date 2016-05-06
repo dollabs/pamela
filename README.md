@@ -81,7 +81,7 @@ at some point soon)!
 ## Further Documentation
 
 * Detailed notes on generating [TPNs](TPN.md)
-* PAMELA API docs:  _TBD_
+* See the PAMELA [API docs](http://dollabs.github.io/pamela/doc/)
 * Command line **pamela** (see pamela in `src/main/clj/pamela/cli.clj`)
 * Jenkins:
     * _Soon to be transitioned to a public Jenkins server_
