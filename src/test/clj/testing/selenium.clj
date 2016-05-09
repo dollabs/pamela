@@ -12,11 +12,12 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (ns testing.selenium
-  (:import [org.openqa.selenium.firefox FirefoxBinary FirefoxProfile FirefoxDriver])
+  ;; (:import [org.openqa.selenium.firefox FirefoxBinary FirefoxProfile FirefoxDriver])
   (:require [clojure.java.io :refer :all]
             [environ.core :refer [env]]
-            [clj-webdriver.driver :as driver]
-            [clj-webdriver.taxi :as taxi]))
+            ;; [clj-webdriver.driver :as driver]
+            ;; [clj-webdriver.taxi :as taxi]
+            ))
 
 ;; NOTE this is for integration testing.. no clj only tests here
 
@@ -24,19 +25,21 @@
 (defn firefox-default
   "Initialize default Firefox profile"
   []
-  (taxi/set-driver! {:browser :firefox}))
+  ;; (taxi/set-driver! {:browser :firefox})
+  )
 
 ;; alternate function for customizing which browser and profile you need
 (defn firefox-profile
   "Set Firefox driver with specific browser path and profile"
   [browser profile]
-  (let [ffpath (file browser)
-        ffbin (FirefoxBinary. ffpath)
-        ffprofdir (file profile)
-        ffprof (FirefoxProfile. ffprofdir)
-        ffdrv (FirefoxDriver. ffbin ffprof)
-        firefox (driver/init-driver {:webdriver ffdrv})]
-    (taxi/set-driver! firefox)))
+  ;; (let [ffpath (file browser)
+  ;;       ffbin (FirefoxBinary. ffpath)
+  ;;       ffprofdir (file profile)
+  ;;       ffprof (FirefoxProfile. ffprofdir)
+  ;;       ffdrv (FirefoxDriver. ffbin ffprof)
+  ;;       firefox (driver/init-driver {:webdriver ffdrv})]
+  ;;   (taxi/set-driver! firefox))
+  )
 
 (defn start-firefox
   "Start firefox (with optional browser path and profile)"
@@ -48,17 +51,20 @@
       (firefox-default))))
 
 (defn stop-firefox []
-  (taxi/quit))
+  ;; (taxi/quit)
+  )
 
 (defn run-firefox [html-file]
   (let [html-url (str "file://" (.getCanonicalPath (as-file html-file)))
         runner-script "testing.runner.runtests(false);"]
     (println "Loading...:" html-url)
     (start-firefox)
-    (taxi/to html-url)
-    (taxi/wait-until #(taxi/exists? "#out"))
+    ;; (taxi/to html-url)
+    ;; (taxi/wait-until #(taxi/exists? "#out"))
     (println "Loaded____:" html-url)
-    (taxi/execute-script runner-script)
-    (let [out (taxi/attribute (taxi/element "#out") :value)]
+    ;; (taxi/execute-script runner-script)
+    (let [out "web client tests currently disabled"
+          ;; (taxi/attribute (taxi/element "#out") :value)
+          ]
       (stop-firefox)
       out)))

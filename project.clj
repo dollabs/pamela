@@ -19,42 +19,43 @@
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.2.1"]
-                 [com.fzakaria/slf4j-timbre "0.2.2"]
+                 [com.taoensso/timbre "4.3.1"]
+                 [org.slf4j/slf4j-api "1.7.21"]
+                 [com.fzakaria/slf4j-timbre "0.3.1"]
                  [avenir "0.2.1"]
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
                  ;; -------
                  [org.clojure/clojurescript "1.8.51" :scope "provided"]
                  [org.clojure/core.async "0.2.374"]
-                 [org.clojure/tools.cli "0.3.4"]
+                 [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
-                 [environ "1.0.2"]
-                 [clojurewerkz/elastisch "2.2.1"]
-                 [aleph "0.4.2-alpha1"]
+                 [environ "1.0.3"]
+                 ;; required for elastich
+                 [clj-http "2.1.0"]
+                 [clojurewerkz/elastisch "2.2.1" :exclusions [clj-http]]
+                 [aleph "0.4.2-alpha3"]
                  [clj-time "0.11.0"]
                  [ring "1.4.0" :exclusions [clj-time]]
                  [ring/ring-defaults "0.2.0"]
                  [compojure "1.5.0" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
-                 [cljsjs/react-dom-server "0.14.3-0"] ;; for sablono
-                 [cljsjs/react-dom "0.14.3-1"] ;; for sablono
+                 [cljsjs/react-dom-server "15.0.2-0"]  ;; for sablono
+                 [cljsjs/react-dom "15.0.2-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha34"]
                  [sablono "0.7.1"]
                  [cljs-http "0.1.40"]
                  ;; the following are to resolve dependency conflicts
-                 [org.clojure/tools.reader "1.0.0-alpha3"] ;; figwheel
                  [commons-codec "1.10"] ;; compojure
                  ]
 
-  :plugins [[lein-environ "1.0.2"]
-            [codox "0.8.13" :exclusions [org.clojure/clojure]]
-            [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]
-            [lein-figwheel "0.5.0-3"
-             :exclusions [org.clojure/clojure
-                          org.clojure/tools.reader
-                          ring/ring-core]]]
+  :plugins [[lein-environ "1.0.3"]
+            [lein-codox "0.9.5" :exclusions
+             [org.clojure/clojure org.clojure/clojurescript]]
+            [lein-cljsbuild "1.1.3" :exclusions [org.clojure/clojure]]
+            [lein-figwheel "0.5.3-1"
+             :exclusions [org.clojure/clojure org.clojure/clojurescript]]]
 
   :hooks [leiningen.cljsbuild]
 
@@ -98,13 +99,13 @@
   :profiles
   {:dev {:resource-paths ^:replace ["resources"]
          :env {:program-mode "dev"}
-         :dependencies [[org.seleniumhq.selenium/selenium-java "2.49.1"
-                         :exclusions [org.eclipse.jetty/jetty-io
-                                      org.eclipse.jetty/jetty-util
-                                      org.apache.httpcomponents/httpcore
-                                      org.apache.httpcomponents/httpclient
-                                      ]]
-                        [clj-webdriver "0.7.2"]]
+         ;; :dependencies [[org.seleniumhq.selenium/selenium-java "2.49.1"
+         ;;                 :exclusions [org.eclipse.jetty/jetty-io
+         ;;                              org.eclipse.jetty/jetty-util
+         ;;                              org.apache.httpcomponents/httpcore
+         ;;                              org.apache.httpcomponents/httpclient
+         ;;                              ]]
+         ;;                [clj-webdriver "0.7.2"]]
          :test-paths ["src/test/clj"]
          :cljsbuild
          {:builds

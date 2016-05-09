@@ -147,13 +147,9 @@
   [& [options]]
   (sync-models-to-db)
   (log/debug (str "daemon/running? " (daemon/running?) " remote " (true? (db-node))))
-  (if-not (daemon/running?)
+  (when (and (not (daemon/running?)) (not (repl?)))
     (if (true? (db-node)) ;; remote DB
-      (if (repl?)
-        (throw (Exception. (str "DEV MODE exit(0)")))
-        (do
-          (sleep 3)
-          (System/exit 0)))
+      (sleep 3)
       (do
         (wait-for-green)
         (log/info "stopping standalone DB, will exit")

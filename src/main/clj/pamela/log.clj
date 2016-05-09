@@ -23,7 +23,7 @@
 (defonce pamela-logging (atom nil))
 
 (def config
-  {:level :debug  ; e/o #{:trace :debug :info :warn :error :fatal :report}
+  {:level :info  ; e/o #{:trace :debug :info :warn :error :fatal :report}
 
    ;; Control log filtering by namespaces/patterns. Useful for turning off
    ;; logging in noisy libraries, etc.:

@@ -68,7 +68,7 @@ lein clean
 echo " "
 echo "-- update documentation -- "
 
-lein doc
+lein codox
 
 echo " "
 echo "-- run clojure tests -- "

@@ -19,7 +19,7 @@
             [clojure.java.io :refer :all] ;; for as-file
             [clojure.pprint :as pp]
             ;; to be replaced with aleph
-            ;; [clj-http.client :as http]
+            [clj-http.client :as http]
             [environ.core :refer [env]]
             ;; [cheshire.core :as json]
             [clojure.data.json :as json]
@@ -64,15 +64,13 @@
    (try (java.net.URL. protocol host port file) (catch Exception e nil))))
 
 (defn http-get
-  "Wrapper for clj-http.core/get"
+  "Wrapper for GET requests"
   {:added "0.2.0"}
   ([url]
    (http-get url nil))
   ([url req]
    (let [url (if (string? url) url (.toString url))]
-     ;; (http/get url req)
-     "NOT IMPLEMENTED YET"
-     )))
+     (http/get url req))))
 
 (defn get-url
   "Will retrieve the data at url (returns nil on failure)."
