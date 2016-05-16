@@ -20,9 +20,9 @@
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  [instaparse "1.4.2"]
                  [rhizome "0.2.5"]
-                 [environ "1.0.2"]]
+                 [environ "1.0.3"]]
 
-  :plugins [[lein-environ "1.0.2"]]
+  :plugins [[lein-environ "1.0.3"]]
 
   :main pamela-grammar.parser
 

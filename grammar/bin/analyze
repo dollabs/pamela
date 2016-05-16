@@ -81,7 +81,7 @@ for f in *.txt; do
     echo "<br/><pre>" >> $html
     cat "$test.txt" >> $html
     echo "</pre>" >> $html
-    echo "<img src=\"$test.png\">" >> $html
+    echo "<img alt=\"FAILED!\" src=\"$test.png\">" >> $html
     echo "<hr/>" >> $html
 done
 

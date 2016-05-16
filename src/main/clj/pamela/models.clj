@@ -38,30 +38,99 @@
   (if-let [h (get-helper-var x)]
     (:pamela (meta h))))
 
-(defn get-label-bounds-body
-  "Return the bounds and the body (where bounds are optional)"
+(defmacro condition
+  "Define a condition.
+
+  Conditions must
+  - if keyword then converted to (mode= keyword)
+  - return boolean type
+  - comprised of and, or, not, implies
+  - either (field= field-kw constant) or (mode= mode-kw)
+  - must not have cycles
+
+  Conditions may appear in
+  - mode definitions
+  - transition :pre :post conditions
+  - method :pre :post conditions"
+  {:pamela :models-helper :added "0.2.0" :doc/format :markdown}
+  [& body]
+  (if (empty? body)
+    (throw (AssertionError.
+             (str "condition: empty condition\n")))
+    (if (not= 1 (count body))
+      (throw (AssertionError.
+               (str "condition: expecting only one condition\n")))
+      `(quote ~@body))))
+
+(defmacro noop
+  "No operation function (used for testing)"
   {:pamela :models-helper :added "0.2.0"}
+  []
+  (list 'list (quote (symbol "noop"))))
+
+(defn get-opts-body
+  "Return the optional bounds as a map and the body"
+  {:pamela :models-helper :added "0.2.4"}
   [body]
-  (loop [label nil bounds nil body body]
+  (loop [bounds nil body body]
     (cond
-      (= :label (first body))
-      (if (not (keyword? (second body)))
-        (throw (AssertionError.
-                 (str "label: not a keyword\n")))
-        (if (not (nil? label))
-          (throw (AssertionError.
-                   (str "label: may only be specified once\n")))
-          (recur (second body) bounds (nthrest body 2))))
       (= :bounds (first body))
       (if (not (legal-bounds? (second body)))
-        (throw (AssertionError.
-                 (str "bounds: not a vector\n")))
+        (throw (AssertionError. (str "bounds: not a vector\n")))
         (if (not (nil? bounds))
           (throw (AssertionError.
-                   (str "bounds: may only be specified once\n")))
-          (recur label (second body) (nthrest body 2))))
+                   (str (first body) " may only be specified once\n")))
+          (recur (second body) (nthrest body 2))))
       :else
-      [label (or bounds default-bounds) body])))
+      (let [opts (assoc-if {}
+                   :bounds bounds)]
+        [opts body]))))
+
+(defn get-fn-opts-body
+  "Return the fn-opt(s) as a map and the body (label allowed if not between?)"
+  {:pamela :models-helper :added "0.2.4"}
+  [between? body]
+  (loop [bounds nil label nil cost<= nil reward>= nil body body]
+    (cond
+      (= :bounds (first body))
+      (if (not (legal-bounds? (second body)))
+        (throw (AssertionError. (str "bounds: not a vector\n")))
+        (if (not (nil? bounds))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur (second body) label cost<= reward>= (nthrest body 2))))
+      (= :label (first body))
+      (if between?
+        (throw (AssertionError.
+                 (str ":label not allowed in a between expression\n")))
+        (if (not (keyword? (second body)))
+          (throw (AssertionError. (str "label: not a keyword\n")))
+          (if (not (nil? label))
+            (throw (AssertionError.
+                     (str (first body) " may only be specified once\n")))
+            (recur bounds (second body) cost<= reward>= (nthrest body 2)))))
+      (= :cost<= (first body))
+      (if (not (number? (second body)))
+        (throw (AssertionError. (str "cost<=: not a number\n")))
+        (if (not (nil? cost<=))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds label (second body) reward>= (nthrest body 2))))
+      (= :reward>= (first body))
+      (if (not (number? (second body)))
+        (throw (AssertionError. (str "reward>=: not a number\n")))
+        (if (not (nil? reward>=))
+          (throw (AssertionError.
+                   (str (first body) " may only be specified once\n")))
+          (recur bounds label cost<= (second body) (nthrest body 2))))
+      :else
+      ;; (let [fn-opts (-> {:bounds (or bounds default-bounds)}
+      (let [fn-opts (assoc-if {}
+                      :bounds bounds
+                      :label label
+                      :cost<= cost<=
+                      :reward>= reward>=)]
+        [fn-opts body]))))
 
 (defn get-choice-opts-body
   "Return the choice-opt(s) as a map and the body"
@@ -117,60 +186,26 @@
         (recur bounds label probability cost reward (second body)
           (nthrest body 2)))
       :else
-      (let [choice-opts (-> {}
-                          (assoc-if :bounds (or bounds default-bounds))
-                          (assoc-if :label label)
-                          (assoc-if :probability probability)
-                          (assoc-if :cost cost)
-                          (assoc-if :reward reward)
-                          (assoc-if :guard guard))]
+      (let [choice-opts (assoc-if {}
+                          :bounds bounds ;; (or bounds default-bounds)
+                          :label label
+                          :probability probability
+                          :cost cost
+                          :reward reward
+                          :guard guard)]
         [choice-opts body]))))
-
-(defmacro condition
-  "Define a condition.
-
-  Conditions must
-  - if keyword then converted to (mode= keyword)
-  - return boolean type
-  - comprised of and, or, not, implies
-  - either (field= field-kw constant) or (mode= mode-kw)
-  - must not have cycles
-
-  Conditions may appear in
-  - mode definitions
-  - transition :pre :post conditions
-  - method :pre :post conditions"
-  {:pamela :models-helper :added "0.2.0" :doc/format :markdown}
-  [& body]
-  (if (empty? body)
-    (throw (AssertionError.
-             (str "condition: empty condition\n")))
-    (if (not= 1 (count body))
-      (throw (AssertionError.
-               (str "condition: expecting only one condition\n")))
-      `(quote ~@body))))
-
-(defmacro noop
-  "No operation function (used for testing)"
-  {:pamela :models-helper :added "0.2.0"}
-  []
-  (list 'list (quote (symbol "noop"))))
 
 (defmacro maintain
   "Try to achieve condition throughout the specified time bounds
    and maintain it for the duration of body."
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
-  (let [[label bounds body] (get-label-bounds-body body)
-        _ (if label
-            (throw (AssertionError.
-                     (str "maintain: label not allowed\n"))))
+  (let [[opts body] (get-opts-body body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "maintain"))
         (cons condition
-          (cons :bounds
-            (cons bounds safe-body)))))))
+          (cons opts safe-body))))))
 
 ;; NOTE overrides clojure.core/assert in this namespace
 (defmacro assert
@@ -186,47 +221,35 @@
   (i.e. if condition is true in this time window)."
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
-  (let [[label bounds body] (get-label-bounds-body body)
-        _ (if label
-            (throw (AssertionError.
-                     (str "when: label not allowed\n"))))
+  (let [[opts body] (get-opts-body body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "when"))
         (cons condition
-          (cons :bounds
-            (cons bounds safe-body)))))))
+          (cons opts safe-body))))))
 
 (defmacro unless
   "If condition is not true body will be performed."
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
-  (let [[label bounds body] (get-label-bounds-body body)
-        _ (if label
-            (throw (AssertionError.
-                     (str "unless: label not allowed\n"))))
+  (let [[opts body] (get-opts-body body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "unless"))
         (cons condition
-          (cons :bounds
-            (cons bounds safe-body)))))))
+          (cons opts safe-body))))))
 
 (defmacro whenever
   "Every time that condition is true body will be performed.
   Limited to the time bounds (if provided)."
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
-  (let [[label bounds body] (get-label-bounds-body body)
-        _ (if label
-            (throw (AssertionError.
-                     (str "unless: label not allowed\n"))))
+  (let [[opts body] (get-opts-body body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "whenever"))
         (cons condition
-          (cons :bounds
-            (cons bounds safe-body)))))))
+          (cons opts safe-body))))))
 
 ;; NOTE overrides clojure.core/sequence in this namespace
 (defmacro sequence
@@ -235,15 +258,11 @@
   if the last item has not completed within the upper time bound."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (if (empty? body)
-    (cons 'list (list (quote (symbol "sequence")) :bounds default-bounds))
-    (let [[label bounds body] (get-label-bounds-body body)
-          safe-body (replace-pamela-args (replace-pamela-calls body))]
-      (cons 'list
-        (cons (quote (symbol "sequence"))
-          (cons :label
-            (cons label
-              (cons :bounds (cons bounds safe-body)))))))))
+  (let [[fn-opts body] (get-fn-opts-body false body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))]
+    (cons 'list
+      (cons (quote (symbol "sequence"))
+        (cons fn-opts safe-body)))))
 
 (defmacro parallel
   "The forms that constitute body are performed in parallel
@@ -251,15 +270,11 @@
   if the last item has not completed within the upper time bound."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (if (empty? body)
-    (cons 'list (list (quote (symbol "parallel")) :bounds default-bounds))
-    (let [[label bounds body] (get-label-bounds-body body)
-          safe-body (replace-pamela-args (replace-pamela-calls body))]
-      (cons 'list
-        (cons (quote (symbol "parallel"))
-          (cons :label
-            (cons label
-              (cons :bounds (cons bounds safe-body)))))))))
+  (let [[fn-opts body] (get-fn-opts-body false body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))]
+    (cons 'list
+      (cons (quote (symbol "parallel"))
+        (cons fn-opts safe-body)))))
 
 (defmacro choose
   "One of the choices will be taken either to maximize reward, minimise
@@ -273,16 +288,11 @@
   Note that <n> can be a numeric constant or a logic variable."
   {:pamela :models-helper :added "0.2.0"}
   [& choices]
-  (if (empty? choices)
-    (throw (AssertionError.
-             (str "chose must comprise one or more choices")))
-    (let [[label bounds choices] (get-label-bounds-body choices)
-          safe-choices (replace-pamela-args (replace-pamela-calls choices))]
-      (cons 'list
-        (cons (quote (symbol "choose"))
-          (cons :label
-            (cons label
-              (cons :bounds (cons bounds safe-choices)))))))))
+  (let [[fn-opts choices] (get-fn-opts-body false choices)
+        safe-choices (replace-pamela-args (replace-pamela-calls choices))]
+    (cons 'list
+      (cons (quote (symbol "choose"))
+        (cons fn-opts safe-choices)))))
 
 (defn expect-number-or-lvar
   "Verify the value for param is a number or lvar. (helper function)"
@@ -358,47 +368,47 @@
   label1 and label2 is <time bounds>. ie: sequential actions
   with gap between."
   {:pamela :models-helper :added "0.2.0"}
-  [label1 label2 & [time-bounds]]
+  [label1 label2 & opts]
   (when-not (keyword? label1)
     (throw (AssertionError.
              (str "label must be a keyword: " label1 "\n"))))
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [time-bounds (or time-bounds default-bounds)]
+  (let [[fn-opts _] (get-fn-opts-body true opts)]
     (list 'list
       (quote (symbol "between"))
-      label1 label2 time-bounds)))
+      label1 label2 fn-opts)))
 
 (defmacro between-starts
   "Form named by <label2> begins <time bounds> after form named by <label1>."
   {:pamela :models-helper :added "0.2.0"}
-  [label1 label2 & [time-bounds]]
+  [label1 label2 & opts]
   (when-not (keyword? label1)
     (throw (AssertionError.
              (str "label must be a keyword: " label1 "\n"))))
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [time-bounds (or time-bounds default-bounds)]
+  (let [[fn-opts _] (get-fn-opts-body true opts)]
     (list 'list
       (quote (symbol "between-starts"))
-      label1 label2 time-bounds)))
+      label1 label2 fn-opts)))
 
 (defmacro between-ends
   "Form named by <label2> ends <time bounds> after form named by <label1>."
   {:pamela :models-helper :added "0.2.0"}
-  [label1 label2 & [time-bounds]]
+  [label1 label2 & opts]
   (when-not (keyword? label1)
     (throw (AssertionError.
              (str "label must be a keyword: " label1 "\n"))))
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [time-bounds (or time-bounds default-bounds)]
+  (let [[fn-opts _] (get-fn-opts-body true opts)]
     (list 'list
       (quote (symbol "between-ends"))
-      label1 label2 time-bounds)))
+      label1 label2 fn-opts)))
 
 (defmacro ask
   "Wait for condition during time bounds, else fail

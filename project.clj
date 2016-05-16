@@ -11,7 +11,7 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-(defproject pamela "0.2.4-SNAPSHOT"
+(defproject pamela "0.2.5"
   :description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)"
   :url "https://github.com/dollabs/pamela"
   :scm {:url "https://github.com/dollabs/pamela.git"}
@@ -34,7 +34,7 @@
                  ;; required for elastich
                  [clj-http "2.1.0"]
                  [clojurewerkz/elastisch "2.2.1" :exclusions [clj-http]]
-                 [aleph "0.4.2-alpha3"]
+                 [aleph "0.4.2-alpha4"]
                  [clj-time "0.11.0"]
                  [ring "1.4.0" :exclusions [clj-time]]
                  [ring/ring-defaults "0.2.0"]
@@ -136,7 +136,7 @@
            {:app
             {:source-paths ["src/main/cljs" "src/test/cljs"]
              :figwheel {:websocket-host :js-client-host
-                       :on-jsload "pamela.client/figwheel-reload"}
+                        :on-jsload "pamela.client/figwheel-reload"}
              :compiler {:main testing.runner
                         :closure-defines {"pamela.utils.program_mode" "test"}
                         :output-dir    "target/test/js/compiled"
@@ -161,6 +161,6 @@
                         :optimizations :advanced
                         :pretty-print false}}}}}}
 
-   :uberjar {:omit-source true
-             ;; :aot :all
-             })
+  :uberjar {:omit-source true
+            ;; :aot :all
+            })

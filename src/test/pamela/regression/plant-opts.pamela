@@ -11,10 +11,17 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-(defpclass between-starts-example []
-  :meta {:version "0.2.0"
-         :doc "between-starts example"}
-  :methods [(defpmethod example
-              {:doc "between-starts example"}
+;; An example of calling a plant function
+
+(defpclass plant []
+  :meta {:doc "The Plant API"}
+  :methods [(defpmethod action
+              {:doc "Take action"}
+              [a b])])
+
+(defpclass plant-opts [plant]
+  :meta {:doc "An example of invoking a plant function."}
+  :methods [(defpmethod start
+              {:doc "Demo method"}
               []
-              (between-starts :a :b :bounds [1 100]))])
+              (plant$action :bounds [0 1] :label :demo :cost 2 :reward 3 :foo 4))])

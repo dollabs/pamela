@@ -16,30 +16,52 @@
   (:require [clojure.pprint :as pp]
             [clojure.data.json :as json]))
 
-; Structures to hold some information
+(def #^{:added "0.2.4"} next-tpnsym
+  "Next number for typsym"
+  (atom 0))
+
+(defn reset-tpnsym!
+  "Reset the tpnsym number"
+  {:added "0.2.4"}
+  []
+  (reset! next-tpnsym 0))
+
+(defn tpnsym
+  "Generates a symbol (based on next-tpnsym).
+  Like gensym, but resettable via reset-tpnsym.
+  If prefix is not supplied then 'uid-' is used."
+  {:added "0.2.4"}
+  ([]
+   (tpnsym "uid-"))
+  ([prefix]
+   (str prefix (swap! next-tpnsym inc))))
+
+                                        ; Structures to hold some information
 (defrecord network [uid begin-node])                        ; Network contains begin node of TPN
 
-; Nodes
+                                        ; Nodes
 (defrecord state [uid activities constraints incidence-set])
 (defrecord p-begin [uid activities constraints incidence-set end-node])
 (defrecord p-end [uid activities incidence-set])
 (defrecord c-begin [uid activities constraints incidence-set end-node])
 (defrecord c-end [uid activities incidence-set])
 
-; Arcs
+                                        ; Arcs
 (defrecord null-activity [uid end-node])                    ; constraints will have single object containing temporal constraints [0 0]
 (defrecord activity [uid name cost reward constraints end-node])
 
-; Constraints
+                                        ; Constraints
 (defrecord temporal-constraint [uid value end-node])
+(defrecord cost<=-constraint [uid value end-node])
+(defrecord reward>=-constraint [uid value end-node])
 
-; Constructor fns. Maybe a macro to generate them would be nice
-; ------------------------------------------------------------------------------------------------------------------
+                                        ; Constructor fns. Maybe a macro to generate them would be nice
+                                        ; ------------------------------------------------------------------------------------------------------------------
 (defn make-state
   "Node constructor. Create with supplied values or defaults and then merge with given map"
   {:added "0.2.0"}
   [m & {:keys [uid activities constraints incidence-set]
-        :or   {uid         (keyword (gensym "node-")), activities #{},
+        :or   {uid         (keyword (tpnsym "node-")), activities #{},
                constraints #{}, incidence-set #{}}}]
   (merge (->state uid activities constraints incidence-set) m {:tpn-type :state}))
 
@@ -47,7 +69,7 @@
   "Make a parallel begin node"
   {:added "0.2.0"}
   [m & {:keys [uid activities constraints incidence-set end-node]
-        :or   {uid         (keyword (gensym "node-")), activities #{},
+        :or   {uid         (keyword (tpnsym "node-")), activities #{},
                constraints #{}, incidence-set #{}, end-node nil}}]
   (merge (->p-begin uid activities constraints incidence-set end-node) m {:tpn-type :p-begin}))
 
@@ -55,14 +77,14 @@
   "Make a parallel end node"
   {:added "0.2.0"}
   [m & {:keys [uid activities incidence-set]
-        :or   {uid (keyword (gensym "node-")), activities #{}, incidence-set #{}}}]
+        :or   {uid (keyword (tpnsym "node-")), activities #{}, incidence-set #{}}}]
   (merge (->p-end uid activities incidence-set) m {:tpn-type :p-end}))
 
 (defn make-c-begin
   "Make a choice begin node"
   {:added "0.2.0"}
   [m & {:keys [uid activities constraints incidence-set end-node]
-        :or   {uid         (keyword (gensym "node-")), activities #{},
+        :or   {uid         (keyword (tpnsym "node-")), activities #{},
                constraints #{}, incidence-set #{}, end-node nil}}]
   (merge (->c-begin uid activities constraints incidence-set end-node) m {:tpn-type :c-begin}))
 
@@ -70,14 +92,14 @@
   "Make a choice end node"
   {:added "0.2.0"}
   [m & {:keys [uid activities incidence-set]
-        :or   {uid (keyword (gensym "node-")), activities #{}, incidence-set #{}}}]
+        :or   {uid (keyword (tpnsym "node-")), activities #{}, incidence-set #{}}}]
   (merge (->c-end uid activities incidence-set) m {:tpn-type :c-end}))
 
 (defn make-activity
   "Make an activity"
   {:added "0.2.0"}
   [m & {:keys [uid name cost reward constraints end-node]
-        :or   {uid (keyword (gensym "act-")), name "", cost 0, reward 0, constraints #{}, end-node nil}}]
+        :or   {uid (keyword (tpnsym "act-")), name "", cost 0, reward 0, constraints #{}, end-node nil}}]
   "Activity constructor. Create with supplied values or defaults and then merge with given map"
   (merge (->activity uid name cost reward constraints end-node) m {:tpn-type :activity}))
 
@@ -85,34 +107,48 @@
   "Make an activity"
   {:added "0.2.0"}
   [m & {:keys [uid end-node]
-        :or   {uid (keyword (gensym "act-"))}}]
+        :or   {uid (keyword (tpnsym "act-"))}}]
   "Null activity constructor."
   (merge (->null-activity uid end-node) m {:tpn-type :null-activity}))
 
-; Since network is not exactly a TPN object but an enclosing container, we do not add :tpn-type to it.
+                                        ; Since network is not exactly a TPN object but an enclosing container, we do not add :tpn-type to it.
 (defn make-network
   "Make a network"
   {:added "0.2.0"}
   [m & {:keys [uid begin-node]
-        :or   {uid (keyword (gensym "net-"))}}]
+        :or   {uid (keyword (tpnsym "net-"))}}]
   "Network constructor. Create with supplied values or defaults and then merge with given map"
   (if-not uid
-    (merge (->network (keyword (gensym "net-")) begin-node) m {:tpn-type :network})
+    (merge (->network (keyword (tpnsym "net-")) begin-node) m {:tpn-type :network})
     (merge (->network uid begin-node) m {:tpn-type :network})))
 
 (defn make-temporal-constraint
   "Make a temporal constraint"
   {:added "0.2.0"}
   [m & {:keys [uid value end-node]
-        :or   {uid (keyword (gensym "cnstr-")) value [0 :infinity]}}]
+        :or   {uid (keyword (tpnsym "cnstr-")) value [0 :infinity]}}]
   (merge (->temporal-constraint uid value end-node) m {:tpn-type :temporal-constraint}))
 
-; :tpn-type to constructor-fn map
+(defn make-cost<=-constraint
+  "Make a cost<= constraint"
+  {:added "0.2.0"}
+  [m & {:keys [uid value end-node]
+        :or   {uid (keyword (tpnsym "cnstr-")) value 0}}]
+  (merge (->cost<=-constraint uid value end-node) m {:tpn-type :cost<=-constraint}))
+
+(defn make-reward>=-constraint
+  "Make a reward>= constraint"
+  {:added "0.2.0"}
+  [m & {:keys [uid value end-node]
+        :or   {uid (keyword (tpnsym "cnstr-")) value 0}}]
+  (merge (->reward>=-constraint uid value end-node) m {:tpn-type :reward>=-constraint}))
+
+                                        ; :tpn-type to constructor-fn map
 (def tpn-type-2-create {:state    make-state :p-begin make-p-begin :p-end make-p-end
                         :c-begin  make-c-begin :c-end make-c-end :null-activity make-null-activity
                         :activity make-activity :temporal-constraint make-temporal-constraint :network make-network})
 
-; Rest
+                                        ; Rest
 (defn wire-activity
   "Wire up an activity"
   {:added "0.2.0"}
@@ -228,8 +264,8 @@
 (defmethod walk-tpn activity [obj func objects visited]
   (walk-tpn-activity obj func objects visited))
 
-; Collect tpn objects
-; --------------------------------------------------------------------------
+                                        ; Collect tpn objects
+                                        ; --------------------------------------------------------------------------
 
 (defn collect-tpn
   "collect tpn"
@@ -246,7 +282,7 @@
       #_(println "collect-tpn" objs)
       #_(clojure.pprint/pprint @m)
       (begin-walk (bnode objs) (fn [obj _]
-                                 ;(println "got " (:uid obj) (type obj))
+                                        ;(println "got " (:uid obj) (type obj))
                                  (var-set m (assoc @m (:uid obj) obj #_(merge obj {:checkme (.getSimpleName (type obj))})))
                                  #_(clojure.pprint/pprint @m)
                                  (when-not (empty? (:constraints obj))
@@ -293,7 +329,7 @@
         (= :tc-ub k) (if (= String (type v))
                        (convert-tcub v)
                        v)
-        ; Convert other keys as needed. For now they will be string.
+                                        ; Convert other keys as needed. For now they will be string.
         :otherwise v))
 
 (defn map-from-json-str
@@ -301,8 +337,8 @@
   {:added "0.2.0"}
   [content]
   (json/read-str content
-                 :key-fn #(keyword %)
-                 :value-fn val-converter)
+    :key-fn #(keyword %)
+    :value-fn val-converter)
   )
 
 (defn from-file

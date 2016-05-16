@@ -17,4 +17,4 @@
   :methods [(defpmethod example
               {:doc "between example"}
               []
-              (between :a :b [1 100]))])
+              (between :a :b :bounds [1 100]))])

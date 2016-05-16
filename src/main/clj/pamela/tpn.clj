@@ -73,6 +73,17 @@
     (nth form n)
     nil))
 
+(defn default-bounds?
+  "Return true of bounds are [0 :infinity]"
+  {:added "0.2.0"}
+  [bounds]
+  (and (vector? bounds)
+    (or (zero? (count bounds))
+      (and
+        (= 2 (count bounds))
+        (= 0 (first bounds))
+        (= :infinity (second bounds))))))
+
 (defn replace-plant-functions
   "Replace plant functions"
   {:added "0.2.0"}
@@ -86,37 +97,27 @@
           form
           (let [arg-method (first form)
                 [arg method-name] (string/split (name arg-method) #"\$")
-                plant-opts (rest form)
-                {:keys [bounds label cost reward argvals]}
-                (loop [m {} k nil
-                       v (first plant-opts) more (rest plant-opts)]
-                  (if (empty? more)
-                    (if k
-                      (assoc m k v)
-                      m)
-                    (cond
-                      (and (nil? k) (not (keyword? v))) ;; argvals
-                      (recur (assoc m :argvals (cons v more)) nil nil nil)
-                      (and (nil? k) (keyword? v))
-                      (recur m v (first more) (rest more))
-                      (#{:bounds :label :cost :reward} k)
-                      (recur (assoc m k v) nil (first more) (rest more))
-                      :else
-                      m)))
-                fbounds bounds
+                opts (second form)
+                argvals (nthrest form 2)
+                label (:label opts)
+                f-bounds (:bounds opts)
+                f-cost (:cost opts)
+                f-reward (:reward opts)
                 f' (symbol (str arg "." method-name))
                 method-sym (symbol method-name)
-                ;; _ (println "GET PLANT " (type arg) " = " arg "$" method-name)  ;; DEBUG
+                ;; _ (println "GET PLANT " (type arg) " = "
+                ;;     arg "$" method-name)  ;; DEBUG
                 plant (if (= arg "this")
                         tpn
                         (get tpn-args (keyword arg)))
                 _ (if (nil? plant)
-                    (throw (AssertionError. (str "cannot find plant for arg: " arg))))
+                    (throw (AssertionError.
+                             (str "cannot find plant for arg: " arg))))
                 {:keys [pclass id]} plant
                 method (get-in plant [:methods method-sym])
-                {:keys [args bounds pre post doc betweens body]} method
+                {:keys [doc pre post bounds cost reward args body betweens]} method
                 doc (or doc "") ;; doc (or doc method-name)
-                [flb fub] fbounds
+                [flb fub] f-bounds
                 [lb ub] bounds
                 lb (or lb 0)
                 ub (or ub :infinity)
@@ -133,44 +134,36 @@
                               ub))) ;; (str "invalid upper bound")
                       ub)
                 bounds [flb fub]
+                bounds (if (default-bounds? bounds) nil bounds)
+                cost (or f-cost cost)
+                reward (or f-reward reward)
                 av (mapv hash-map (map keyword args) argvals)
                 body (if body ;; plant-fn body is NOT primitive
                        (do
                          ;; (println "SUB prewalk")  ;; DEBUG
-                         (prewalk (replace-plant-functions plant tpn-args) body) ;
+                         (prewalk (replace-plant-functions plant tpn-args) body)
                          ))
                 ;; _ (println "PREP plant-fn")  ;; DEBUG
                 plant-fn (list f'
-                           :pclass pclass
-                           :id id
-                           :method method-name
-                           :doc doc
-                           :bounds bounds
-                           :label label
-                           :cost cost
-                           :reward reward
-                           :args av
-                           :non-primitive body)]
+                           (assoc-if {:pclass pclass
+                                      :method method-name
+                                      :args av}
+                             :id id
+                             :doc doc
+                             :bounds bounds
+                             :label label
+                             :cost cost
+                             :reward reward
+                             :non-primitive body))]
             ;; (println "DEBUG plant-fn:")
             ;; (pp/pprint plant-fn)
             plant-fn))))))
-
-(defn default-bounds?
-  "Return true of bounds are [0 :infinity]"
-  {:added "0.2.0"}
-  [bounds]
-  (and (vector? bounds)
-    (or (zero? (count bounds))
-      (and
-        (= 2 (count bounds))
-        (= 0 (first bounds))
-        (= :infinity (second bounds))))))
 
 (defn constraint-from-bounds
   "Returns a new constraint if the bounds are non-default bounds"
   {:added "0.2.0"}
   [bounds & [end-node]]
-  (let [constraint (if-not (default-bounds? bounds)
+  (let [constraint (if (and bounds (not (default-bounds? bounds)))
                      (tpns/make-temporal-constraint {}
                        :value bounds :end-node end-node))
         constraint (if end-node constraint
@@ -195,10 +188,8 @@
   "sequence helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [label (safe-nth form 2)
-        ;; _ (println "BUILD-SEQUENCE label" label)
-        bounds (safe-nth form 4)
-        activities (nthrest form 5)]
+  (let [{:keys [bounds label cost<= reward>=]} (second form)
+        activities (nthrest form 2)]
     (loop [first-act nil prev nil activity (first activities)
            more (rest activities) objects {}]
       (if (empty? more)
@@ -255,10 +246,12 @@
                                     (:constraints first-act-sb-obj)
                                     (:uid constraint))
                                   (:constraints first-act-sb-obj))
-                first-act-sb-obj (-> first-act-sb-obj
-                                   (assoc-if :constraints new-constraints)
-                                   (assoc-if :sequence-label label)
-                                   (assoc-if :sequence-end (if label se)))
+                first-act-sb-obj (assoc-if first-act-sb-obj
+                                   :constraints new-constraints
+                                   :cost<= cost<=
+                                   :reward>= reward>=
+                                   :sequence-label label
+                                   :sequence-end se)
                 objects (-> objects
                           (assoc first-act-sb first-act-sb-obj)
                           (assoc-if (:uid constraint) constraint))
@@ -330,13 +323,7 @@
   "choice helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [;; bounds (safe-nth form 2)
-        ;; label (safe-nth form 4)
-        ;; probability (safe-nth form 6)
-        ;; cost (safe-nth form 8)
-        ;; reward (safe-nth form 10)
-        choice-opts (safe-nth form 1)
-        {:keys [bounds label probability cost reward guard]} choice-opts
+  (let [{:keys [bounds label cost reward probability guard]} (second form)
         first-act (first (nthrest form 2))
         {:keys [sb act se objects]} (:graph first-act)
         ;; _ (if (map-has-nil-key? objects)
@@ -368,12 +355,12 @@
                   (assoc-if (:uid constraint) constraint))
         ;; _ (if (map-has-nil-key? objects)
         ;;     (println "MHNK choice (0)" objects))
-        graph (-> {:sb sb :se se :objects objects}
-                (assoc-if :label label)
-                (assoc-if :probability probability)
-                (assoc-if :cost cost)
-                (assoc-if :reward reward)
-                (assoc-if :guard (if guard (str guard)))) ;; TBD
+        graph (assoc-if {:sb sb :se se :objects objects}
+                :label label
+                :cost cost
+                :reward reward
+                :probability probability
+                :guard (if guard (str guard))) ;; TBD
         new-form {:graph graph :function (first form)}]
     ;; (println "CHOICE ---------------------------") ;; DEBUG
     ;; (pp/pprint new-form) ;; DEBUG
@@ -383,7 +370,8 @@
   "Wire up null activities"
   {:added "0.2.0"}
   [objs ob oe options &[choice?]]
-  (let [ob-id (:uid ob)
+  (let [order (atom -1)
+        ob-id (:uid ob)
         oe-id (:uid oe)
         begin-ids
         (for [option options
@@ -394,6 +382,7 @@
                     choice-opts (if choice?
                                   (dissoc g :sb :se :objects)
                                   {})
+                    choice-opts (assoc choice-opts :order (swap! order inc))
                     begin-na (tpns/make-null-activity choice-opts :end-node sb)
                     end-na (tpns/make-null-activity {} :end-node oe-id)
                     ob (get @objs ob-id)
@@ -415,24 +404,15 @@
   "choose helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [label (safe-nth form 2)
-        ;; _ (println "BUILD-CHOOSE label" label)
-        bounds (safe-nth form 4)
-        choices (nthrest form 5)
-        ;; probability (remove nil?
-        ;;               (for [choice choices]
-        ;;                 (get-in choice [:graph :probability])))
-        ;; ;; here this represents the sum of all choice probabilities
-        ;; probability (if (pos? (count probability)) (reduce + 0 probability))
+  (let [{:keys [bounds label cost<= reward>=]} (second form)
+        choices (nthrest form 2)
         ce (tpns/make-c-end {})
-        ;; (-> {}
-        ;;   (assoc-if :probability probability)))
         constraint (constraint-from-bounds bounds (:uid ce))
         cb (tpns/make-c-begin
-             (-> {}
-               (assoc-if :label label)
-               ;; (assoc-if :probability probability)
-               )
+             (assoc-if {}
+               :label label
+               :cost<= cost<=
+               :reward>= reward>=)
              :constraints (union-items (:uid constraint)))
         ;; each se of the choice must now have a null activity pointing to ce
         objects (atom (assoc-if
@@ -447,13 +427,8 @@
         _ (swap! objects assoc (:uid cb) cb (:uid ce) ce)
         ;; _ (if (map-has-nil-key? @objects)
         ;;     (println "MHNK choose" @objects))
-        graph (-> {:sb (:uid cb) :se (:uid ce) :objects @objects}
-                (assoc-if :label label)
-                ;; (assoc-if :probability probability)
-                )
-        new-form {:graph graph :function (first form)
-                  ;; :choices choices
-                  }]
+        graph {:sb (:uid cb) :se (:uid ce) :objects @objects}
+        new-form {:graph graph :function (first form)}]
     ;; (println "BUILD-CHOOSE ---------------------") ;; debug
     ;; (pp/pprint new-form) ;; DEBUG
     new-form))
@@ -462,15 +437,15 @@
   "parallel helper for build-graph"
   {:added "0.2.0"}
   [form]
-  (let [label (safe-nth form 2)
-        ;; _ (println "BUILD-PARALLEL label" label)
-        bounds (safe-nth form 4)
-        options (nthrest form 5)
+  (let [{:keys [bounds label cost<= reward>=]} (second form)
+        options (nthrest form 2)
         pe (tpns/make-p-end {})
         constraint (constraint-from-bounds bounds (:uid pe))
         pb (tpns/make-p-begin
              (assoc-if {}
-               :label label)
+               :label label
+               :cost<= cost<=
+               :reward>= reward>=)
              :constraints (union-items (:uid constraint)))
         ;; each se of the parallel must now have a null activity pointing to pe
         objects (atom (assoc-if
@@ -487,8 +462,7 @@
         ;; _ (pp/pprint @objects)
         ;; _ (if (map-has-nil-key? @objects)
         ;;     (println "MHNK parallel" @objects))
-        graph (assoc-if {:sb (:uid pb) :se (:uid pe) :objects @objects}
-                :label label)
+        graph {:sb (:uid pb) :se (:uid pe) :objects @objects}
         new-form {:graph graph :function (first form)
                   ;; :options options
                   }]
@@ -523,8 +497,7 @@
     (if (dotmethod? (first form))
       (let [{:keys [pclass id method doc
                     bounds label cost reward
-                    args non-primitive]}
-            (apply hash-map (rest form))
+                    args non-primitive]} (second form)
             se (tpns/make-state {})
             constraint (constraint-from-bounds bounds (:uid se))
             ;; remove doc -- it's too verbose!
@@ -568,10 +541,9 @@
                       (merge (dissoc net-objects :network-id) objects)
                       objects)
             ;; _ (if (map-has-nil-key? objects) (println "MHNK activity" act))
-            graph (assoc-if {:sb (:uid sb) :act (:uid act) :se (:uid se)
-                             :objects objects}
-                    :label label)
-            new-form (apply hash-map :graph graph :function (first form) (rest form))]
+            graph {:sb (:uid sb) :act (:uid act) :se (:uid se)
+                   :objects objects}
+            new-form {:graph graph :function (first form)}]
         new-form)
       (case (keyword (first form))
         :sequence (build-sequence form)
@@ -611,7 +583,10 @@
             (swap! labels
               assoc sequence-label [uid sequence-end]))))
       (doseq [between betweens]
-        (let [[between-type from to bounds] between
+        (let [[between-type from to opts] between
+              {:keys [bounds cost<= reward>=]} opts
+              ;; _ (println "DEBUG ABC" between-type "from" from "to" to
+              ;;     "bounds" bounds "cost<=" cost<= "reward>=" reward>=)
               [from-uid from-end] (get @labels from)
               from-obj (get @objs from-uid)
               from-begin (if (= (:tpn-type from-obj) :activity)
@@ -620,26 +595,50 @@
               [to-uid to-end] (get @labels to)
               to-obj (get @objs to-uid)
               to-begin (if (= (:tpn-type to-obj) :activity)
-                           (find-begin-for-activity @objs to-uid)
-                           to-uid)
+                         (find-begin-for-activity @objs to-uid)
+                         to-uid)
               object (get @objs
                        (if (= between-type :between-starts)
                          from-begin from-end))
-              constraint (constraint-from-bounds bounds
-                           (if (= between-type :between-ends)
-                             to-end to-begin))
-              constraint (assoc constraint
-                           between-type [from to])
+              temporal-constraint (constraint-from-bounds bounds
+                                    (if (= between-type :between-ends)
+                                      to-end to-begin))
+              temporal-constraint (if temporal-constraint
+                                    (assoc temporal-constraint
+                                      between-type [from to]))
+              ;; _ (println "DEBUG ABC tc" temporal-constraint)
+              cost<=-constraint (if cost<=
+                                  (tpns/make-cost<=-constraint
+                                    {between-type [from to]}
+                                    :value cost<=
+                                    :end-node (if (= between-type
+                                                    :between-ends)
+                                                to-end to-begin)))
+              ;; _ (println "DEBUG ABC c-le" cost<=-constraint)
+              reward>=-constraint (if reward>=
+                                    (tpns/make-reward>=-constraint
+                                      {between-type [from to]}
+                                      :value reward>=
+                                      :end-node (if (= between-type
+                                                      :between-ends)
+                                                  to-end to-begin)))
+              ;; _ (println "DEBUG ABC r-ge" reward>=-constraint)
               object (assoc object
                        :constraints
                        (union-items
                          (:constraints object)
-                         (:uid constraint)))]
+                         (:uid temporal-constraint)
+                         (:uid cost<=-constraint)
+                         (:uid reward>=-constraint)))]
+          ;; (println "DEBUG ABC constraints" object)
           (swap! objs
             (fn [o]
-              (-> o
-                (assoc (:uid object) object)
-                (assoc (:uid constraint) constraint))))))
+              (assoc-if o
+                (:uid object) object
+                (:uid temporal-constraint) temporal-constraint
+                (:uid cost<=-constraint) cost<=-constraint
+                (:uid reward>=-constraint) reward>=-constraint)
+              ))))
       @objs)))
 
 (defn create-tpn
@@ -647,9 +646,10 @@
   the field representing the TPN, and the method in the TPN to use."
   {:added "0.2.0"}
   [pclass field method-sym]
-  (let [_ (if-not (pclass-instance? pclass)
-            (throw (AssertionError. "requires a pclass instance")))
-        tpn (get-in pclass [:fields field])
+  (if-not (pclass-instance? pclass)
+    (throw (AssertionError. "requires a pclass instance")))
+  (tpns/reset-tpnsym!)
+  (let [tpn (get-in pclass [:fields field])
         _ (if (nil? tpn)
             (throw (AssertionError. (str "field " field " is not defined in pclass"))))
         method (get-in tpn [:methods method-sym])
@@ -739,6 +739,8 @@
    :null-activity "null-activity"
    :network "network"
    :temporal-constraint "temporal-constraint"
+   :cost<=-constraint "cost<=-constraint"
+   :reward>=-constraint "reward>=-constraint"
    })
 
 (defn edgeid
@@ -858,6 +860,8 @@
    ;; :null-activity ""
    ;; :network ""
    :temporal-constraint "color=lightgrey"
+   :cost<=-constraint "color=lightgrey"
+   :reward>=-constraint "color=lightgrey"
    })
 
 (defn vizid

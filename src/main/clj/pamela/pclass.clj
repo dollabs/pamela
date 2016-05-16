@@ -398,6 +398,65 @@
         (throw (AssertionError. "defpclass :meta must be a map")))
       (reduce-kv validate-meta-kv {} meta))))
 
+(def pamela-reserved-words
+  #{"access"
+    "and"
+    "ask"
+    "assert"
+    "between"
+    "between-ends"
+    "between-starts"
+    "bounds"
+    "catch"
+    "choice"
+    "choose"
+    "condition"
+    "cost"
+    "defpclass"
+    "defpmethod"
+    "depends"
+    "doc"
+    "false"
+    "field="
+    "fields"
+    "guard"
+    "icon"
+    "id"
+    "implies"
+    "infinity"
+    "initial"
+    "label"
+    "lvar"
+    "maintain"
+    "meta"
+    "methods"
+    "mode="
+    "modes"
+    "noop"
+    "not"
+    "observable"
+    "or"
+    "parallel"
+    "pclass"
+    "probability"
+    "reward"
+    "sequence"
+    "tell"
+    "transitions"
+    "true"
+    "try-form"
+    "unless"
+    "version"
+    "when"
+    "whenever"})
+
+(defn validate-name
+  "A defpclass/defpmethod helper: validate name is not a reserved word."
+  {:added "0.2.0"}
+  [name]
+  (if (pamela-reserved-words (str name))
+    (throw (AssertionError. (str "cannot define a pclass or pmethod with the reserved word: " name)))))
+
 (defn validate-args
   "A defpclass/defpmethod helper: validate args is a vector of symbols."
   {:added "0.2.0"}
@@ -508,8 +567,8 @@
   [pclass-name m labels]
   (fn [form]
     (let [method (first form)
-          label (if (= method 'choice) (:label (second form))
-                    (nth form 2))]
+          opts (second form)
+          label (:label opts)]
       (clj/when label
         (swap! labels update-in [label]
           ;; NOTE count could be nil if the label was not used in a between
@@ -694,13 +753,14 @@
   "
   {:added "0.2.0" :doc/format :markdown}
   [name args & opts]
+  (validate-name name)
   (let [{:keys [meta fields modes methods transitions observable access id]} opts
         {:keys [version icon depends doc]} meta
-        pclass-type (if (or (empty? modes) (map? modes)) :pclass :pclass-enumeration)
+        pclass-type (if (or (empty? modes) (map? modes))
+                      :pclass :pclass-enumeration)
         modesmap (if-not (nil? modes)
                    (if (map? modes) modes
                        (zipmap modes (repeat true))))
-        ;; arglists (list 'list (list 'quote args))
         _ (validate-args "defpclass" args)
         argstrs (mapv str args)
         url *url*] ;; bound in models.clj
@@ -708,8 +768,7 @@
     (validate-labels name methods)
     (add-to-pclasses name)
     `(def ~(with-meta name
-             (merge {;; :arglists arglists
-                     :args (list 'mapv 'symbol argstrs)
+             (merge {:args (list 'mapv 'symbol argstrs)
                      :pamela pclass-type
                      :url url}
                (validate-meta meta)))
@@ -768,30 +827,48 @@
   {:added "0.2.0"}
   [method]
   (fn [& args]
-    (loop [label nil bounds nil args args]
+    (loop [opts {} args args]
       (cond
+        (zero? (count args))
+        (list method opts)
         (= :label (first args))
         (if (not (keyword? (second args)))
           (throw (AssertionError.
                    (str "label: not a keyword for method: " method "\n")))
-          (if (not (nil? label))
+          (if (not (nil? (:label opts)))
             (throw (AssertionError.
-                     (str "label: may only be specified once for method: " method "\n")))
-            (recur (second args) bounds (nthrest args 2))))
+                     (str "label: may only be specified once for method: "
+                       method "\n")))
+            (recur (assoc opts :label (second args)) (nthrest args 2))))
         (= :bounds (first args))
         (if (not (legal-bounds? (second args)))
           (throw (AssertionError.
                    (str "bounds: not a vector for method: " method "\n")))
-          (if (not (nil? bounds))
+          (if (not (nil? (:bounds opts)))
             (throw (AssertionError.
-                     (str "bounds: may only be specified once for method: " method "\n")))
-            (recur label (second args) (nthrest args 2))))
+                     (str "bounds: may only be specified once for method: "
+                       method "\n")))
+            (recur (assoc opts :bounds (second args)) (nthrest args 2))))
+        (= :cost (first args))
+        (if (not (number? (second args)))
+          (throw (AssertionError.
+                   (str "cost: value must be a number: " method "\n")))
+          (if (not (nil? (:cost opts)))
+            (throw (AssertionError.
+                     (str "cost: may only be specified once for method: "
+                       method "\n")))
+            (recur (assoc opts :cost (second args)) (nthrest args 2))))
+        (= :reward (first args))
+        (if (not (number? (second args)))
+          (throw (AssertionError.
+                   (str "reward: value must be a number: " method "\n")))
+          (if (not (nil? (:reward opts)))
+            (throw (AssertionError.
+                     (str "reward: may only be specified once for method: "
+                       method "\n")))
+            (recur (assoc opts :reward (second args)) (nthrest args 2))))
         :else
-        (cons method
-          (cons :label
-            (cons label
-              (cons :bounds
-                (cons (or bounds default-bounds) args)))))))))
+        (cons method (cons opts args))))))
 
 (defn pamela-call
   "Create a pamela method call"
@@ -845,7 +922,7 @@
                  :labels {}})]
     (doseq [between betweens]
       (cond
-        (not= 4 (count between))
+        (< (count between) 5)
         (throw (AssertionError.
                  (str "between form invalid")))
         (not (symbol? (first between)))
@@ -854,24 +931,12 @@
         (nil? (#{'between 'between-starts 'between-ends} (first between)))
         (throw (AssertionError.
                  (str "invalid symbol (expected between): " (first between) "\n")))
-        (not (keyword? (second between)))
-        (throw (AssertionError.
-                 (str "first " (first between)
-                   " argument is not a keyword" (second between) "\n")))
-        (not (keyword? (nth between 2)))
-        (throw (AssertionError.
-                 (str "second " (first between)
-                   " argument is not a keyword" (nth between 2) "\n")))
-        (not (legal-bounds? (nth between 3)))
-        (throw (AssertionError.
-                 (str "bounds for " (first between)
-                   " not legal " (nth between 3) "\n")))
         :else
-        (do
+        (let [bopts (eval between)]
           (swap! b update-in [:betweens]
-            conj (vec (cons (keyword (first between)) (rest between))))
+            conj (vec (cons (keyword (first bopts)) (rest bopts))))
           (swap! b update-in [:labels]
-            assoc (second between) 0 (nth between 2) 0))))
+            assoc (second bopts) 0 (nth bopts 2) 0))))
     @b))
 
 ;; NOTE: these :pre and :post conditions are NOT clojure fn conditions
@@ -894,6 +959,7 @@
   for primitive methods or comprised of PAMELA functions."
   {:added "0.2.0" :doc/format :markdown}
   [name conds args & body-betweens]
+  (validate-name name)
   (let [body (first body-betweens)
         b (:betweens (prepare-betweens (rest body-betweens)))
         safe-body (restore-pamela-args (replace-pamela-calls body))

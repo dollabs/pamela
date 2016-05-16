@@ -17,6 +17,7 @@
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [instaparse.core :as insta]
+            [instaparse.viz :as iv]
             [environ.core :refer [env]])
   )
 
@@ -31,29 +32,44 @@
 (defn test-grammar [parser src results-dir]
   (let [testname (string/replace (.getName src) ".pamela" "")
         _ (println "Checking grammar for:" (.getName src))
-        tree (parser (slurp src))]
+        tree (insta/parses parser (slurp src))]
     (if (insta/failure? tree)
       (do
         (pp/pprint (insta/get-failure tree))
         false)
       (let [txt (as-file (str (.getPath results-dir) "/" testname ".txt"))
             png (as-file (str (.getPath results-dir) "/" testname ".png"))]
-        (println "Success! parse tree in: " (.getPath txt))
-        (spit txt (with-out-str (pp/pprint tree)))
-        (println "parse diagram in: " (.getPath png))
-        (insta/visualize tree :output-file (.getPath png) :options {:dpi 72})
-        true))))
+        (if (not= 1 (count tree))
+          (do
+            (println "  Failure! ambiguous parse tree in: " (.getPath txt))
+            (spit txt (with-out-str (pp/pprint tree)))
+            false)
+          (do
+            (println "  Success! parse tree in: " (.getPath txt))
+            (spit txt (with-out-str (pp/pprint (first tree))))
+            (println "  parse diagram in: " (.getPath png))
+            ;; (println "  type: " (iv/tree-type tree))
+            ;; NOTE visuzlize does NOT recur correctly :(
+            ;; must add fake-root ourselves
+            ;; https://github.com/Engelberg/instaparse/issues/138
+            (insta/visualize (iv/fake-root tree)
+              :output-file png :options {:dpi 72})
+            true))))))
+
+(defn pamela-filename? [filename]
+  (string/ends-with? filename ".pamela"))
 
 (defn test-grammar-all []
   (let [regression (as-file "../src/test/pamela/regression")
         srcs (and (.exists regression) (.listFiles regression))
-        analysis (as-file "target/analysis")
+        analysis (as-file (str (:user-dir env) "/target/analysis"))
         parser (build-parser)]
     (when srcs
       (if-not (.exists analysis)
         (.mkdirs analysis))
       (doseq [src srcs]
-        (test-grammar parser src analysis)))))
+        (if (pamela-filename? src)
+          (test-grammar parser src analysis))))))
 
 (defn test-grammar-one [filename]
   (let [file (as-file filename)

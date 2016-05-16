@@ -5,8 +5,9 @@ args ::= LB symbol* RB
 option ::= ( meta | modes | fields | methods | transitions | observable | access)
 
 meta ::= META LM meta-entry+ RM
-meta-entry ::= ( VERSION string | ICON string | DEPENDS LB dep* RB | DOC string )
+meta-entry ::= ( VERSION string | ICON string | DEPENDS LB dep* RB | opt-doc )
 dep ::= LB symbol string RB
+opt-doc ::= DOC string
 
 modes ::= MODES ( mode-enum | mode-map )
 mode-enum ::= LB keyword* RB
@@ -26,12 +27,17 @@ field ::= keyword field-init
 field-init ::= ( symbol | lvar-ctor| pclass-ctor | pclass-helper )
 
 methods ::= METHODS LB defpmethod* RB
-defpmethod ::= LP DEFPMETHOD symbol cond-map? args fn? between-opt* RP
+defpmethod ::= LP DEFPMETHOD symbol cond-map? args fn? between-stmt* RP
 
 transitions ::= TRANSITIONS LM transition* RM
-transition ::= keyword cond-map
+transition ::= keyword trans-map
 cond-map ::=  LM cond* RM
-cond ::= keyword ( keyword | string | number | symbol | lvar-ctor | cond-fn | bounds )
+trans-map ::=  LM trans* RM
+cond ::= ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward )
+trans ::= ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward | opt-probability )
+
+opt-pre ::= PRE keyword
+opt-post ::= POST keyword
 
 fn ::= ( ask | assert | choose | maintain | noop | parallel | plant-fn | sequence | tell | try-form | unless | when | whenever )
 
@@ -42,7 +48,7 @@ choose ::= LP CHOOSE fn-opt* choice+ RP
 maintain ::= LP MAINTAIN cond-fn opt-bounds? fn RP
 noop ::= LP NOOP RP
 parallel ::= LP PARALLEL fn-opt* fn+ RP
-plant-fn ::= LP symbol '$' symbol fn-opt* argval* RP
+plant-fn ::= LP symbol '$' symbol plant-opt* argval* RP
 sequence ::= LP SEQUENCE fn-opt* fn+ RP
 tell ::= LP TELL cond-fn RP
 try-form ::= LP TRY-FORM opt-bounds? fn LP CATCH fn RP RP
@@ -50,21 +56,24 @@ unless ::= LP UNLESS cond-fn opt-bounds? fn RP
 when ::= LP WHEN cond-fn opt-bounds? fn RP
 whenever ::= LP WHENEVER cond-fn opt-bounds? fn RP
 
-between-opt ::= (between | between-ends | between-starts)
+between-stmt ::= (between | between-ends | between-starts)
 
-between ::= LP BETWEEN keyword keyword bounds RP
-between-ends ::= LP BETWEEN-ENDS keyword keyword bounds RP
-between-starts ::= LP BETWEEN-STARTS keyword keyword bounds RP
+between ::= LP BETWEEN keyword keyword between-opt+ RP
+between-ends ::= LP BETWEEN-ENDS keyword keyword between-opt+ RP
+between-starts ::= LP BETWEEN-STARTS keyword keyword between-opt+ RP
 
-fn-opt ::= ( opt-bounds | opt-label )
-
-choice-opt ::= ( opt-bounds | opt-probability | opt-cost | opt-reward | opt-guard | opt-label )
+fn-opt ::= ( opt-label | opt-bounds | opt-cost-le | opt-reward-ge )
+between-opt ::= ( opt-bounds | opt-cost-le | opt-reward-ge )
+plant-opt ::= ( opt-label | opt-bounds | opt-cost | opt-reward )
+choice-opt ::= ( opt-label | opt-bounds | opt-cost | opt-reward | opt-probability | opt-guard )
 
 opt-bounds ::= BOUNDS bounds
 opt-label ::= LABEL keyword
 opt-probability ::= PROBABILITY number-ref
 opt-cost ::= COST number-ref
 opt-reward ::= REWARD number-ref
+opt-cost-le ::= COST_LE number-ref
+opt-reward-ge ::= REWARD_GE number-ref
 opt-guard ::= GUARD cond-fn
 
 number-ref ::= ( symbol | lvar-ctor | number )
@@ -82,14 +91,16 @@ pclass-ctor-option ::= ( initial | observable | access | id )
 
 bounds ::= LB number ( number | INFINITY ) RB
 
-argval ::= ( symbol | literal )
-symbol ::= [A-Za-z][A-Za-z0-9-]+
+symbol ::= [A-Za-z][A-Za-z0-9-]*
 literal ::= ( boolean | string | keyword | number )
+argval ::= ( symbol | boolean | string | number | safe-keyword )
+safe-keyword ::= keyword
+plant-opt-keyword ::= ( LABEL | BOUNDS | COST | REWARD )
 keyword ::= ':' [A-Za-z0-9:*-]+
 boolean ::= ( TRUE | FALSE )
 string ::= '"'  [^"]* '"'
 number ::= ( float | integer )
-float ::= '-'? integer '.' integer
+float ::= integer '.' integer
 integer ::= '-'? [0-9]+
 
 ACCESS ::= ':access'
@@ -105,6 +116,7 @@ CHOICE ::= 'choice'
 CHOOSE ::= 'choose'
 CONDITION ::= 'condition'
 COST ::= ':cost'
+COST_LE ::= ':cost='
 DEFPCLASS ::= 'defpclass'
 DEFPMETHOD ::= 'defpmethod'
 DEPENDS ::= ':depends'
@@ -131,8 +143,11 @@ OBSERVABLE ::= ':observable'
 OR ::= 'or'
 PARALLEL ::= 'parallel'
 PCLASS ::= 'pclass'
+POST ::= ':post'
+PRE ::= ':pre'
 PROBABILITY ::= ':probability'
 REWARD ::= ':reward'
+REWARD_GE ::= ':reward='
 SEQUENCE ::= 'sequence'
 TELL ::= 'tell'
 TRANSITIONS ::= ':transitions'
