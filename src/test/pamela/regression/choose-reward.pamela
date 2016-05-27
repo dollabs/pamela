@@ -18,6 +18,6 @@
               {:doc "choose based on rewards"}
               []
               (choose
-                (choice :reward 1000 (noop))
-                (choice :reward 2000 (noop))
-                (choice :reward (lvar "payoff") (noop))))])
+                (choice :reward 1000 (delay))
+                (choice :reward 2000 (delay))
+                (choice :reward (lvar "payoff") (delay))))])

@@ -96,6 +96,7 @@
         (if-not (argmethod? f)
           form
           (let [arg-method (first form)
+                delay? (= 'delay arg-method)
                 [arg method-name] (string/split (name arg-method) #"\$")
                 opts (second form)
                 argvals (nthrest form 2)
@@ -103,19 +104,27 @@
                 f-bounds (:bounds opts)
                 f-cost (:cost opts)
                 f-reward (:reward opts)
-                f' (symbol (str arg "." method-name))
-                method-sym (symbol method-name)
+                f-controllable (:controllable opts)
+                f' (if delay?
+                     'delay
+                     (symbol (str arg "." method-name)))
+                method-sym (if-not delay? (symbol method-name))
                 ;; _ (println "GET PLANT " (type arg) " = "
                 ;;     arg "$" method-name)  ;; DEBUG
-                plant (if (= arg "this")
+                plant (if (or (= arg "this") delay?)
                         tpn
                         (get tpn-args (keyword arg)))
                 _ (if (nil? plant)
                     (throw (AssertionError.
                              (str "cannot find plant for arg: " arg))))
                 {:keys [pclass id]} plant
-                method (get-in plant [:methods method-sym])
-                {:keys [doc pre post bounds cost reward args body betweens]} method
+                method (if delay?
+                         {:doc "built in delay function"
+                          :bounds [0 :infinity]
+                          :controllable true}
+                         (get-in plant [:methods method-sym]))
+                {:keys [doc pre post bounds cost reward controllable
+                        args body betweens]} method
                 doc (or doc "") ;; doc (or doc method-name)
                 [flb fub] f-bounds
                 [lb ub] bounds
@@ -137,6 +146,9 @@
                 bounds (if (default-bounds? bounds) nil bounds)
                 cost (or f-cost cost)
                 reward (or f-reward reward)
+                controllable (if (boolean? f-controllable)
+                               f-controllable
+                               (or controllable false))
                 av (mapv hash-map (map keyword args) argvals)
                 body (if body ;; plant-fn body is NOT primitive
                        (do
@@ -147,7 +159,8 @@
                 plant-fn (list f'
                            (assoc-if {:pclass pclass
                                       :method method-name
-                                      :args av}
+                                      :args av
+                                      :controllable controllable}
                              :id id
                              :doc doc
                              :bounds bounds
@@ -494,9 +507,9 @@
   [form]
   (if (list-or-cons? form)
     ;; (if (argmethod? (first form))
-    (if (dotmethod? (first form))
+    (if (or (dotmethod? (first form)) (= 'delay (first form)))
       (let [{:keys [pclass id method doc
-                    bounds label cost reward
+                    bounds label cost reward controllable
                     args non-primitive]} (second form)
             se (tpns/make-state {})
             constraint (constraint-from-bounds bounds (:uid se))
@@ -506,17 +519,21 @@
             ;;         (if-not (empty? args) " ")
             ;;         (if-not (empty? args) (string/join " " (map str args)))
             ;;         ")")
-            edge-label method
+            edge-label (or method "delay")
             net-objects (build-non-primitive non-primitive)
             network-id (:network-id net-objects)
             non-primitive (or network-id false)
-            act-details {:plant (str pclass)
-                         :plantid (or id "")
-                         ;; :command method
-                         :command (if (pos? (count args))
-                                    (apply str method " " args)
-                                    method)
-                         :non-primitive non-primitive}
+            act-details (if method
+                          {:plant (str pclass)
+                           :plantid (or id "")
+                           ;; :command method
+                           :command (if (pos? (count args))
+                                      (apply str method " " args)
+                                      method)
+                           :controllable (or controllable false)
+                           :non-primitive non-primitive}
+                          {:command "delay"
+                           :controllable (or controllable false)})
             act-details (assoc-if act-details
                           :label label
                           :cost cost
@@ -1095,7 +1112,7 @@
       (throw (AssertionError. "load-tpn does not define a tpn class")))
     (if-not (= 1 (count methods))
       (throw (AssertionError. "load-tpn expects tpn class with exactly one method")))
-    ;; (println "Will construct tpn based on" tpn-sym "method" method "using" plant)
+    ;; (println "DEBUG Will construct tpn based on" tpn-sym "method" method "using" plant)
     (let [tpn-pclass-str (str "(defpclass my-tpn []\n"
                            "  :fields {:plant (" (name plant) ")\n"
                            "  :tpn (pclass " (name tpn-sym) " :plant)})")

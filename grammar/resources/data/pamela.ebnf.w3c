@@ -1,3 +1,5 @@
+
+
 pamela ::= defpclass*
 defpclass ::= LP DEFPCLASS symbol args option* RP
 
@@ -24,7 +26,7 @@ mode-expr ::= LP MODEEQ keyword RP
 
 fields ::= FIELDS LM field* RM
 field ::= keyword field-init
-field-init ::= ( symbol | lvar-ctor| pclass-ctor | pclass-helper )
+field-init ::= ( symbol | lvar-ctor|  pclass-ctor | pclass-helper )
 
 methods ::= METHODS LB defpmethod* RB
 defpmethod ::= LP DEFPMETHOD symbol cond-map? args fn? between-stmt* RP
@@ -33,20 +35,20 @@ transitions ::= TRANSITIONS LM transition* RM
 transition ::= keyword trans-map
 cond-map ::=  LM cond* RM
 trans-map ::=  LM trans* RM
-cond ::= ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward )
+cond ::= ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward | opt-controllable )
 trans ::= ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward | opt-probability )
 
 opt-pre ::= PRE keyword
 opt-post ::= POST keyword
 
-fn ::= ( ask | assert | choose | maintain | noop | parallel | plant-fn | sequence | tell | try-form | unless | when | whenever )
+fn ::= ( ask | assert | choose | maintain | delay | parallel | plant-fn | sequence | tell | try-form | unless | when | whenever )
 
 ask ::= LP ASK cond-fn opt-bounds? RP
 assert ::= LP ASSERT cond-fn opt-bounds? RP
 choice ::= LP CHOICE choice-opt* fn RP
 choose ::= LP CHOOSE fn-opt* choice+ RP
 maintain ::= LP MAINTAIN cond-fn opt-bounds? fn RP
-noop ::= LP NOOP RP
+delay ::= LP DELAY delay-opt*  RP
 parallel ::= LP PARALLEL fn-opt* fn+ RP
 plant-fn ::= LP symbol '$' symbol plant-opt* argval* RP
 sequence ::= LP SEQUENCE fn-opt* fn+ RP
@@ -63,8 +65,9 @@ between-ends ::= LP BETWEEN-ENDS keyword keyword between-opt+ RP
 between-starts ::= LP BETWEEN-STARTS keyword keyword between-opt+ RP
 
 fn-opt ::= ( opt-label | opt-bounds | opt-cost-le | opt-reward-ge )
+delay-opt ::= ( opt-label | opt-bounds | opt-cost-le | opt-reward-ge | opt-controllable )
 between-opt ::= ( opt-bounds | opt-cost-le | opt-reward-ge )
-plant-opt ::= ( opt-label | opt-bounds | opt-cost | opt-reward )
+plant-opt ::= ( opt-label | opt-bounds | opt-cost | opt-reward | opt-controllable )
 choice-opt ::= ( opt-label | opt-bounds | opt-cost | opt-reward | opt-probability | opt-guard )
 
 opt-bounds ::= BOUNDS bounds
@@ -75,6 +78,7 @@ opt-reward ::= REWARD number-ref
 opt-cost-le ::= COST_LE number-ref
 opt-reward-ge ::= REWARD_GE number-ref
 opt-guard ::= GUARD cond-fn
+opt-controllable ::= CONTROLLABLE boolean
 
 number-ref ::= ( symbol | lvar-ctor | number )
 
@@ -94,8 +98,8 @@ bounds ::= LB number ( number | INFINITY ) RB
 symbol ::= [A-Za-z][A-Za-z0-9-]*
 literal ::= ( boolean | string | keyword | number )
 argval ::= ( symbol | boolean | string | number | safe-keyword )
-safe-keyword ::= keyword
-plant-opt-keyword ::= ( LABEL | BOUNDS | COST | REWARD )
+safe-keyword ::=  keyword
+reserved-keyword ::= ( LABEL | BOUNDS | COST | REWARD | CONTROLLABLE )
 keyword ::= ':' [A-Za-z0-9:*-]+
 boolean ::= ( TRUE | FALSE )
 string ::= '"'  [^"]* '"'
@@ -115,6 +119,7 @@ CATCH ::= 'catch'
 CHOICE ::= 'choice'
 CHOOSE ::= 'choose'
 CONDITION ::= 'condition'
+CONTROLLABLE ::= ':controllable'
 COST ::= ':cost'
 COST_LE ::= ':cost='
 DEFPCLASS ::= 'defpclass'
@@ -137,7 +142,7 @@ META ::= ':meta'
 METHODS ::= ':methods'
 MODEEQ ::= 'mode='
 MODES ::= ':modes'
-NOOP ::= 'noop'
+DELAY ::= 'delay'
 NOT ::= 'not'
 OBSERVABLE ::= ':observable'
 OR ::= 'or'

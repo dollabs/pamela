@@ -18,6 +18,6 @@
               {:doc "try example"}
               []
               (try-form :bounds [1 100]
-                (noop)
+                (delay)
                 (catch
-                    (noop))))])
+                    (delay))))])

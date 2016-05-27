@@ -19,4 +19,4 @@
               {:doc "ensure field :a is always 1.0"}
               []
               (unless (condition (field= :a 1.0))
-                (noop)))])
+                (delay)))])

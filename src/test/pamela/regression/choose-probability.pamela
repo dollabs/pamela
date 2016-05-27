@@ -19,8 +19,8 @@
               {:doc "choose based on probability"}
               []
               (choose
-                (choice :probability 0.5 (noop))
+                (choice :probability 0.5 (delay))
                 (choice :probability 0.25 :guard (condition (field= :a 1.0))
-                  (noop))
+                  (delay))
                 (choice :probability (lvar "likelihood")
-                  (noop))))])
+                  (delay))))])

@@ -18,6 +18,6 @@
               {:doc "choose based on time"}
               []
               (choose
-                (choice :bounds [1 100] (noop))
-                (choice :bounds [101 200] (noop))
-                (choice :bounds [201 300] (noop))))])
+                (choice :bounds [1 100] (delay))
+                (choice :bounds [101 200] (delay))
+                (choice :bounds [201 300] (delay))))])

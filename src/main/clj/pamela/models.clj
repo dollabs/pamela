@@ -17,13 +17,15 @@
   "The pamela.models namespace is used to import all PAMELA models.
   The symbols defined in this namespace with {:pamela :models-helper}
   metadata are helper functions. All other symbols have been imported."
-  (:refer-clojure :exclude [assert when sequence]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
   (:require [clojure.java.io :refer :all] ;; for as-file
             [clojure.string :as string]
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [pamela.pclass :refer :all]
             [avenir.utils :refer [assoc-if]]))
+
+;; pamela functions
 
 (defn new-pclass
   "Instanciate a predefined pclass."
@@ -62,12 +64,6 @@
                (str "condition: expecting only one condition\n")))
       `(quote ~@body))))
 
-(defmacro noop
-  "No operation function (used for testing)"
-  {:pamela :models-helper :added "0.2.0"}
-  []
-  (list 'list (quote (symbol "noop"))))
-
 (defn get-opts-body
   "Return the optional bounds as a map and the body"
   {:pamela :models-helper :added "0.2.4"}
@@ -89,43 +85,54 @@
 (defn get-fn-opts-body
   "Return the fn-opt(s) as a map and the body (label allowed if not between?)"
   {:pamela :models-helper :added "0.2.4"}
-  [between? body]
-  (loop [bounds nil label nil cost<= nil reward>= nil body body]
+  [label? delay? body]
+  (loop [bounds nil label nil cost<= nil reward>= nil controllable delay?
+         body body]
     (cond
+      (= :label (first body))
+      (if label?
+        (if (not (keyword? (second body)))
+          (throw (AssertionError. (str "label: not a keyword\n")))
+          (if (not (nil? label))
+            (throw (AssertionError.
+                     (str (first body) " may only be specified once\n")))
+            (recur bounds (second body) cost<= reward>= controllable (nthrest body 2))))
+        (throw (AssertionError.
+                 (str ":label not allowed here\n"))))
+      (= :controllable (first body))
+      (if delay?
+        (if (not (boolean? (second body)))
+          (throw (AssertionError. (str "controllable: value must be true or false\n")))
+          (recur bounds label cost<= reward>= (second body) (nthrest body 2)))
+        (throw (AssertionError.
+                 (str ":controllable not allowed here\n"))))
       (= :bounds (first body))
       (if (not (legal-bounds? (second body)))
         (throw (AssertionError. (str "bounds: not a vector\n")))
         (if (not (nil? bounds))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur (second body) label cost<= reward>= (nthrest body 2))))
-      (= :label (first body))
-      (if between?
-        (throw (AssertionError.
-                 (str ":label not allowed in a between expression\n")))
-        (if (not (keyword? (second body)))
-          (throw (AssertionError. (str "label: not a keyword\n")))
-          (if (not (nil? label))
-            (throw (AssertionError.
-                     (str (first body) " may only be specified once\n")))
-            (recur bounds (second body) cost<= reward>= (nthrest body 2)))))
+          (recur (second body) label cost<= reward>= controllable (nthrest body 2))))
       (= :cost<= (first body))
       (if (not (number? (second body)))
         (throw (AssertionError. (str "cost<=: not a number\n")))
         (if (not (nil? cost<=))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds label (second body) reward>= (nthrest body 2))))
+          (recur bounds label (second body) reward>= controllable (nthrest body 2))))
       (= :reward>= (first body))
       (if (not (number? (second body)))
         (throw (AssertionError. (str "reward>=: not a number\n")))
         (if (not (nil? reward>=))
           (throw (AssertionError.
                    (str (first body) " may only be specified once\n")))
-          (recur bounds label cost<= (second body) (nthrest body 2))))
+          (recur bounds label cost<= (second body) controllable (nthrest body 2))))
       :else
       ;; (let [fn-opts (-> {:bounds (or bounds default-bounds)}
-      (let [fn-opts (assoc-if {}
+      (let [fn-opts (assoc-if
+                      (if delay?
+                        {:controllable (or controllable false)}
+                        {})
                       :bounds bounds
                       :label label
                       :cost<= cost<=
@@ -195,6 +202,14 @@
                           :guard guard)]
         [choice-opts body]))))
 
+(defmacro delay
+  "Delay operation function (planner may elect proper time delay)"
+  {:pamela :models-helper :added "0.2.0"}
+  [& body]
+  (let [[fn-opts _] (get-fn-opts-body true true body)]
+    (cons 'list
+      (list (quote (symbol "delay")) fn-opts))))
+
 (defmacro maintain
   "Try to achieve condition throughout the specified time bounds
    and maintain it for the duration of body."
@@ -258,7 +273,7 @@
   if the last item has not completed within the upper time bound."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (let [[fn-opts body] (get-fn-opts-body false body)
+  (let [[fn-opts body] (get-fn-opts-body true false  body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "sequence"))
@@ -270,7 +285,7 @@
   if the last item has not completed within the upper time bound."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (let [[fn-opts body] (get-fn-opts-body false body)
+  (let [[fn-opts body] (get-fn-opts-body true false body)
         safe-body (replace-pamela-args (replace-pamela-calls body))]
     (cons 'list
       (cons (quote (symbol "parallel"))
@@ -288,7 +303,7 @@
   Note that <n> can be a numeric constant or a logic variable."
   {:pamela :models-helper :added "0.2.0"}
   [& choices]
-  (let [[fn-opts choices] (get-fn-opts-body false choices)
+  (let [[fn-opts choices] (get-fn-opts-body true false choices)
         safe-choices (replace-pamela-args (replace-pamela-calls choices))]
     (cons 'list
       (cons (quote (symbol "choose"))
@@ -375,7 +390,7 @@
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [[fn-opts _] (get-fn-opts-body true opts)]
+  (let [[fn-opts _] (get-fn-opts-body false false opts)]
     (list 'list
       (quote (symbol "between"))
       label1 label2 fn-opts)))
@@ -390,7 +405,7 @@
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [[fn-opts _] (get-fn-opts-body true opts)]
+  (let [[fn-opts _] (get-fn-opts-body false false opts)]
     (list 'list
       (quote (symbol "between-starts"))
       label1 label2 fn-opts)))
@@ -405,7 +420,7 @@
   (when-not (keyword? label2)
     (throw (AssertionError.
              (str "label must be a keyword: " label2 "\n"))))
-  (let [[fn-opts _] (get-fn-opts-body true opts)]
+  (let [[fn-opts _] (get-fn-opts-body false false opts)]
     (list 'list
       (quote (symbol "between-ends"))
       label1 label2 fn-opts)))

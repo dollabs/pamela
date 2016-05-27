@@ -50,7 +50,9 @@ fi
 echo "Converting Instaparse EBNF file: $file"
 w3c="$file.w3c"
 
-sed -e 's/<//g' \
+sed -e 's/(\*.*\*)//' \
+    -e 's/\![a-z-]*//g' \
+    -e 's/<//g' \
     -e 's/>//g' \
     -e 's/ = / ::= /g' \
     -e "s/#'\([^']*\)'/\1/g" \
