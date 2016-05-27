@@ -19,9 +19,9 @@
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.3.1"]
+                 [com.taoensso/timbre "4.4.0-alpha1"]
                  [org.slf4j/slf4j-api "1.7.21"]
-                 [com.fzakaria/slf4j-timbre "0.3.1"]
+                 [com.fzakaria/slf4j-timbre "0.3.2"]
                  [avenir "0.2.1"]
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
@@ -32,7 +32,7 @@
                  [riddley "0.1.12"]
                  [environ "1.0.3"]
                  ;; required for elastich
-                 [clj-http "2.1.0"]
+                 [clj-http "3.1.0"]
                  [clojurewerkz/elastisch "2.2.1" :exclusions [clj-http]]
                  [aleph "0.4.2-alpha4"]
                  [clj-time "0.11.0"]
@@ -41,9 +41,9 @@
                  [compojure "1.5.0" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
-                 [cljsjs/react-dom-server "15.0.2-0"]  ;; for sablono
-                 [cljsjs/react-dom "15.0.2-0"] ;; for sablono
-                 [org.omcljs/om "1.0.0-alpha34"]
+                 [cljsjs/react-dom-server "15.1.0-0"]  ;; for sablono
+                 [cljsjs/react-dom "15.1.0-0"] ;; for sablono
+                 [org.omcljs/om "1.0.0-alpha36"]
                  [sablono "0.7.1"]
                  [cljs-http "0.1.40"]
                  ;; the following are to resolve dependency conflicts

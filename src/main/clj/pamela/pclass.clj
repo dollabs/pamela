@@ -974,9 +974,13 @@
   **body** is the method body which may either be :primitive
   for primitive methods or comprised of PAMELA functions."
   {:added "0.2.0" :doc/format :markdown}
-  [name conds args & body-betweens]
+  [name conds & args-body-betweens]
   (validate-name name)
-  (let [body (first body-betweens)
+  (let [[conds args body-betweens]
+        (if (vector? conds)
+          [{} conds args-body-betweens]
+          [conds (first args-body-betweens) (rest args-body-betweens)])
+        body (first body-betweens)
         b (:betweens (prepare-betweens (rest body-betweens)))
         safe-body (restore-pamela-args (replace-pamela-calls body))
         argstrs (mapv str args)]
