@@ -18,7 +18,7 @@
               {:doc "sequence example"}
               []
               (sequence
-                (noop)
-                (noop)
-                (noop)
-                (noop)))])
+                (delay)
+                (delay)
+                (delay)
+                (delay)))])

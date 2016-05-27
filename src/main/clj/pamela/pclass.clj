@@ -15,7 +15,7 @@
   "The defpclass macro (and ancillary helper functions)
   are defined here to implement the PAMELA lanuage DSL."
 
-  (:refer-clojure :exclude [assert when sequence]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
 
   (:require [clojure.core :as clj]
             [clojure.set :as set]
@@ -29,6 +29,11 @@
             [pamela.utils :refer [make-url get-url]]
             [avenir.utils :refer [and-fn assoc-if]])
   (:import [clojure.lang Symbol PersistentList]))
+
+;; generic functions
+
+(defn boolean? [x]
+  (or (true? x) (false? x)))
 
 ;; current values of lvar's -------------------------------
 
@@ -414,6 +419,7 @@
     "cost"
     "defpclass"
     "defpmethod"
+    "delay"
     "depends"
     "doc"
     "false"
@@ -432,7 +438,6 @@
     "methods"
     "mode="
     "modes"
-    "noop"
     "not"
     "observable"
     "or"
@@ -822,6 +827,9 @@
     (number? (first bounds))
     (or (= :infinity (second bounds)) (number? (second bounds)))))
 
+;; NOTE: grammar
+;; plant-fn = <LP> symbol <'$'> symbol plant-opt* argval* <RP>
+;; plant-opt = ( opt-label | opt-bounds | opt-cost | opt-reward | opt-controllable )
 (defn pamela-method
   "Return a function for the pamela method name"
   {:added "0.2.0"}
@@ -867,6 +875,14 @@
                      (str "reward: may only be specified once for method: "
                        method "\n")))
             (recur (assoc opts :reward (second args)) (nthrest args 2))))
+        (= :controllable (first args))
+        (if (not (boolean? (second args)))
+          (throw (AssertionError. (str "controllable: value must be true or false\n")))
+          (if (not (nil? (:controllable opts)))
+            (throw (AssertionError.
+                     (str "controllable: may only be specified once for method: "
+                       method "\n")))
+            (recur (assoc opts :controllable (second args)) (nthrest args 2))))
         :else
         (cons method (cons opts args))))))
 

@@ -7,6 +7,14 @@ All notable changes to this project will be documented in this file. This change
 Added
 * *TBD*
 
+### [0.2.6] - 2016-05-27
+
+Added
+- Add :controllable feature to plant functions
+- Grammar changes
+ * Change built in function noop to delay (to better mesh with planners)
+ * Updated insta2w3c script and railroad diagram
+
 ### 0.2.5 - 2016-05-16
 
 Added
@@ -24,4 +32,5 @@ Added
 * TPN generation will record the original pamela order of activities
   in parallel and choice blocks
 
-[Unreleased]: https://github.com/dollabs/planviz/compare/0.2.5...HEAD
+[0.2.6]: https://github.com/dollabs/pamela/compare/0.2.5...0.2.6
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.2.6...HEAD

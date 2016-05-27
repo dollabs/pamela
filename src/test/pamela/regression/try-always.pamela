@@ -18,6 +18,6 @@
               {:doc "try example"}
               []
               (try-form
-                (noop)
+                (delay)
                 (catch
-                    (noop))))])
+                    (delay))))])

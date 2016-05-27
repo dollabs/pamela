@@ -11,7 +11,7 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-(defproject pamela "0.2.5"
+(defproject pamela "0.2.6"
   :description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)"
   :url "https://github.com/dollabs/pamela"
   :scm {:url "https://github.com/dollabs/pamela.git"}
