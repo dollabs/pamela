@@ -18,19 +18,17 @@
            :methods [(defpmethod do-a {:bounds [2 4]} [])
                      (defpmethod do-b {:bounds [3 6]} [])
                      (defpmethod do-c {:bounds [4 8]} [])
-                     (defpmethod do-d  [])
-                     (defpmethod do-e {:bounds [5 10]} [])
-
-                     ])
+                     (defpmethod do-d [])                   ; cause of infeasibility
+                     (defpmethod do-e {:bounds [5 10]} [])])
 
 (defpclass infeasible-sequence [plnt]
            :meta {:doc "An example of infeasible sequence of activties"}
            :methods [(defpmethod start
                                  {:doc "Simple TPN with constraints"}
                                  []
-                                 (sequence
-                                   (plnt$do-a)
-                                   (plnt$do-d)
-                                   (plnt$do-c)
-                                   (plnt$do-d)
-                                   (plnt$do-e)))])
+                                 (sequence :bounds [10 30]
+                                           (plnt$do-a)
+                                           (plnt$do-b)
+                                           (plnt$do-c)
+                                           (plnt$do-d)
+                                           (plnt$do-e)))])
