@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Added
-* *TBD*
+* Fixed #4 TPN output for delay should create a delay-activity
+* Updated dependencies
 
 ### [0.2.6] - 2016-05-27
 

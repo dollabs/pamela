@@ -508,7 +508,8 @@
   (if (list-or-cons? form)
     ;; (if (argmethod? (first form))
     (if (or (dotmethod? (first form)) (= 'delay (first form)))
-      (let [{:keys [pclass id method doc
+      (let [delay? (= 'delay (first form))
+            {:keys [pclass id method doc
                     bounds label cost reward controllable
                     args non-primitive]} (second form)
             se (tpns/make-state {})
@@ -519,11 +520,12 @@
             ;;         (if-not (empty? args) " ")
             ;;         (if-not (empty? args) (string/join " " (map str args)))
             ;;         ")")
-            edge-label (or method "delay")
+            edge-label (if delay? "delay" method)
             net-objects (build-non-primitive non-primitive)
             network-id (:network-id net-objects)
             non-primitive (or network-id false)
-            act-details (if method
+            act-details (if delay?
+                          {:controllable (or controllable false)}
                           {:plant (str pclass)
                            :plantid (or id "")
                            ;; :command method
@@ -531,9 +533,7 @@
                                       (apply str method " " args)
                                       method)
                            :controllable (or controllable false)
-                           :non-primitive non-primitive}
-                          {:command "delay"
-                           :controllable (or controllable false)})
+                           :non-primitive non-primitive})
             act-details (assoc-if act-details
                           :label label
                           :cost cost
@@ -543,6 +543,7 @@
                   :name edge-label
                   :constraints (union-items (:uid constraint))
                   :end-node (:uid se))
+            act (if delay? (assoc act :tpn-type :delay-activity) act)
             ;; _ (println "DEBUG act: " (type act))
             ;; _ (pp/pprint act)
             se (assoc se :incidence-set #{(:uid act)})
