@@ -5,7 +5,12 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Added
-* *TBD*
+* Added support for new grammar features
+  * slack-sequence
+  * slack-parallel
+  * optional
+  * soft-sequence
+  * soft-parallel
 
 ### [0.2.6] - 2016-05-27
 
