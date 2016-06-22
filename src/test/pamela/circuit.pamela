@@ -61,30 +61,37 @@
 
   :fields {:anode vcc
            :cathode vdd
-           :illumination (lightvals :initial :dark :access :public)
-           :sensed-illumination (lightvals :observable true
-                                  :access :public :initial :dark)}
+           :illumination {:initial (lightvals :dark) :access :public}
+           ; :sensed-illumination (lightvals :observable true
+           ;                        :access :public :initial :dark)
+           :sensed-illumination {:initial (lightvals :dark)
+                                :observable true
+                                  :access :public}}
   :modes {:on (condition (and
-                (field= :illumination :bright)
-                (field= :sensed-illumination :bright)))
+                (= :illumination (lightvals :bright))
+                (= (:illumination this) (lightvals :bright))
+                ;(= (:illumination this) (:illumination abulb)) ;Orthogonal example
+                (= (field :illumination) (lightvals :bright))
+                (field= :illumination (lightvals :bright))
+                (field= :sensed-illumination (lightvals :bright))))
           :off (condition (and
-                 (field= :illumination :dark)
-                 (field= :sensed-illumination :dark)))
+                 (field= :illumination (lightvals :dark))
+                 (field= :sensed-illumination (lightvals :dark))))
           :fail true}
   :transitions {:off:on {:pre (condition (and
                                 (mode= :off)
-                                (field= :anode :none)
-                                (field= :sensed-illumination :dark)))
+                                (field= :anode (pwrvals :high))
+                                (field= :sensed-illumination (lightvals :bright))))
                          :post :on
                          :bounds [1 3]
                          :doc "turning on bulb"}
                 :on:off {:pre (condition (and
                                 (mode= :on)
-                                (field= :anode :high)
-                                (field= :sensed-illumination :bright)))
+                                (field= :anode (pwrvals :none))
+                                (field= :sensed-illumination (lightvals :dark))))
                          :post :off
                          :bounds [1 3]
-                         :doc "turning on bulb"}
+                         :doc "turning off bulb"}
                 :*:fail {:probability (lvar "pfbulb")
                          :doc "spontaneous bulb failure"}})
 
@@ -96,5 +103,5 @@
 
   :fields {:source (lvar "source")
            :drain (lvar "drain")
-           :bulb1 (pclass bulb :source :drain)
-           :switchedpower (pclass psw :source :drain)})
+           :bulb1 (pclass bulb :source :drain {:id "Bulb1"})
+           :switchedpower (pclass psw :source :drain {:id "PSW1"})})
