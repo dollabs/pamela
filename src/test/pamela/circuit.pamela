@@ -25,8 +25,7 @@
 
   :fields {:TP1 gnd
            :TP2 pwr
-           :pwr {:type (pwrvals)
-                 :initial :none}}
+           :pwr (mode-of pwrvals :none)}
   :modes {:on (= :pwr :high)
           :off (= :pwr :none)
           :fail true}
@@ -62,11 +61,9 @@
 
   :fields {:anode vcc
            :cathode vdd
-           :illumination {:type (lightvals)
-                          :initial :dark
+           :illumination {:initial (mode-of lightvals :dark)
                           :access :public}
-           :sensed-illumination {:type (lightvals)
-                                 :initial :dark
+           :sensed-illumination {:initial (mode-of lightvals :dark)
                                  :access :public
                                  :observable true}}
   :modes {:on (and
@@ -101,7 +98,5 @@
 
   :fields {:source (lvar "source")
            :drain (lvar "drain")
-           :bulb1 {:type (bulb :source :drain)
-                   :id "Bulb1"}
-           :switchedpower {:type (psw :source :drain)
-                           :id "PSW1"}})
+           :bulb1 (bulb source drain :id "Bulb1")
+           :switchedpower (psw source drain :id "PSW1" :interface "RMQ")})

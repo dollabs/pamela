@@ -26,21 +26,18 @@ or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> cond-expr <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
-cond-operand = ( keyword | field-expr | mode-expr )
+cond-operand = ( keyword | symbol | field-expr | mode-expr )
 field-expr = <LP> keyword symbol <RP>
 mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( symbol | lvar-ctor| !lvar-ctor pclass-ctor )
-field-init = ( type | initial | access | observable | id | interface )
+field-type = ( symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-init = ( initial | access | observable )
 
-type = <TYPE> field-type
-initial = <INITIAL> keyword
+initial = <INITIAL> ( keyword | field-type )
 access = <ACCESS> keyword
 observable = <OBSERVABLE> boolean
-id = <ID> string
-interface = <INTERFACE> string
 
 methods = <METHODS> <LB> defpmethod* <RB>
 defpmethod = <LP> <DEFPMETHOD> symbol cond-map? args fn? between-stmt* <RP>
@@ -103,8 +100,10 @@ number-ref = ( symbol | lvar-ctor | number )
 
 lvar-ctor = <LP> <LVAR> string? <RP>
 
-pclass-ctor = <LP> symbol pclass-ctor-arg* <RP>
-pclass-ctor-arg = ( keyword | symbol )
+pclass-ctor = <LP> symbol+ pclass-ctor-arg* <RP>
+pclass-ctor-arg = ( id | interface )
+id = <ID> string
+interface = <INTERFACE> string
 
 bounds = <LB> number ( number | INFINITY ) <RB>
 
@@ -176,7 +175,6 @@ TELL = <'tell'>
 TRANSITIONS = <':transitions'>
 TRUE = <'true'>
 TRY-FORM = <'try-form'>
-TYPE = <':type'>
 UNLESS = <'unless'>
 VERSION = <':version'>
 WHEN = <'when'>

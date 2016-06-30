@@ -22,9 +22,8 @@
     [:field [:keyword "TP2"] [:field-type [:symbol "pwr"]]]
     [:field
      [:keyword "pwr"]
-     [:field-init
-      [:type [:field-type [:pclass-ctor [:symbol "pwrvals"]]]]]
-     [:field-init [:initial [:keyword "none"]]]]]]
+     [:field-type
+      [:mode-expr [:symbol "pwrvals"] [:keyword "none"]]]]]]
   [:option
    [:modes
     [:mode-map
@@ -117,14 +116,16 @@
     [:field
      [:keyword "illumination"]
      [:field-init
-      [:type [:field-type [:pclass-ctor [:symbol "lightvals"]]]]]
-     [:field-init [:initial [:keyword "dark"]]]
+      [:initial
+       [:field-type
+        [:mode-expr [:symbol "lightvals"] [:keyword "dark"]]]]]
      [:field-init [:access [:keyword "public"]]]]
     [:field
      [:keyword "sensed-illumination"]
      [:field-init
-      [:type [:field-type [:pclass-ctor [:symbol "lightvals"]]]]]
-     [:field-init [:initial [:keyword "dark"]]]
+      [:initial
+       [:field-type
+        [:mode-expr [:symbol "lightvals"] [:keyword "dark"]]]]]
      [:field-init [:access [:keyword "public"]]]
      [:field-init [:observable [:boolean [:TRUE]]]]]]]
   [:option
@@ -229,21 +230,18 @@
      [:field-type [:lvar-ctor [:string "drain"]]]]
     [:field
      [:keyword "bulb1"]
-     [:field-init
-      [:type
-       [:field-type
-        [:pclass-ctor
-         [:symbol "bulb"]
-         [:pclass-ctor-arg [:keyword "source"]]
-         [:pclass-ctor-arg [:keyword "drain"]]]]]]
-     [:field-init [:id [:string "Bulb1"]]]]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "bulb"]
+       [:symbol "source"]
+       [:symbol "drain"]
+       [:pclass-ctor-arg [:id [:string "Bulb1"]]]]]]
     [:field
      [:keyword "switchedpower"]
-     [:field-init
-      [:type
-       [:field-type
-        [:pclass-ctor
-         [:symbol "psw"]
-         [:pclass-ctor-arg [:keyword "source"]]
-         [:pclass-ctor-arg [:keyword "drain"]]]]]]
-     [:field-init [:id [:string "PSW1"]]]]]]]]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "psw"]
+       [:symbol "source"]
+       [:symbol "drain"]
+       [:pclass-ctor-arg [:id [:string "PSW1"]]]
+       [:pclass-ctor-arg [:interface [:string "RMQ"]]]]]]]]]]
