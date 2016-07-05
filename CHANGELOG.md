@@ -11,6 +11,8 @@ Added
   * optional
   * soft-sequence
   * soft-parallel
+* Fixed #4 TPN output for delay should create a delay-activity
+* Updated dependencies
 
 ### [0.2.6] - 2016-05-27
 

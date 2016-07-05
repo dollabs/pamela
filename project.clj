@@ -26,7 +26,7 @@
                  [org.clojure/tools.logging "0.3.1"
                   :exclusions [org.clojure/clojure]]
                  ;; -------
-                 [org.clojure/clojurescript "1.8.51" :scope "provided"]
+                 [org.clojure/clojurescript "1.9.36" :scope "provided"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
@@ -44,8 +44,8 @@
                  [cljsjs/react-dom-server "15.1.0-0"]  ;; for sablono
                  [cljsjs/react-dom "15.1.0-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha36"]
-                 [sablono "0.7.1"]
-                 [cljs-http "0.1.40"]
+                 [sablono "0.7.2"]
+                 [cljs-http "0.1.41"]
                  ;; the following are to resolve dependency conflicts
                  [commons-codec "1.10"] ;; compojure
                  ]
