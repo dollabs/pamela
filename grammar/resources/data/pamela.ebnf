@@ -4,29 +4,40 @@ pamela = defpclass*
 defpclass = <LP> <DEFPCLASS> symbol args option* <RP>
 
 args = <LB> symbol* <RB>
-option = ( meta | modes | fields | methods | transitions | observable | access)
+option = ( meta | inherit | modes | fields | methods | transitions )
 
 meta = <META> <LM> meta-entry+ <RM>
-meta-entry = ( VERSION string | ICON string | DEPENDS <LB> dep* <RB> | opt-doc )
+meta-entry = ( version | icon | depends | doc )
+depends = <DEPENDS> <LB> dep* <RB>
 dep = <LB> symbol string <RB>
-opt-doc = DOC string
+icon = <ICON> string
+version = <VERSION> string
+doc = <DOC> string
+
+inherit = <INHERIT> <LB> symbol+ <RB>
 
 modes = <MODES> ( mode-enum | mode-map )
 mode-enum = <LB> keyword* <RB>
 mode-map = <LM> mode-init+ <RM>
-mode-init = keyword ( TRUE | cond-fn )
-cond-fn = <LP> <CONDITION> cond-expr <RP>
-cond-expr = ( and-expr | or-expr | not-expr | implies-expr | field-expr | mode-expr )
-and-expr = <LP> <AND> cond-expr+ <RP>
-or-expr = <LP> <OR> cond-expr+ <RP>
+mode-init = keyword ( TRUE | cond-expr )
+cond-expr = ( and-expr | or-expr | implies-expr | not-expr | equal-expr)
+and-expr = <LP> <AND> ( cond-expr | cond-operand )+ <RP>
+or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
+implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> cond-expr <RP>
-implies-expr = <LP> <IMPLIES> cond-expr+ <RP>
-field-expr = <LP> <FIELDEQ> keyword literal <RP>
-mode-expr = <LP> <MODEEQ> keyword <RP>
+equal-expr = <LP> <EQUAL> cond-operand+ <RP>
+cond-operand = ( keyword | symbol | field-expr | mode-expr )
+field-expr = <LP> keyword symbol <RP>
+mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
-fields = <FIELDS> <LM> field* <RM>
-field = keyword field-init
-field-init = ( symbol | lvar-ctor| !lvar-ctor pclass-ctor | pclass-helper )
+fields = <FIELDS> <LM> field+ <RM>
+field = keyword ( <LM> field-init+ <RM> | field-type )
+field-type = ( symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-init = ( initial | access | observable )
+
+initial = <INITIAL> ( keyword | field-type )
+access = <ACCESS> keyword
+observable = <OBSERVABLE> boolean
 
 methods = <METHODS> <LB> defpmethod* <RB>
 defpmethod = <LP> <DEFPMETHOD> symbol cond-map? args fn? between-stmt* <RP>
@@ -35,20 +46,20 @@ transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
-cond = ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward | opt-controllable )
-trans = ( opt-doc | opt-pre | opt-post | opt-bounds | opt-cost | opt-reward | opt-probability )
+cond = ( doc | pre | post | opt-bounds | cost | reward | controllable )
+trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
-opt-pre = <PRE> keyword
-opt-post = <POST> keyword
+pre = <PRE> ( keyword | cond-expr )
+post = <POST> ( keyword | cond-expr )
 
 fn = ( ask | assert | choose | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try-form | unless | when | whenever )
 
-ask = <LP> <ASK> cond-fn opt-bounds? <RP>
-assert = <LP> <ASSERT> cond-fn opt-bounds? <RP>
+ask = <LP> <ASK> cond-expr opt-bounds? <RP>
+assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
 choice = <LP> <CHOICE> choice-opt* fn <RP>
 choose = <LP> <CHOOSE> fn-opt* choice+ <RP>
 optional = <LP> <OPTIONAL> fn-opt* fn <RP>
-maintain = <LP> <MAINTAIN> cond-fn opt-bounds? fn <RP>
+maintain = <LP> <MAINTAIN> cond-expr opt-bounds? fn <RP>
 delay = <LP> <DELAY> delay-opt*  <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
@@ -57,11 +68,11 @@ plant-fn = <LP> symbol <'$'> symbol plant-opt* argval* <RP>
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
-tell = <LP> <TELL> cond-fn <RP>
+tell = <LP> <TELL> cond-expr <RP>
 try-form = <LP> <TRY-FORM> opt-bounds? fn <LP> <CATCH> fn <RP> <RP>
-unless = <LP> <UNLESS> cond-fn opt-bounds? fn <RP>
-when = <LP> <WHEN> cond-fn opt-bounds? fn <RP>
-whenever = <LP> <WHENEVER> cond-fn opt-bounds? fn <RP>
+unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
+when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
+whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
 
 between-stmt = (between | between-ends | between-starts)
 
@@ -69,34 +80,30 @@ between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
 between-ends = <LP> <BETWEEN-ENDS> keyword keyword between-opt+ <RP>
 between-starts = <LP> <BETWEEN-STARTS> keyword keyword between-opt+ <RP>
 
-fn-opt = ( opt-label | opt-bounds | opt-cost-le | opt-reward-ge )
-delay-opt = ( opt-label | opt-bounds | opt-cost-le | opt-reward-ge | opt-controllable )
-between-opt = ( opt-bounds | opt-cost-le | opt-reward-ge )
-plant-opt = ( opt-label | opt-bounds | opt-cost | opt-reward | opt-controllable )
-choice-opt = ( opt-label | opt-bounds | opt-cost | opt-reward | opt-probability | opt-guard )
+fn-opt = ( label | opt-bounds | cost-le | reward-ge )
+delay-opt = ( label | opt-bounds | cost-le | reward-ge | controllable )
+between-opt = ( opt-bounds | cost-le | reward-ge )
+plant-opt = ( label | opt-bounds | cost | reward | controllable )
+choice-opt = ( label | opt-bounds | cost | reward | probability | guard )
 
 opt-bounds = <BOUNDS> bounds
-opt-label = <LABEL> keyword
-opt-probability = <PROBABILITY> number-ref
-opt-cost = <COST> number-ref
-opt-reward = <REWARD> number-ref
-opt-cost-le = <COST_LE> number-ref
-opt-reward-ge = <REWARD_GE> number-ref
-opt-guard = <GUARD> cond-fn
-opt-controllable = <CONTROLLABLE> boolean
+label = <LABEL> keyword
+probability = <PROBABILITY> number-ref
+cost = <COST> number-ref
+reward = <REWARD> number-ref
+cost-le = <COST_LE> number-ref
+reward-ge = <REWARD_GE> number-ref
+guard = <GUARD> cond-expr
+controllable = <CONTROLLABLE> boolean
 
 number-ref = ( symbol | lvar-ctor | number )
 
 lvar-ctor = <LP> <LVAR> string? <RP>
 
-initial = <INITIAL> keyword
-observable = <OBSERVABLE> boolean
-access = <ACCESS> keyword
+pclass-ctor = <LP> symbol+ pclass-ctor-arg* <RP>
+pclass-ctor-arg = ( id | interface )
 id = <ID> string
-
-pclass-ctor = <LP> symbol pclass-ctor-option* <RP>
-pclass-helper = <LP> <PCLASS> symbol keyword* pclass-ctor-option* <RP>
-pclass-ctor-option = ( initial | observable | access | id )
+interface = <INTERFACE> string
 
 bounds = <LB> number ( number | INFINITY ) <RB>
 
@@ -123,7 +130,6 @@ BOUNDS = <':bounds'>
 CATCH = <'catch'>
 CHOICE = <'choice'>
 CHOOSE = <'choose'>
-CONDITION = <'condition'>
 CONTROLLABLE = <':controllable'>
 COST = <':cost'>
 COST_LE = <':cost<='>
@@ -131,22 +137,24 @@ DEFPCLASS = <'defpclass'>
 DEFPMETHOD = <'defpmethod'>
 DEPENDS = <':depends'>
 DOC = <':doc'>
+EQUAL = <'='>
 FALSE = <'false'>
-FIELDEQ = <'field='>
 FIELDS = <':fields'>
 GUARD = <':guard'>
 ICON = <':icon'>
 ID = <':id'>
 IMPLIES = <'implies'>
 INFINITY = <':infinity'>
+INHERIT = <':inherit'>
 INITIAL = <':initial'>
+INTERFACE = <':interface'>
 LABEL = <':label'>
 LVAR = <'lvar'>
 MAINTAIN = <'maintain'>
 META = <':meta'>
 METHODS = <':methods'>
-MODEEQ = <'mode='>
 MODES = <':modes'>
+MODE_OF = <'mode-of'>
 DELAY = <'delay'>
 NOT = <'not'>
 OBSERVABLE = <':observable'>
@@ -155,7 +163,6 @@ OR = <'or'>
 PARALLEL = <'parallel'>
 SLACK_PARALLEL = <'slack-parallel'>
 SOFT_PARALLEL = <'soft-parallel'>
-PCLASS = <'pclass'>
 POST = <':post'>
 PRE = <':pre'>
 PROBABILITY = <':probability'>

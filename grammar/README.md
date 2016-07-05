@@ -7,6 +7,11 @@ as well as some tooling based on [instaparse](https://github.com/Engelberg/insta
 NOTE: PAMELA does not actually use this EBNF directly as
 part of its parsing engine.
 
+Please see
+* The [PAMELA Language Manual](doc/PAMELA.md)
+* The [PAMELA Language Changelog](doc/CHANGELOG.md)
+
+
 ## analyze
 
 The `analyze` script is located in `../bin` and can be used

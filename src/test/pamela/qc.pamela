@@ -13,7 +13,6 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-;; (defpclass quadcopter-plant []
 (defpclass qc []
   :meta {:version "0.2.1"
          :doc "The Plant API"}

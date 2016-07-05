@@ -20,7 +20,9 @@
               []
               (choose
                 (choice :probability 0.5 (delay))
-                (choice :probability 0.25 :guard (condition (field= :a 1.0))
+                (choice
+                  :probability 0.25
+                  :guard (= :a 1.0)
                   (delay))
                 (choice :probability (lvar "likelihood")
                   (delay))))])

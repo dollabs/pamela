@@ -1,0 +1,247 @@
+[:pamela
+ [:defpclass
+  [:symbol "pwrvals"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Enum for power values"]]]]]
+  [:option [:modes [:mode-enum [:keyword "high"] [:keyword "none"]]]]]
+ [:defpclass
+  [:symbol "psw"]
+  [:args [:symbol "gnd"] [:symbol "pwr"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry
+     [:depends [:dep [:symbol "pwrvals"] [:string "0.2.0"]]]]
+    [:meta-entry [:doc [:string "Power Switch"]]]]]
+  [:option
+   [:fields
+    [:field [:keyword "TP1"] [:field-type [:symbol "gnd"]]]
+    [:field [:keyword "TP2"] [:field-type [:symbol "pwr"]]]
+    [:field
+     [:keyword "pwr"]
+     [:field-type
+      [:mode-expr [:symbol "pwrvals"] [:keyword "none"]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword "on"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:keyword "pwr"]]
+        [:cond-operand [:keyword "high"]]]]]
+     [:mode-init
+      [:keyword "off"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:keyword "pwr"]]
+        [:cond-operand [:keyword "none"]]]]]
+     [:mode-init [:keyword "fail"] [:TRUE]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "turn-on"]
+     [:cond-map
+      [:cond [:pre [:keyword "off"]]]
+      [:cond [:post [:keyword "on"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+      [:cond [:doc [:string "turns on the power supply"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "turn-off"]
+     [:cond-map
+      [:cond [:pre [:keyword "on"]]]
+      [:cond [:post [:keyword "off"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+      [:cond [:doc [:string "turns off the power supply"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "reset"]
+     [:cond-map
+      [:cond [:post [:keyword "off"]]]
+      [:cond [:doc [:string "resets the power supply"]]]]
+     [:args]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword "off:on"]
+     [:trans-map
+      [:trans [:pre [:keyword "off"]]]
+      [:trans [:post [:keyword "on"]]]
+      [:trans [:doc [:string "turning on"]]]]]
+    [:transition
+     [:keyword "on:off"]
+     [:trans-map
+      [:trans [:pre [:keyword "on"]]]
+      [:trans [:post [:keyword "off"]]]
+      [:trans [:doc [:string "turning off"]]]]]
+    [:transition
+     [:keyword "*:fail"]
+     [:trans-map
+      [:trans
+       [:probability
+        [:number-ref
+         [:number [:float [:integer "0"] [:integer "0000001"]]]]]]
+      [:trans [:doc [:string "spontaneous switch failure"]]]]]]]]
+ [:defpclass
+  [:symbol "lightvals"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Enum for lighting values"]]]]]
+  [:option
+   [:modes [:mode-enum [:keyword "bright"] [:keyword "dark"]]]]]
+ [:defpclass
+  [:symbol "bulb"]
+  [:args [:symbol "vcc"] [:symbol "vdd"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry
+     [:depends [:dep [:symbol "lightvals"] [:string "0.2.0"]]]]
+    [:meta-entry [:doc [:string "A light bulb"]]]
+    [:meta-entry [:icon [:string "bulb.svg"]]]]]
+  [:option
+   [:fields
+    [:field [:keyword "anode"] [:field-type [:symbol "vcc"]]]
+    [:field [:keyword "cathode"] [:field-type [:symbol "vdd"]]]
+    [:field
+     [:keyword "illumination"]
+     [:field-init
+      [:initial
+       [:field-type
+        [:mode-expr [:symbol "lightvals"] [:keyword "dark"]]]]]
+     [:field-init [:access [:keyword "public"]]]]
+    [:field
+     [:keyword "sensed-illumination"]
+     [:field-init
+      [:initial
+       [:field-type
+        [:mode-expr [:symbol "lightvals"] [:keyword "dark"]]]]]
+     [:field-init [:access [:keyword "public"]]]
+     [:field-init [:observable [:boolean [:TRUE]]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword "on"]
+      [:cond-expr
+       [:and-expr
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:keyword "illumination"]]
+          [:cond-operand [:keyword "bright"]]]]
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:keyword "sensed-illumination"]]
+          [:cond-operand [:keyword "bright"]]]]]]]
+     [:mode-init
+      [:keyword "off"]
+      [:cond-expr
+       [:and-expr
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:keyword "illumination"]]
+          [:cond-operand [:keyword "dark"]]]]
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:keyword "sensed-illumination"]]
+          [:cond-operand [:keyword "dark"]]]]]]]
+     [:mode-init [:keyword "fail"] [:TRUE]]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword "off:on"]
+     [:trans-map
+      [:trans
+       [:pre
+        [:cond-expr
+         [:and-expr
+          [:cond-operand [:keyword "off"]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:keyword "anode"]]
+            [:cond-operand [:keyword "high"]]]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:keyword "sensed-illumination"]]
+            [:cond-operand [:keyword "bright"]]]]]]]]
+      [:trans [:post [:keyword "on"]]]
+      [:trans
+       [:opt-bounds
+        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+      [:trans [:doc [:string "turning on bulb"]]]]]
+    [:transition
+     [:keyword "on:off"]
+     [:trans-map
+      [:trans
+       [:pre
+        [:cond-expr
+         [:and-expr
+          [:cond-operand [:keyword "on"]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:keyword "anode"]]
+            [:cond-operand [:keyword "none"]]]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:keyword "sensed-illumination"]]
+            [:cond-operand [:keyword "dark"]]]]]]]]
+      [:trans [:post [:keyword "off"]]]
+      [:trans
+       [:opt-bounds
+        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+      [:trans [:doc [:string "turning off bulb"]]]]]
+    [:transition
+     [:keyword "*:fail"]
+     [:trans-map
+      [:trans
+       [:probability [:number-ref [:lvar-ctor [:string "pfbulb"]]]]]
+      [:trans [:doc [:string "spontaneous bulb failure"]]]]]]]]
+ [:defpclass
+  [:symbol "circuit1"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry
+     [:depends
+      [:dep [:symbol "psw"] [:string "0.2.1"]]
+      [:dep [:symbol "bulb"] [:string "0.2.1"]]]]
+    [:meta-entry
+     [:doc
+      [:string
+       "An example circuit with a power switch and light bulb"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:keyword "source"]
+     [:field-type [:lvar-ctor [:string "source"]]]]
+    [:field
+     [:keyword "drain"]
+     [:field-type [:lvar-ctor [:string "drain"]]]]
+    [:field
+     [:keyword "bulb1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "bulb"]
+       [:symbol "source"]
+       [:symbol "drain"]
+       [:pclass-ctor-arg [:id [:string "Bulb1"]]]]]]
+    [:field
+     [:keyword "switchedpower"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "psw"]
+       [:symbol "source"]
+       [:symbol "drain"]
+       [:pclass-ctor-arg [:id [:string "PSW1"]]]
+       [:pclass-ctor-arg [:interface [:string "RMQ"]]]]]]]]]]
