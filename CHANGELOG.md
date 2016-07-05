@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Added
+* Added support for new grammar features
+  * slack-sequence
+  * slack-parallel
+  * optional
+  * soft-sequence
+  * soft-parallel
 * Fixed #4 TPN output for delay should create a delay-activity
 * Updated dependencies
 

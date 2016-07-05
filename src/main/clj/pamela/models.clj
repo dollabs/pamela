@@ -23,7 +23,7 @@
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [pamela.pclass :refer :all]
-            [avenir.utils :refer [assoc-if]]))
+            [avenir.utils :refer [assoc-if concatv]]))
 
 ;; pamela functions
 
@@ -279,6 +279,41 @@
       (cons (quote (symbol "sequence"))
         (cons fn-opts safe-body)))))
 
+(defmacro slack-sequence
+  "The forms that constitute body are performed in sequence
+  with flexible spacing in between each function.
+  (slack-sequence fn-opt* fn0 fn1 ...)
+  is equivalent to
+  (sequence fn-opt* (delay) fn0  (delay) fn1 ...  (delay))"
+  {:pamela :models-helper :added "0.2.6"}
+  [& body]
+  (let [[fn-opts body] (get-fn-opts-body true false  body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))
+        {:keys [label bounds cost<= reward>=]} fn-opts
+        opts (if label [:label label] [])
+        opts (if bounds (concatv opts [:bounds bounds]) opts)
+        opts (if cost<= (concatv opts [:cost<= cost<=]) opts)
+        opts (if reward>= (concatv opts [:reward>= reward>=]) opts)
+        slack-body (cons '(delay) (conj (vec (interpose '(delay) safe-body)) '(delay)))]
+    `(sequence ~@opts ~@slack-body)))
+
+(defmacro soft-sequence
+  "The forms that constitute body are optionally performed
+  (soft-sequence fn-opt* fn0 fn1 ...)
+  is equivalent to
+  (sequence fn-opt* (optional fn0) (optional fn1) ...)"
+  {:pamela :models-helper :added "0.2.6"}
+  [& body]
+  (let [[fn-opts body] (get-fn-opts-body true false  body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))
+        {:keys [label bounds cost<= reward>=]} fn-opts
+        opts (if label [:label label] [])
+        opts (if bounds (concatv opts [:bounds bounds]) opts)
+        opts (if cost<= (concatv opts [:cost<= cost<=]) opts)
+        opts (if reward>= (concatv opts [:reward>= reward>=]) opts)
+        soft-body (map #(list 'optional %) safe-body)]
+    `(sequence ~@opts ~@soft-body)))
+
 (defmacro parallel
   "The forms that constitute body are performed in parallel
   within the specified time bounds. The form will exit with failure
@@ -290,6 +325,41 @@
     (cons 'list
       (cons (quote (symbol "parallel"))
         (cons fn-opts safe-body)))))
+
+(defmacro slack-parallel
+  "The forms that constitute body are performed in parallel
+  with flexible spacing in between each function.
+  (slack-parallel fn-opt* fn0 fn1 ...)
+  is equivalent to
+  (parallel fn-opt* (slack-sequence fn0) (slack-sequence fn1) ...)"
+  {:pamela :models-helper :added "0.2.0"}
+  [& body]
+  (let [[fn-opts body] (get-fn-opts-body true false  body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))
+        {:keys [label bounds cost<= reward>=]} fn-opts
+        opts (if label [:label label] [])
+        opts (if bounds (concatv opts [:bounds bounds]) opts)
+        opts (if cost<= (concatv opts [:cost<= cost<=]) opts)
+        opts (if reward>= (concatv opts [:reward>= reward>=]) opts)
+        slack-body (map #(list 'slack-sequence %) safe-body)]
+    `(parallel ~@opts ~@slack-body)))
+
+(defmacro soft-parallel
+  "The forms that constitute body are optionally performed in parallel
+  (soft-parallel fn-opt* fn0 fn1 ...)
+  is equivalent to
+  (parallel fn-opt* (optional fn0) (optional fn1) ...)"
+  {:pamela :models-helper :added "0.2.0"}
+  [& body]
+  (let [[fn-opts body] (get-fn-opts-body true false  body)
+        safe-body (replace-pamela-args (replace-pamela-calls body))
+        {:keys [label bounds cost<= reward>=]} fn-opts
+        opts (if label [:label label] [])
+        opts (if bounds (concatv opts [:bounds bounds]) opts)
+        opts (if cost<= (concatv opts [:cost<= cost<=]) opts)
+        opts (if reward>= (concatv opts [:reward>= reward>=]) opts)
+        soft-body (map #(list 'optional %) safe-body)]
+    `(parallel ~@opts ~@soft-body)))
 
 (defmacro choose
   "One of the choices will be taken either to maximize reward, minimise
@@ -308,6 +378,22 @@
     (cons 'list
       (cons (quote (symbol "choose"))
         (cons fn-opts safe-choices)))))
+
+(defmacro optional
+  "Optionally execute the fn.
+  (optional fn-opt* fn)
+  is equivalent to
+  (choose fn-opt* (choice (delay :bounds [0 0])) (choice fn))"
+  {:pamela :models-helper :added "0.2.6"}
+  [& fn]
+  (let [[fn-opts fn] (get-fn-opts-body true false fn)
+        safe-fn (replace-pamela-args (replace-pamela-calls fn))
+        {:keys [label bounds cost<= reward>=]} fn-opts
+        opts (if label [:label label] [])
+        opts (if bounds (concatv opts [:bounds bounds]) opts)
+        opts (if cost<= (concatv opts [:cost<= cost<=]) opts)
+        opts (if reward>= (concatv opts [:reward>= reward>=]) opts)]
+    `(choose ~@opts (choice (delay :bounds [0 0])) (choice ~@safe-fn))))
 
 (defn expect-number-or-lvar
   "Verify the value for param is a number or lvar. (helper function)"
