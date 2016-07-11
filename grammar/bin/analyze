@@ -50,6 +50,7 @@ if [ -n "$file" ]; then
     parsetree="${file%%.pamela}.txt"
 else
     echo "Analyzing PAMELA regression files..."
+    rm -rf "$analysis"
 fi
 lein run $args
 

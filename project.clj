@@ -4,14 +4,14 @@
 ;; Apache License, Version 2.0 which can be found in
 ;; the file LICENSE at the root of this distribution.
 
-;;; Acknowledgement and Disclaimer:
-;;; This material is based upon work supported by the Army Contracting
-;;; and DARPA under contract No. W911NF-15-C-0005.
-;;; Any opinions, findings and conclusions or recommendations expressed
-;;; in this material are those of the author(s) and do necessarily reflect the
-;;; views of the Army Contracting Command and DARPA.
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
 
-(defproject pamela "0.2.6"
+(defproject pamela "0.3.0"
   :description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)"
   :url "https://github.com/dollabs/pamela"
   :scm {:url "https://github.com/dollabs/pamela.git"}
@@ -19,7 +19,7 @@
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.4.0-alpha1"]
+                 [com.taoensso/timbre "4.5.1"]
                  [org.slf4j/slf4j-api "1.7.21"]
                  [com.fzakaria/slf4j-timbre "0.3.2"]
                  [avenir "0.2.1"]
@@ -27,7 +27,7 @@
                   :exclusions [org.clojure/clojure]]
                  ;; -------
                  [org.clojure/clojurescript "1.9.36" :scope "provided"]
-                 [org.clojure/core.async "0.2.374"]
+                 [org.clojure/core.async "0.2.385"]
                  [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
                  [environ "1.0.3"]
@@ -35,14 +35,14 @@
                  [clj-http "3.1.0"]
                  [clojurewerkz/elastisch "2.2.1" :exclusions [clj-http]]
                  [aleph "0.4.2-alpha4"]
-                 [clj-time "0.11.0"]
-                 [ring "1.4.0" :exclusions [clj-time]]
-                 [ring/ring-defaults "0.2.0"]
-                 [compojure "1.5.0" :exclusions [commons-codec]]
+                 [clj-time "0.12.0"]
+                 [ring "1.5.0" :exclusions [clj-time]]
+                 [ring/ring-defaults "0.2.1"]
+                 [compojure "1.5.1" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
-                 [cljsjs/react-dom-server "15.1.0-0"]  ;; for sablono
-                 [cljsjs/react-dom "15.1.0-0"] ;; for sablono
+                 [cljsjs/react-dom-server "15.2.0-0"]  ;; for sablono
+                 [cljsjs/react-dom "15.2.0-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha36"]
                  [sablono "0.7.2"]
                  [cljs-http "0.1.41"]

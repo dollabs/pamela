@@ -27,13 +27,24 @@
             [clojure.set :as set]
             [environ.core :refer [env]]
             [pamela.utils :refer [make-url get-url]]
-            [avenir.utils :refer [and-fn assoc-if]])
-  (:import [clojure.lang Symbol PersistentList]))
+            [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]])
+  (:import [clojure.lang
+            Symbol PersistentList PersistentArrayMap]))
 
 ;; generic functions
 
-(defn boolean? [x]
+(defn boolean?
+  "Returns true of x is either true or false"
+  {:added "0.e.0"}
+  [x]
   (or (true? x) (false? x)))
+
+(defn list-or-cons?
+  "Returns true of x is a list"
+  {:added "0.2.0"}
+  [x]
+  (or (instance? clojure.lang.PersistentList x)
+    (instance? clojure.lang.Cons x)))
 
 ;; current values of lvar's -------------------------------
 
@@ -58,12 +69,95 @@
   NOTE: as this is a dynamic var it can be used with **binding**"
   (atom []))
 
-(def valid-meta-keys #{:version :icon :depends :doc})
+(def #^{:added "0.3.0"}
+  valid-defpclass-opts
+  "Valid options for defpclass"
+  #{:meta :inherit :fields :modes :methods :transitions})
 
-(def default-bounds [0 :infinity])
+(def #^{:added "0.3.0"}
+  valid-meta-keys
+  "Valid keys for the defpclass :meta map"
+  #{:version :icon :depends :doc})
+
+(def #^{:added "0.3.0"}
+  valid-pclass-ctor-opts
+  "Valid pclass constructor options"
+  #{:id :interface})
+
+(def #^{:added "0.3.0"}
+  default-bounds
+  "Default bounds"
+  [0 :infinity])
+
+(def #^{:added "0.3.0"}
+  pclass-types
+  "Set of valid pclass types"
+  #{:pclass :pclass-enumeration})
+
+(def #^{:added "0.3.0"}
+  pamela-reserved-words
+  "Reserved words in the PAMELA language"
+  #{"access"
+    "and"
+    "ask"
+    "assert"
+    "between"
+    "between-ends"
+    "between-starts"
+    "bounds"
+    "catch"
+    "choice"
+    "choose"
+    "controllable"
+    "cost"
+    "defpclass"
+    "defpmethod"
+    "delay"
+    "depends"
+    "doc"
+    "false"
+    "fields"
+    "guard"
+    "icon"
+    "id"
+    "implies"
+    "infinity"
+    "inherit"
+    "initial"
+    "interface"
+    "label"
+    "lvar"
+    "maintain"
+    "meta"
+    "methods"
+    "modes"
+    "mode-of"
+    "not"
+    "observable"
+    "optional"
+    "or"
+    "parallel"
+    "pclass"
+    "post"
+    "pre"
+    "probability"
+    "reward"
+    "sequence"
+    "slack-parallel"
+    "slack-sequence"
+    "soft-parallel"
+    "soft-sequence"
+    "tell"
+    "transitions"
+    "true"
+    "try-form"
+    "unless"
+    "version"
+    "when"
+    "whenever"})
 
 (defn get-model-vars
-  "Return models."
+  "Return models has a map from symbol -> var."
   {:pamela :models-helper :added "0.2.0"}
   ([]
    (get-model-vars true))
@@ -75,9 +169,8 @@
                              nse (get me :ns)
                              pamela (get me :pamela)]
                          (and (= nse models-ns) (ptype= pamela :models-helper))))
-         ;; models (filter only-models (.getMappings models-ns))]
          models (filter only-models (ns-publics models-ns))]
-     (reduce (fn [m kv] (assoc m (first kv) (second kv))) {} models))))
+     (reduce (fn [m [k v]] (assoc m k v)) {} models))))
 
 (defn list-models
   "Return a vector of model symbols.
@@ -103,8 +196,8 @@
 (defn delete-all-models
   "Removes all models (from the pamela.models namespace)."
   {:pamela :models-helper :added "0.2.0"}
-  []
-  (doseq [model (list-models)]
+  [& [all?]]
+  (doseq [model (list-models (not all?))]
     (delete-model model)))
 
 (defn get-model-var
@@ -124,25 +217,9 @@
           model-var (get models model-name)
           _ (if (and (not exists?) (nil? model-var))
               (throw (AssertionError.
-                       (str "new-class: model-name does not exist: " model-name "\n"))))]
+                       (str "new-class: model-name does not exist: "
+                         model-name "\n"))))]
       model-var)))
-
-(defn get-helper-var
-  "FIXME Return a model var by symbol (or name)
-
-   If the second argument is true simply return nil
-   if the model-var does not exist."
-  {:pamela :models-helper :added "0.2.0"}
-  [helper-name]
-  (if (nil? helper-name)
-    (throw (AssertionError. "cannot get-helper-var for nil\n"))
-    (let [helper-name (if (symbol? helper-name) helper-name (symbol helper-name))
-          ;; the following doesn't work with late binding
-          ;; helper-var (resolve helper-name)
-          ;; instead we'll query the namespace here...
-          helpers (get-model-vars false)
-          helper-var (get helpers helper-name)]
-      helper-var)))
 
 (defn get-model
   "Return a model by symbol (or name)
@@ -186,7 +263,72 @@
   [v]
   (instance? pamela.pclass.LVar v))
 
-(declare pclass?)
+(defn pclass?
+  "Returns true if pclass is an pclass."
+  {:pamela :models-helper :added "0.2.0"}
+  [pclass]
+  (cond
+    (or (nil? pclass) (lvar? pclass))
+    false
+    (map? pclass) ;; this is an instance
+    (let [p (:pclass pclass)
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (boolean (pclass-types (:pamela model-meta))))
+    (fn? pclass) ;; a pclass function
+    (let [p (:name (meta pclass))
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (boolean (pclass-types (:pamela model-meta))))
+    (or (symbol? pclass) (string? pclass))
+    (let [p (symbol pclass)
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (boolean (pclass-types (:pamela model-meta))))
+    :else
+    false))
+
+(defn pclass-instance?
+  "Returns true if pclass is an instance pclass."
+  {:pamela :models-helper :added "0.2.0"}
+  [pclass]
+  (cond
+    (or (nil? pclass) (lvar? pclass))
+    false
+    (and (map? pclass) (:pclass pclass)) ;; this is an instance
+    (let [p (:pclass pclass)
+          pvar (get-model-var p)
+          model-meta (meta pvar)
+          ;;_ (print "PVAR nil?" (nil? pvar) "MM>" model-meta "<MM")
+          ]
+      (boolean (pclass-types (:pamela model-meta))))
+    :else
+    false))
+
+(defn enumeration-pclass?
+  "Returns true if pclass is an enumeration class."
+  {:pamela :models-helper :added "0.2.0"}
+  [pclass]
+  (cond
+    (or (nil? pclass) (lvar? pclass))
+    false
+    (map? pclass) ;; this is an instance
+    (let [p (:pclass pclass)
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (= (:pamela model-meta) :pclass-enumeration))
+    (fn? pclass) ;; a pclass function
+    (let [p (:name (meta pclass))
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (= (:pamela model-meta) :pclass-enumeration))
+    (or (symbol? pclass) (string? pclass))
+    (let [p (symbol pclass)
+          pvar (get-model-var p)
+          model-meta (meta pvar)]
+      (= (:pamela model-meta) :pclass-enumeration))
+    :else
+    false))
 
 (defn lvar-or-pclass?
   "Return true of x is a lvar or pclass"
@@ -201,68 +343,31 @@
   [v value]
   (let [lvar-name (if (lvar? v) (:lvar v) v)
         lvar-value (get-in @*world* [:lvars lvar-name])]
-    ;; (println "set-mode!" lvar-name "(lvar?" (lvar? lvar-value)
-    ;;   ") from" lvar-value "to" value)
     (if (lvar? lvar-value)
       (set-mode! lvar-value value)
-      (let []
-        ;; (println "set-mode!" lvar-name value)
-        (if (string? lvar-name)
-          (swap! *world* assoc-in [:lvars lvar-name] value))))))
+      (if (string? lvar-name)
+        (swap! *world* assoc-in [:lvars lvar-name] value)))))
 
 ;; get an lvar value or pclass mode
-(defn mode
+(defn mode-of
   "Get the current value for a LVar or pclass *(assigned :mode)*."
-  {:added "0.2.0" :doc/format :markdown}
+  {:added "0.2.0" :doc/format :markdown
+   :pamela :pclass-builder}
   [x]
   (let [value
         (if (or (lvar? x) (string? x))
           (let [lvar-name (if (lvar? x) (:lvar x) x)]
             (get-in @*world* [:lvars lvar-name]))
-          (if (pclass? x)
-            (:mode x)))]
+          (if (pclass-instance? x)
+            [(:pclass x) (:mode x)]))]
     (if (lvar? value)
-      (mode value)
+      (mode-of value)
       value)))
-
-(defn get-field
-  "Return field in pclass"
-  {:added "0.2.0"}
-  [pclass field]
-  (if (map? pclass)
-    (get-in pclass [:fields field])))
-
-;; a function taking the pclass
-;; which will return pclass if the field in pclass == value
-;; if pclass is false or nil return false
-(defn field=
-  "Return pclass (true) if field in pclass = val, otherwise returns false.
-
-   As the pclass itself is returned these functions maybe
-   combined in the treading macro -> to form an effective logical and.
-
-   Consider a lambda function which takes a pclass as an argument:
-   #(-> %
-      (field= :illumination :bright)
-      (field= :sensed-illumination :bright))
-   Will return pclass (true) if both :illumination and :sensed-illumination
-   fields have the value :bright.
-
-   A logical or could be constructed as follows:
-   #(or
-      (field= % :illumination :bright)
-      (field= % :sensed-illumination :bright))"
-  {:added "0.2.0"}
-  [pclass field value]
-  (if (map? pclass)
-    (if (= (mode (get-field pclass field)) value)
-      pclass
-      false)
-    false))
 
 ;; returns true of pclass is in mode
 (defn in-mode?
-  "Return true if pclass is determined to be in mode *(mode function evaluated)*."
+  "Return true if pclass is determined to be in mode
+*(mode-of function evaluated)*."
   {:tag Boolean :added "0.2.0" :doc/format :markdown}
   [pclass mode]
   (let [f (get-in pclass [:modes mode])]
@@ -296,171 +401,135 @@
           n1
           p1)))))
 
-(defn mode=
-  "Return pclass (true) if pclass mode = value, otherwise returns false.
-
-   As the pclass itself is returned these functions maybe
-   combined in the treading macro -> to form an effective logical and.
-
-   Consider a lambda function which takes a pclass as an argument:
-   #(-> %
-      (mode= :off)
-      (field= :anode :none)
-      (field= :sensed-illumination :dark))
-   Will return pclass (true) if the :off mode function for pclass
-   is true and the :anode field mode is and the :sensed-illumination
-   field is :dark."
-  {:added "0.2.0"}
-  [pclass mode value]
-  (if (map? pclass)
-    (let [assigned-mode (mode pclass)
-          determined-mode (determine-mode pclass)
-          pclass-mode (or assigned-mode determined-mode)]
-      (if (= pclass-mode value)
-        pclass
-        false)
-      false)))
-
 (defn validate-meta-depend
   "A defpclass helper: validate meta data dependency."
   {:added "0.2.0"}
-  [depend]
+  [pclass-name depend]
   (if-not (vector? depend)
-    (throw (AssertionError. (str "defpclass meta :depends component must be a vector (not \"" depend "\")")))
+    (throw
+      (AssertionError.
+        (str "defpclass " pclass-name
+          " meta :depends component must be a vector (not \"" depend "\")")))
     (if-not (= 2 (count depend))
-      (throw (AssertionError. (str "defpclass meta :depends component must be a vector of length 2")))
+      (throw
+        (AssertionError.
+          (str "defpclass " pclass-name
+            " meta :depends component must be a vector of length 2")))
       (let [pclass (first depend)
             version (second depend)]
         (when-not (symbol? pclass)
-          (throw (AssertionError. (str "defpclass meta :depends entry must start with a symbol (not \"" pclass "\")"))))
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :depends entry must start with a symbol (not \""
+                pclass "\")"))))
         (when-not (string? version)
-          (throw (AssertionError. (str "defpclass meta :depends entry must end with a string (not \"" version "\")"))))
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :depends entry must end with a string (not \""
+                version "\")"))))
         (let [p (get-model-var pclass true)
               pclass-version (if p (:version (meta p)))]
           (clj/when (nil? p)
-            (throw (AssertionError. (str "defpclass meta :depends upon a non-existent model: " pclass))))
+            (throw
+              (AssertionError.
+                (str "defpclass " pclass-name
+                  " meta :depends upon a non-existent model: " pclass))))
           (when-not (= version pclass-version)
-            (throw (AssertionError. (str "defpclass meta :depends upon "
-                                      depend " but the available version is: \""
-                                      pclass-version "\""))))
+            (throw
+              (AssertionError.
+                (str "defpclass " pclass-name
+                  " meta :depends upon " depend
+                  " but the available version is: \"" pclass-version "\""))))
           [(list 'quote pclass) version])))))
 
 (defn validate-meta-kv
   "A defpclass helper: validate meta data key and value."
   {:added "0.2.0"}
-  [m k v]
-  (when-not (contains? valid-meta-keys k)
-    (throw (AssertionError. (str "defpclass meta key \"" k "\" invalid, must be one of: " valid-meta-keys))))
-  (case k
-    :version
-    (do
-      (when-not (string? v)
-        (throw (AssertionError. (str "defpclass meta :version must be a string (not \"" v "\")"))))
-      (assoc m k v))
-    :doc
-    (do
-      (when-not (string? v)
-        (throw (AssertionError. (str "defpclass meta :doc must be a string (not \"" v "\")"))))
-      (assoc m k v))
-    :depends
-    (do
-      (when-not (vector? v)
-        (throw (AssertionError. (str "defpclass meta :depends must be a vector (not \"" v "\")"))))
-      (assoc m k (mapv validate-meta-depend v)))
-    :icon
-    (do
-      (when-not (string? v)
-        (throw (AssertionError. (str "defpclass meta :icon must be a pathname string (not \"" v "\")"))))
-      (let [abs-path (if (.startsWith v "/")
-                       v ;; absolute
-                       (str (:user-dir env) "/" v)) ;; relative
-            path-file (as-file abs-path)
-            icon (if (.exists path-file)
-                   (str (as-url path-file))
-                   (if-let [url *url*]
-                     (let [url (as-url url)
-                           protocol (.getProtocol url)
-                           host  (.getHost url)
-                           port  (.getHost url)
-                           path (.getPath url)
-                           sibling (as-file (str (.getParent (as-file path)) "/" v))]
-                       (if (and (= protocol "file") (.exists sibling))
-                         (str (as-url sibling))
-                         (let [icon-url (make-url protocol host port (.getPath sibling))
-                               icon-data (get-url icon-url)]
-                           (if icon-data
-                             (str icon-url)))))))]
-        (assoc m :icon (or icon "file:///tmp/unknown.icon"))))))
+  [pclass-name]
+  (fn [m k v]
+    (when-not (contains? valid-meta-keys k)
+      (throw
+        (AssertionError.
+          (str "defpclass " pclass-name
+            " meta key \"" k "\" invalid, must be one of: " valid-meta-keys))))
+    (case k
+      :version
+      (do
+        (when-not (string? v)
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :version must be a string (not \"" v "\")"))))
+        (assoc m k v))
+      :doc
+      (do
+        (when-not (string? v)
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :doc must be a string (not \"" v "\")"))))
+        (assoc m k v))
+      :depends
+      (do
+        (when-not (vector? v)
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :depends must be a vector (not \"" v "\")"))))
+        (assoc m k (mapv (partial validate-meta-depend pclass-name) v)))
+      :icon
+      (do
+        (when-not (string? v)
+          (throw
+            (AssertionError.
+              (str "defpclass " pclass-name
+                " meta :icon must be a pathname string (not \"" v "\")"))))
+        (let [abs-path (if (.startsWith v "/")
+                         v ;; absolute
+                         (str (:user-dir env) "/" v)) ;; relative
+              path-file (as-file abs-path)
+              icon (if (.exists path-file)
+                     (str (as-url path-file))
+                     (if-let [url *url*]
+                       (let [url (as-url url)
+                             protocol (.getProtocol url)
+                             host  (.getHost url)
+                             port  (.getHost url)
+                             path (.getPath url)
+                             sibling (as-file
+                                       (str (.getParent (as-file path)) "/" v))]
+                         (if (and (= protocol "file") (.exists sibling))
+                           (str (as-url sibling))
+                           (let [icon-url (make-url
+                                            protocol host port
+                                            (.getPath sibling))
+                                 icon-data (get-url icon-url)]
+                             (if icon-data
+                               (str icon-url)))))))]
+          (assoc m :icon (or icon "file:///tmp/unknown.icon")))))))
 
 (defn validate-meta
   "A defpclass helper: validate meta data."
   {:added "0.2.0"}
-  [meta]
+  [pclass-name meta]
   (if (nil? meta)
     {}
     (do
       (when-not (map? meta)
         (throw (AssertionError. "defpclass :meta must be a map")))
-      (reduce-kv validate-meta-kv {} meta))))
-
-(def pamela-reserved-words
-  #{"access"
-    "and"
-    "ask"
-    "assert"
-    "between"
-    "between-ends"
-    "between-starts"
-    "bounds"
-    "catch"
-    "choice"
-    "choose"
-    "condition"
-    "cost"
-    "defpclass"
-    "defpmethod"
-    "delay"
-    "depends"
-    "doc"
-    "false"
-    "field="
-    "fields"
-    "guard"
-    "icon"
-    "id"
-    "implies"
-    "infinity"
-    "initial"
-    "label"
-    "lvar"
-    "maintain"
-    "meta"
-    "methods"
-    "mode="
-    "modes"
-    "not"
-    "observable"
-    "or"
-    "parallel"
-    "pclass"
-    "probability"
-    "reward"
-    "sequence"
-    "tell"
-    "transitions"
-    "true"
-    "try-form"
-    "unless"
-    "version"
-    "when"
-    "whenever"})
+      (reduce-kv (validate-meta-kv pclass-name) {} meta))))
 
 (defn validate-name
   "A defpclass/defpmethod helper: validate name is not a reserved word."
   {:added "0.2.0"}
   [name]
   (if (pamela-reserved-words (str name))
-    (throw (AssertionError. (str "cannot define a pclass or pmethod with the reserved word: " name)))))
+    (throw
+      (AssertionError.
+        (str "cannot define a pclass or pmethod with the reserved word: "
+          name)))))
 
 (defn validate-args
   "A defpclass/defpmethod helper: validate args is a vector of symbols."
@@ -471,76 +540,358 @@
   (clj/when (not (or (empty? args) (reduce and-fn (map symbol? args))))
     (throw (AssertionError. (str "All " call " args must be symbols")))))
 
+
+(defn get-pclass-meta
+  "Returns the meta data for a symbol in 'pamela.models or 'pamela.pclass
+if found, else nil"
+  {:added "0.2.0"}
+  [pclass]
+  (let [pclass-sym (symbol (str pclass))
+        pclass-var (or (get-model-var pclass-sym true)
+                     (ns-resolve 'pamela.pclass pclass-sym))]
+    (if pclass-var
+      (meta pclass-var))))
+
+(defn valid-mode-of?
+  "Validate initial mode in mode-of expression"
+  {:added "0.2.0"}
+  [pclass initial]
+  (let [modes (:modes (get-pclass-meta pclass))]
+    (if modes
+      (modes initial))))
+
+(defn get-field
+  "Return the initial value of a field in a pclass instance"
+  {:added "0.2.0"}
+  [pclass field]
+  (if (pclass-instance? pclass)
+    (get-in pclass [:fields field :initial])))
+
+(defn get-field-modes
+  "Return a list of (mode-of pclass :mode-of-pclass) for
+this field initializer value"
+  {:added "0.2.0"}
+  [val]
+  (if (and (map? val) (:initial val))
+    (get-field-modes (:initial val))
+    (if-not (symbol? val) ;; ignore symbols
+      (if (pclass-instance? val)
+        (let [pclass (:pclass val)
+              modes (keys (:modes val))]
+          (doall (map #(list 'mode-of pclass %) modes)))
+        (if (list-or-cons? val)
+          (let [v0 (first val)
+                v1 (second val)
+                pclass (if (= 'mode-of v0) v1 v0)
+                modes (:modes (get-pclass-meta pclass))]
+            (map #(list 'mode-of pclass %) modes))
+          ;; (println "UNKNOWN field modes for" val)
+          )))))
+
+;; returns [field-names field-modes]
+;; where field-names is a set of the field name keywords
+;; and field-modes is set of (mode-of pclass :mode-for-pclass)
 (defn validate-fields
   "A defpclass helper: validate fields are one of: args, lvars, pclass, pclass-builder."
   {:added "0.2.0"}
   [args fields]
-  (doseq [field fields]
-    (let [k (first field)
-          v (second field)]
-      (condp #(= %1 %2) (type v)
-        Symbol ;; must be in the args to defpclass
-        (clj/when (not-any? #(= v %) args)
+  (let [fields-seq (seq fields)]
+    (loop [field-names #{} field-modes '()
+           field-val (first fields-seq) more (rest fields-seq)]
+      (if-not field-val
+        [field-names (set field-modes)]
+        (let [[field val] field-val
+              field-ms (remove nil? (get-field-modes val))]
+        (if-not (keyword? field)
           (throw (AssertionError.
-                   (str "Symbol " v " not in args " args))))
-        PersistentList  ;; must be a lvar, pclass or pclass builder
-        (let [f (first v)
-              pamela (:pamela (meta (eval (list 'var (symbol (str f))))))]
-          (when-not pamela
+                   (str "field name " field " must be a keyword"))))
+        (condp #(= %1 %2) (type val)
+          Symbol ;; must be in the args to defpclass
+          (if (not-any? #(= val %) args)
             (throw (AssertionError.
-                     (str "Function " (first v) " does not return an lvar or pclass")))))
+                     (str "Symbol " val " not in args " args))))
+          PersistentList  ;; must be a lvar or pclass ctor
+          (let [f (first val)
+                pamela? (:pamela (get-pclass-meta f))
+                [pclass initial] (if (and pamela? (= f 'mode-of)) (rest val))]
+            (if (and pclass initial (not (valid-mode-of? pclass initial)))
+              (throw (AssertionError.
+                       (str "mode-of " pclass
+                         " specfies illegal initial mode: " initial))))
+            (if-not pamela?
+              (throw (AssertionError.
+                       (str "Function " f
+                         " does not return an lvar or pclass")))))
+          PersistentArrayMap
+          (doseq [[fik fiv] (seq val)]
+            (case fik
+              :initial
+              (condp #(= %1 %2) (type fiv)
+                Symbol ;; must be in the args to defpclass
+                (if (not-any? #(= fiv %) args)
+                  (throw (AssertionError.
+                           (str "Symbol " fiv " not in args " args))))
+                PersistentList  ;; must be a lvar or pclass ctor
+                (let [f (first fiv)
+                      pamela? (:pamela (get-pclass-meta f))
+                      [pclass initial]
+                      (if (and pamela? (= f 'mode-of)) (rest fiv))]
+                  (if (and pclass initial (not (valid-mode-of? pclass initial)))
+                    (throw (AssertionError.
+                             (str "mode-of " pclass
+                               " specfies illegal initial mode: " initial))))
+                  (if-not pamela?
+                    (throw (AssertionError.
+                             (str "Function " f
+                               " does not return an lvar or pclass")))))
+                (throw (AssertionError.
+                         (str "Field initializer :initial" fiv
+                           " is not an arg nor returns an lvar or pclass"))))
+              :access
+              (if-not (#{:public :private} fiv)
+                (throw
+                  (AssertionError.
+                    (str "Field initializer :access must be :public or :private, not: " fiv))))
+              :observable
+              (if-not (or (true? fiv) (false? fiv))
+                (throw
+                  (AssertionError.
+                    (str "Field initializer :observable must boolean, not: "
+                      fiv))))
+              ;; :else
+              (throw (AssertionError.
+                       (str "Field initializer key is not valid: " fik)))))
+          (throw
+            (AssertionError.
+              (str "Field initializer " val
+                " is not an arg nor returns an lvar or pclass nor is a field initialzer map"))))
+        (recur (conj field-names field) (concat field-modes field-ms)
+          (first more) (rest more)))))))
+
+(defn parse-cond-operand
+  "Disambiguates an operand to a cond-expr using the field-names and field-modes.
+Returns nil if undetermined."
+  {:added "0.3.0"}
+  [args field-names field-modes operand]
+  (let [rv
+        (if (keyword? operand)
+          (if (field-names operand)
+            (list operand 'this)
+            (let [matches (filter #(= operand (nth % 2)) field-modes)]
+              (if (= 1 (count matches))
+                (first matches)
+                ;; NOTE lvar problem, must use explicit mode-of
+                )))
+          (if (list-or-cons? operand)
+            (let [[op pclass mode] operand
+                  modes (if (and pclass mode)
+                          (:modes (get-pclass-meta pclass)))]
+              (if (and (keyword? op) (symbol? pclass) (nil? mode))
+                (if (or (= pclass 'this) (some #(= pclass %) args))
+                  (list op pclass))
+                (if (and (= op 'mode-of) (modes mode))
+                  (list 'mode-of pclass mode))))))]
+    ;; (println "  PCO=>" rv)
+    rv))
+
+(defn parse-cond-expr
+  "Parses and disambiguates a cond-expr using the field-names and field-modes.
+Returns nil if undetermined."
+  {:added "0.3.0"}
+  [args field-names field-modes condition]
+  (let [rv
+        (if (keyword? condition) ;; FIXME condition must be a valid mode
+          (list 'mode-of 'this condition)
+          (if (and (list-or-cons? condition) (symbol? (first condition)))
+            (let [op (first condition)]
+              (if (#{'and 'or 'implies 'not} op)
+                (let [operands (doall (map (partial parse-cond-expr args
+                                             field-names field-modes)
+                                        (rest condition)))]
+                  (if-not (or (some nil? operands)
+                            (and (= op 'not) (> 1 (count operands))))
+                    (cons op operands)))
+                (if (= op '=)
+                  (let [operands (doall (mapv (partial parse-cond-operand args
+                                                field-names field-modes)
+                                          (rest condition)))]
+                    (if (some nil? operands)
+                      (throw
+                        (AssertionError.
+                          (str "operand for conditional expression invalid: "
+                            (nth condition (inc (vec-index-of operands nil))))))
+                      (cons op operands))))))))]
+    ;; (println "  PCE=>" rv)
+    rv))
+
+(defn validate-options
+  "A helper class to validate options given to defpclass or a pclass constructor"
+  {:added "0.3.0"}
+  [call-site valid-options options]
+  (if (and options (even? (count options)))
+    (doseq [opt (take-nth 2 options)]
+      (if-not (keyword? opt)
         (throw (AssertionError.
-                 (str "Field value " v " is not an arg nor returns an lvar or pclass")))))))
+                 (str call-site " option is not a keyword: " opt))))
+      (if-not (valid-options opt)
+        (throw (AssertionError.
+                 (str call-site " option is not valid: " opt
+                   ", must be one of: " valid-options)))))))
+
+(defn validate-superclasses
+  "Future support for inheritence. Current throws an exception"
+  {:added "0.3.0"}
+  [inherit]
+  (if inherit
+    (throw (AssertionError.
+             (str "superclasses not yet supported: " inherit)))))
+
+(defn validate-modes
+  "A defpclass helper: validate modes"
+  {:added "0.2.0"}
+  [args field-names field-modes modesmap]
+  (doseq [[mode condition] modesmap]
+    (let [condition (or (true? condition)
+                      (parse-cond-expr args field-names field-modes
+                        condition))]
+      (if-not condition
+        (throw (AssertionError.
+                 (str "condition for mode " mode " invalid: " condition)))))))
+
+(defn validate-transitions
+  "A defpclass helper: validate transitions"
+  {:added "0.2.0"}
+  [args field-names field-modes valid-modes transitions]
+  (doseq [transition transitions]
+    (let [[fromto trans-map] transition
+          [from to] (map keyword (string/split (name fromto) #":"))
+          {:keys [pre post probability]} trans-map
+          pre (or (nil? pre)
+                (and (keyword? pre) (valid-modes pre)
+                  (list 'mode-of 'this pre))
+                (parse-cond-expr args field-names field-modes pre))
+          post (or (nil? post)
+                 (and (keyword? post) (valid-modes post)
+                   (list 'mode-of 'this post))
+                 (parse-cond-expr args field-names field-modes post))]
+      (if (and (not= from :*) (not (valid-modes from)))
+        (throw
+          (AssertionError.
+            (str "Invalid transition :FROM:TO \"" fromto
+              "\" where the :FROM is not one of: " valid-modes))))
+      (if (not (valid-modes to))
+        (throw
+          (AssertionError.
+            (str "Invalid transition :FROM:TO \"" fromto
+              "\" where the :TO is not one of: " valid-modes))))
+      (if-not pre
+        (throw
+          (AssertionError.
+            (str "pre-condition for transition " fromto " invalid: " pre))))
+      (if-not post
+        (throw
+          (AssertionError.
+            (str "post-condition for transition " fromto " invalid: " post))))
+      (if (and probability
+            (not (or (and (symbol? probability) (some #(= probability %) args))
+                   (and (list-or-cons? probability)
+                     (= 'lvar (first probability)))
+                   (number? probability))))
+        (throw
+          (AssertionError.
+            (str "probabiliity for transition " fromto
+              " invalid: " probability)))))))
 
 (defn validate-arg-types
   "A defpclass helper: validate (at instanciation time) args are lvars."
   {:added "0.2.0"}
-  [args]
-  (clj/when (not (or (empty? args) (reduce and-fn (map lvar-or-pclass? args))))
-    (throw (AssertionError. "All pclass args must be LVars or pclasses."))))
+  [pclass-name args options]
+  (if-not (empty? args)
+    (loop [arg (first args) more (rest args)]
+      (if-not arg
+        true ;; valid
+        (if (or
+              (and (list-or-cons? arg) (= 'lvar (first arg)))
+              (lvar-or-pclass? arg))
+          (recur (first more) (rest more))
+          (throw (AssertionError.
+                   (str "All pclass args must be LVars or pclasses in: ("
+                     pclass-name
+                     " " (apply str (interpose " "args))
+                     " " (apply str (interpose " " options)) ")"))))))))
 
-;; NOTE: because this function *must* have metadata on the
-;; the var pclass *and* on the function it returns Codox
-;; cannot document this function correctly.
-(defn ^{:pamela :pclass-builder :added "0.2.0"} pclass
-  [& args]
-  "Build the pclass (first arg) during instanciation with (rest args).
+(defn build-fields-pclass
+  "A defpclass helper: resolve arguments to a pclass constructor and invoke it."
+  {:added "0.3.0"}
+  [field-map pclass args]
+  (loop [new-args [] symbols? true arg (first args) more (rest args)]
+    (if-not arg
+      (do
+        (if (= pclass 'mode-of)
+          (first new-args)
+          (apply (ns-resolve 'pamela.models pclass) new-args)))
+      (if (and symbols? (symbol? arg))
+        (if (= pclass 'mode-of) ;; arg is pclass to construct
+          (let [initial (first more)
+                val (assoc ((ns-resolve 'pamela.models arg))
+                      :mode initial)] ;; construct in initial mode
+            (recur (conj new-args val) false nil nil))
+          (let [field (keyword (name arg)) ;; lookup arg symbol
+                val (get-in field-map [field :initial])]
+            (if-not val
+              (throw
+                (AssertionError.
+                  (str "pclass constructor arg " arg
+                    " used before it was defined.")))
+              (recur (conj new-args val) true (first more) (rest more)))))
+          (recur (conj new-args arg) false (first more) (rest more))))))
 
-  For example: (pclass bulb :source :drain)"
-  ^{:pamela :pclass-builder :added "0.2.0"}
-  (fn [p field]
-    (let [v (get-field p field)
-          builder? (fn? v)]
-      (if builder?
-        (let [f (first args)
-              kwargs (rest args)
-              fields (:fields p)
-              fargs (map #(if (keyword? %) (get fields %) %) kwargs)
-              fieldargs (mapv #(if (keyword? %) % nil) kwargs)
-              value (apply f fargs)]
-          (-> p
-            (assoc-in [:fields field] value)
-            (assoc-in [:fieldargs field] fieldargs)))
-        p))))
-
+;; argvals should be a vector
 (defn build-fields
-  "A defpclass helper: call any pclass builders as needed."
+  "A defpclass helper: construct each field."
   {:added "0.2.0"}
-  [pclass]
-  (let [fields (keys (:fields pclass))]
-    (if (pos? (count fields))
-      ((reduce #(comp %1 %2) identity
-         (for [k fields]
-           (let [v (get-field pclass k)]
-             (cond
-               (lvar? v) identity
-               (map? v) identity ;; a pclass instance
-               (and (fn? v) (:pamela (meta v))) ;; :pamela builder fn?
-               (fn [p] (v p k)) ;; call builder
-               :else
-               (throw (AssertionError. (str "Field value " v " illegal")))))))
-       pclass)
-      pclass)))
+  [args argvals fields]
+  (if (pos? (count fields))
+    (loop [field-map {} field-val (first fields) more (rest fields)]
+      (if-not field-val
+        field-map
+        (let [[field val] field-val
+              access :private
+              observable false
+              [initial access observable]
+              (cond
+                (symbol? val) ;; must be an arg
+                [(get argvals (vec-index-of args val)) access observable]
+                (or (lvar? val) (pclass-instance? val))
+                [val access observable]
+                (and (fn? val) (:pamela (meta val))) ;; :pamela builder fn?
+                [(val nil field) access observable] ;; call builder WITHOUT p!!!
+                (list-or-cons? val)
+                (let [p (first val)
+                      pamela? (:pamela (get-pclass-meta p))]
+                  (when-not pamela?
+                    (throw (AssertionError.
+                             (str "Function " p " is not a defined pclass"))))
+                  [(build-fields-pclass field-map p (rest val))
+                   access observable])
+                (map? val)
+                (let [initial (:initial val)
+                      access (or (:access val) access)
+                      observable (or (:observable val) observable)
+                      p (first initial)
+                      pamela? (:pamela (get-pclass-meta p))]
+                  (when-not pamela?
+                    (throw (AssertionError.
+                             (str "Function " p " is not a defined pclass"))))
+                  [(build-fields-pclass field-map p (rest initial))
+                   access observable])
+                :else
+                (throw (AssertionError. (str "Field value " val " illegal"))))
+              new-val  {:initial initial
+                        :access access
+                        :observable observable}
+              field-map (assoc field-map field new-val)]
+          (recur field-map (first more) (rest more)))))))
 
 (defn build-mode
   "A defpclass helper: build the mode."
@@ -549,22 +900,59 @@
   ^{:added "0.2.0"}
   (assoc-in p [:modes mode] value))
 
+;; early idea: applicative
+;;   each mode should be a function of this pclass instance
+;;   which returns true if it's in the mode
+;; current idea: make explicit symbols that can be output
 (defn build-modes
-  "A defpclass helper: verify modes."
+  "A defpclass helper: disambiguate mode conditions."
   {:added "0.2.0"}
-  [pclass]
-  (let [modes (keys (:modes pclass))]
-    (if (pos? (count modes))
-      ((reduce #(comp %1 %2) identity
-         (for [k modes]
-           (let [v (get-in pclass [:modes k])]
-             (cond
-               (true? v) identity
-               (list? v) (fn [p] (build-mode p k v))
-               :else
-               (throw (AssertionError. (str "Mode value " v " illegal")))))))
-       pclass)
-      pclass)))
+  [args argvals field-names field-modes modesmap]
+  (let [mode-conditions (seq modesmap)]
+    (loop [modesmap {} mode-condition (first mode-conditions)
+           more (rest mode-conditions)]
+      (if-not mode-condition
+        modesmap
+        (let [[mode condition] mode-condition
+              condition (or (true? condition)
+                          (parse-cond-expr args field-names field-modes
+                            condition))
+              modesmap (assoc modesmap mode condition)]
+          (recur modesmap (first more) (rest more)))))))
+
+(defn build-transitions
+  "A defpclass helper: disambiguate pre and post conditions."
+  {:added "0.2.0"}
+  [args argvals field-names field-modes valid-modes transitions]
+  (let [fromto-trans-maps (seq transitions)]
+    (loop [transmap {} fromto-trans-map (first fromto-trans-maps)
+           more (rest fromto-trans-maps)]
+      (if-not fromto-trans-map
+        transmap
+        (let [[fromto trans-map] fromto-trans-map
+              {:keys [pre post probability]} trans-map
+              pre (or (nil? pre)
+                    (and (keyword? pre) (valid-modes pre)
+                      (list 'mode-of 'this pre))
+                    (parse-cond-expr args field-names field-modes pre))
+              post (or (nil? post)
+                     (and (keyword? post) (valid-modes post)
+                       (list 'mode-of 'this post))
+                     (parse-cond-expr args field-names field-modes post))
+              probability (if probability
+                            (cond
+                              (number? probability)
+                              probability
+                              (symbol? probability)
+                              (get argvals (vec-index-of args probability))
+                              :else
+                              (lvar (second probability))))
+              trans-map (assoc-if trans-map
+                          :pre (if-not (true? pre) pre)
+                          :post (if-not (true? post) post)
+                          :probability probability)
+              transmap (assoc transmap fromto trans-map)]
+          (recur transmap (first more) (rest more)))))))
 
 (defn validate-label-fn
   "Validate label"
@@ -584,13 +972,6 @@
                        (str "label " label " defined multiple times "
                          " in pclass: " pclass-name " method: " m "\n")))))))
       form)))
-
-(defn list-or-cons?
-  "Returns true of x is a list"
-  {:added "0.2.0"}
-  [x]
-  (or (instance? clojure.lang.PersistentList x)
-    (instance? clojure.lang.Cons x)))
 
 (defn validate-labels
   "Validate labels"
@@ -623,24 +1004,28 @@
 (defn build-method
   "A defpclass helper: build the method."
   {:pamela :pclass-builder-fn :added "0.2.0"}
-  [pclass method]
+  [field-names field-modes valid-modes pclass method]
   (let [[m f] (first (seq method))
-        {:keys [pre post bounds doc betweens body]} f]
-    (clj/when (and pre (or (not (keyword? pre))
-                         (nil? (get-in pclass [:modes pre]))))
-      (throw (AssertionError.
-               (str "pclass: " (:pclass pclass) " method: " m
-                 " has :pre condition \"" pre
-                 "\" which is not one of the modes: "
-                 (vec (keys (:modes pclass)))))))
-    (clj/when (and post (or (not (keyword? post))
-                          (nil? (get-in pclass [:modes post]))))
-      (throw (AssertionError.
-               (str "pclass: " (:pclass pclass) " method: " m
-                 " has :post condition \"" post
-                 "\" which is not one of the modes: "
-                 (vec (keys (:modes pclass)))))))
-    [m f]))
+        {:keys [args pre post bounds doc betweens body]} f
+        pclass-args (:args pclass)
+        both-args (if args (concatv pclass-args args) pclass-args)
+        pre (or (nil? pre)
+                (and (keyword? pre) (valid-modes pre)
+                  (list 'mode-of 'this pre))
+                (parse-cond-expr both-args field-names field-modes pre))
+          post (or (nil? post)
+                 (and (keyword? post) (valid-modes post)
+                   (list 'mode-of 'this post))
+                 (parse-cond-expr both-args field-names field-modes post))]
+      (if-not pre
+        (throw (AssertionError.
+                 (str "for defpmethod " m " invalid pre-condition:" pre))))
+      (if-not post
+        (throw (AssertionError.
+                 (str "for defpmethod " m " invalid post-condition: " post))))
+      [m (assoc-if f
+           :pre (if-not (true? pre) pre)
+           :post (if-not (true? post) post))]))
 
 (defn fuse-methods
   "A build-methods helper: fuse all methods by name"
@@ -658,54 +1043,14 @@
 (defn build-methods
   "A defpclass helper: build the methods"
   {:pamela :pclass-builder-fn :added "0.2.0"}
-  [pclass]
+  [pclass field-names field-modes valid-modes]
   (let [methods (:methods pclass)]
     (if (pos? (count methods))
       (let [new-methods
             (reduce fuse-methods {}
-              (map #(build-method pclass %) methods))]
+              (map (partial build-method field-names
+                     field-modes valid-modes pclass) methods))]
         (assoc pclass :methods new-methods))
-      pclass)))
-
-(defn build-condition
-  "A defpclass helper: build the tranistion condition."
-  {:pamela :pclass-builder-fn :added "0.2.0"}
-  [transition k v]
-  (let [value (if (or (= k :pre) (= k :post))
-                (if (keyword? v)
-                  (list 'mode= v)
-                  v)
-                v)]
-    (assoc transition k value)))
-
-(defn build-transition
-  "A defpclass helper: build the transition."
-  {:pamela :pclass-builder-fn :added "0.2.0"}
-  [transitions fromto transition]
-  (assoc transitions fromto
-    (reduce-kv build-condition {} transition)))
-
-(defn build-transitions
-  "A defpclass helper: build the transitions."
-  {:pamela :pclass-builder-fn :added "0.2.0"}
-  [pclass]
-  (let [transitions (:transitions pclass)]
-    (if (pos? (count transitions))
-      (let [fromtos (keys transitions)]
-        (doseq [fromto fromtos]
-          (let [[from to] (map keyword (string/split (name fromto) #":"))]
-            (clj/when (and from
-                        (not= from :*)
-                        (nil? (get-in pclass [:modes from])))
-              (throw (AssertionError. (str "pclass: " (:pclass pclass) " has transition :FROM:TO \"" fromto "\" where the :FROM is not one of: " (vec (keys (:modes pclass)))))))
-            (clj/when (and to
-                        ;; (not= to :*) doesn't make sense!
-                        (nil? (get-in pclass [:modes to])))
-              (throw (AssertionError. (str "pclass: " (:pclass pclass) " has transition :FROM:TO \"" fromto "\" where the :TO is not one of: " (vec (keys (:modes pclass)))))))
-            ))
-        (assoc pclass :transitions
-          (reduce-kv build-transition {} transitions))
-        )
       pclass)))
 
 (defn- add-to-pclasses [pclass]
@@ -759,51 +1104,67 @@
   {:added "0.2.0" :doc/format :markdown}
   [name args & opts]
   (validate-name name)
-  (let [{:keys [meta fields modes methods transitions observable access id]} opts
+  (validate-args "defpclass" args)
+  (validate-options (str "defpclass " name) valid-defpclass-opts opts)
+  (let [{:keys [meta inherit fields modes methods transitions]} opts
         {:keys [version icon depends doc]} meta
+        url *url* ;; bound in models.clj
         pclass-type (if (or (empty? modes) (map? modes))
                       :pclass :pclass-enumeration)
+        argstrs (mapv str args)
+        [field-names field-modes] (validate-fields args fields)
         modesmap (if-not (nil? modes)
                    (if (map? modes) modes
                        (zipmap modes (repeat true))))
-        _ (validate-args "defpclass" args)
-        argstrs (mapv str args)
-        url *url*] ;; bound in models.clj
-    (validate-fields args fields)
+        valid-modes (if modesmap (set (keys modesmap)))]
+    (validate-superclasses inherit)
+    (validate-modes args field-names field-modes modesmap)
+    (validate-transitions args field-names field-modes valid-modes transitions)
     (validate-labels name methods)
     (add-to-pclasses name)
     `(def ~(with-meta name
-             (merge {:args (list 'mapv 'symbol argstrs)
-                     :pamela pclass-type
-                     :url url}
-               (validate-meta meta)))
+             (merge (assoc-if {:args (list 'mapv 'symbol argstrs)
+                               :pamela pclass-type
+                               :url url}
+                      :modes valid-modes) ;; valid modes
+               (validate-meta name meta)))
        ^{:pamela ~pclass-type :name '~name}
        (fn [~@args & ~(symbol 'options)]
-         (validate-arg-types ~args)
-         (let [{:keys [~(symbol 'initial) ~(symbol 'observable)
-                       ~(symbol 'access) ~(symbol 'id)]} ~(symbol 'options)
+         (validate-arg-types '~name ~args ~(symbol 'options))
+         (let [valid?# (validate-options (str '~name " pclass constructor")
+                         valid-pclass-ctor-opts ~(symbol 'options))
+               {:keys [~(symbol 'id) ~(symbol 'interface)]} ~(symbol 'options)
+               fields# (build-fields
+                         (quote ~args)
+                         (apply vector ~args)
+                         (quote ~fields))
+               modes# (build-modes
+                        (quote ~args)
+                        (apply vector ~args)
+                        (quote ~field-names)
+                        (quote ~field-modes)
+                        (quote ~modesmap))
+               transitions# (build-transitions
+                              (quote ~args)
+                              (apply vector ~args)
+                              (quote ~field-names)
+                              (quote ~field-modes)
+                              (quote ~valid-modes)
+                              (quote ~transitions))
                pclass# (-> {:pclass '~name}
                          (assoc-if :doc ~doc)
                          (assoc-if :args (quote ~args))
-                         (assoc-if :fields ~fields)
-                         (assoc-if :modes ~modesmap)
+                         (assoc-if :fields fields#)
+                         (assoc-if :modes modes#)
                          (assoc-if :methods ~methods)
-                         (assoc-if :transitions ~transitions)
-                         (assoc-if :observable ~(symbol 'observable))
-                         (assoc-if :access ~(symbol 'access))
+                         (assoc-if :transitions transitions#)
                          (assoc-if :id ~(symbol 'id))
-                         (build-fields)
-                         (build-modes)
-                         (build-methods)
-                         (build-transitions))
-               initial# (if ~(symbol 'initial)
-                          (do
-                            (when-not (get ~modesmap ~(symbol 'initial))
-                              (throw (AssertionError.
-                                       (str "pclass :initial mode " ~(symbol 'initial)
-                                         " is not one of the defined modes: " (vec (keys ~modesmap))))))
-                            ~(symbol 'initial))
-                          (determine-mode pclass#))]
+                         (assoc-if :interface ~(symbol 'interface)))
+               pclass# (build-methods pclass#
+                         (quote ~field-names)
+                         (quote ~field-modes)
+                         (quote ~valid-modes))
+               initial# (determine-mode pclass#)]
            (with-meta
              (assoc-if pclass# :mode initial#)
              {:pamela :pclass-instance}))))))
@@ -1044,15 +1405,17 @@
     (apply merge
       (concat
         (for [field (keys fields)]
-          (let [v (get fields field)]
-            ;; (println "checking field:" field)
+          (let [v (get-in fields [field :initial])]
+            ;; (println "checking field:" field "v" v "lvar?" (lvar? v))
             (if (lvar? v)
               (let [x {(gensym)
                        {(:lvar v)
                         (conj context :field field)}}]
                 ;; (println "found field:" x)
                 x)
-              (if (map? v) (get-lvars v (conj context :field field))))))
+              (if (pclass-instance? v)
+                (get-lvars v (conj context :field field))
+                ))))
         (for [transition (keys transitions)]
           (let [tv (get transitions transition)]
             ;; (println "checking transition:" transition)
@@ -1060,7 +1423,8 @@
               (concat
                 (for [predicate (keys tv)]
                   (let [v (get tv predicate)]
-                    ;; (println "checking predicate:" predicate)
+                    ;; (println "checking predicate:" predicate
+                    ;;   "v" v "lvar?" (lvar? v))
                     (if (lvar? v)
                       (let [x
                             {(gensym) {(:lvar v)
@@ -1136,71 +1500,6 @@
     ;;                       :let [m (get models i)]]
     ;;                   {(:lvar m) {:i i :depends (:depends m)}}))
     (dissoc rdepends :rdepends)))
-
-(defn pclass-instance?
-  "Returns true if pclass is an instance pclass."
-  {:pamela :models-helper :added "0.2.0"}
-  [pclass]
-  (cond
-    (or (nil? pclass) (lvar? pclass))
-    false
-    (map? pclass) ;; this is an instance
-    (let [p (:pclass pclass)
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass))
-    :else
-    false))
-
-(defn pclass?
-  "Returns true if pclass is an pclass."
-  {:pamela :models-helper :added "0.2.0"}
-  [pclass]
-  (cond
-    (or (nil? pclass) (lvar? pclass))
-    false
-    (map? pclass) ;; this is an instance
-    (let [p (:pclass pclass)
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass))
-    (fn? pclass) ;; a pclass function
-    (let [p (:name (meta pclass))
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass))
-    (or (symbol? pclass) (string? pclass))
-    (let [p (symbol pclass)
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass))
-    :else
-    (println "ERROR: argument to pclass? should be a PAMELA class instance, pclass (function), pclass name, or pclass symbol")))
-
-(defn enumeration-pclass?
-  "Returns true if pclass is an enumeration class."
-  {:pamela :models-helper :added "0.2.0"}
-  [pclass]
-  (cond
-    (or (nil? pclass) (lvar? pclass))
-    false
-    (map? pclass) ;; this is an instance
-    (let [p (:pclass pclass)
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass-enumeration))
-    (fn? pclass) ;; a pclass function
-    (let [p (:name (meta pclass))
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass-enumeration))
-    (or (symbol? pclass) (string? pclass))
-    (let [p (symbol pclass)
-          pvar (get-model-var p)
-          model-meta (meta pvar)]
-      (= (:pamela model-meta) :pclass-enumeration))
-    :else
-    (println "ERROR: argument to enumeration-pclass? should be a PAMELA class instance, pclass (function), pclass name, or pclass symbol")))
 
 (defn describe-fields
   "Describes PAMELA class fields (helper function for describe-model)."
@@ -1306,15 +1605,13 @@
           pversion (str "  version: \"" (or (:version model-meta) "") "\"")
           pdepends (str "  depends: " (or (:depends model-meta) ""))
           prdepends (str "  rdepends: " (or rdeps ""))
-          {:keys [fields modes methods transitions observable access id]} pclass
-          prdepends-options (if (or observable access id)
+          {:keys [fields modes methods transitions id interface]} pclass
+          prdepends-options (if (or id interface)
                               (str prdepends
-                                (if observable
-                                  (str "\n  observable: " observable))
-                                (if access
-                                  (str "\n  access: " access))
                                 (if id
-                                  (str "\n  id: " id)))
+                                  (str "\n  id: " id))
+                                (if interface
+                                  (str "\n  interface: " interface)))
                               prdepends)
           pfields (str "fields:" (describe-fields fields))
           pmodes (str "modes:" (describe-modes modes))

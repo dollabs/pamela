@@ -18,5 +18,5 @@
   :methods [(defpmethod always-on
               {:doc "ensure field :a is always 1.0"}
               []
-              (whenever (condition (field= :a 1.0)) :bounds [1 100]
+              (whenever (= :a 1.0) :bounds [1 100]
                 (delay)))])

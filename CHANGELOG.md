@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ### [Unreleased]
+Added
+* *TBD*
+
+### [0.3.0] - 2016-07-11
 
 Added
 * Added support for new grammar features
@@ -13,6 +17,7 @@ Added
   * soft-parallel
 * Fixed #4 TPN output for delay should create a delay-activity
 * Updated dependencies
+* Changed some language features (see [grammar/doc/CHANGELOG.md](grammar/doc/CHANGELOG.md))
 
 ### [0.2.6] - 2016-05-27
 
@@ -40,4 +45,5 @@ Added
   in parallel and choice blocks
 
 [0.2.6]: https://github.com/dollabs/pamela/compare/0.2.5...0.2.6
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.2.6...HEAD
+[0.3.0]: https://github.com/dollabs/pamela/compare/0.2.6...0.3.0
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.3.0...HEAD

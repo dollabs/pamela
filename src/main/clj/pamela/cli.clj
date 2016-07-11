@@ -16,12 +16,12 @@
   (:require [clojure.java.io :refer :all] ;; for as-file
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.string :as string]
-            [clojure.pprint :as pp]
+            [clojure.pprint :as pp :refer [pprint]]
             [pamela.mode :as mode]
             [pamela.utils :refer [get-input var-of repl?]]
             [pamela.db :as db]
             [pamela.daemon :as daemon]
-            [pamela.pclass :as pclass]
+            [pamela.pclass :as pclass :refer [get-model-var]]
             [pamela.models :as models]
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
@@ -80,7 +80,7 @@
       (let [models (db/list-models options)]
         (if (:simple options)
           (doseq [m models] (println m))
-          (pp/pprint models))))))
+          (pprint models))))))
 
 (defn load-models
   "Load model(s) in memory only"
@@ -98,6 +98,35 @@
               (if (> verbose 1)
                 (println "loaded classes:" @pclass/*pclasses*))
               @pclass/*pclasses*)))))
+
+(defn build-model
+  "Load model(s) in memory, construct --model PCLASS, save as EDN"
+  {:added "0.3.0"}
+  [options]
+  (let [{:keys [model output]} options
+        loaded (load-models options)
+        model-var (if model (get-model-var model))
+        model-args-count (count (:args (meta model-var)))
+        model-ctor (if (zero? model-args-count) (deref model-var))
+        instance (if model-ctor (model-ctor))
+        instance-str (with-out-str (pprint instance))]
+    (cond
+      (nil? model-var)
+      (do
+        (log/errorf "unable to find model: %s" (or model "<unspecified>"))
+        false)
+      (pos? model-args-count)
+      (do
+        (log/errorf "model to build: %s takes %d arguments (need a zero arg constructor)" model model-args-count)
+        false)
+      (nil? model-ctor)
+      (do
+        (log/errorf "unable to get constructor for model to build: %s" model)
+        false)
+      :else
+      (if (daemon/stdout? output)
+        (print instance-str)
+        (spit output instance-str)))))
 
 (defn tpn
   "Load model(s) in memory only, process as a TPN"
@@ -119,7 +148,8 @@
 (def #^{:added "0.2.0"}
   actions
   "Valid PAMELA command line actions"
-  {"cat" (var cat-input-output)
+  {"build" (var build-model)
+   "cat" (var cat-input-output)
    "delete" (var delete-model)
    "describe" (var describe-model)
    "export" (var export-model)
@@ -242,7 +272,7 @@
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.2.6"}
+   :version "0.3.0"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))

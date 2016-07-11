@@ -33,36 +33,6 @@
   [pclass & args]
   (let [pclass (get-model pclass)]
     (apply pclass args)))
-(defn helper?
-  "Is x a helper function?"
-  {:pamela :models-helper :added "0.2.0"}
-  [x]
-  (if-let [h (get-helper-var x)]
-    (:pamela (meta h))))
-
-(defmacro condition
-  "Define a condition.
-
-  Conditions must
-  - if keyword then converted to (mode= keyword)
-  - return boolean type
-  - comprised of and, or, not, implies
-  - either (field= field-kw constant) or (mode= mode-kw)
-  - must not have cycles
-
-  Conditions may appear in
-  - mode definitions
-  - transition :pre :post conditions
-  - method :pre :post conditions"
-  {:pamela :models-helper :added "0.2.0" :doc/format :markdown}
-  [& body]
-  (if (empty? body)
-    (throw (AssertionError.
-             (str "condition: empty condition\n")))
-    (if (not= 1 (count body))
-      (throw (AssertionError.
-               (str "condition: expecting only one condition\n")))
-      `(quote ~@body))))
 
 (defn get-opts-body
   "Return the optional bounds as a map and the body"

@@ -12,7 +12,7 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (ns testing.pamela.pclass
-  (:refer-clojure :exclude [assert when sequence]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
   (:require [clojure.test :refer :all]
             [pamela.pclass :refer :all]
             [pamela.models :refer :all]))
@@ -33,11 +33,11 @@
       (is (lvar? testing2))
       (set-mode! testing 123)
       (set-mode! testing2 testing)
-      (is (= (mode testing) 123))
-      (is (= (mode testing2) 123))
+      (is (= (mode-of testing) 123))
+      (is (= (mode-of testing2) 123))
       (set-mode! testing2 3.14)
-      (is (= (mode testing) 3.14))
-      (is (= (mode testing2) 3.14))
+      (is (= (mode-of testing) 3.14))
+      (is (= (mode-of testing2) 3.14))
 
       ;; verify construction of a pclass
       (is (fn? enumvals))
@@ -61,62 +61,62 @@
   :meta [:not-a-map])")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= (str "defpclass meta key \":foo\" invalid, must be one of: "
+    (is (= (str "defpclass bad-meta-key meta key \":foo\" invalid, must be one of: "
              valid-meta-keys)
           (try (load-pamela-string "
 (defpclass bad-meta-key []
   :meta {:foo :bar})")
                (catch Exception e (.. e getCause getMessage)))))
 
-   (is (= "defpclass meta :version must be a string (not \"1.0\")"
+   (is (= "defpclass bad-meta-ver meta :version must be a string (not \"1.0\")"
           (try (load-pamela-string "
 (defpclass bad-meta-ver []
   :meta {:version 1.0})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :doc must be a string (not \"[:random-stuff]\")"
+    (is (= "defpclass bad-meta-doc meta :doc must be a string (not \"[:random-stuff]\")"
           (try (load-pamela-string "
 (defpclass bad-meta-doc []
   :meta {:doc [:random-stuff]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends must be a vector (not \"something\")"
+    (is (= "defpclass bad-meta-depends-type meta :depends must be a vector (not \"something\")"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-type []
   :meta {:depends \"something\"})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends component must be a vector (not \"something\")"
+    (is (= "defpclass bad-meta-depends-item meta :depends component must be a vector (not \"something\")"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-item []
   :meta {:depends [\"something\"]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends component must be a vector of length 2"
+    (is (= "defpclass bad-meta-depends-item2 meta :depends component must be a vector of length 2"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-item2 []
   :meta {:depends [[1 2 3]]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends entry must start with a symbol (not \"1\")"
+    (is (= "defpclass bad-meta-depends-item3 meta :depends entry must start with a symbol (not \"1\")"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-item3 []
   :meta {:depends [[1 2]]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends entry must end with a string (not \"1.0\")"
+    (is (= "defpclass bad-meta-depends-item4 meta :depends entry must end with a string (not \"1.0\")"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-item4 []
   :meta {:depends [[thing 1.0]]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends upon a non-existent model: thing"
+    (is (= "defpclass bad-meta-depends-missing meta :depends upon a non-existent model: nothing"
           (try (load-pamela-string "
 (defpclass bad-meta-depends-missing []
-  :meta {:depends [[thing \"1.0\"]]})")
+  :meta {:depends [[nothing \"1.0\"]]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "defpclass meta :depends upon [thing \"1.0\"] but the available version is: \"0.2.0\""
+    (is (= "defpclass bad-meta-depends-wrong-version meta :depends upon [thing \"1.0\"] but the available version is: \"0.2.0\""
           (try (load-pamela-string "
 (defpclass thing [] :meta {:version \"0.2.0\"})
 (defpclass bad-meta-depends-wrong-version []
@@ -135,25 +135,25 @@
   :fields {:two (+ 1 2)})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "Field value [:vector-not-cool] is not an arg nor returns an lvar or pclass"
+    (is (= "Field initializer [:vector-not-cool] is not an arg nor returns an lvar or pclass nor is a field initialzer map"
           (try (load-pamela-string "
 (defpclass bad-field-val []
   :fields {:three [:vector-not-cool]})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "All pclass args must be LVars or pclasses."
+    (is (= "All pclass args must be LVars or pclasses in: (create-wo-lvar 123 )"
           (try (load-pamela-string "
 (defpclass create-wo-lvar [a])
 (create-wo-lvar 123)")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "Field value :not-lvar-or-pclass is not an arg nor returns an lvar or pclass"
+    (is (= "Field initializer :not-lvar-or-pclass is not an arg nor returns an lvar or pclass nor is a field initialzer map"
           (try (load-pamela-string "
 (defpclass bad-field-arg []
   :fields {:four :not-lvar-or-pclass})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "pclass: bad-transition-from has transition :FROM:TO \":foo:on\" where the :FROM is not one of: [:on :off]"
+    (is (= "Invalid transition :FROM:TO \":foo:on\" where the :FROM is not one of: #{:off :on}"
           (try (load-pamela-string "
 (defpclass bad-transition-from []
   :modes [:on :off]
@@ -161,7 +161,7 @@
 (bad-transition-from)")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "pclass: bad-transition-to has transition :FROM:TO \":on:*\" where the :TO is not one of: [:on :off]"
+    (is (= "Invalid transition :FROM:TO \":on:*\" where the :TO is not one of: #{:off :on}"
           (try (load-pamela-string "
 (defpclass bad-transition-to []
   :modes [:on :off]
@@ -169,7 +169,7 @@
 (bad-transition-to)")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "pclass :initial mode :medium is not one of the defined modes: [:high :low]"
+    (is (= "bad-initializer pclass constructor option is not valid: :initial, must be one of: #{:interface :id}"
           (try (load-pamela-string "
 (defpclass bad-initializer []
   :modes [:high :low])

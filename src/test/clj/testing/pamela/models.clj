@@ -12,7 +12,7 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (ns testing.pamela.models
-  (:refer-clojure :exclude [assert when sequence]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
   (:require [clojure.test :refer :all]
             [pamela.pclass :refer :all]
             [pamela.models :refer :all]))
@@ -32,21 +32,21 @@
 
       ;; test pclass meta data
       (let [bulb1-meta (meta (get-model-var (:pclass bulb1)))]
-        (is (= (:version bulb1-meta) "0.2.0"))
+        (is (= (:version bulb1-meta) "0.2.1"))
         (is (.endsWith (:icon bulb1-meta)
               "src/test/pamela/bulb.svg")))
 
       (let [c1-meta (meta (get-model-var (:pclass c1)))]
         (is (= (:depends c1-meta)
-              [['psw "0.2.0"] ['bulb "0.2.0"]])))
+              [['psw "0.2.1"] ['bulb "0.2.1"]])))
 
       (is (= (with-out-str (describe-pclass-methods switchedpower))
-            "pclass psw has 3 methods\nturn-on  (pamela)\n :doc\t turns on the power supply\n :pre\t :off\n :post\t :on\n :bounds\t [1 3]\nturn-off  (pamela)\n :doc\t turns off the power supply\n :pre\t :on\n :post\t :off\n :bounds\t [1 3]\nreset  (pamela)\n :doc\t resets the power supply\n :post\t :off\n"))
+            "pclass psw has 3 methods\nturn-on  (pamela)\n :doc\t turns on the power supply\n :pre\t (mode-of this :off)\n :post\t (mode-of this :on)\n :bounds\t [1 3]\nturn-off  (pamela)\n :doc\t turns off the power supply\n :pre\t (mode-of this :on)\n :post\t (mode-of this :off)\n :bounds\t [1 3]\nreset  (pamela)\n :doc\t resets the power supply\n :post\t (mode-of this :off)\n"))
       (is (= (with-out-str (describe-pclass-transitions switchedpower))
             "pclass psw has 3 transitions\n:off -> :on     turning on\n:on -> :off     turning off\n:* -> :fail     spontaneous switch failure\n"))
 
       (is (= (with-out-str (describe-pclass-transitions bulb1))
-            "pclass bulb has 3 transitions\n:off -> :on     turning on bulb\n:on -> :off     turning on bulb\n:* -> :fail     spontaneous bulb failure\n"))
+            "pclass bulb has 3 transitions\n:off -> :on     turning on bulb\n:on -> :off     turning off bulb\n:* -> :fail     spontaneous bulb failure\n"))
       (is (= (get-all-lvars c1)
             {"source"
              [['circuit1 :field :source]

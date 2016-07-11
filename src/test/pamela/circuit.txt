@@ -31,14 +31,14 @@
       [:keyword "on"]
       [:cond-expr
        [:equal-expr
-        [:cond-operand [:keyword "pwr"]]
-        [:cond-operand [:keyword "high"]]]]]
+        [:cond-operand [:literal [:keyword "pwr"]]]
+        [:cond-operand [:literal [:keyword "high"]]]]]]
      [:mode-init
       [:keyword "off"]
       [:cond-expr
        [:equal-expr
-        [:cond-operand [:keyword "pwr"]]
-        [:cond-operand [:keyword "none"]]]]]
+        [:cond-operand [:literal [:keyword "pwr"]]]
+        [:cond-operand [:literal [:keyword "none"]]]]]]
      [:mode-init [:keyword "fail"] [:TRUE]]]]]
   [:option
    [:methods
@@ -137,24 +137,24 @@
        [:and-expr
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:keyword "illumination"]]
-          [:cond-operand [:keyword "bright"]]]]
+          [:cond-operand [:literal [:keyword "illumination"]]]
+          [:cond-operand [:literal [:keyword "bright"]]]]]
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:keyword "sensed-illumination"]]
-          [:cond-operand [:keyword "bright"]]]]]]]
+          [:cond-operand [:literal [:keyword "sensed-illumination"]]]
+          [:cond-operand [:literal [:keyword "bright"]]]]]]]]
      [:mode-init
       [:keyword "off"]
       [:cond-expr
        [:and-expr
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:keyword "illumination"]]
-          [:cond-operand [:keyword "dark"]]]]
+          [:cond-operand [:literal [:keyword "illumination"]]]
+          [:cond-operand [:literal [:keyword "dark"]]]]]
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:keyword "sensed-illumination"]]
-          [:cond-operand [:keyword "dark"]]]]]]]
+          [:cond-operand [:literal [:keyword "sensed-illumination"]]]
+          [:cond-operand [:literal [:keyword "dark"]]]]]]]]
      [:mode-init [:keyword "fail"] [:TRUE]]]]]
   [:option
    [:transitions
@@ -165,15 +165,16 @@
        [:pre
         [:cond-expr
          [:and-expr
-          [:cond-operand [:keyword "off"]]
+          [:cond-operand [:literal [:keyword "off"]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:keyword "anode"]]
-            [:cond-operand [:keyword "high"]]]]
+            [:cond-operand [:literal [:keyword "anode"]]]
+            [:cond-operand
+             [:mode-expr [:symbol "pwrvals"] [:keyword "high"]]]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:keyword "sensed-illumination"]]
-            [:cond-operand [:keyword "bright"]]]]]]]]
+            [:cond-operand [:literal [:keyword "sensed-illumination"]]]
+            [:cond-operand [:literal [:keyword "bright"]]]]]]]]]
       [:trans [:post [:keyword "on"]]]
       [:trans
        [:opt-bounds
@@ -186,15 +187,16 @@
        [:pre
         [:cond-expr
          [:and-expr
-          [:cond-operand [:keyword "on"]]
+          [:cond-operand [:literal [:keyword "on"]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:keyword "anode"]]
-            [:cond-operand [:keyword "none"]]]]
+            [:cond-operand [:literal [:keyword "anode"]]]
+            [:cond-operand
+             [:mode-expr [:symbol "pwrvals"] [:keyword "none"]]]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:keyword "sensed-illumination"]]
-            [:cond-operand [:keyword "dark"]]]]]]]]
+            [:cond-operand [:literal [:keyword "sensed-illumination"]]]
+            [:cond-operand [:literal [:keyword "dark"]]]]]]]]]
       [:trans [:post [:keyword "off"]]]
       [:trans
        [:opt-bounds
