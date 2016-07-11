@@ -26,7 +26,7 @@ or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> cond-expr <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
-cond-operand = ( keyword | symbol | field-expr | mode-expr )
+cond-operand = ( literal | symbol | field-expr | mode-expr )
 field-expr = <LP> keyword symbol <RP>
 mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
@@ -135,6 +135,7 @@ COST = <':cost'>
 COST_LE = <':cost<='>
 DEFPCLASS = <'defpclass'>
 DEFPMETHOD = <'defpmethod'>
+DELAY = <'delay'>
 DEPENDS = <':depends'>
 DOC = <':doc'>
 EQUAL = <'='>
@@ -155,21 +156,20 @@ META = <':meta'>
 METHODS = <':methods'>
 MODES = <':modes'>
 MODE_OF = <'mode-of'>
-DELAY = <'delay'>
 NOT = <'not'>
 OBSERVABLE = <':observable'>
 OPTIONAL = <'optional'>
 OR = <'or'>
 PARALLEL = <'parallel'>
-SLACK_PARALLEL = <'slack-parallel'>
-SOFT_PARALLEL = <'soft-parallel'>
 POST = <':post'>
 PRE = <':pre'>
 PROBABILITY = <':probability'>
 REWARD = <':reward'>
 REWARD_GE = <':reward>='>
 SEQUENCE = <'sequence'>
+SLACK_PARALLEL = <'slack-parallel'>
 SLACK_SEQUENCE = <'slack-sequence'>
+SOFT_PARALLEL = <'soft-parallel'>
 SOFT_SEQUENCE = <'soft-sequence'>
 TELL = <'tell'>
 TRANSITIONS = <':transitions'>

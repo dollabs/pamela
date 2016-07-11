@@ -67,7 +67,7 @@
     (when srcs
       (if-not (.exists analysis)
         (.mkdirs analysis))
-      (doseq [src srcs]
+      (doseq [src (sort srcs)]
         (if (pamela-filename? src)
           (test-grammar parser src analysis))))))
 

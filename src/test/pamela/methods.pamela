@@ -34,7 +34,8 @@
                                  []
                                  (parallel
                                    (sequence
-                                     (arg1$primitive 42.445370 -71.227891 :bounds [5 20]))
+                                     (arg1$primitive :bounds [5 20]
+                                       42.445370 -71.227891))
                                    (sequence
                                      (arg2$nonprimitive))
                                    ))
@@ -45,6 +46,6 @@
                   :depends [[plant-methods "0.2.1"]
                             [tpn-methods "0.2.1"]]
                   :doc "Test methods"}
-           :fields {:qc1 (plant-methods :id "qc1")
-                    :qc2 (plant-methods :id "qc2")
-                    :go (pclass tpn-methods :qc1 :qc2)})
+  :fields {:qc1 (plant-methods :id "qc1")
+           :qc2 (plant-methods :id "qc2")
+           :go (tpn-methods qc1 qc2)})

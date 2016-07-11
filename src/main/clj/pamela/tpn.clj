@@ -42,7 +42,7 @@
       (remove nil?
         (for [[k v] (seq m)]
           (do
-            ;; (println "MHNK" k "v" v)
+            (println "MHNK" k "v" v)
             (if (nil? k) true)))))))
 
 (defn argmethod?
@@ -667,15 +667,17 @@
   (if-not (pclass-instance? pclass)
     (throw (AssertionError. "requires a pclass instance")))
   (tpns/reset-tpnsym!)
-  (let [tpn (get-in pclass [:fields field])
+  (let [tpn (get-in pclass [:fields field :initial])
         _ (if (nil? tpn)
             (throw (AssertionError. (str "field " field " is not defined in pclass"))))
         method (get-in tpn [:methods method-sym])
         _ (if (nil? method)
             (throw (AssertionError. (str "method " method-sym " is not defined in tpn"))))
         ;; NOTE: tpn-args keys MUST match the formal parameters of the tpn-class
-        field-args (get-in pclass [:fieldargs field])
-        field-vals (map #(get-in pclass [:fields %]) field-args)
+        ;; FIXME field-args (get-in pclass [:fieldargs field])
+        ;; field-vals (map #(get-in pclass [:fields % :initial]) field-args)
+        field-vals (map #(get-in pclass [:fields % :initial])
+                     (keys (:fields pclass)))
         tpn-params (map keyword (:args tpn))
         tpn-args (apply merge (map hash-map tpn-params field-vals))
         {:keys [args bounds pre post doc betweens body]} method
@@ -1116,7 +1118,8 @@
     ;; (println "DEBUG Will construct tpn based on" tpn-sym "method" method "using" plant)
     (let [tpn-pclass-str (str "(defpclass my-tpn []\n"
                            "  :fields {:plant (" (name plant) ")\n"
-                           "  :tpn (pclass " (name tpn-sym) " :plant)})")
+                           "  :tpn (" (name tpn-sym) " plant)})")
+          ;; _ (println "DEBUG TPN" tpn-pclass-str)
           legal (try (load-pamela-string tpn-pclass-str)
                      true
                      (catch Exception e (.. e getCause getMessage)))
