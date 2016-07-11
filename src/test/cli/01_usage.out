@@ -21,6 +21,7 @@ Options:
   -w, --web WEB                    Web request hints (internal use only)
 
 Actions:
+  build	Load model(s) in memory, construct --model PCLASS, save as EDN
   cat	Simply copies the input to output (for debugging)
   delete	Deletes given model from the database
   describe	Analyze and describe the given model

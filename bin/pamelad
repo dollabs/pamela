@@ -15,8 +15,6 @@
 # in this material are those of the author(s) and do necessarily reflect the
 # views of the Army Contracting Command and DARPA.
 
-# set -x
-
 program="$(basename $0)"
 dir="$(dirname $0)"
 cd "$dir"
@@ -81,6 +79,7 @@ jstatpid=""
 if [ -e "$envfile" ]; then
     . $envfile
 fi
+export SERVER_JAR=${SERVER_JAR:-"$top/target/uberjar/pamela.jar"}
 export SERVER_COMMITTER=${SERVER_COMMITTER:-"anonymous"}
 export SERVER_TIMESTAMP=${SERVER_TIMESTAMP:-"now"}
 export SERVER_PROJECT=${SERVER_PROJECT:-$program}
@@ -210,19 +209,19 @@ do_start() {
                 max=60
                 while [ $i -lt $max ]; do
                     if [ -z "$leinpid" ]; then
-                        leinpid=$(get_pid_with_parent $pamelapid)
+                        leinpid=$(get_pid_with_parent $pamelapid "bash")
                         if [ -n "$leinpid" ]; then
                             vprintf "(lein %s)" $leinpid
                         fi
                     fi
                     if [ -z "$javapid" ] && [ -n "$leinpid" ]; then
-                        javapid=$(get_pid_with_parent $leinpid java)
+                        javapid=$(get_pid_with_parent $leinpid "java")
                         if [ -n "$javapid" ]; then
                             vprintf "(launcher %s)" $javapid
                         fi
                     fi
                     if [ -z "$pid" ] && [ -n "$javapid" ]; then
-                        pid=$(get_pid_with_parent $javapid java)
+                        pid=$(get_pid_with_parent $javapid "java")
                     fi
                     if [ -n "$pid" ] && kill -0 $pid > /dev/null 2>&1; then
                         vprintf "(pamelad %s)" $pid

@@ -84,7 +84,7 @@ if [ -z "$PAMELAD" ]; then
     if [ -e "$jar" ]; then
         if [ "$PAMELA_MODE" != "dev" ]; then
             vvlog java $PAMELA_OPTS -jar $jar $*
-            exec java $PAMELA_OPTS -jar $jar $* 2> $errfile
+            exec java $PAMELA_OPTS -jar $jar $* | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
         fi
     else
         if [ "$PAMELA_MODE" = "prod" ]; then
@@ -220,7 +220,7 @@ done
 
 if [ -z "$PAMELAD" ]; then
     vvlog lein $leinargs
-    lein $leinargs 2> $errfile
+    lein $leinargs  | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
     # lein sometimes returns non-zero when things are fine
     rc=0
     if [ -s "$errfile" ]; then
