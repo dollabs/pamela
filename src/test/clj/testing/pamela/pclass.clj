@@ -135,22 +135,10 @@
   :fields {:two (+ 1 2)})")
                (catch Exception e (.. e getCause getMessage)))))
 
-    (is (= "Field initializer [:vector-not-cool] is not an arg nor returns an lvar or pclass nor is a field initialzer map"
+    (is (= "Field initializer [:vector-not-cool] of type class clojure.lang.PersistentVector is not supported (nor a field initializer map)"
           (try (load-pamela-string "
 (defpclass bad-field-val []
   :fields {:three [:vector-not-cool]})")
-               (catch Exception e (.. e getCause getMessage)))))
-
-    (is (= "All pclass args must be LVars or pclasses in: (create-wo-lvar 123 )"
-          (try (load-pamela-string "
-(defpclass create-wo-lvar [a])
-(create-wo-lvar 123)")
-               (catch Exception e (.. e getCause getMessage)))))
-
-    (is (= "Field initializer :not-lvar-or-pclass is not an arg nor returns an lvar or pclass nor is a field initialzer map"
-          (try (load-pamela-string "
-(defpclass bad-field-arg []
-  :fields {:four :not-lvar-or-pclass})")
                (catch Exception e (.. e getCause getMessage)))))
 
     (is (= "Invalid transition :FROM:TO \":foo:on\" where the :FROM is not one of: #{:off :on}"

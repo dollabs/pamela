@@ -1,0 +1,41 @@
+{:pclass test-flex,
+ :args [],
+ :fields
+ {:flex1
+  {:initial
+   {:pclass flex1,
+    :args [],
+    :fields
+    {:number {:initial 3.14, :access :private, :observable false},
+     :string
+     {:initial {:initial "foo", :access :public},
+      :access :public,
+      :observable false},
+     :boolean
+     {:initial {:initial false, :observable true},
+      :access :private,
+      :observable true},
+     :enum {:initial :red, :access :private, :observable false}},
+    :modes {},
+    :transitions {},
+    :id "flex1",
+    :interface "ZMQ"},
+   :access :private,
+   :observable false},
+  :flex2
+  {:initial
+   {:pclass flex2,
+    :args [a b c d],
+    :fields
+    {:number {:initial 1000, :access :private, :observable false},
+     :string
+     {:initial "elephant", :access :private, :observable false},
+     :boolean {:initial true, :access :private, :observable false},
+     :enum {:initial :blue, :access :private, :observable false}},
+    :modes {},
+    :transitions {},
+    :id "flex2"},
+   :access :private,
+   :observable false}},
+ :modes {},
+ :transitions {}}

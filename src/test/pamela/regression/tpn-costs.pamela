@@ -44,17 +44,17 @@
               []
               (parallel :bounds [1 100] :cost<= 11 :reward>= 6
                 (sequence :cost<= 4 :reward>= 2
-                  (plnt$do-a)
-                  (plnt$do-b :label :b))
+                  (plnt.do-a)
+                  (plnt.do-b :label :b))
                 (sequence
                   (choose :label :choice :cost<= 10 :reward>= 5
                     (choice
                       (sequence
-                        (plnt$do-d :cost 1 :reward 2)
-                        (plnt$do-e :cost 2 :reward 1)))
+                        (plnt.do-d :cost 1 :reward 2)
+                        (plnt.do-e :cost 2 :reward 1)))
                     (choice
                       (sequence
-                        (plnt$do-f :cost 3 :reward 1)
-                        (plnt$do-g :cost 4))))
-                  (plnt$do-c)))
+                        (plnt.do-f :cost 3 :reward 1)
+                        (plnt.do-g :cost 4))))
+                  (plnt.do-c)))
               (between :choice :b :bounds [1 50] :cost<= 7 :reward>= 1))])

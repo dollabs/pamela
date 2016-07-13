@@ -27,8 +27,8 @@
                                  {:doc "Simple TPN with constraints"}
                                  []
                                  (sequence :bounds [10 30]
-                                           (plnt$do-a)
-                                           (plnt$do-b)
-                                           (plnt$do-c)
-                                           (plnt$do-d)
-                                           (plnt$do-e)))])
+                                           (plnt.do-a)
+                                           (plnt.do-b)
+                                           (plnt.do-c)
+                                           (plnt.do-d)
+                                           (plnt.do-e)))])

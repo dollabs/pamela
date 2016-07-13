@@ -76,14 +76,14 @@
               (parallel
                 (choose
                   (choice :cost 3.0 :reward 10
-                    (plant$take-high-res-images))
+                    (plant.take-high-res-images))
                   (choice :cost 2.0 :reward 4
-                    (plant$take-medium-res-images))
+                    (plant.take-medium-res-images))
                   (choice :cost 1.0 :reward 1
-                    (plant$take-move-low-res-images)))
+                    (plant.take-move-low-res-images)))
                 (choose
                   (choice :probability 0.66
-                    (plant$picture-analysis-type-2-slow))
+                    (plant.picture-analysis-type-2-slow))
                   (choice :probability 0.33
-                    (plant$picture-analysis-type-2-fast))))
+                    (plant.picture-analysis-type-2-fast))))
               )])

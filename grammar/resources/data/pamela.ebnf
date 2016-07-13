@@ -32,7 +32,7 @@ mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-type = ( literal | symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> ( keyword | field-type )
@@ -64,7 +64,7 @@ delay = <LP> <DELAY> delay-opt*  <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> symbol <'$'> symbol plant-opt* argval* <RP>
+plant-fn = <LP> symbol <'.'> symbol plant-opt* argval* <RP>
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
@@ -100,14 +100,17 @@ number-ref = ( symbol | lvar-ctor | number )
 
 lvar-ctor = <LP> <LVAR> string? <RP>
 
-pclass-ctor = <LP> symbol+ pclass-ctor-arg* <RP>
-pclass-ctor-arg = ( id | interface )
+pclass-ctor = <LP> symbol pclass-ctor-arg* pclass-ctor-option* <RP>
+pclass-ctor-arg = ( boolean | string | number | symbol | pclass-arg-keyword )
+pclass-ctor-option = ( id | interface )
+pclass-arg-keyword = !reserved-pclass-ctor-keyword keyword
+reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> )
 id = <ID> string
 interface = <INTERFACE> string
 
 bounds = <LB> number ( number | INFINITY ) <RB>
 
-symbol = #'[A-Za-z][A-Za-z0-9-]*'
+symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
 literal = ( boolean | string | keyword | number )
 argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword

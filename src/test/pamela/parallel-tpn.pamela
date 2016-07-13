@@ -21,6 +21,6 @@
               {:doc "Simple Parallel TPN"}
               []
               (parallel
-                (plant$bounded)
-                (plant$unbounded))
+                (plant.bounded)
+                (plant.unbounded))
               )])

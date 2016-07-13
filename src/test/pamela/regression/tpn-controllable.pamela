@@ -31,10 +31,10 @@
               {:doc "Demo method"}
               []
               (sequence
-                (plant$action1)
+                (plant.action1)
                 (delay)
-                (plant$action1 :controllable true)
+                (plant.action1 :controllable true)
                 (delay :controllable true)
-                (plant$action2)
+                (plant.action2)
                 (delay :bounds [2 8] :controllable false)
-                (plant$action2 :bounds [1 10] :controllable false)))])
+                (plant.action2 :bounds [1 10] :controllable false)))])

@@ -30,7 +30,7 @@
                                  {:doc "Simple Choice TPN"}
                                  []
                                  (choose
-                                   (choice (plant$bounded))
-                                   (choice (plant$unbounded)))
+                                   (choice (plant.bounded))
+                                   (choice (plant.unbounded)))
                                  )]
            )

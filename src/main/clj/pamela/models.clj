@@ -186,7 +186,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
   (let [[opts body] (get-opts-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "maintain"))
         (cons condition
@@ -207,7 +207,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
   (let [[opts body] (get-opts-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "when"))
         (cons condition
@@ -218,7 +218,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
   (let [[opts body] (get-opts-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "unless"))
         (cons condition
@@ -230,7 +230,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [condition & body]
   (let [[opts body] (get-opts-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "whenever"))
         (cons condition
@@ -244,7 +244,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false  body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "sequence"))
         (cons fn-opts safe-body)))))
@@ -258,7 +258,7 @@
   {:pamela :models-helper :added "0.2.6"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false  body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         {:keys [label bounds cost<= reward>=]} fn-opts
         opts (if label [:label label] [])
         opts (if bounds (concatv opts [:bounds bounds]) opts)
@@ -275,7 +275,7 @@
   {:pamela :models-helper :added "0.2.6"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false  body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         {:keys [label bounds cost<= reward>=]} fn-opts
         opts (if label [:label label] [])
         opts (if bounds (concatv opts [:bounds bounds]) opts)
@@ -291,7 +291,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))]
+        safe-body (replace-pamela-calls body)]
     (cons 'list
       (cons (quote (symbol "parallel"))
         (cons fn-opts safe-body)))))
@@ -305,7 +305,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false  body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         {:keys [label bounds cost<= reward>=]} fn-opts
         opts (if label [:label label] [])
         opts (if bounds (concatv opts [:bounds bounds]) opts)
@@ -322,7 +322,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& body]
   (let [[fn-opts body] (get-fn-opts-body true false  body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         {:keys [label bounds cost<= reward>=]} fn-opts
         opts (if label [:label label] [])
         opts (if bounds (concatv opts [:bounds bounds]) opts)
@@ -344,7 +344,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& choices]
   (let [[fn-opts choices] (get-fn-opts-body true false choices)
-        safe-choices (replace-pamela-args (replace-pamela-calls choices))]
+        safe-choices (replace-pamela-calls choices)]
     (cons 'list
       (cons (quote (symbol "choose"))
         (cons fn-opts safe-choices)))))
@@ -357,7 +357,7 @@
   {:pamela :models-helper :added "0.2.6"}
   [& fn]
   (let [[fn-opts fn] (get-fn-opts-body true false fn)
-        safe-fn (replace-pamela-args (replace-pamela-calls fn))
+        safe-fn (replace-pamela-calls fn)
         {:keys [label bounds cost<= reward>=]} fn-opts
         opts (if label [:label label] [])
         opts (if bounds (concatv opts [:bounds bounds]) opts)
@@ -400,7 +400,7 @@
   {:pamela :models-helper :added "0.2.0"}
   [& body]
   (let [[choice-opts body] (get-choice-opts-body body)
-        safe-body (replace-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         ;; {:keys [bounds label probability cost reward]} choice-opts
         ;; body (cons :reward (cons reward safe-body))
         ;; body (cons :cost (cons cost body))

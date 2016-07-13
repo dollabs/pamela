@@ -32,11 +32,11 @@
 
                                  (sequence
                                    (parallel
-                                     (plant$bounded)
-                                     (plant$unbounded))
+                                     (plant.bounded)
+                                     (plant.unbounded))
                                    (choose
-                                     (choice (plant$bounded))
-                                     (choice (plant$unbounded)))
+                                     (choice (plant.bounded))
+                                     (choice (plant.unbounded)))
                                    )
 
                                  )]

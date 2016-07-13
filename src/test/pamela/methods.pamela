@@ -23,7 +23,7 @@
                                  {:doc    "A non primitive method"
                                   :bounds [10 50]}
                                  []
-                                 (this$primitive 42.445370 -71.227891))
+                                 (this.primitive 42.445370 -71.227891))
                      ])
 
 (defpclass tpn-methods [arg1 arg2]
@@ -34,10 +34,10 @@
                                  []
                                  (parallel
                                    (sequence
-                                     (arg1$primitive :bounds [5 20]
+                                     (arg1.primitive :bounds [5 20]
                                        42.445370 -71.227891))
                                    (sequence
-                                     (arg2$nonprimitive))
+                                     (arg2.nonprimitive))
                                    ))
                      ])
 

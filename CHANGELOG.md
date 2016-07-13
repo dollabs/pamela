@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file. This change
 
 ### [Unreleased]
 Added
-* *TBD*
+* Added flexible field initializer and pclass constructor types
+* Changed method invocation to use '.' instead of '$'
 
 ### [0.3.0] - 2016-07-11
 
