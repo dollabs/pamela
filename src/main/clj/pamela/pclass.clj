@@ -94,6 +94,13 @@
   "Set of valid pclass types"
   #{:pclass :pclass-enumeration})
 
+(def #^{:added "0.3.1"}
+  literal-classes
+  "set of classes for PAMELA literals (except numbers)"
+  #{java.lang.Boolean
+    java.lang.String
+    clojure.lang.Keyword})
+
 (def #^{:added "0.3.0"}
   pamela-reserved-words
   "Reserved words in the PAMELA language"
@@ -543,14 +550,15 @@
 
 (defn get-pclass-meta
   "Returns the meta data for a symbol in 'pamela.models or 'pamela.pclass
-if found, else nil"
+  if found, else nil"
   {:added "0.2.0"}
   [pclass]
-  (let [pclass-sym (symbol (str pclass))
-        pclass-var (or (get-model-var pclass-sym true)
-                     (ns-resolve 'pamela.pclass pclass-sym))]
-    (if pclass-var
-      (meta pclass-var))))
+  (if pclass
+    (let [pclass-sym (symbol (str pclass))
+          pclass-var (or (get-model-var pclass-sym true)
+                       (ns-resolve 'pamela.pclass pclass-sym))]
+      (if pclass-var
+        (meta pclass-var)))))
 
 (defn valid-mode-of?
   "Validate initial mode in mode-of expression"
@@ -601,72 +609,79 @@ this field initializer value"
       (if-not field-val
         [field-names (set field-modes)]
         (let [[field val] field-val
+              val-class (class val)
               field-ms (remove nil? (get-field-modes val))]
-        (if-not (keyword? field)
-          (throw (AssertionError.
-                   (str "field name " field " must be a keyword"))))
-        (condp #(= %1 %2) (type val)
-          Symbol ;; must be in the args to defpclass
-          (if (not-any? #(= val %) args)
+          (if-not (keyword? field)
             (throw (AssertionError.
-                     (str "Symbol " val " not in args " args))))
-          PersistentList  ;; must be a lvar or pclass ctor
-          (let [f (first val)
-                pamela? (:pamela (get-pclass-meta f))
-                [pclass initial] (if (and pamela? (= f 'mode-of)) (rest val))]
-            (if (and pclass initial (not (valid-mode-of? pclass initial)))
+                     (str "field name " field " must be a keyword"))))
+          (cond
+            (or (literal-classes val-class) (number? val))
+            true
+            (= val-class Symbol) ;; must be in the args to defpclass
+            (if (not-any? #(= val %) args)
               (throw (AssertionError.
-                       (str "mode-of " pclass
-                         " specfies illegal initial mode: " initial))))
-            (if-not pamela?
-              (throw (AssertionError.
-                       (str "Function " f
-                         " does not return an lvar or pclass")))))
-          PersistentArrayMap
-          (doseq [[fik fiv] (seq val)]
-            (case fik
-              :initial
-              (condp #(= %1 %2) (type fiv)
-                Symbol ;; must be in the args to defpclass
-                (if (not-any? #(= fiv %) args)
-                  (throw (AssertionError.
-                           (str "Symbol " fiv " not in args " args))))
-                PersistentList  ;; must be a lvar or pclass ctor
-                (let [f (first fiv)
-                      pamela? (:pamela (get-pclass-meta f))
-                      [pclass initial]
-                      (if (and pamela? (= f 'mode-of)) (rest fiv))]
-                  (if (and pclass initial (not (valid-mode-of? pclass initial)))
-                    (throw (AssertionError.
-                             (str "mode-of " pclass
-                               " specfies illegal initial mode: " initial))))
-                  (if-not pamela?
-                    (throw (AssertionError.
-                             (str "Function " f
-                               " does not return an lvar or pclass")))))
+                       (str "Symbol " val " not in args " args))))
+            (= val-class PersistentList)  ;; must be a lvar or pclass ctor
+            (let [f (first val)
+                  pamela? (:pamela (get-pclass-meta f))
+                  [pclass initial] (if (and pamela? (= f 'mode-of)) (rest val))]
+              (if (and pclass initial (not (valid-mode-of? pclass initial)))
                 (throw (AssertionError.
-                         (str "Field initializer :initial" fiv
-                           " is not an arg nor returns an lvar or pclass"))))
-              :access
-              (if-not (#{:public :private} fiv)
-                (throw
-                  (AssertionError.
-                    (str "Field initializer :access must be :public or :private, not: " fiv))))
-              :observable
-              (if-not (or (true? fiv) (false? fiv))
-                (throw
-                  (AssertionError.
-                    (str "Field initializer :observable must boolean, not: "
-                      fiv))))
-              ;; :else
-              (throw (AssertionError.
-                       (str "Field initializer key is not valid: " fik)))))
-          (throw
-            (AssertionError.
-              (str "Field initializer " val
-                " is not an arg nor returns an lvar or pclass nor is a field initialzer map"))))
-        (recur (conj field-names field) (concat field-modes field-ms)
-          (first more) (rest more)))))))
+                         (str "mode-of " pclass
+                           " specfies illegal initial mode: " initial))))
+              (if-not pamela?
+                (throw (AssertionError.
+                         (str "Function " f
+                           " does not return an lvar or pclass")))))
+            (= val-class PersistentArrayMap)
+            (doseq [[fik fiv] (seq val)]
+              (let [fiv-class (class fiv)]
+                (case fik
+                  :initial
+                  (cond
+                    (or (literal-classes fiv-class) (number? fiv))
+                    true
+                    (= fiv-class Symbol) ;; must be in the args to defpclass
+                    (if (not-any? #(= fiv %) args)
+                      (throw (AssertionError.
+                               (str "Symbol " fiv " not in args " args))))
+                    (= fiv-class PersistentList)  ;; must be a lvar or pclass ctor
+                    (let [f (first fiv)
+                          pamela? (:pamela (get-pclass-meta f))
+                          [pclass initial]
+                          (if (and pamela? (= f 'mode-of)) (rest fiv))]
+                      (if (and pclass initial (not (valid-mode-of? pclass initial)))
+                        (throw (AssertionError.
+                                 (str "mode-of " pclass
+                                   " specfies illegal initial mode: " initial))))
+                      (if-not pamela?
+                        (throw (AssertionError.
+                                 (str "Function " f
+                                   " does not return an lvar or pclass")))))
+                    :else
+                    (throw (AssertionError.
+                             (str "Field initializer :initial" fiv
+                               " of type " fiv-class " is not supported"))))
+                  :access
+                  (if-not (#{:public :private} fiv)
+                    (throw
+                      (AssertionError.
+                        (str "Field initializer :access must be :public or :private, not: " fiv))))
+                  :observable
+                  (if-not (or (true? fiv) (false? fiv))
+                    (throw
+                      (AssertionError.
+                        (str "Field initializer :observable must boolean, not: "
+                          fiv))))
+                  ;; :else
+                  (throw (AssertionError.
+                           (str "Field initializer key is not valid: " fik))))))
+            :else
+            (throw (AssertionError.
+                     (str "Field initializer " val
+                       " of type " val-class " is not supported (nor a field initializer map)"))))
+          (recur (conj field-names field) (concat field-modes field-ms)
+            (first more) (rest more)))))))
 
 (defn parse-cond-operand
   "Disambiguates an operand to a cond-expr using the field-names and field-modes.
@@ -811,6 +826,8 @@ Returns nil if undetermined."
       (if-not arg
         true ;; valid
         (if (or
+              (literal-classes (class arg))
+              (number? arg)
               (and (list-or-cons? arg) (= 'lvar (first arg)))
               (lvar-or-pclass? arg))
           (recur (first more) (rest more))
@@ -856,10 +873,13 @@ Returns nil if undetermined."
       (if-not field-val
         field-map
         (let [[field val] field-val
+              val-class (class val)
               access :private
               observable false
               [initial access observable]
               (cond
+                (or (literal-classes val-class) (number? val))
+                [val access observable]
                 (symbol? val) ;; must be an arg
                 [(get argvals (vec-index-of args val)) access observable]
                 (or (lvar? val) (pclass-instance? val))
@@ -876,15 +896,19 @@ Returns nil if undetermined."
                    access observable])
                 (map? val)
                 (let [initial (:initial val)
+                      initial-class (class initial)
                       access (or (:access val) access)
                       observable (or (:observable val) observable)
-                      p (first initial)
+                      p (if (list-or-cons? initial) (first initial))
                       pamela? (:pamela (get-pclass-meta p))]
-                  (when-not pamela?
-                    (throw (AssertionError.
-                             (str "Function " p " is not a defined pclass"))))
-                  [(build-fields-pclass field-map p (rest initial))
-                   access observable])
+                  (if (or (literal-classes initial-class) (number? initial))
+                    [val access observable]
+                    (do
+                      (when-not pamela?
+                        (throw (AssertionError.
+                                 (str "Function " p " is not a defined pclass"))))
+                      [(build-fields-pclass field-map p (rest initial))
+                       access observable])))
                 :else
                 (throw (AssertionError. (str "Field value " val " illegal"))))
               new-val  {:initial initial
@@ -1169,17 +1193,13 @@ Returns nil if undetermined."
              (assoc-if pclass# :mode initial#)
              {:pamela :pclass-instance}))))))
 
-(defn unknown?
-  "True if x is an unresolved symbol"
-  {:added "0.2.0"}
-  [x]
-  (and (symbol? x) (nil? (resolve x))))
-
 (defn method-call?
   "Return true if x is a method-call form"
   {:added "0.2.0"}
   [x]
-  (and (instance? clojure.lang.PersistentList x) (unknown? (first x))))
+  (and (instance? clojure.lang.PersistentList x)
+    (symbol? (first x))
+    (= 2 (count (string/split (name (first x)) #"\.")))))
 
 (defn legal-bounds? [bounds]
   (and
@@ -1189,7 +1209,7 @@ Returns nil if undetermined."
     (or (= :infinity (second bounds)) (number? (second bounds)))))
 
 ;; NOTE: grammar
-;; plant-fn = <LP> symbol <'$'> symbol plant-opt* argval* <RP>
+;; plant-fn = <LP> symbol <'.'> symbol plant-opt* argval* <RP>
 ;; plant-opt = ( opt-label | opt-bounds | opt-cost | opt-reward | opt-controllable )
 (defn pamela-method
   "Return a function for the pamela method name"
@@ -1253,46 +1273,12 @@ Returns nil if undetermined."
   [x]
   (cons (list 'pamela-method (list 'symbol (str (first x)))) (rest x)))
 
-(defn pamela-arg
-  "Keywordize x as an arg"
-  {:added "0.2.0"}
-  [x]
-  (keyword (str "arg:" x)))
-
-(defn pamela-arg?
-  "Returns true if x is a pamela-arg"
-  {:added "0.2.0"}
-  [x]
-  (and (keyword? x)
-    (.startsWith (str x) ":arg:")))
-
-(defn un-pamela-arg
-  "Convert from keyword to symbol for pamela arg"
-  {:added "0.2.0"}
-  [x]
-  (let [arg (subs (str x) 5)]
-    (symbol arg)))
-
 (defn replace-pamela-calls
   "Replace pamela method calls"
   {:added "0.2.0"}
   [body]
   (if body
     (walk-exprs method-call? pamela-call body)))
-
-(defn replace-pamela-args
-  "Replace pamela args with keywordized equivalent"
-  {:added "0.2.0"}
-  [body]
-  (if body
-    (prewalk #(if (unknown? %) (pamela-arg %) %) body)))
-
-(defn restore-pamela-args
-  "Unkeywordize pamela args"
-  {:added "0.2.0"}
-  [body]
-  (if body
-    (prewalk #(if (pamela-arg? %) (un-pamela-arg %) %) body)))
 
 (defn prepare-betweens [betweens]
   (let [b (atom {:betweens []
@@ -1343,7 +1329,7 @@ Returns nil if undetermined."
           [conds (first args-body-betweens) (rest args-body-betweens)])
         body (first body-betweens)
         b (:betweens (prepare-betweens (rest body-betweens)))
-        safe-body (restore-pamela-args (replace-pamela-calls body))
+        safe-body (replace-pamela-calls body)
         argstrs (mapv str args)]
     `(apply
        (fn [~@args]

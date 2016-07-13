@@ -46,10 +46,10 @@
                                  {:doc "QC waypoints"}
                                  []
                                  (sequence
-                                   (quadcopter-plant$wp1)
-                                   (quadcopter-plant$wp2)
-                                   (quadcopter-plant$wp3)
-                                   (quadcopter-plant$wp4)
-                                   (quadcopter-plant$wp5)
+                                   (quadcopter-plant.wp1)
+                                   (quadcopter-plant.wp2)
+                                   (quadcopter-plant.wp3)
+                                   (quadcopter-plant.wp4)
+                                   (quadcopter-plant.wp5)
                                    )
                                  )])

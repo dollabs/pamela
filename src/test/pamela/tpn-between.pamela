@@ -74,28 +74,28 @@
               {:doc "the tpn"}
               []
               (parallel
-                (plant$track-elephant :bounds [160 170])
+                (plant.track-elephant :bounds [160 170])
                 (parallel :bounds [20 25]
-                  (plant$watch-right-hemisphere :label :watch-right)
-                  (plant$watch-left-hemisphere))
+                  (plant.watch-right-hemisphere :label :watch-right)
+                  (plant.watch-left-hemisphere))
                 (sequence :label :process :bounds [123 456]
                   (choose :label :acquire
                     (choice (sequence
-                              (plant$take-high-res-images :bounds [0 3])
-                              (plant$move-high-res-images :bounds [0 4])))
-                    (choice (plant$take-move-low-res-images :bounds [0 3]))
+                              (plant.take-high-res-images :bounds [0 3])
+                              (plant.move-high-res-images :bounds [0 4])))
+                    (choice (plant.take-move-low-res-images :bounds [0 3]))
                     (choice :bounds [78 90]
                       (sequence
-                        (plant$take-medium-res-images :bounds [0 3])
-                        (plant$move-medium-res-images :bounds [0 4]))))
+                        (plant.take-medium-res-images :bounds [0 3])
+                        (plant.move-medium-res-images :bounds [0 4]))))
                   (parallel :label :analyze
-                    (plant$picture-analysis-type-1 :bounds [0 6])
+                    (plant.picture-analysis-type-1 :bounds [0 6])
                     (choose :bounds [0 15] ;; :label :analyze ;; dup label
                       (choice :label :slow-path
-                        (plant$picture-analysis-type-2-slow :bounds [0 10]))
-                      (choice (plant$picture-analysis-type-2-fast :bounds [0 10])))
-                    (plant$picture-analysis-type-3 :label :phase-3 :bounds [0 7]))
-                  (plant$picture-distribution :bounds [0 5])))
+                        (plant.picture-analysis-type-2-slow :bounds [0 10]))
+                      (choice (plant.picture-analysis-type-2-fast :bounds [0 10])))
+                    (plant.picture-analysis-type-3 :label :phase-3 :bounds [0 7]))
+                  (plant.picture-distribution :bounds [0 5])))
               (between :acquire :analyze :bounds [5 20])
               (between-starts :watch-right :phase-3 :bounds [50 :infinity])
               (between-ends :phase-3 :watch-right :bounds [0 5])

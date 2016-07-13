@@ -30,16 +30,16 @@
               []
               (parallel
                 (slack-sequence :label :slack-sequence
-                  (plant$action1)
-                  (plant$action2))
+                  (plant.action1)
+                  (plant.action2))
                 (slack-parallel :label :slack-parallel
-                  (plant$action1)
-                  (plant$action2))
+                  (plant.action1)
+                  (plant.action2))
                 (optional :label :optional
-                  (plant$action1))
+                  (plant.action1))
                 (soft-sequence :label :soft-sequence
-                  (plant$action1)
-                  (plant$action2))
+                  (plant.action1)
+                  (plant.action2))
                 (soft-parallel :label :soft-parallel
-                  (plant$action1)
-                  (plant$action2))))])
+                  (plant.action1)
+                  (plant.action2))))])

@@ -24,4 +24,4 @@
   :methods [(defpmethod start
               {:doc "Demo method"}
               []
-              (plant$action :bounds [0 1] :label :demo :cost 2 :reward 3 :foo 4))])
+              (plant.action :bounds [0 1] :label :demo :cost 2 :reward 3 :foo 4))])

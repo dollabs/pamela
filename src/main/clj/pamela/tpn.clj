@@ -46,11 +46,11 @@
             (if (nil? k) true)))))))
 
 (defn argmethod?
-  "Returns true if symbol is a method on an argument (i.e. contains $)"
+  "Returns true if symbol is a method on an argument (i.e. contains .)"
   {:added "0.2.0"}
   [symbol]
   (and (symbol? symbol)
-    (pos? (.indexOf (name symbol) "$"))))
+    (pos? (.indexOf (name symbol) "."))))
 
 (defn dotmethod?
   "Returns true if symbol is a method on an argument (i.e. contains .)"
@@ -97,7 +97,7 @@
           form
           (let [arg-method (first form)
                 delay? (= 'delay arg-method)
-                [arg method-name] (string/split (name arg-method) #"\$")
+                [arg method-name] (string/split (name arg-method) #"\.")
                 opts (second form)
                 argvals (nthrest form 2)
                 label (:label opts)
@@ -110,7 +110,7 @@
                      (symbol (str arg "." method-name)))
                 method-sym (if-not delay? (symbol method-name))
                 ;; _ (println "GET PLANT " (type arg) " = "
-                ;;     arg "$" method-name)  ;; DEBUG
+                ;;     arg "." method-name)  ;; DEBUG
                 plant (if (or (= arg "this") delay?)
                         tpn
                         (get tpn-args (keyword arg)))
