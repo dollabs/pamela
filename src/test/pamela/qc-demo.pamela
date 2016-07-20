@@ -19,4 +19,4 @@
   :fields {:qc1 (qc :id "qc1" :interface "RMQ") ;;Note that this map (:id and :interface) is implicit
            :qc2 (qc :id "qc2" :interface "ZMQ")
            :qc3 (qc :id "qc3") ;this uses the default :interface (i.e., RMQ)
-           :qc-waypoints (qc-waypoints qc1 qc2 qc3)})
+           :qc-waypoints (qc-waypoints :qc1 :qc2 :qc3)})

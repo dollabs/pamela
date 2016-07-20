@@ -1,4 +1,4 @@
-;; Copyright © 2016 Dynamic Object Language Labs Inc.tr
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
@@ -17,7 +17,7 @@
   "The pamela.models namespace is used to import all PAMELA models.
   The symbols defined in this namespace with {:pamela :models-helper}
   metadata are helper functions. All other symbols have been imported."
-  (:refer-clojure :exclude [assert when sequence delay]) ;; try catch
+  (:refer-clojure :exclude [assert when sequence delay try catch]) ;; try catch
   (:require [clojure.java.io :refer :all] ;; for as-file
             [clojure.string :as string]
             [clojure.pprint :as pp]
@@ -410,29 +410,45 @@
         body (cons choice-opts safe-body)]
     (cons 'list (cons (quote (symbol "choice")) body))))
 
-;; NOTE due to a clojure limitation we CANNOT redfine try
-(defn try-form
+(defmacro try-form
   "The form is performed, but if a problem is encountered,
    body is run. A problem here is if a constraint cannot be achieved.
 
   (try form [<time bounds>] (catch body))"
   {:pamela :models-helper :added "0.2.0"}
-  [& form-time-body]
-  (let [form (first form-time-body)
-        tb (second form-time-body)
-        time-bounds (if (vector? tb) tb [])
-        body (if (vector? tb)
-               (first (rest (rest form-time-body)))
-               (first (rest form-time-body)))]
-    (list 'try-form form time-bounds body)))
+  ;; [& form-time-body]
+  ;; (let [form (first form-time-body)
+  ;;       tb (second form-time-body)
+  ;;       time-bounds (if (vector? tb) tb [])
+  ;;       body (if (vector? tb)
+  ;;              (first (rest (rest form-time-body)))
+  ;;              (first (rest form-time-body)))]
+  ;;   (list 'try form time-bounds body)))
+  [& opt-bounds-body]
+  (let [bounds-kw (first opt-bounds-body)
+        bounds (second opt-bounds-body)
+        opt-bounds? (and (= bounds-kw :bounds) (legal-bounds? bounds))
+        bounds (if opt-bounds?  bounds default-bounds)
+        body (if opt-bounds? (nthrest opt-bounds-body 2) opt-bounds-body)
+        safe-body (replace-pamela-calls (replace-try-catch body))]
+    ;; (apply vector :try :bounds bounds safe-body)
+    (cons 'try-form
+      (cons {:bounds bounds} safe-body))
+    ))
 
-;; NOTE due to a clojure limitation we CANNOT redfine catch as macro,
-;; but we can as a function
-(defn catch
-  "Failure handling block for try-form."
+(defmacro catch-form
+  "Failure handling block for try."
   {:pamela :models-helper :added "0.2.0"}
   [& body]
-  (cons 'catch body))
+  ;; (apply vector :catch body))
+  (let [safe-body (replace-pamela-calls (replace-try-catch body))]
+    ;; (apply vector :try :bounds bounds safe-body)
+    (cons 'catch-form safe-body)
+    ))
+
+(defmacro special [& args]
+  (println "SPECIAL" args)
+  :fred)
 
 (defmacro between
   "This constrains that the time between the form named by

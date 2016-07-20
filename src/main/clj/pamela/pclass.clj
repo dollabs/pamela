@@ -46,6 +46,9 @@
   (or (instance? clojure.lang.PersistentList x)
     (instance? clojure.lang.Cons x)))
 
+;; FIXME
+(def models-ns (the-ns 'pamela.models))
+
 ;; current values of lvar's -------------------------------
 
 (def #^{:dynamic true :added "0.2.0" :doc/format :markdown}
@@ -170,7 +173,6 @@
    (get-model-vars true))
   ([models?]
    (let [ptype= (if models? not= =)
-         models-ns (the-ns 'pamela.models)
          only-models (fn [e]
                        (let [me (meta (.getValue e))
                              nse (get me :ns)
@@ -1280,6 +1282,40 @@ Returns nil if undetermined."
   (if body
     (walk-exprs method-call? pamela-call body)))
 
+(defn try-catch?
+  "FIXME Return true if x is a method-call form"
+  {:added "0.2.0"}
+  [x]
+  (and (instance? clojure.lang.PersistentList x)
+    (symbol? (first x))
+    (#{'try 'catch} (first x))))
+
+(defn try-catch
+  "FIXME Create a pamela method call"
+  {:added "0.2.0"}
+  [x]
+  ;; (let [rv
+  ;;       (if (and x (try-catch? x))
+  ;;         (let [body (rest x)
+  ;;               _ (println "TC" x)
+  ;;               y (if (empty? body)
+  ;;                   ((ns-resolve models-ns (first x)))
+  ;;                   (apply (ns-resolve models-ns (first x)) body))]
+  ;;           (println "TRY CATCH" x "==>" y)
+  ;;           y)
+  ;;         x)]
+  ;;   rv))
+  (if (and (symbol? x) (#{'try 'catch} x))
+    (symbol (str x "-form"))
+    x))
+
+(defn replace-try-catch
+  "FIXME Replace pamela method calls"
+  {:added "0.2.0"}
+  [body]
+  (if body
+    (postwalk try-catch body)))
+
 (defn prepare-betweens [betweens]
   (let [b (atom {:betweens []
                  :labels {}})]
@@ -1328,8 +1364,10 @@ Returns nil if undetermined."
           [{} conds args-body-betweens]
           [conds (first args-body-betweens) (rest args-body-betweens)])
         body (first body-betweens)
+        _ (println "DFM BODY" body)
         b (:betweens (prepare-betweens (rest body-betweens)))
-        safe-body (replace-pamela-calls body)
+        safe-body (replace-pamela-calls (replace-try-catch body))
+        _ (println "DFM SAFE-BODY" safe-body)
         argstrs (mapv str args)]
     `(apply
        (fn [~@args]

@@ -65,4 +65,4 @@
   :fields {:qc1 (qc :id "qc1" :interface "RMQ")
            :qc2 (qc :id "qc2" :interface "ZMQ")
            :qc3 (qc :id "qc3")
-           :qc-waypoints (qc-waypoints qc1 qc2 qc3)})
+           :qc-waypoints (qc-waypoints :qc1 :qc2 :qc3)})

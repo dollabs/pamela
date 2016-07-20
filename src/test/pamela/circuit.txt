@@ -234,16 +234,16 @@
      [:keyword "bulb1"]
      [:field-type
       [:pclass-ctor
-       [:symbol "bulb"]
-       [:symbol "source"]
-       [:symbol "drain"]
-       [:pclass-ctor-arg [:id [:string "Bulb1"]]]]]]
+       [:pclass-name [:symbol "bulb"]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
+       [:pclass-ctor-option [:id [:string "Bulb1"]]]]]]
     [:field
      [:keyword "switchedpower"]
      [:field-type
       [:pclass-ctor
-       [:symbol "psw"]
-       [:symbol "source"]
-       [:symbol "drain"]
-       [:pclass-ctor-arg [:id [:string "PSW1"]]]
-       [:pclass-ctor-arg [:interface [:string "RMQ"]]]]]]]]]]
+       [:pclass-name [:symbol "psw"]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
+       [:pclass-ctor-option [:id [:string "PSW1"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]]]

@@ -17,7 +17,7 @@
   :methods [(defpmethod example
               {:doc "try example"}
               []
-              (try-form :bounds [1 100]
+              (try :bounds [1 100]
                 (delay)
                 (catch
                     (delay))))])
