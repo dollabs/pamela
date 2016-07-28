@@ -24,7 +24,6 @@
             [riddley.walk :refer [walk-exprs]]
             [clojure.string :as string]
             [clojure.pprint :as pp]
-            [clojure.set :as set]
             [environ.core :refer [env]]
             [pamela.utils :refer [make-url get-url]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]])
@@ -47,7 +46,8 @@
     (instance? clojure.lang.Cons x)))
 
 ;; FIXME
-(def models-ns (the-ns 'pamela.models))
+;; (def models-ns (the-ns 'pamela.models))
+(def models-ns nil)
 
 ;; current values of lvar's -------------------------------
 

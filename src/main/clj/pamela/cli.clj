@@ -23,6 +23,7 @@
             [pamela.daemon :as daemon]
             [pamela.pclass :as pclass :refer [get-model-var]]
             [pamela.models :as models]
+            [pamela.parser :as parser]
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
@@ -128,6 +129,25 @@
         (print instance-str)
         (spit output instance-str)))))
 
+(defn parse-model
+  "Load model(s) in memory, construct --model PCLASS, save as EDN"
+  {:added "0.3.0"}
+  [options]
+  (let [{:keys [cwd input output]} options
+        filename (if (= 1 (count input)) (first input))
+        pir (if filename (parser/parse cwd filename))]
+    (if pir
+      (if (daemon/stdout? output)
+        (print pir)
+        (spit output pir))
+      (if filename
+        (do
+          (log/errorf "unable to parse: %s" filename)
+          false)
+        (do
+          (log/errorf "invalid input to parse: %s" input)
+          false)))))
+
 (defn tpn
   "Load model(s) in memory only, process as a TPN"
   {:added "0.2.0"}
@@ -149,6 +169,7 @@
   actions
   "Valid PAMELA command line actions"
   {"build" (var build-model)
+   "parse" (var parse-model)
    "cat" (var cat-input-output)
    "delete" (var delete-model)
    "describe" (var describe-model)

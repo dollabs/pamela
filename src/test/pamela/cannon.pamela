@@ -32,8 +32,8 @@
   :fields {:ammunitions {:initial 5
                          :observable true}
            :ready       {:initial false
-                         :observable true
-                         :access :public}}
+                         :access :public
+                         :observable true}}
   :methods [(defpmethod fire
               [arg1 arg2])
             (defpmethod reset
@@ -53,9 +53,7 @@
                   (unless (= :cannon-f.:ammunitions 0)
                     (try :bounds [2 20]
                       (sequence
-                        (assert (= :box-f :open)) ;; WHY NOT (:box-f.open-lid) ?
-                        ;; Below can we "maintain" a mode
-                        ;; seems like this wants to be a state variable?
+                        (assert (= :box-f :open))
                         (maintain (= :box-f :open)
                           (sequence
                             (cannon-f.fire :bounds [1 7] 123 "456")
