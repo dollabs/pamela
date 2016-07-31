@@ -1,192 +1,158 @@
-;; Copyright © 2016 Dynamic Object Language Labs Inc.
-;;
-;; This software is licensed under the terms of the
-;; Apache License, Version 2.0 which can be found in
-;; the file LICENSE at the root of this distribution.
-
-;; Acknowledgement and Disclaimer:
-;; This material is based upon work supported by the Army Contracting
-;; and DARPA under contract No. W911NF-15-C-0005.
-;; Any opinions, findings and conclusions or recommendations expressed
-;; in this material are those of the author(s) and do necessarily reflect the
-;; views of the Army Contracting Command and DARPA.
-
-;; hand-crafted IR for cannon.pamela
-
-{game {:type :pclass
-       :fields
-       {:cannon-f {:access :private
-                   :observable true ;; DEFAULT false
-                   :initial
-                   {:type :pclass
-                    :fields {:ammunitions {:access :private
-                                           :observable true ;; DEFAULT false
-                                           :initial 5}
-                             :ready {:access :public
-                                     :observable true
-                                     :initial false}
-                             }
-                    :methods {fire {:args [arg1 arg2]
-                                    :pre true
-                                    :post true
-                                    :cost 0
-                                    :reward 0
-                                    :controllable false
-                                    :temporal-constraints {:type :bounds
-                                                           :value [0 :infinity]}
-                                    :body nil ;; plant primitive method
-                                    }
-                              reset {:args []
-                                     :pre true
-                                     :post true
-                                     :cost 0
-                                     :reward 0
-                                     :controllable false
-                                     :temporal-constraints {:type :bounds
-                                                            :value [0 :infinity]}
-                                     :body nil ;; plant primitive method
-                                     }
-                              }
-                    }
-                   }
-        :box-f {:access :public
-                :observable true
-                :initial
-                {:type :pclass
-                 :modes {:open true
-                         :close true}
-                 :fields {:ball-in-motion {:initial false
-                                           :access :public
-                                           :observable true}
-                          }
-                 :methods {open-lid {:args []
-                                     :pre {:type :mode-reference-this
-                                           :value :close}
-                                     :post {:type :mode-reference-this
-                                            :value :open}
-                                     :cost 0
-                                     :reward 0
-                                     :controllable false
-                                     :temporal-constraints {:type :bounds
-                                                            :value [0 :infinity]}
-                                     :body nil ;; plant primitive method
-                                     }
-                           close-lid {:args []
-                                      :pre {:type :mode-reference-this
-                                            :value :open}
-                                      :post {:type :mode-reference-this
-                                             :value :close}
-                                      :cost 0
-                                      :reward 0
-                                      :controllable false
-                                      :temporal-constraints {:type :bounds
-                                                             :value [0 :infinity]}
-                                      :body nil ;; plant primitive method
-                                      }
-                           reset {:args []
-                                  :pre true
-                                  :post {:type :mode-reference-this
-                                         :value :open}
-                                  :cost 0
-                                  :reward 0
-                                  :controllable false
-                                  :temporal-constraints {:type :bounds
-                                                         :value [0 :infinity]}
-                                  :body nil ;; plant primitive method
-                                  }
-                           }
-
-                 }
-                }
-        }
-       :methods {main {:args []
-                       :pre true
-                       :post true
-                       :cost 0
-                       :reward 0
-                       :controllable false
-                       :temporal-constraints {:type :bounds
-                                              :value [0 :infinity]}
-                       :body [{:type :parallel
-                               :temporal-constraints [{:type  :bounds
-                                                       :value [1 60]}]
-                               :body [{:type :whenever
-                                       :condition {:type :equal
-                                                   :args [{:type :field-reference
-                                                           :value :box-f.:ball-in-motion}
-                                                          {:type :literal
-                                                           :value true}]}
-                                       :body [{:type :tell
-                                               :condition {:type :equal
-                                                           :args [{:type :state-variable
-                                                                   :value all-clear}
-                                                                  {:type :literal
-                                                                   :value true}]}
-                                               }]
-                                       }
-                                      {:type :whenever
-                                       :condition {:type :equal
-                                                   :args [{:type :field-reference
-                                                           :value :cannon-f.:ready}
-                                                          {:type :literal
-                                                           :value true}]}
-                                       :body [{:type :unless
-                                               :condition {:type :equal
-                                                           :args [{:type :field-reference
-                                                                   :value :cannon-f.:ammunitions}
-                                                                  {:type :literal
-                                                                   :value 0}]}
-                                               :body [{:type :try
-                                                       :temporal-constraints [{:type  :bounds
-                                                                               :value [2 20]}]
-
-                                                       :body [{:type :sequence
-                                                               :body [{:type :assert
-                                                                       :condition {:type :mode-reference
-                                                                                   :field :box-f
-                                                                                   :value :open}
-
-                                                                       }
-                                                                      {:type :maintain
-                                                                       :condition {:type :mode-reference
-                                                                                   :field :box-f
-                                                                                   :value :open}
-                                                                       :body [{:type :sequence
-                                                                               :body [{:type :method
-                                                                                       :temporal-constraints [{:type  :bounds
-                                                                                                               :value [1 7]}]
-                                                                                       :value :cannon-f.fire
-                                                                                       :args [123 "456"]}
-                                                                                      {:type :ask
-                                                                                       :condition {:type :equal
-                                                                                                   :args [{:type :state-variable
-                                                                                                           :value all-clear}
-                                                                                                          {:type :literal
-                                                                                                           :value true}]}
-                                                                                       }]
-
-                                                                               }
-                                                                              {:type :method
-                                                                               :value :box-f.close}]
-                                                                       }]
-                                                               :catch [{:type :sequence
-                                                                        :body [{:type :parallel
-                                                                                :body [{:type :method
-                                                                                        :value :box-f.reset}
-                                                                                       {:type :method
-                                                                                        :value :cannon-f.reset}]
-                                                                                }
-                                                                               {:type :delay
-                                                                                :temporal-constraints [{:type  :bounds
-                                                                                                        :value [30 30]}]
-                                                                                }]
-                                                                        }]
-                                                               }]
-                                                       }]
-                                               }]
-                                       }]
-                               }]
-                       }
-                 }
-       }
- }
+{box
+ {:type :pclass,
+  :args [],
+  :fields
+  {:ball-in-motion
+   {:access :public,
+    :observable true,
+    :initial {:type :literal, :value false}}},
+  :modes
+  {:open {:type :literal, :value true},
+   :close {:type :literal, :value true}},
+  :methods
+  {open-lid
+   {:pre :close,
+    :post :open,
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body nil,
+    :args []},
+   close-lid
+   {:pre :open,
+    :post :close,
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body nil,
+    :args []},
+   reset
+   {:pre {:type :literal, :value true},
+    :post :open,
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body nil,
+    :args []}}},
+ cannon
+ {:type :pclass,
+  :args [],
+  :fields
+  {:ammunitions
+   {:access :private,
+    :observable true,
+    :initial {:type :literal, :value 5}},
+   :ready
+   {:access :public,
+    :observable true,
+    :initial {:type :literal, :value false}}},
+  :methods
+  {fire
+   {:pre {:type :literal, :value true},
+    :post {:type :literal, :value true},
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body nil,
+    :args [arg1 arg2]},
+   reset
+   {:pre {:type :literal, :value true},
+    :post {:type :literal, :value true},
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body nil,
+    :args []}},
+  :modes {}},
+ game
+ {:type :pclass,
+  :args [],
+  :fields
+  {:cannon-f
+   {:access :private,
+    :observable false,
+    :initial {:type :pclass-ctor, :name cannon, :args []}},
+   :box-f
+   {:access :private,
+    :observable false,
+    :initial {:type :pclass-ctor, :name box, :args []}}},
+  :methods
+  {main
+   {:pre {:type :literal, :value true},
+    :post {:type :literal, :value true},
+    :cost 0,
+    :reward 0,
+    :controllable false,
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :betweens [],
+    :body
+    {:type :parallel,
+     :body
+     [{:type :whenever,
+       :body
+       [{:type :tell,
+         :condition {:type :equal, :args [all-clear true]}}],
+       :condition {:type :equal, :args [:box-f.:ball-in-motion true]}}
+      {:type :whenever,
+       :body
+       [{:type :unless,
+         :body
+         [{:type :try,
+           :body
+           [{:type :sequence,
+             :body
+             [{:type :assert,
+               :body nil,
+               :condition {:type :equal, :args [:box-f :open]}}
+              {:type :maintain,
+               :body
+               [{:type :sequence,
+                 :body
+                 [{:type :plant-fn-symbol,
+                   :name cannon-f,
+                   :method fire,
+                   :args [123 "456"],
+                   :temporal-constraints
+                   [{:type :bounds, :value [1 7]}]}
+                  {:type :ask,
+                   :body nil,
+                   :condition
+                   {:type :equal, :args [all-clear true]}}]}],
+               :condition {:type :equal, :args [:box-f :open]}}
+              {:type :plant-fn-field,
+               :field :box-f,
+               :method close,
+               :args []}]}],
+           :catch
+           [{:type :sequence,
+             :body
+             [{:type :parallel,
+               :body
+               [{:type :plant-fn-field,
+                 :field :box-f,
+                 :method reset,
+                 :args []}
+                {:type :plant-fn-field,
+                 :field :cannon-f,
+                 :method reset,
+                 :args []}]}
+              {:type :delay,
+               :body nil,
+               :temporal-constraints
+               [{:type :bounds, :value [30 30]}]}]}],
+           :temporal-constraints [{:type :bounds, :value [2 20]}]}],
+         :condition {:type :equal, :args [:cannon-f.:ammunitions 0]}}],
+       :condition {:type :equal, :args [:cannon-f.:ready true]}}],
+     :temporal-constraints [{:type :bounds, :value [1 60]}]},
+    :args []}},
+  :modes {}}}

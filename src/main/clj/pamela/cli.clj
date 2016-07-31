@@ -104,30 +104,18 @@
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [model output]} options
-        loaded (load-models options)
-        model-var (if model (get-model-var model))
-        model-args-count (count (:args (meta model-var)))
-        model-ctor (if (zero? model-args-count) (deref model-var))
-        instance (if model-ctor (model-ctor))
-        instance-str (with-out-str (pprint instance))]
+  (let [{:keys [input output]} options
+        ir (parser/parse options)]
     (cond
-      (nil? model-var)
+      (not ir)
       (do
-        (log/errorf "unable to find model: %s" (or model "<unspecified>"))
-        false)
-      (pos? model-args-count)
-      (do
-        (log/errorf "model to build: %s takes %d arguments (need a zero arg constructor)" model model-args-count)
-        false)
-      (nil? model-ctor)
-      (do
-        (log/errorf "unable to get constructor for model to build: %s" model)
+        (println "unable to parse: %s" input)
+        (log/errorf "unable to parse: %s" input)
         false)
       :else
       (if (daemon/stdout? output)
-        (print instance-str)
-        (spit output instance-str)))))
+        (pprint ir)
+        (spit output (with-out-str (pprint ir)))))))
 
 (defn parse-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
@@ -354,11 +342,12 @@
         (usage summary))
       (try
         (action (assoc options :cwd cwd))
-        (catch Throwable e ;; note AssertionError not derived from Exception
+        ;; DEBUG
+        ;; (catch Throwable e ;; note AssertionError not derived from Exception
           ;; NOTE: this alternate exception is to help generate a stack trace
           ;; perhaps it's better to generate a stack trace in every case
           ;; HOWEVER pamelad *must* trap all exceptions at the top level
-          ;; (catch PrivilegedActionException e
+        (catch PrivilegedActionException e
           ;; FIXME: use proper logging
           (binding [*out* *err*]
             (println "ERROR caught exception:" (.getMessage e)))

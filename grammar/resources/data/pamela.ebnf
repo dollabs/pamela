@@ -35,7 +35,7 @@ field = keyword ( <LM> field-init+ <RM> | field-type )
 field-type = ( literal | symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
 field-init = ( initial | access | observable )
 
-initial = <INITIAL> ( keyword | field-type )
+initial = <INITIAL> field-type
 access = <ACCESS> keyword
 observable = <OBSERVABLE> boolean
 
@@ -69,7 +69,7 @@ sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
 tell = <LP> <TELL> cond-expr <RP>
-try = <LP> <TRY> opt-bounds? fn+ <LP> <CATCH> fn+ <RP> <RP>
+try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
