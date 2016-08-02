@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ### [Unreleased]
+
 Added
 * Added flexible field initializer and pclass constructor types
 * Changed method invocation to use '.' instead of '$'
+* Updated grammar and the railroad diagram
 
 ### [0.3.0] - 2016-07-11
 
