@@ -11,7 +11,7 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-(defproject pamela "0.3.0"
+(defproject pamela "0.4.0"
   :description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)"
   :url "https://github.com/dollabs/pamela"
   :scm {:url "https://github.com/dollabs/pamela.git"}
@@ -19,7 +19,7 @@
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.7.0"
+                 [com.taoensso/timbre "4.7.3"
                   :exclusions [org.clojure/tools.reader]]
                  [org.slf4j/slf4j-api "1.7.21"]
                  [com.fzakaria/slf4j-timbre "0.3.2"]
@@ -46,8 +46,8 @@
                  [compojure "1.5.1" :exclusions [commons-codec]]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
-                 [cljsjs/react-dom-server "15.2.1-1"]  ;; for sablono
-                 [cljsjs/react-dom "15.2.1-1"] ;; for sablono
+                 [cljsjs/react-dom-server "15.3.0-0"]  ;; for sablono
+                 [cljsjs/react-dom "15.3.0-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha38"]
                  [sablono "0.7.3"]
                  [cljs-http "0.1.41"

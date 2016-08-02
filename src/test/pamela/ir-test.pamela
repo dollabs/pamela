@@ -11,9 +11,14 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
+(defpclass pwrvals []
+  :meta {:version "0.2.0"
+         :doc "Enum for power values"}
+  :modes [:high :none])
+
 ;; Pamela plant class
 (defpclass box []
-  :inherit [thing cube]
+  ;; :inherit [thing cube]
   :meta {:version "0.0.1"
          :depends [[pwrvals "0.2.0"]]
          :icon "box.svg"
@@ -23,13 +28,13 @@
                             :access :public}
            :fred (lvar "fred")
            :dummy (lvar)
-           :enum-example (mode-of myenum :black)
+           :pwr (mode-of pwrvals :high)
            }
   :modes [:open :close]
   :transitions {:open:close {:pre :open :post :close :doc "lid closes"}
                 :close:open {:pre :close
-                             :post (and (= :box-f.:enum-example global-state)
-                                     (= (:box-f this):red)
+                             :post (and (= :pwr :high)
+                                     (= (:fred this) 123.456)
                                      (mode-of this :wacky))
                              :doc "lid opens"
                              :bounds [12 34]
@@ -66,15 +71,15 @@
               [])])
 
 ;; Pamela main / class or entry point for a control program
-(defpclass game []
+(defpclass game [power]
   :fields {:cannon-f (cannon true "fred" 123 bob :id "first-cannon" :interface "ZMQ")
            :box-f    (box)}
 
   :modes {:wacky true
-          :bizarre (= :cannot-f.:ammunitions 5)
-          :weird (and (= :box-f.:enum-example global-state)
-                   (= (:box-f this):red)
-                   (mode-of this :wacky))
+          :bizarre (= :cannon-f.:ammunitions 5)
+          :weird (and (= :box-f.:pwr :high)
+                   (= power :high)
+                   (= global-state true))
           }
   :methods [(defpmethod main
               []

@@ -19,22 +19,26 @@
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [clojure.java.io :refer :all] ;; for as-file
+            [pamela.pclass :refer :all]
             [pamela.utils :refer [make-url get-url]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
   (:import [java.lang
             Long Double]))
 
-(def zero-bounds {:type :bounds, :value [0 0]})
 
-(def default-bounds {:type :bounds, :value [0 :infinity]})
+(def zero-bounds [0 0])
+
+(def zero-bounds-type {:type :bounds, :value zero-bounds})
+
+(def default-bounds-type {:type :bounds, :value default-bounds})
 
 (def zero-delay {:type :delay
-                 :temporal-constraints [zero-bounds]
+                 :temporal-constraints [zero-bounds-type]
                  :body nil})
 
 (def default-delay {:type :delay
-                    :temporal-constraints [default-bounds]
+                    :temporal-constraints [default-bounds-type]
                     :body nil})
 
 (defn pamela-filename? [filename]
@@ -67,7 +71,7 @@
     v
     (if (symbol? v)
       {:type :arg-reference
-       :value v}
+       :name v}
       {:type :literal
        :value v})))
 
@@ -86,7 +90,7 @@
     (if-not a
       (merge
         {:type :pclass-ctor
-         :name name
+         :pclass name
          :args args}
         options)
       (let [args (if (map? a) args (conj args a))
@@ -168,7 +172,7 @@
             :cost 0
             :reward 0
             :controllable false
-            :temporal-constraints [default-bounds]
+            :temporal-constraints [default-bounds-type]
             :betweens []
             :body nil}
          args-seen? false
@@ -226,7 +230,7 @@
         (recur fn-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-fn-cond [f cond-expr & args]
-  (loop [fn-opts {:condition cond-expr } body [] a (first args) more (rest args)]
+  (loop [fn-opts {:condition cond-expr} body [] a (first args) more (rest args)]
     (if-not a
       (merge {:type f :body (if (empty? body) nil body)} fn-opts)
       (if (and (vector? a) (#{:fn-opt :delay-opt} (first a)))
@@ -420,24 +424,12 @@
                 :whenever (partial ir-fn-cond :whenever)
                 })
 
-(defn validate-condition [pclass fields modes condition]
-  (log/info "VALIDATE-CONDITION for" pclass
-    "\nfields:" (keys fields)
-    "\nmodes:" (if modes (keys modes))
-    "\ncondition:" condition)
-  condition)
+(def reference-types #{:mode-reference :field-reference :field-reference-mode
+                       :field-reference-field})
 
-(defn validate-modes [pclass fields modes]
-  (let [mode-conds (seq modes)]
-    (loop [vmodes {} mode-cond (first mode-conds) more (rest mode-conds)]
-      (if-not mode-cond
-        vmodes
-        (let [[mode cond] mode-cond
-              cond (validate-condition pclass fields nil cond)
-              vmodes (assoc vmodes mode cond)]
-          (recur vmodes (first more) (rest more)))))))
+(def literal-ref-types (conj reference-types :literal))
 
-;; Hoist state variables, disambiguate conditional expression operands
+
 
 ;; ;; :box-f , (:box-f this)
 ;; {:type :field-reference
@@ -460,16 +452,249 @@
 ;;  :pclass this ;; or other class
 ;;  :field :cannon-f
 ;;  :value :ammunitions} ;; is a field
+
+;; unknown (e.g. compared against the mode or field of a pclass arg)
+;; NOTE: a warning will be logged
+;;  {:type :literal
+;;   :value :high}
+
+;; pclass arguments
+;; {:type :arg-reference
+;;  :name power}
+
+;; state variables
+;; {:type :state-variable
+;;  :name global-state}
+
+(defn validate-keyword  [ir state-vars pclass fields modes context kw]
+  (let [[m-or-f ref] (map keyword (string/split (name kw) #"\.:" 2))
+        field-ref (get fields m-or-f)
+        field-pclass (if field-ref (get-in field-ref [:initial :pclass]))
+        mode-ref (get modes m-or-f)]
+    (if field-ref
+      (if ref
+        (if (get-in ir [field-pclass :fields ref])
+          ;; ref is field?
+          {:type :field-reference-field
+           :pclass 'this
+           :field m-or-f
+           :value ref} ;; is a field
+          (if (get-in ir [field-pclass :modes ref])
+            ;; ref is mode?
+            {:type :field-reference-mode
+             :pclass 'this
+             :field m-or-f
+             :value ref} ;; is a mode
+            {:type :error
+             :msg (str "field reference invalid: " kw)}))
+        {:type :field-reference
+         :pclass 'this
+         :field m-or-f})
+      (if mode-ref
+        (if ref
+          {:type :error
+           :msg (str "cannot reference the field of a mode: " kw)}
+          {:type :mode-reference
+           :pclass 'this
+           :mode m-or-f})
+        (do
+          (log/warn "unable to determine if this keyword"
+            "value is valid in pclass" pclass kw)
+          {:type :literal
+           :value kw})))))
+
+;; if one arg is
+;;   {:type :field-reference, :pclass this, :field :pwr}
+;; and we know
+;;   :initial {:type :mode-reference, :pclass pwrvals, :mode :none}
+;; then we can determine
+;;   (keys (get-in ir [pwrvals :modes])) ==> #{:high :none}
+;; such that when we see another arg
+;;   {:type :literal, :value :high}
+;; THEN we can convert it
+;;   :high ==> {:type :mode-reference, :pclass pwrvals, :mode :high}
+;; ALSO handle :field-reference-field
+(defn mode-qualification [ir dpclass fields args]
+  (loop [vargs [] a (first args) more (rest args)]
+    (if-not a
+      vargs
+      (let [{:keys [type value]} a
+            a (if (= type :literal)
+                (loop [va a b (first args) moar (rest args)]
+                  (if-not b
+                    va
+                    (if (= b a)
+                      (recur va (first moar) (rest moar))
+                      (let [a-value value
+                            {:keys [type pclass field value]} b
+                            pclass (if (= pclass 'this) dpclass pclass)
+                            fpclass (if (#{:field-reference
+                                           :field-reference-field} type)
+                                      (get-in ir [pclass :fields
+                                                  field :initial :pclass]))
+                            fpclass (if (and fpclass
+                                          (= type :field-reference-field))
+                                      (get-in ir [fpclass :fields
+                                                  value :initial :pclass])
+                                      fpclass)
+                            values (if fpclass
+                                     (set (keys (get-in ir [fpclass :modes]))))
+                            va (if (and (set? values) (values a-value))
+                                 {:type :mode-reference,
+                                  :pclass fpclass,
+                                  :mode a-value}
+                                 va)]
+                        (recur va (first moar) (rest moar))))))
+                a)]
+        (recur (conj vargs a) (first more) (rest more))))))
+
+(defn validate-condition [ir state-vars pclass fields modes context condition]
+  ;; (log/info "VALIDATE-CONDITION for" pclass
+  ;;   "\nfields:" (keys fields)
+  ;;   "\nmodes:" (keys modes)
+  ;;   "\ncontext:" context
+  ;;   "\ncondition:" condition)
+  (let [{:keys [type args]} condition
+        pclass-args (get-in ir [pclass :args])]
+    (cond
+      (and (nil? type) (keyword? condition)) ;; bare keyword
+      (validate-keyword ir state-vars pclass fields modes context condition)
+      (literal-ref-types type)
+      condition
+      (= type :equal)
+      (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
+        (if-not a
+          (assoc vcond :args (mode-qualification ir pclass fields vargs))
+          (cond
+            (map? a) ;; already specified by instaparse
+            (recur vcond (conj vargs a) (first more) (rest more))
+            (keyword? a) ;; must disambiguate here
+            (recur vcond
+              (conj vargs (validate-keyword ir state-vars pclass fields modes
+                            context a))
+              (first more) (rest more))
+            (symbol? a) ;; must resolve in scope here
+            (recur vcond (conj vargs
+                           (if (some #(= % a) pclass-args)
+                             {:type :arg-reference
+                              :name a}
+                             (do
+                               (swap! state-vars assoc a
+                                 {:type :state-variable})
+                               {:type :state-variable
+                                :name a})))
+              (first more) (rest more))
+            :else ;; must be a literal
+            (recur vcond (conj vargs {:type :literal :value a})
+              (first more) (rest more))
+            )))
+      :else ;; :and :or :not :implies => recurse on args
+      (do
+        {:type type
+         :args (mapv
+                 (partial validate-condition ir state-vars
+                   pclass fields modes
+                   (conj context type))
+                 args)}))))
+
+(defn validate-body [ir state-vars pclass fields modes method mbody]
+  (loop [vmbody []
+         b (if (vector? mbody) (first mbody) mbody)
+         more (if (vector? mbody) (rest mbody))]
+    (if-not b
+      vmbody
+      (let [{:keys [condition body]} b
+            condition (if condition
+                        (validate-condition ir state-vars pclass fields modes
+                          [:method method :body] condition))
+            body (if body
+                   (validate-body ir state-vars pclass fields modes method body))
+            vb (assoc-if b
+                 :condition condition
+                 :body body)]
+        (recur (conj vmbody vb) (first more) (rest more))))))
+
+(defn validate-modes-new [ir state-vars pclass fields modes]
+  (let [mode-conds (seq modes)]
+    (loop [vmodes {} mode-cond (first mode-conds) more (rest mode-conds)]
+      (if-not mode-cond
+        vmodes
+        (let [[mode cond] mode-cond
+              cond (validate-condition ir state-vars pclass fields modes
+                     [:mode mode] cond)
+              vmodes (assoc vmodes mode cond)]
+          (recur vmodes (first more) (rest more)))))))
+
+(defn validate-transitions-new [ir state-vars pclass fields modes transitions]
+  (let [from-to-transitions (seq transitions)]
+    (loop [vtransitions {}
+           from-to-transition (first from-to-transitions)
+           more (rest from-to-transitions)]
+      (if-not from-to-transition
+        vtransitions
+        (let [[from-to transition] from-to-transition
+              [from to] (map keyword (string/split (name from-to) #":"))
+              ;; TODO check that from and to are valid modes
+              {:keys [pre post]} transition
+              pre (if pre
+                    (validate-condition ir state-vars pclass fields modes
+                      [:transition from-to :pre] pre))
+              post (if post
+                     (validate-condition ir state-vars pclass fields modes
+                       [:transition from-to :post] post))
+              transition (assoc-if transition
+                           :pre pre
+                           :post post)
+              vtransitions (assoc vtransitions from-to transition)]
+          (recur vtransitions (first more) (rest more)))))))
+
+(defn validate-methods-new [ir state-vars pclass fields modes methods]
+  (let [method-mdefs (seq methods)]
+    (loop [vmethods {}
+           method-mdef (first method-mdefs)
+           more (rest method-mdefs)]
+      (if-not method-mdef
+        vmethods
+        (let [[method mdef] method-mdef
+              {:keys [pre post body]} mdef
+              pre (if pre
+                    (validate-condition ir state-vars pclass fields modes
+                      [:method method :pre] pre))
+              post (if post
+                     (validate-condition ir state-vars pclass fields modes
+                       [:method method :post] post))
+              body (if-not (empty? body)
+                     (validate-body ir state-vars pclass fields modes
+                       method body))
+              mdef (assoc-if mdef
+                     :pre pre
+                     :post post
+                     :body body)
+              vmethods (assoc vmethods method mdef)]
+          (recur vmethods (first more) (rest more)))))))
+
+;; Hoist state variables, disambiguate conditional expression operands
 (defn validate-pamela [ir]
-  (let [sym-vals (seq ir)]
+  (let [sym-vals (seq ir)
+        state-vars (atom {})]
     (loop [vir {} sym-val (first sym-vals) more (rest sym-vals)]
       (if-not sym-val
-        vir
+        (merge vir @state-vars)
         (let [[sym val] sym-val
               {:keys [type args fields modes transitions methods]} val
               pclass? (= type :pclass)
-              modes (if pclass? (validate-modes sym fields modes))
-              val (if pclass? (assoc val :modes modes) val)
+              modes (if (and pclass? modes)
+                      (validate-modes-new ir state-vars sym fields modes))
+              transitions (if (and pclass? transitions)
+                            (validate-transitions-new ir state-vars
+                              sym fields modes transitions))
+              methods (if (and pclass? methods)
+                            (validate-methods-new ir state-vars
+                              sym fields modes methods))
+              val (assoc-if val
+                    :modes modes
+                    :transitions transitions
+                    :methods methods)
               vir (assoc vir sym val)]
           (recur vir (first more) (rest more)))))))
 
