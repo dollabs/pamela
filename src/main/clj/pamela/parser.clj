@@ -383,6 +383,7 @@
                 :mode-init ir-mode-init
                 :mode-map ir-merge
                 :modes (partial ir-map-kv :modes)
+                :natural ir-integer
                 :not-expr (partial ir-cond-expr :not)
                 :number ir-number
                 :number-ref identity

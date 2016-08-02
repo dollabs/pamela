@@ -120,8 +120,9 @@ keyword = <':'> #'[A-Za-z0-9:*-.]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
-float = integer <'.'> integer
-integer = #'-?[0-9]+'
+float = integer <'.'> natural
+integer = #'[-]?[0-9]+'
+natural = #'[0-9]+'
 
 ACCESS = <':access'>
 AND = <'and'>
