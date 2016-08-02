@@ -201,7 +201,9 @@
 
 (defn ir-plant-fn [& args]
   (let [[pclass method used] (if (symbol? (first args))
-                               [(first args) (second args) 2]
+                               (if (symbol? (second args))
+                                 [(first args) (second args) 2] ;; remote method
+                                 ['this (first args) 1]) ;; local method
                                (let [[p m]
                                      (string/split (name (first args)) #"\." 2)]
                                  [(keyword p) (symbol m) 1]))

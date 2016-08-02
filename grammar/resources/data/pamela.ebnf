@@ -64,7 +64,7 @@ delay = <LP> <DELAY> delay-opt*  <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> symbol <'.'> symbol plant-opt* argval* <RP> | <LP> keyword plant-opt* argval* <RP>
+plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt* argval* <RP>
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
@@ -121,7 +121,7 @@ boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
 float = integer <'.'> integer
-integer = '-'? #'[0-9]+'
+integer = #'-?[0-9]+'
 
 ACCESS = <':access'>
 AND = <'and'>
