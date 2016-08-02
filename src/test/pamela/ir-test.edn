@@ -192,7 +192,7 @@
           {:type :equal,
            :args
            [{:type :state-variable, :name all-clear}
-            {:type :literal, :value true}]}}],
+            {:type :method-arg-reference, :name initial-state}]}}],
         :condition
         {:type :equal,
          :args
@@ -446,6 +446,6 @@
               :args []}]}]}],
         :label :soft-parallel}],
       :temporal-constraints [{:type :bounds, :value [1 60]}]}],
-    :args []}}},
+    :args [initial-state]}}},
  global-state {:type :state-variable},
  all-clear {:type :state-variable}}

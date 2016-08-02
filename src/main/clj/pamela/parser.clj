@@ -185,7 +185,8 @@
                                [false (merge m a)] ;; merge in cond-map
                                [0 (assoc m :args a)]) ;; merge in :args
                              (if (zero? args-seen?) ;; fn
-                               [1 (assoc m :body a)]
+                               [1 (assoc m :body
+                                    (if (vector? a) a [a]))]
                                [(inc args-seen?) (update-in m [:betweens]
                                                    conj a)]))]
         (recur m args-seen? (first more) (rest more))))))
@@ -555,7 +556,10 @@
   ;;   "\ncontext:" context
   ;;   "\ncondition:" condition)
   (let [{:keys [type args]} condition
-        pclass-args (get-in ir [pclass :args])]
+        pclass-args (get-in ir [pclass :args])
+        [c0 c1 c2] context
+        method (if (= c0 :method) c1)
+        method-args (if method (get-in ir [pclass :methods method :args]))]
     (cond
       (and (nil? type) (keyword? condition)) ;; bare keyword
       (validate-keyword ir state-vars pclass fields modes context condition)
@@ -575,14 +579,18 @@
               (first more) (rest more))
             (symbol? a) ;; must resolve in scope here
             (recur vcond (conj vargs
-                           (if (some #(= % a) pclass-args)
-                             {:type :arg-reference
+                           (if (and method-args
+                                 (some #(= % a) method-args))
+                             {:type :method-arg-reference
                               :name a}
-                             (do
-                               (swap! state-vars assoc a
-                                 {:type :state-variable})
-                               {:type :state-variable
-                                :name a})))
+                             (if (some #(= % a) pclass-args)
+                               {:type :arg-reference
+                                :name a}
+                               (do
+                                 (swap! state-vars assoc a
+                                   {:type :state-variable})
+                                 {:type :state-variable
+                                  :name a}))))
               (first more) (rest more))
             :else ;; must be a literal
             (recur vcond (conj vargs {:type :literal :value a})
@@ -656,7 +664,7 @@
       (if-not method-mdef
         vmethods
         (let [[method mdef] method-mdef
-              {:keys [pre post body]} mdef
+              {:keys [pre post args body]} mdef
               pre (if pre
                     (validate-condition ir state-vars pclass fields modes
                       [:method method :pre] pre))

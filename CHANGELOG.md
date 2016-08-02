@@ -7,6 +7,12 @@ Added
 * Added flexible field initializer and pclass constructor types
 * Changed method invocation to use '.' instead of '$'
 
+### [0.4.0] - 2016-08-02
+
+Change
+- New PAMELA intermediate representation
+-
+
 ### [0.3.0] - 2016-07-11
 
 Added
