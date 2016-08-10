@@ -524,14 +524,15 @@
             net-objects (build-non-primitive non-primitive)
             network-id (:network-id net-objects)
             non-primitive (or network-id false)
+            positional-args (mapv #(first (vals %)) args)
+            argsmap (apply merge args)
             act-details (if delay?
                           {:controllable (or controllable false)}
                           {:plant (str pclass)
                            :plantid (or id "")
-                           ;; :command method
-                           :command (if (pos? (count args))
-                                      (apply str method " " args)
-                                      method)
+                           :command method
+                           :args positional-args
+                           :argsmap argsmap
                            :controllable (or controllable false)
                            :non-primitive non-primitive})
             act-details (assoc-if act-details
@@ -1070,8 +1071,10 @@
         out-format (or out-format "tpn")
         out (case out-format
               "tpn" (with-out-str (pp/pprint tpn))
-              "json" (with-out-str (json/pprint tpn))
-              "cytoscape" (with-out-str (json/pprint (tpn->cytoscape tpn)))
+              "json" (with-out-str (json/pprint tpn :escape-slash false))
+              "cytoscape" (with-out-str
+                            (json/pprint (tpn->cytoscape tpn)
+                              :escape-slash false))
               "dot" (tpn->dot tpn)
               ;; default
               (str "ERROR: unknown format: " out-format))]
@@ -1133,8 +1136,10 @@
                 "tpn" tpn
                 ;; consider...
                 ;; "tpn" (with-out-str (pp/pprint tpn))
-                "json" (with-out-str (json/pprint tpn))
-                "cytoscape" (with-out-str (json/pprint (tpn->cytoscape tpn)))
+                "json" (with-out-str (json/pprint tpn) :escape-slash false)
+                "cytoscape" (with-out-str
+                              (json/pprint (tpn->cytoscape tpn)
+                                :escape-slash false))
                 "dot" (tpn->dot tpn)
                 ;; default
                 (str "ERROR: unknown format: " out-format))]
