@@ -28,13 +28,14 @@
                   :exclusions [org.clojure/clojure]]
                  [instaparse "1.4.2"]
                  ;; -------
-                 [org.clojure/clojurescript "1.9.89"
+                 [org.clojure/clojurescript "1.9.216"
                   :scope "provided"
                   :exclusions [org.clojure/tools.reader]]
                  [org.clojure/core.async "0.2.385"]
                  [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
-                 [environ "1.0.3"]
+                 [environ "1.1.0"]
+                 [me.raynes/fs "1.4.6"]
                  ;; required for elastich
                  [clj-http "3.1.0"
                   :exclusions [commons-io]]
@@ -49,7 +50,7 @@
                  [cljsjs/react-dom-server "15.3.0-0"]  ;; for sablono
                  [cljsjs/react-dom "15.3.0-0"] ;; for sablono
                  [org.omcljs/om "1.0.0-alpha38"]
-                 [sablono "0.7.3"]
+                 [sablono "0.7.4"]
                  [cljs-http "0.1.41"
                   :exclusions [org.clojure/core.async]]
                  ;; the following are to resolve dependency conflicts

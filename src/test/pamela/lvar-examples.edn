@@ -1,0 +1,61 @@
+{plant
+ {:type :pclass,
+  :args [],
+  :methods
+  {take-high-res-images
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints
+    [{:type :bounds,
+      :value {:type :lvar, :name "high-res-bounds", :default [5 10]}}],
+    :reward 0,
+    :controllable false,
+    :betweens [],
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Take High Res Image"},
+   take-medium-res-images
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :betweens [],
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Take Medium Res Image"}}},
+ example
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :betweens [],
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :choose,
+      :body
+      [{:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method take-high-res-images,
+          :args []}]}
+       {:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method take-medium-res-images,
+          :args []}],
+        :temporal-constraints
+        [{:type :bounds,
+          :value
+          {:type :lvar, :name "med-res-bounds", :default [3 6]}}]}]}],
+    :doc "the tpn"}}}}

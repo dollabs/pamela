@@ -22,8 +22,8 @@
             [clojure.walk :refer [prewalk postwalk]]
             [pamela.daemon :as daemon]
             [pamela.tpnrecords :as tpns]
-            [pamela.pclass :refer :all]
-            [pamela.models :refer [load-pamela-project load-pamela-string]]
+            ;; [pamela.pclass :refer :all]
+            ;; [pamela.models :refer [load-pamela-project load-pamela-string]]
             [avenir.utils :refer [concatv assoc-if keywordize]]
             [pamela.web :as web]
             [clojure.tools.logging :as log]
@@ -34,6 +34,19 @@
             [aleph.tcp :as tcp]))
 
 ;; -----------------------------------------------------------------------
+
+(defn boolean?
+  "Returns true of x is either true or false"
+  {:added "0.e.0"}
+  [x]
+  (or (true? x) (false? x)))
+
+(defn list-or-cons?
+  "Returns true of x is a list"
+  {:added "0.2.0"}
+  [x]
+  (or (instance? clojure.lang.PersistentList x)
+    (instance? clojure.lang.Cons x)))
 
 ;; DEBUG
 (defn map-has-nil-key? [m]
@@ -664,8 +677,9 @@
   the field representing the TPN, and the method in the TPN to use."
   {:added "0.2.0"}
   [pclass field method-sym]
-  (if-not (pclass-instance? pclass)
-    (throw (AssertionError. "requires a pclass instance")))
+  ;; FIXME
+  ;; (if-not (pclass-instance? pclass)
+  ;;   (throw (AssertionError. "requires a pclass instance")))
   (tpns/reset-tpnsym!)
   (let [tpn (get-in pclass [:fields field :initial])
         _ (if (nil? tpn)
@@ -1058,10 +1072,11 @@
                      :else
                      (throw (AssertionError.
                               (str "construct-tpn called with bad type for tpn-method: " (type tpn-method)))))
-        demo-class (if-let [d (get-model demo-class)] d
-                           (throw (AssertionError.
-                                    (str "construct-tpn undefined demo-class: "
-                                      demo-class))))
+        demo-class nil ;; FIXME
+        ;; (if-let [d (get-model demo-class)] d
+        ;;                    (throw (AssertionError.
+        ;;                             (str "construct-tpn undefined demo-class: "
+        ;;                               demo-class))))
         demo (demo-class)
         ;; _ (println "demo-class" demo-class "tpn-field" tpn-field
         ;;     "tpn-method" tpn-method)
@@ -1090,44 +1105,51 @@
         (AssertionError.
           (str "construct-tpn-cfm requires a C:F:M argument where C is the demo-class, F is the TPN field and M is the tpn-method: " cfm))))))
 
+;; NOTE loaded is now in PAMELA IR
 (defn load-tpn
   "Load a tpn, loaded is the list of loaded class symbols.
   Presumably one symbol is the plant (defpclass taking no arguments)
   and the other symbol is the TPN (defpclass taking one argument)."
   {:added "0.2.0"}
   [loaded & [out-format]]
-  (if-not (= 2 (count loaded))
-    (throw (AssertionError. "load-tpn expects only two classes")))
+  ;; NO LONGER NECESSARY
+  ;; (if-not (= 2 (count loaded))
+  ;;   (throw (AssertionError. "load-tpn expects only two classes")))
   ;; ONE of them must be the plant (zero args)
   ;; the OTHER must be the TPN and have exactly one pmethod (one arg)
-  (let [plant (first (filter (comp zero? count :args meta get-model-var) loaded))
-        tpn-sym (first (filter (comp pos? count :args meta get-model-var) loaded))
-        tpn-var (if tpn-sym (get-model-var tpn-sym))
-        arglist (if tpn-var (:args (meta tpn-var)))
-        args (map lvar arglist)
-        tpn-fun (if tpn-var (deref tpn-var))
-        tpn-instance (apply tpn-fun args) ;; create an instance
-        methods (keys (:methods tpn-instance))
-        method (first methods)]
-    (if (nil? plant)
-      (throw (AssertionError. "load-tpn does not define a plant")))
-    (if (nil? tpn-sym)
-      (throw (AssertionError. "load-tpn does not define a tpn class")))
-    (if-not (= 1 (count methods))
-      (throw (AssertionError. "load-tpn expects tpn class with exactly one method")))
+  (let [
+        ;; plant (first (filter (comp zero? count :args meta get-model-var) loaded))
+        ;; tpn-sym (first (filter (comp pos? count :args meta get-model-var) loaded))
+        ;; tpn-var (if tpn-sym (get-model-var tpn-sym))
+        ;; arglist (if tpn-var (:args (meta tpn-var)))
+        ;; args (map lvar arglist)
+        ;; tpn-fun (if tpn-var (deref tpn-var))
+        ;; tpn-instance (apply tpn-fun args) ;; create an instance
+        ;; methods (keys (:methods tpn-instance))
+        ;; method (first methods)
+        a 1]
+    ;; (if (nil? plant)
+    ;;   (throw (AssertionError. "load-tpn does not define a plant")))
+    ;; (if (nil? tpn-sym)
+    ;;   (throw (AssertionError. "load-tpn does not define a tpn class")))
+    ;; (if-not (= 1 (count methods))
+    ;;   (throw (AssertionError. "load-tpn expects tpn class with exactly one method")))
     ;; (println "DEBUG Will construct tpn based on" tpn-sym "method" method "using" plant)
-    (let [tpn-pclass-str (str "(defpclass my-tpn []\n"
-                           "  :fields {:plant (" (name plant) ")\n"
-                           "  :tpn (" (name tpn-sym) " plant)})")
+    (let [
+          ;; tpn-pclass-str (str "(defpclass my-tpn []\n"
+          ;;                  "  :fields {:plant (" (name plant) ")\n"
+          ;;                  "  :tpn (" (name tpn-sym) " plant)})")
           ;; _ (println "DEBUG TPN" tpn-pclass-str)
-          legal (try (load-pamela-string tpn-pclass-str)
-                     true
-                     (catch Exception e (.. e getCause getMessage)))
-          _ (if-not (true? legal)
-              (throw (AssertionError. (str "load-tpn could not create a synthetic class: " legal))))
-          my-tpn (get-model "my-tpn")
-          my-tpn-instance (my-tpn)
-          tpn (create-tpn my-tpn-instance :tpn method)
+          legal false ;; FIXME
+                 ;; (try (load-pamela-string tpn-pclass-str)
+                 ;;     true
+                 ;;     (catch Exception e (.. e getCause getMessage)))
+          ;; _ (if-not (true? legal)
+          ;;     (throw (AssertionError. (str "load-tpn could not create a synthetic class: " legal))))
+          ;; my-tpn (get-model "my-tpn")
+          ;; my-tpn-instance (my-tpn)
+          ;; tpn (create-tpn my-tpn-instance :tpn method)
+          tpn loaded ;; FIXME
           out-format (or out-format "tpn")
           out (case out-format
                 "tpn" tpn
@@ -1148,11 +1170,14 @@
   "Load one or more TPN files (typically a plant and a tpn)"
   {:added "0.2.0"}
   [& filenames]
-  (binding [*pclasses* (atom [])]
-    ;; (println "loading tpn files from:" filenames)
-    (doseq [filename filenames]
-      (load-pamela-project filename))
-    (load-tpn @*pclasses*)))
+  nil ;; FIXME
+  )
+  ;; (binding [*pclasses* (atom [])]
+  ;;   ;; (println "loading tpn files from:" filenames)
+  ;;   ;; FIXME
+  ;;   ;; (doseq [filename filenames]
+  ;;   ;;   (load-pamela-project filename))
+  ;;   (load-tpn @*pclasses*)))
 
 (defn visualize
   "Visualize TPN as SVG

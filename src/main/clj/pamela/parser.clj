@@ -18,6 +18,7 @@
             [clojure.pprint :as pp :refer [pprint]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
+            ;; [me.raynes.fs :as fs]
             [clojure.java.io :refer :all] ;; for as-file
             [pamela.pclass :refer :all]
             [pamela.utils :refer [make-url get-url]]
@@ -75,9 +76,12 @@
       {:type :literal
        :value v})))
 
-(defn ir-lvar-ctor [& [name]]
-  {:type :lvar
-   :name (or name :gensym)})
+(defn ir-lvar-ctor [& args]
+  (let [[name lvar-init] args]
+    (assoc-if
+      {:type :lvar
+       :name (or name :gensym)}
+      :default lvar-init)))
 
 (defn ir-id [id]
   {:id id})
@@ -191,7 +195,7 @@
                                                    conj a)]))]
         (recur m args-seen? (first more) (rest more))))))
 
-(defn ir-bounds [lb ub]
+(defn ir-bounds-literal [lb ub]
   [lb (if (= ub [:INFINITY]) :infinity ub)])
 
 (defn ir-opt-bounds [bounds]
@@ -335,7 +339,8 @@
                 :between-starts (partial ir-between :between-starts)
                 :between-stmt identity
                 :boolean ir-boolean
-                :bounds ir-bounds
+                :bounds identity
+                :bounds-literal ir-bounds-literal
                 :choice ir-choice
                 ;; :choice-opt handled by ir-choice
                 :choose (partial ir-fn :choose)
@@ -374,6 +379,7 @@
                 :label (partial ir-map-kv :label)
                 :literal identity
                 :lvar-ctor ir-lvar-ctor
+                :lvar-init identity
                 :maintain (partial ir-fn-cond :maintain)
                 :meta (partial ir-k-merge :meta)
                 :meta-entry identity
@@ -400,6 +406,7 @@
                 :pclass-ctor-option identity
                 :pclass-name identity
                 :plant-fn ir-plant-fn
+                :plant-fn-symbol identity
                 ;; :plant-opt handled in ir-plant-fn
                 :post (partial ir-map-kv :post)
                 :pre (partial ir-map-kv :pre)

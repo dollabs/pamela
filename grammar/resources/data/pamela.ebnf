@@ -64,7 +64,8 @@ delay = <LP> <DELAY> delay-opt*  <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt* argval* <RP>
+plant-fn = <LP> ( symbol <'.'> symbol | plant-fn-symbol | keyword ) plant-opt* argval* <RP>
+plant-fn-symbol = !DELAY symbol
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
@@ -98,7 +99,8 @@ controllable = <CONTROLLABLE> boolean
 
 number-ref = ( symbol | lvar-ctor | number )
 
-lvar-ctor = <LP> <LVAR> string? <RP>
+lvar-ctor = ( <LP> <LVAR> <RP> | <LP> <LVAR> string lvar-init? <RP> )
+lvar-init = literal | bounds-literal
 
 pclass-ctor = <LP> pclass-name pclass-ctor-arg* pclass-ctor-option* <RP>
 pclass-name = !MODE_OF symbol
@@ -109,7 +111,8 @@ reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> )
 id = <ID> string
 interface = <INTERFACE> string
 
-bounds = <LB> number ( number | INFINITY ) <RB>
+bounds = bounds-literal | lvar-ctor
+bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
 symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
 literal = ( boolean | string | keyword | number )

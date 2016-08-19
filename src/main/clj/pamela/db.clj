@@ -33,8 +33,9 @@
             [avenir.utils :refer [and-fn assoc-if]]
             [clojure.tools.logging :as log]
             [pamela.daemon :as daemon]
-            [pamela.pclass :as pclass]
-            [pamela.models :as models])
+            ;; [pamela.pclass :as pclass]
+            ;; [pamela.models :as models]
+            )
   (:import [java.net.URL]))
 
 ;; (def #^{:added "0.2.0"} db
@@ -108,8 +109,9 @@
   []
   (let [max 30] ;; * 2 seconds
     (loop [i 0
-           clj-models (mapv str (pclass/list-models))
-           db-models (list-models {:simple true})]
+           clj-models [] ;; FIXME (mapv str (pclass/list-models))
+           db-models [] ;; FIXME (list-models {:simple true})
+           ]
       (if (= db-models clj-models)
         (do
           (log/debug (str "sync-models-to-db complete:" db-models))
@@ -269,10 +271,12 @@
           (doseq [i order]
             (let [model-data (models i)
                   {:keys [name source url id]} model-data
-                  load-result (models/load-pamela-string source url)]
+                  load-result nil ;; FIXME (models/load-pamela-string source url)
+                  ]
               (if (empty? load-result) ;; model loaded correctly
-                (let [model-var (pclass/get-model-var name)]
-                  (alter-meta! model-var assoc :id id))
+                ;; FIXME
+                ;; (let [model-var (pclass/get-model-var name)]
+                ;;   (alter-meta! model-var assoc :id id))
                 (log/error (str "unable to load model \""
                              (:name model-data) "\" result:" load-result))))))
         true))))
@@ -336,7 +340,9 @@
       (println "delete-all-models..."))
     (doseq [id (map :id (list-models))]
       (delete-model-by-id id options))
-    (pclass/delete-all-models)))
+    ;; FIXME
+    ;; (pclass/delete-all-models)
+    ))
 
 (defmacro with-db
   "Run PAMELA operations on database.  If the :database option
@@ -408,7 +414,7 @@
         (when (> n 1)
           (println "WARNING:" n "copies of this model found:" model-name))
         (when (pos? n)
-          (let [rdepends (pclass/model-reverse-depends)
+          (let [rdepends nil ;; FIXME (pclass/model-reverse-depends)
                 rdeps (:rdepends (get rdepends model))]
             (when
                 (if (pos? (count rdeps))
@@ -426,8 +432,10 @@
                   true)
               (doseq [id (map :id hits)]
                 (delete-model-by-id id options)
-                (if-not db-only
-                  (pclass/delete-model model))))))))
+                ;; FIXME
+                ;; (if-not db-only
+                ;;   (pclass/delete-model model))
+                ))))))
     ))
 
 (defn export-model
@@ -473,60 +481,69 @@
   "Import model into the database"
   {:added "0.2.0"}
   [options]
-  (when-not (running?)
-    (throw (AssertionError. "database not running")))
-  (let [{:keys [verbose]} options ;; model not required
-        verbose? (pos? (or verbose 0))
-        [url source] (get-input options)]
-    (if verbose?
-      (println "import-model" (count source) "bytes from" url))
-    ;; FIXME if source is missing
-    (when source
-      (try
-        (binding [pclass/*pclasses* (atom [])]
-          (let [load-result (models/load-pamela-string source url)]
-            (if-not (empty? load-result)
-              (log/errorf "unable to import: %s" load-result)
-              (let [new-models @pclass/*pclasses*]
-                (if verbose?
-                  (println "import-model found these new models:" new-models))
-                (doseq [model new-models]
-                  (let [model-name (name model)
-                        hits (get-model model-name) ;; stale version in DB?
-                        ;; NOTE map would be elided here as the value isn't used
-                        _ (mapv #(delete-model-by-id (:id %) {:verbose 2}) hits)
-                        model-var (pclass/get-model-var model)
-                        model-meta (meta model-var)
-                        {:keys [version depends doc]} model-meta
-                        model-data (-> {:name model-name
-                                        :url url ;; string
-                                        :source source}
-                                     (assoc-if :version version)
-                                     (assoc-if :depends depends)
-                                     (assoc-if :doc doc))
-                        result (doc/create (db-conn) db-index "model" model-data)
-                        id (:_id result)]
-                    (if id
-                      (do
-                        (alter-meta! model-var assoc :id id)
-                        (if (and verbose (pos? verbose) (> verbose 1))
-                          (println "imported:" model-name "as id:" id)))
-                      (log/errorf "could not create model: %s" result))))))))
-          (catch Exception e
-            (println "ERROR: invalid model:" (.. e getCause getMessage)))))))
+  (let [msg "import-model not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
+  ;; (when-not (running?)
+  ;;   (throw (AssertionError. "database not running")))
+  ;; (let [{:keys [verbose]} options ;; model not required
+  ;;       verbose? (pos? (or verbose 0))
+  ;;       [url source] (get-input options)]
+  ;;   (if verbose?
+  ;;     (println "import-model" (count source) "bytes from" url))
+  ;;   ;; FIXME if source is missing
+  ;;   (when source
+  ;;     (try
+  ;;       (binding [pclass/*pclasses* (atom [])]
+  ;;         (let [load-result nil ;; FIXME (models/load-pamela-string source url)
+  ;;               ]
+  ;;           (if-not (empty? load-result)
+  ;;             (log/errorf "unable to import: %s" load-result)
+  ;;             (let [new-models @pclass/*pclasses*]
+  ;;               (if verbose?
+  ;;                 (println "import-model found these new models:" new-models))
+  ;;               (doseq [model new-models]
+  ;;                 (let [model-name (name model)
+  ;;                       hits (get-model model-name) ;; stale version in DB?
+  ;;                       ;; NOTE map would be elided here as the value isn't used
+  ;;                       _ (mapv #(delete-model-by-id (:id %) {:verbose 2}) hits)
+  ;;                       model-var (pclass/get-model-var model)
+  ;;                       model-meta (meta model-var)
+  ;;                       {:keys [version depends doc]} model-meta
+  ;;                       model-data (-> {:name model-name
+  ;;                                       :url url ;; string
+  ;;                                       :source source}
+  ;;                                    (assoc-if :version version)
+  ;;                                    (assoc-if :depends depends)
+  ;;                                    (assoc-if :doc doc))
+  ;;                       result (doc/create (db-conn) db-index "model" model-data)
+  ;;                       id (:_id result)]
+  ;;                   (if id
+  ;;                     (do
+  ;;                       (alter-meta! model-var assoc :id id)
+  ;;                       (if (and verbose (pos? verbose) (> verbose 1))
+  ;;                         (println "imported:" model-name "as id:" id)))
+  ;;                     (log/errorf "could not create model: %s" result))))))))
+  ;;         (catch Exception e
+  ;;           (println "ERROR: invalid model:" (.. e getCause getMessage)))))))
 
 (defn describe-model
   "Analyze and describe the given model"
   {:added "0.2.0"}
   [options]
-  (when-not (running?)
-    (throw (AssertionError. "database not running")))
-  (let [{:keys [verbose model output]} options
-        verbose? (pos? (or verbose 0))
-        model-var (pclass/get-model-var model true)]
-    (if-not model-var
-      (println "ERROR: model not found:" model)
-      (let [model-desc (pclass/describe-model model)]
-        (if (daemon/stdout? output)
-          (print model-desc)
-          (spit output model-desc))))))
+  (let [msg "describe-model not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
+  ;; (when-not (running?)
+  ;;   (throw (AssertionError. "database not running")))
+  ;; (let [{:keys [verbose model output]} options
+  ;;       verbose? (pos? (or verbose 0))
+  ;;       model-var (pclass/get-model-var model true)]
+  ;;   (if-not model-var
+  ;;     (println "ERROR: model not found:" model)
+  ;;     (let [model-desc (pclass/describe-model model)]
+  ;;       (if (daemon/stdout? output)
+  ;;         (print model-desc)
+  ;;         (spit output model-desc))))))

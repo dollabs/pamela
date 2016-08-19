@@ -21,8 +21,8 @@
             [pamela.utils :refer [get-input var-of repl?]]
             [pamela.db :as db]
             [pamela.daemon :as daemon]
-            [pamela.pclass :as pclass :refer [get-model-var]]
-            [pamela.models :as models]
+            ;; [pamela.pclass :as pclass :refer [get-model-var]]
+            ;; [pamela.models :as models]
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
@@ -75,30 +75,38 @@
   "List models (--simple for names only, --load for memory only)"
   {:added "0.2.0"}
   [options]
-  (if (:load options) ;; memory only
-    (println (pclass/list-models false))
-    (db/with-db options
-      (let [models (db/list-models options)]
-        (if (:simple options)
-          (doseq [m models] (println m))
-          (pprint models))))))
+  (let [msg "list-models not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
+  ;; (if (:load options) ;; memory only
+  ;;   (println (pclass/list-models false))
+  ;;   (db/with-db options
+  ;;     (let [models (db/list-models options)]
+  ;;       (if (:simple options)
+  ;;         (doseq [m models] (println m))
+  ;;         (pprint models))))))
 
 (defn load-models
   "Load model(s) in memory only"
   {:added "0.2.0"}
   [options]
-  (binding [pclass/*pclasses* (atom [])]
-    (let [{:keys [verbose]} options
-          [url source] (get-input options)
-          load-result (models/load-pamela-string source url)]
-          (if-not (empty? load-result)
-            (do
-              (log/errorf "unable to load: %s" load-result)
-              false)
-            (do
-              (if (> verbose 1)
-                (println "loaded classes:" @pclass/*pclasses*))
-              @pclass/*pclasses*)))))
+  (let [msg "load-models not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
+  ;; (binding [pclass/*pclasses* (atom [])]
+  ;;   (let [{:keys [verbose]} options
+  ;;         [url source] (get-input options)
+  ;;         load-result (models/load-pamela-string source url)]
+  ;;         (if-not (empty? load-result)
+  ;;           (do
+  ;;             (log/errorf "unable to load: %s" load-result)
+  ;;             false)
+  ;;           (do
+  ;;             (if (> verbose 1)
+  ;;               (println "loaded classes:" @pclass/*pclasses*))
+  ;;             @pclass/*pclasses*)))))
 
 (defn build-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
@@ -123,7 +131,7 @@
   [options]
   (let [{:keys [cwd input output]} options
         filename (if (= 1 (count input)) (first input))
-        pir (if filename (parser/parse cwd filename))]
+        pir (if filename (parser/parse options))]
     (if pir
       (if (daemon/stdout? output)
         (print pir)
@@ -140,18 +148,26 @@
   "Load model(s) in memory only, process as a TPN"
   {:added "0.2.0"}
   [options]
-  (let [{:keys [construct-tpn file-format output visualize]} options
-        loaded (load-models options)
+  (let [{:keys [construct-tpn file-format cwd input output visualize]} options
+        ;; loaded (load-models options)
+        filename (if (= 1 (count input))
+                   (first input)
+                   (log/error "multiple TPN input files not implemented yet")
+                   )
+        loaded (if filename (parser/parse options))
         tpn (if loaded
               (if construct-tpn
-                (tpn/construct-tpn-cfm construct-tpn file-format)
+                ;; FIXME (tpn/construct-tpn-cfm construct-tpn file-format)
+                (log/error "construct-tpn not implemented yet")
                 (tpn/load-tpn loaded file-format)))]
     (when (and loaded tpn)
       (if (daemon/stdout? output)
         (print tpn)
         (spit output tpn))
       (when visualize
-        (tpn/visualize tpn options)))))
+        ;; (tpn/visualize tpn options)
+        (log/error "visualize not implemented yet")
+        ))))
 
 (def #^{:added "0.2.0"}
   actions
@@ -190,7 +206,7 @@
    ["-e" "--database DATABASE" "Remote database server name (ES_SERVER)"
     :default (:es-server env)]
    ["-f" "--file-format FORMAT" "Output file format"
-    :default "dot"
+    :default "tpn"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
