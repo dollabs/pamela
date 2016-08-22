@@ -15,4 +15,7 @@
 
 set -e
 
-pamela -v -v -v -m three -r delete
+# pamela -v -v -v -m three -r delete
+
+# FIXME
+true

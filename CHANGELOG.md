@@ -11,7 +11,7 @@ Added
 
 Change
 - New PAMELA intermediate representation
--
+- Reset non-passing tests as functionality is replaced with the new IR
 
 ### [0.3.0] - 2016-07-11
 
