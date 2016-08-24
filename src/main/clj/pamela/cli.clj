@@ -15,6 +15,7 @@
   "PAMELA command line interface."
   (:require [clojure.java.io :refer :all] ;; for as-file
             [clojure.tools.cli :refer [parse-opts]]
+            [clojure.data.json :as json]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
             [pamela.mode :as mode]
@@ -24,6 +25,7 @@
             ;; [pamela.pclass :as pclass :refer [get-model-var]]
             ;; [pamela.models :as models]
             [pamela.parser :as parser]
+            [pamela.htn :as htn]
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
@@ -169,6 +171,26 @@
         (log/error "visualize not implemented yet")
         ))))
 
+(defn htn
+  "Load model(s) in memory only, process as a HTN"
+  {:added "0.4.0"}
+  [options]
+  (let [{:keys [root-task file-format cwd input output]} options
+        ir (parser/parse options)]
+    (if-not ir
+      (do
+        (println "unable to parse: %s" input)
+        (log/errorf "unable to parse: %s" input)
+        false)
+      ;; root-task may be nil for the default case
+      (let [htn (htn/plan-htn ir root-task)
+            out (if (= file-format "json")
+                  (with-out-str (json/pprint htn))
+                  (with-out-str (pprint htn)))]
+        (if (daemon/stdout? output)
+          (println out)
+          (spit output out))))))
+
 (def #^{:added "0.2.0"}
   actions
   "Valid PAMELA command line actions"
@@ -181,12 +203,13 @@
    "import" (var import-model)
    "list" (var list-models)
    "load" (var load-models)
-   "tpn" (var tpn)})
+   "tpn" (var tpn)
+   "htn" (var htn)})
 
 (def #^{:added "0.2.0"}
   output-formats
   "Valid PAMELA output file formats"
-  #{"tpn" "cytoscape" "dot" "json"})
+  #{"edn" "cytoscape" "dot" "json"})
 
 ;; command line processing -----------------------------------
 
@@ -205,8 +228,8 @@
     :validate [#(< 80 % 0x10000) "Must be a number between 80 and 65536"]]
    ["-e" "--database DATABASE" "Remote database server name (ES_SERVER)"
     :default (:es-server env)]
-   ["-f" "--file-format FORMAT" "Output file format"
-    :default "tpn"
+   ["-f" "--file-format FORMAT" "Output file format [edn]"
+    :default "edn"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
@@ -224,6 +247,7 @@
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--simple" "Simple operation"]
+   ["-t" "--root-task ROOTTASK" "Construct HTN"]
    ["-g" "--visualize" "Render TPN as SVG (set -f dot)"]
    ["-w" "--web WEB" "Web request hints (internal use only)"]
    ;; NOT Supported: all imports will currently update
@@ -309,7 +333,7 @@
         (parse-opts args cli-options)
         cmd (first arguments)
         action (get actions cmd)
-        {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive simple visualize web]} options
+        {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
         output (if-not (daemon/stdout-option? output)
                  (if (.startsWith output "/")
@@ -348,6 +372,7 @@
       (println "output:" output)
       (println "model:" model)
       (println "recursive:" recursive)
+      (println "root-task:" root-task)
       (println "simple:" simple)
       (println "visualize:" visualize)
       ;; (println "update:" (:update options))

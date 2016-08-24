@@ -173,7 +173,6 @@
    (apply merge {:type :pclass} {:args args} options)})
 
 (defn ir-defpmethod [method & args]
-  (log/warn "IR-DEFPMETHOD" method (pr-str args))
   (loop [m {:pre {:type :literal :value true}
             :post {:type :literal :value true}
             :cost 0
@@ -248,16 +247,12 @@
         (recur fn-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choice [& args]
-  (log/warn "IR-CHOICE" (pr-str args))
   (loop [choice-opts {} body [] a (first args) more (rest args)]
     (if-not a
-      (let [rv (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)]
-        (log/warn "IR-CHOICE RV" rv)
-        rv)
+      (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)
       (if (and (vector? a) (= :choice-opt (first a)))
         (let [choice-opt (second a)
               [opt val] choice-opt]
-          (log/warn "CHOICE-OPT" choice-opt)
           (if (= opt :guard)
             (recur (assoc choice-opts :condition val)
               body (first more) (rest more))
@@ -266,13 +261,9 @@
         (recur choice-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choose [f & args]
-  (log/warn "IR-CHOOSE" f (pr-str args))
-  ;; {:FIXME :IR-CHOOSE})
   (loop [choose-opts {} body [] a (first args) more (rest args)]
     (if-not a
-      (let [rv (merge {:type f :body (if (empty? body) nil body)} choose-opts)]
-        (log/warn "IR-CHOOSE RV" rv)
-        rv)
+      (merge {:type f :body (if (empty? body) nil body)} choose-opts)
       (if (and (vector? a) (#{:choose-opt :delay-opt} (first a)))
         (if (vector? (second a))
           (let [a1 (second a)
