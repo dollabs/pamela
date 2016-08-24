@@ -146,7 +146,9 @@
   {mode (if (= v [:TRUE]) {:type :literal :value true} v)})
 
 (defn ir-merge [& ms]
-  (apply merge ms))
+  (if (empty? ms)
+    {}
+    (apply merge ms)))
 
 (defn ir-k-merge [k & ms]
   {k (apply merge ms)})
@@ -171,6 +173,7 @@
    (apply merge {:type :pclass} {:args args} options)})
 
 (defn ir-defpmethod [method & args]
+  (log/warn "IR-DEFPMETHOD" method (pr-str args))
   (loop [m {:pre {:type :literal :value true}
             :post {:type :literal :value true}
             :cost 0
@@ -245,15 +248,47 @@
         (recur fn-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choice [& args]
+  (log/warn "IR-CHOICE" (pr-str args))
   (loop [choice-opts {} body [] a (first args) more (rest args)]
     (if-not a
-      (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)
+      (let [rv (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)]
+        (log/warn "IR-CHOICE RV" rv)
+        rv)
       (if (and (vector? a) (= :choice-opt (first a)))
-        (if (and (vector? (second a)) (= :guard (first (second a))))
-          (recur (assoc choice-opts :condition (second (second a)))
-            body (first more) (rest more))
-          (recur (merge choice-opts (second a)) body (first more) (rest more)))
+        (let [choice-opt (second a)
+              [opt val] choice-opt]
+          (log/warn "CHOICE-OPT" choice-opt)
+          (if (= opt :guard)
+            (recur (assoc choice-opts :condition val)
+              body (first more) (rest more))
+            (recur (assoc choice-opts opt val)
+              body (first more) (rest more))))
         (recur choice-opts (conj body a) (first more) (rest more))))))
+
+(defn ir-choose [f & args]
+  (log/warn "IR-CHOOSE" f (pr-str args))
+  ;; {:FIXME :IR-CHOOSE})
+  (loop [choose-opts {} body [] a (first args) more (rest args)]
+    (if-not a
+      (let [rv (merge {:type f :body (if (empty? body) nil body)} choose-opts)]
+        (log/warn "IR-CHOOSE RV" rv)
+        rv)
+      (if (and (vector? a) (#{:choose-opt :delay-opt} (first a)))
+        (if (vector? (second a))
+          (let [a1 (second a)
+                opt (first a1)
+                opt (if (= opt [:MIN])
+                      :min
+                      (if (= opt [:MAX])
+                        :max
+                        (if (= opt [:EXACTLY])
+                          :exactly
+                          :unknown-choose-opt ;; FIXME
+                          )))
+                val (second a1)]
+            (recur (assoc choose-opts opt val) body (first more) (rest more)))
+          (recur (merge choose-opts (second a)) body (first more) (rest more)))
+        (recur choose-opts (conj body a) (first more) (rest more))))))
 
 (defn make-slack-sequence [body]
   {:type :sequence
@@ -343,7 +378,9 @@
                 :bounds-literal ir-bounds-literal
                 :choice ir-choice
                 ;; :choice-opt handled by ir-choice
-                :choose (partial ir-fn :choose)
+                :choose (partial ir-choose :choose)
+                ;; :choose-opt handled by ir-choose
+                :choose-whenever (partial ir-choose :choose-whenever)
                 :cond identity
                 :cond-expr identity
                 :cond-map ir-merge
@@ -358,7 +395,9 @@
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
                 :doc (partial ir-map-kv :doc)
+                ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
+                :exactly ir-vec
                 :field ir-field
                 :field-expr ir-field-expr
                 ;; :field-init handled in ir-field
@@ -377,13 +416,16 @@
                 :interface ir-interface
                 :keyword keyword
                 :label (partial ir-map-kv :label)
+                ;; :leave handled by ir-choice
                 :literal identity
                 :lvar-ctor ir-lvar-ctor
                 :lvar-init identity
                 :maintain (partial ir-fn-cond :maintain)
+                :max ir-vec
                 :meta (partial ir-k-merge :meta)
                 :meta-entry identity
                 :methods ir-methods
+                :min ir-vec
                 :mode-enum ir-mode-enum
                 :mode-expr ir-mode-expr
                 :mode-init ir-mode-init
