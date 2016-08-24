@@ -27,13 +27,15 @@
 
 ;; -----------------------------------------------------------------------
 
+;; if the root-task is nil
+;;   look for htn-pclass with a zero arg main pmethod
+;;   then look for a pclass that has a :pclass-ctor for the htn-pclass with zero args
+;;   then we know how to construct pclass, htn-class and handle the main method
+;; else
+;;   do as above AND find the root-task label within the body of main, then handle
+;;
+;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
 (defn plan-htn [ir root-task]
   ;; DEBUGGING
-  ;; (assoc ir 'root-task root-task)
-
-  ;; if the root-task is nil
-  ;; look for pclass with a zero arg main pmethod
-  ;;
-  ;;
-
+  (assoc ir 'root-task root-task)
   )

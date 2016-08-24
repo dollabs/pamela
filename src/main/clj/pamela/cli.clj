@@ -247,7 +247,7 @@
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--simple" "Simple operation"]
-   ["-t" "--root-task ROOTTASK" "Construct HTN"]
+   ["-t" "--root-task ROOTTASK" "Label for HTN root-task [main]"]
    ["-g" "--visualize" "Render TPN as SVG (set -f dot)"]
    ["-w" "--web WEB" "Web request hints (internal use only)"]
    ;; NOT Supported: all imports will currently update
@@ -335,11 +335,14 @@
         action (get actions cmd)
         {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
+        root-task (if root-task
+                    (keyword (if (string/starts-with? root-task ":")
+                               (subs root-task 1) root-task)))
         output (if-not (daemon/stdout-option? output)
                  (if (.startsWith output "/")
                    output ;; absolute
                    (str cwd "/" output)))
-        options (assoc options :output output)
+        options (assoc options :output output :root-task root-task)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
