@@ -28,11 +28,16 @@
 ;; -----------------------------------------------------------------------
 
 ;; if the root-task is nil
-;;   look for htn-pclass with a zero arg main pmethod
-;;   then look for a pclass that has a :pclass-ctor for the htn-pclass with zero args
-;;   then we know how to construct pclass, htn-class and handle the main method
+;;   look for htn-pclass with a "main" pmethod
+;;   if main takes arguments throw exception
 ;; else
-;;   do as above AND find the root-task label within the body of main, then handle
+;;   expect that the htn-pclass and method are given as well as
+;;   any literal args for that method (number of args should match)
+;;   NOTE: argval = ( symbol | boolean | string | number | safe-keyword )
+;;   -- here symbol would not be supported
+;;   NOTE: may need equivalent of the "?variable", perhaps
+;; "-t" "(isr-htn.main \"A\" \"B\" \"C\" {:type :lvar, :name \"last-location\"})"
+;;
 ;;
 ;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
 (defn plan-htn [ir root-task]
