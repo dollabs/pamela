@@ -45,8 +45,9 @@
 (defn pamela-filename? [filename]
   (string/ends-with? filename ".pamela"))
 
-(defn build-parser []
-  (let [ebnf (slurp (resource "data/pamela.ebnf"))
+(defn build-parser [& [ebnf-filename]]
+  (let [ebnf-filename (or ebnf-filename "pamela.ebnf")
+        ebnf (slurp (resource (str "data/" ebnf-filename)))
         whitespace (insta/parser "whitespace = #'([,\\s]+|;.*\\n)+'")
         parser (insta/parser ebnf
                  :input-format :ebnf

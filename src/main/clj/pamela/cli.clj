@@ -335,14 +335,11 @@
         action (get actions cmd)
         {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
-        root-task (if root-task
-                    (keyword (if (string/starts-with? root-task ":")
-                               (subs root-task 1) root-task)))
         output (if-not (daemon/stdout-option? output)
                  (if (.startsWith output "/")
                    output ;; absolute
                    (str cwd "/" output)))
-        options (assoc options :output output :root-task root-task)
+        options (assoc options :output output)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
