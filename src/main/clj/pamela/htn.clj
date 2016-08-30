@@ -33,7 +33,7 @@
 ;; vars
 
 ;; {pclass-name {method-name method}}
-(def *htn-methods* (atom {}))
+(def ^{:dynamic true} *htn-methods* (atom {}))
 
 (defn reinitialize-htn-method-table []
   (reset! *htn-methods* {}))
@@ -77,6 +77,14 @@
 
 ;; HTN Object hierarchy ------------------------------------
 
+;; default HTN prefix "hid-"
+;; :network :htn-network "net-"
+;; :edge  "hedge-"
+;; :temporal-constraint "cnstr-"
+;; TPN's
+;; :null-activity :activity :delay-activity "arc-"
+;; :state :c/p-begin/end "node-"
+;;
 (defn htn-object
   "All HTN objects inherit from htn-object"
   [{:keys [uid]}]
@@ -502,3 +510,85 @@
 ;;         :method method
 ;;         :args args}]
 ;; (assoc ir 'root-task rt)))
+
+                      (let [nonprimitive-task (htn-nonprimitive-task
+                                                {:pclass k :name name :arguments args})
+                            subtasks (make-subtasks k body)]
+                        (println "  method:" name "is an htn-method")
+                        ;; work here
+                        (htn-method {:pclass k :name name
+                                     :nonprimitive-task nonprimitive-task
+                                     :subtasks subtasks})
+                        )
+
+(defn make-htn-methods [pclass body]
+  (loop [things [] f (first body) more (rest body)]
+    (if-not f
+      things
+      (let [{:keys [type name field method args body]} f
+            _ (println "SUBTASK" type "NAME" name "METHOD" method)
+            thing (cond
+                      (#{:plant-fn-symbol :plant-fn-field} type)
+                      ;; subtasks [(htn-task {:pclass pclass :name method :arguments args})]
+                      (= type :sequence)
+                      (make-subtasks pclass body) ;; FIXME add temporal-constraints
+                      ;; (htn-method ...)
+                      (= type :parallel)
+                      (make-subtasks pclass body)
+                      ;; (htn-method ...)
+                      (= type :choose)
+                      ;; create an htn-method FOR EACH choice
+                      ;; (htn-method ...)
+                      ;; (htn-method ...)
+                      ;; (htn-method ...)
+                      [type]
+                      :else
+                      [:TBD])
+            things (concatv things thing)]
+        (recur things (first more) (rest more))
+        )
+      )
+    )
+  )
+
+;; walk ir, look for pclasses that have non-empty methods
+(defn transform-htn [ir]
+  ;; (pprint ir)
+  ;; (println "transform-htn")
+  (let [ir-syms (seq ir)]
+    (loop [[k v] (first ir-syms) more (rest ir-syms)]
+      (if-not k
+        nil ;; (println "done")
+        (let [{:keys [type methods]} v]
+          (println "key:" k "is a" type)
+          (when (and (= type :pclass) methods)
+            (println "  there are" (count methods) "methods")
+            (let [method-syms (seq methods)]
+              (loop [[name method] (first method-syms) moar (rest method-syms)]
+                (println "METHOD NAME" name)
+                (if-not name
+                  nil ;; (println "no more methods")
+                  (let [{:keys [temporal-constraints args body]} method]
+                    (when body
+                      (make-htn-methods pclass body)
+                      (println "  method:" name "is NOT an htn-method"))
+                    (recur (first moar) (rest moar))
+                    )
+                  )
+                )
+              )
+            )
+          (recur (first more) (rest more))
+          )
+        )
+      )
+    (println "HTN-METHODS")
+    (pprint @*htn-methods*)
+    )
+  )
+
+(defn isr-test []
+  (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
+        ir (parser/parse {:input [htn]})]
+    (reinitialize-htn-method-table)
+    (transform-htn ir)))
