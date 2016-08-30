@@ -336,6 +336,9 @@
 
 ;; Expansion -------------------------------------------------
 
+(defn copy-temporal-constraint [from-temporal-constraint]
+  (temporal-constraint (dissoc from-temporal-constraint :uid)))
+
 ;; NOTE assumes old-task is :htn-primitive-task or :htn-nonprimitive-task
 (defn make-expanded-task
   "Make an expanded task"
@@ -394,9 +397,6 @@
         start-delay
         start-time
         end-time)))
-
-(defn copy-temporal-constraint [from-temporal-constraint]
-  (temporal-constraint (dissoc from-temporal-constraint :uid)))
 
 (defn make-temporal-constraint-for-sequential-subtasks [from-temporal-constraint]
   (temporal-constraint
