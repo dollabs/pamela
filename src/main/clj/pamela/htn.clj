@@ -123,7 +123,7 @@
 
 (defn htn-task
   "All HTN tasks inherit from HTN-task"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraint
+  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight]
     :or {task-type :communications}}]
@@ -138,7 +138,7 @@
       :cost cost
       :task-type task-type
       :probability probability
-      :temporal-constraint temporal-constraint ;; CONSIDER converting list-> temp cons objects?
+      :temporal-constraints (or temporal-constraints []) ;; CONSIDER converting list-> temp cons objects?
       :mission-effectiveness mission-effectiveness
       :priority priority
       :resources resources
@@ -148,7 +148,7 @@
 
 (defn htn-primitive-task
   "Primitive tasks can't be decomposed any further"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraint
+  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight]
     :as options}]
@@ -157,7 +157,7 @@
 
 (defn htn-nonprimitive-task
   "NonPrimitive tasks can be decomposed into other tasks, by user HTN methods"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraint
+  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight]
     :as options}]
@@ -166,7 +166,7 @@
 
 (defn htn-expanded-nonprimitive-task
   "Expanded NonPrimitive tasks have already been decomposed into other tasks, by using HTN methods"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraint
+  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight task-expansions]
     :as options}]
@@ -191,7 +191,7 @@
                  :nonprimitive-task nonprimitive-task
                  :preconditions preconditions
                  :subtasks (vec (or subtasks []))
-                 :subtask-constraints subtask-constraints
+                 :subtask-constraints (vec (or subtask-constraints []))
                  :mission-task-combination mission-task-combination
                  :choice-weight choice-weight)]
     (add-htn-method method)
@@ -355,7 +355,7 @@
         task (if (= task-type :htn-primitive-task)
                (htn-primitive-task old-task)
                (htn-nonprimitive-task old-task))
-        {:keys [temporal-constraint arguments]} task]
+        {:keys [temporal-constraints arguments]} task]
     (assoc task
       :type (if (= task-type :htn-primitive-task)
               task-type
@@ -363,7 +363,7 @@
       :arguments (if argument-mapping
                    (mapv #(get argument-mapping (keyword %)) arguments)
                    arguments)
-      :temporal-constraint (and temporal-constraint (copy-temporal-constraint temporal-constraint))
+      :temporal-constraints (and temporal-constraints (copy-temporal-constraint temporal-constraints)) ;; FIXME
       )))
 
 (defn find-methods-that-expand-task [task]
@@ -511,41 +511,104 @@
 ;;         :args args}]
 ;; (assoc ir 'root-task rt)))
 
-                      (let [nonprimitive-task (htn-nonprimitive-task
-                                                {:pclass k :name name :arguments args})
-                            subtasks (make-subtasks k body)]
-                        (println "  method:" name "is an htn-method")
-                        ;; work here
-                        (htn-method {:pclass k :name name
-                                     :nonprimitive-task nonprimitive-task
-                                     :subtasks subtasks})
-                        )
 
-(defn make-htn-methods [pclass body]
-  (loop [things [] f (first body) more (rest body)]
+;; will return subtasks, if any (and create htn-methods as a side effect)
+(defn make-htn-methods [pclass mname margs body]
+  (println "make-htn-methods for" pclass mname margs)
+  (loop [subtasks [] f (first body) more (rest body)]
     (if-not f
-      things
-      (let [{:keys [type name field method args body]} f
-            _ (println "SUBTASK" type "NAME" name "METHOD" method)
-            thing (cond
-                      (#{:plant-fn-symbol :plant-fn-field} type)
-                      ;; subtasks [(htn-task {:pclass pclass :name method :arguments args})]
-                      (= type :sequence)
-                      (make-subtasks pclass body) ;; FIXME add temporal-constraints
-                      ;; (htn-method ...)
-                      (= type :parallel)
-                      (make-subtasks pclass body)
-                      ;; (htn-method ...)
+      subtasks
+      (let [{:keys [type name field method args body temporal-constraints]} f
+            _ (println "SUBTASK" type "NAME" name "METHOD" method "BODY size" (count body))
+            subtask (cond
+                      ;; (#{:plant-fn-symbol :plant-fn-field} type)
+                      ;; (htn-primitive-task {:pclass pclass :name method :arguments args})
+                      ;; FIXME :plant-fn is WRONG.. is a user-fn
+
+                      ;; if (symbol? mname) we need to make an htn-method
+                      (= :plant-fn-symbol type)
+                      (let [task
+                            (if (= name 'this)
+                              (htn-nonprimitive-task {:pclass pclass
+                                                      :name method
+                                                      :arguments args
+                                                      :temporal-constraints temporal-constraints})
+                              (htn-primitive-task {:pclass name
+                                                   :name method
+                                                   :arguments args
+                                                   :temporal-constraints temporal-constraints}))
+                            nt (if (symbol? mname)
+                                 (htn-nonprimitive-task
+                                   {:pclass pclass :name mname
+                                    :arguments margs}))
+                            st (if (symbol? mname) [task])]
+                        (when (symbol? mname) ;; make htn-method
+                          (htn-method {:pclass pclass
+                                       :name mname
+                                       :nonprimitive-task nt
+                                       :subtasks st}))
+                        task)
+
+                      ;; if (symbol? mname) we need to make an htn-method
+                      (= :plant-fn-field type)
+                      (let [task (htn-primitive-task {:pclass field
+                                                      :name method
+                                                      :arguments args
+                                                      :temporal-constraints temporal-constraints})
+                            nt (if (symbol? mname)
+                                 (htn-nonprimitive-task
+                                   {:pclass pclass :name mname
+                                    :arguments margs}))
+                            st (if (symbol? mname) [task])]
+                        (when (symbol? mname) ;; make htn-method
+                          (htn-method {:pclass pclass
+                                       :name mname
+                                       :nonprimitive-task nt
+                                       :subtasks st}))
+                        task)
+
+                      (#{:sequence :parallel} type)
+                      (let [nonprimitive-task (htn-nonprimitive-task
+                                                {:pclass pclass
+                                                 :name mname
+                                                 :arguments margs
+                                                 :temporal-constraints temporal-constraints})
+                            subtasks (make-htn-methods pclass type nil body)
+                            subtask-constraints (if (= type :sequence)
+                                                  [(task-sequential-constraint {:tasks subtasks})]
+                                                  [])]
+                        (println "  method:" mname "is an htn-method")
+                        ;; work here
+                        (htn-method {:pclass pclass :name mname
+                                     :nonprimitive-task nonprimitive-task
+                                     :subtasks subtasks
+                                     :subtask-constraints subtask-constraints})
+                        nil)
+
                       (= type :choose)
-                      ;; create an htn-method FOR EACH choice
-                      ;; (htn-method ...)
-                      ;; (htn-method ...)
-                      ;; (htn-method ...)
-                      [type]
+                      (let [nonprimitive-task (htn-nonprimitive-task ;; shared for all choices
+                                                {:pclass pclass
+                                                 :name mname
+                                                 :arguments margs
+                                                 :temporal-constraints temporal-constraints})]
+                        (loop [i 0 b (first body) moar (rest body)]
+                          (if-not b
+                            nil
+                            (let [{:keys [type body]} b
+                                  cname (symbol (str mname "-choice-" i))
+                                  subtasks (make-htn-methods pclass :choice nil body)]
+                              (println "  method:" cname "is an htn-method choice" i)
+                              (if (not= type :choice)
+                                (println "HEY, I EXPECTED a :choice")) ;; FIXME
+                              (htn-method {:pclass pclass :name cname
+                                           :nonprimitive-task nonprimitive-task
+                                           :subtasks subtasks})
+                              (recur (inc i) (first moar) (rest moar))))))
+
                       :else
-                      [:TBD])
-            things (concatv things thing)]
-        (recur things (first more) (rest more))
+                      :TBD)
+            subtasks (if subtask (conj subtasks subtask) subtasks)]
+        (recur subtasks (first more) (rest more))
         )
       )
     )
@@ -564,14 +627,15 @@
           (when (and (= type :pclass) methods)
             (println "  there are" (count methods) "methods")
             (let [method-syms (seq methods)]
-              (loop [[name method] (first method-syms) moar (rest method-syms)]
-                (println "METHOD NAME" name)
-                (if-not name
-                  nil ;; (println "no more methods")
+              ;; (println "METHOD-SYMS" method-syms)
+              (loop [[mname method] (first method-syms) moar (rest method-syms)]
+                (println "METHOD NAME" mname)
+                (if-not mname
+                  (println "no more methods")
                   (let [{:keys [temporal-constraints args body]} method]
-                    (when body
-                      (make-htn-methods pclass body)
-                      (println "  method:" name "is NOT an htn-method"))
+                    (if body
+                      (make-htn-methods k mname args body)
+                      (println "  METHOD:" mname "is NOT an htn-method"))
                     (recur (first moar) (rest moar))
                     )
                   )
@@ -591,4 +655,6 @@
   (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
         ir (parser/parse {:input [htn]})]
     (reinitialize-htn-method-table)
-    (transform-htn ir)))
+    (transform-htn ir)
+    ;; HTN generation here using *htn-methods* and ir
+    ))
