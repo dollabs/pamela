@@ -35,6 +35,12 @@
 ;; {pclass-name {method-name method}}
 (def ^{:dynamic true} *htn-methods* (atom {}))
 
+(def ^{:dynamic true} *htn-objects* (atom {}))
+
+(def ^{:dynamic true} *htn-plan-ancestry*
+  "Used to keep track of the parents of the current node.  A list, with oldest at the end"
+  '())
+
 (defn reinitialize-htn-method-table []
   (reset! *htn-methods* {}))
 
@@ -77,6 +83,7 @@
 
 ;; HTN Object hierarchy ------------------------------------
 
+;; TOP LEVEL :network :net-1014790698,
 ;; default HTN prefix "hid-"
 ;; :network :htn-network "net-"
 ;; :edge  "hedge-"
@@ -84,128 +91,211 @@
 ;; TPN's
 ;; :null-activity :activity :delay-activity "arc-"
 ;; :state :c/p-begin/end "node-"
-;;
+
+(defn reinitialize-htn-object-table []
+  (reset! *htn-objects* {}))
+
+(defn get-htn-object [uid-or-object]
+  (let [uid (if (keyword? uid-or-object)
+              uid-or-object
+              (:uid uid-or-object))]
+    (get @*htn-objects* uid)))
+
+(defn update-htn-object! [object]
+  (let [uid (:uid object)]
+    (swap! *htn-objects* assoc uid object)
+    object))
+
 (defn htn-object
   "All HTN objects inherit from htn-object"
-  [{:keys [uid]}]
-  (let [uid (or uid (name (gensym "hid-")))]
-    {:type :htn-object
-     :uid uid
-     :ancestry-path []}))
+  [{:keys [prefix uid ancestry-path]
+    :or {prefix "hid-"}}]
+  (update-htn-object!
+    (assoc-if
+      {:type :htn-object
+       :uid (or uid (keyword (gensym prefix)))}
+      :ancestry-path ancestry-path)))
 
 (defn temporal-constraint
   "A task-local temporal constraint for that task."
-  [{:keys [uid lb ub
+  [{:keys [prefix uid ancestry-path lb ub
            start-delay ;; Wait for this long (sec) before starting this task (included in lb/ub time)
            start-time
-           end-time]}]
-  (assoc (htn-object {:uid uid})
-    :type :temporal-constraint
-    :lb lb
-    :ub ub
-    :start-delay start-delay
-    :start-time start-time
-    :end-time end-time))
+           end-time]
+    :or {prefix "cnstr-"}}]
+  (update-htn-object!
+    (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :type :temporal-constraint
+      :lb lb
+      :ub ub
+      :start-delay start-delay
+      :start-time start-time
+      :end-time end-time)))
 
 (defn inter-task-constraint
   "inter-task-constraint"
-  [{:keys [uid]}]
-  (assoc (htn-object {:uid uid})
-    :type :inter-task-constraint))
+  [{:keys [prefix uid ancestry-path]
+    :or {prefix "cnstr-"}}]
+  (update-htn-object!
+    (assoc (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :type :inter-task-constraint)))
 
 (defn task-sequential-constraint
   "List of tasks that must be executed in sequential order.
    This is shorthand for a set of FS constraints."
-  [{:keys [uid tasks]}]
-  (assoc (inter-task-constraint {:uid uid})
-    :type :task-sequential-constraint
-    :tasks (vec (or tasks []))))
+  [{:keys [prefix uid ancestry-path tasks]
+    :or {prefix "cnstr-"
+         tasks []}}]
+  (update-htn-object!
+    (assoc (inter-task-constraint {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :type :task-sequential-constraint
+      :tasks (vec tasks))))
 
 (defn htn-task
   "All HTN tasks inherit from HTN-task"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
-           flow-characteristics mission-task-weight]
-    :or {task-type :communications}}]
+           flow-characteristics mission-task-weight
+           label incidence-set edges]
+    :or {prefix "hid-"
+         task-type :communications
+         temporal-constraints []}}]
   (let [network-flows (if (network-flow-types name)
                         (make-network-flows name flow-characteristics arguments)
                         network-flows)]
-    (assoc (htn-object {:uid uid})
-      :type :htn-task
-      :pclass pclass
-      :name name
-      :arguments arguments
-      :cost cost
-      :task-type task-type
-      :probability probability
-      :temporal-constraints (or temporal-constraints []) ;; CONSIDER converting list-> temp cons objects?
-      :mission-effectiveness mission-effectiveness
-      :priority priority
-      :resources resources
-      :network-flows network-flows
-      :flow-characteristics flow-characteristics
-      :mission-task-weight mission-task-weight)))
+    (update-htn-object!
+      (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+        :type :htn-task
+        :pclass pclass
+        :name name
+        :arguments arguments
+        :cost cost
+        :task-type task-type
+        :probability probability
+        :temporal-constraints temporal-constraints ;; CONSIDER converting list-> temp cons objects?
+        :mission-effectiveness mission-effectiveness
+        :priority priority
+        :resources resources
+        :network-flows network-flows
+        :flow-characteristics flow-characteristics
+        :mission-task-weight mission-task-weight
+        :label label
+        :incidence-set incidence-set ;; NOTE should be a clojure set
+        :edges edges))))
 
 (defn htn-primitive-task
   "Primitive tasks can't be decomposed any further"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
-           flow-characteristics mission-task-weight]
+           flow-characteristics mission-task-weight
+           label incidence-set edges]
+    :or {prefix "hid-"}
     :as options}]
-  (assoc (htn-task options)
-    :type :htn-primitive-task))
+  (update-htn-object!
+    (assoc (htn-task options)
+      :type :htn-primitive-task)))
 
 (defn htn-nonprimitive-task
   "NonPrimitive tasks can be decomposed into other tasks, by user HTN methods"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
-           flow-characteristics mission-task-weight]
+           flow-characteristics mission-task-weight
+           label incidence-set edges]
+    :or {prefix "hid-"}
     :as options}]
-  (assoc (htn-task options)
-    :type :htn-nonprimitive-task))
+  (update-htn-object!
+    (assoc (htn-task options)
+      :type :htn-nonprimitive-task)))
 
 (defn htn-expanded-nonprimitive-task
   "Expanded NonPrimitive tasks have already been decomposed into other tasks, by using HTN methods"
-  [{:keys [uid pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
-           flow-characteristics mission-task-weight task-expansions]
+           flow-characteristics mission-task-weight task-expansions
+           label incidence-set edges]
+    :or {prefix "hid-"
+         task-expansions []}
     :as options}]
-  (assoc (htn-nonprimitive-task options)
-    :type :htn-expanded-nonprimitive-task
-    :task-expansions task-expansions))
+  (update-htn-object!
+    (assoc-if (htn-nonprimitive-task options)
+      :type :htn-expanded-nonprimitive-task
+      :task-expansions task-expansions)))
 
 (defn htn-method
   "An HTN-method is used to decompose a nonprimitive-task into one or more subtasks"
-  [{:keys [pclass
+  [{:keys [prefix
+           uid
+           ancestry-path
+           pclass
            name
            nonprimitive-task ;;This is the HTN-nonprimitive-task that this method matches on
            preconditions
            subtasks ;;This is a simple list of the tasks
            subtask-constraints ;;A list of constraints, expressing all of the partial orders
            mission-task-combination
-           choice-weight]}]
-  (let [method (assoc (htn-object {})
-                 :type :htn-method
-                 :pclass pclass
-                 :name name
-                 :nonprimitive-task nonprimitive-task
-                 :preconditions preconditions
-                 :subtasks (vec (or subtasks []))
-                 :subtask-constraints (vec (or subtask-constraints []))
-                 :mission-task-combination mission-task-combination
-                 :choice-weight choice-weight)]
+           choice-weight
+           task-expansions
+           label incidence-set network edges]
+    :or {prefix "hid-"
+         subtasks []
+         subtask-constraints []
+         task-expansions []}}]
+  (let [method (update-htn-object!
+                 (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+                   :type :htn-method
+                   :pclass pclass
+                   :name name
+                   :nonprimitive-task nonprimitive-task
+                   :preconditions preconditions
+                   :subtasks (vec subtasks)
+                   :subtask-constraints (vec subtask-constraints)
+                   :mission-task-combination mission-task-combination
+                   :choice-weight choice-weight
+                   :task-expansions task-expansions
+                   :label label
+                   :incidence-set incidence-set ;; NOTE should be a clojure set
+                   :edges edges
+                   :network network))]
     (add-htn-method method)
     method))
+
+(defn htn-network
+  "HTN network"
+  [{:keys [prefix uid ancestry-path label rootnodes parentid]
+    :or {prefix "net-"
+         rootnodes []}}]
+  (update-htn-object!
+    (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :label label
+      :rootnodes rootnodes
+      :parentid parentid)))
+
+(defn htn-edge
+  "HTN edge"
+  [{:keys [prefix uid ancestry-path label edge-type] ;; edge-type is usually only :choice (if not nil)
+    :or {prefix "hedge-"
+         rootnodes []}}]
+  (update-htn-object!
+    (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :label label
+      :edge-type edge-type)))
 
 (declare copy-constraint-into-expansion)
 
 ;; There will be a 1:1 mapping between task-expansions and methods
 (defn htn-expanded-method
   "This captures the results of applying the HTN-method to a nonprimitive task."
-  [{:keys [expansion-method
+  [{:keys [prefix
+           uid
+           ancestry-path
+           expansion-method
            argument-mappings
            subtasks
-           subtask-constraints]}]
+           subtask-constraints
+           label incidence-set network]
+    :or {prefix "hid-"
+         subtasks []
+         subtask-constraints []}}]
   (let [orig-method expansion-method
         orig-subtasks (:subtasks orig-method)
         new-subtasks (:subtasks expansion-method)
@@ -213,12 +303,16 @@
                               #(copy-constraint-into-expansion %
                                  orig-method orig-subtasks new-subtasks)
                               (:subtask-constraints orig-method))
-        hem (assoc (htn-object {})
-              :type :htn-expanded-method
-              :expansion-method expansion-method
-              :argument-mappings argument-mappings
-              :subtasks (vec (or subtasks []))
-              :subtask-constraints subtask-constraints)]
+        hem   (update-htn-object!
+                (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+                  :type :htn-expanded-method
+                  :expansion-method expansion-method
+                  :argument-mappings argument-mappings
+                  :subtasks (vec subtasks)
+                  :subtask-constraints (vec subtask-constraints)
+                  :label label
+                  :incidence-set incidence-set ;; NOTE should be a clojure set
+                  :network network))]
     hem))
 
 ;; name-with-args multi-methods --------------------------------------
@@ -341,36 +435,122 @@
         constraint (task-sequential-constraint {:tasks tasks})]
     constraint))
 
+;; plan-htn-task multi-methods --------------------------------------
+
+(defmulti plan-htn-task
+  "Dispatch based on object type"
+  (fn [object] (:type object))
+  :default nil)
+
+(defmethod plan-htn-task nil
+  [object]
+  (throw
+    (AssertionError.
+      (str "cannot plan-htn-task for object type: " (:type object)))))
+
+;; "Nothing to do for primitive tasks"
+(defmethod plan-htn-task :htn-primitive-task
+  [object])
+
+(declare find-methods-that-expand-task)
+(declare arg-mappings-for-task-and-method)
+
+;;   "Expand"
+(defmethod plan-htn-task :htn-expanded-nonprimitive-task
+  [object]
+  (let [task object
+        methods (find-methods-that-expand-task task)]
+    (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
+      (println "PLAN-HTN-TASK w/" (count methods) "methods @" *htn-plan-ancestry*)
+      (println "TASK" task)
+      (doseq [method methods]
+        (let [{:keys [pclass name subtasks]} method]
+          (println "METHOD" name)
+          (let [arg-mappings (arg-mappings-for-task-and-method task method)
+                _ (println "  ARG-MAPPINGS" (pr-str arg-mappings))
+                _ (println "  METHOD")
+                _ (pprint method)
+                subtasks (mapv #(make-expanded-task % arg-mappings) subtasks)
+                _ (println "  SUBTASKS")
+                _ (pprint subtasks)
+                expanded-method (htn-expanded-method
+                                  {:expansion-method method
+                                   :argument-mappings arg-mappings
+                                   :ancestry-path *htn-plan-ancestry*
+                                   :subtasks subtasks})
+                ;; conj onto :task-expansions of task
+                task-expansions (conj (:task-expansions (get-htn-object task))
+                                  expanded-method)
+                task (assoc task :task-expansions task-expansions)]
+            (update-htn-object! task)
+            (println "EXPANSION BEGIN --------------------")
+            (pprint expanded-method)
+            (println "EXPANSION end --------------------")
+            )))
+      (doseq [expanded-method (:task-expansions (get-htn-object task))]
+        (let [{:keys [subtasks]} expanded-method]
+          (doseq [subtask subtasks]
+            (let [{:keys [cost task-type probability mission-effectiveness priority]} subtask
+                  cost (if (= 1 (count subtasks))
+                         (or cost (:cost task))
+                         cost)
+                  task-type (or task-type (:task-type task))
+                  probability (or probability (:probability task))
+                  mission-effectiveness (or mission-effectiveness (:mission-effectiveness task))
+                  priority (or priority (:priority task))
+                  ;; THIS IS NOT YET PORTED
+                  ;; (if (and (not *prune-tasks-without-resources-p*)
+                  ;;       (null (task-resources child-task)))
+                  ;;   (setf (task-resources child-task) (task-resources task)))))
+                  subtask (assoc-if subtask
+                            :cost cost
+                            :task-type task-type
+                            :probability probability
+                            :mission-effectiveness mission-effectiveness
+                            :priority priority)]
+              (update-htn-object! subtask)
+              )
+            )
+          )
+        )
+      )))
 
 ;; Expansion -------------------------------------------------
 
-(defn copy-temporal-constraint [from-temporal-constraint]
-  (temporal-constraint (dissoc from-temporal-constraint :uid)))
+(defn copy-temporal-constraints [from-temporal-constraints]
+  (mapv
+    #(temporal-constraint (dissoc % :uid))
+    from-temporal-constraints))
 
 ;; NOTE assumes old-task is :htn-primitive-task or :htn-nonprimitive-task
 (defn make-expanded-task
   "Make an expanded task"
   [old-task & [argument-mapping]]
   (let [task-type (:type old-task)
+        old-task (dissoc old-task :uid)
         task (if (= task-type :htn-primitive-task)
                (htn-primitive-task old-task)
-               (htn-nonprimitive-task old-task))
-        {:keys [temporal-constraints arguments]} task]
-    (assoc task
-      :type (if (= task-type :htn-primitive-task)
-              task-type
-              :htn-expanded-nonprimitive-task)
-      :arguments (if argument-mapping
-                   (mapv #(get argument-mapping (keyword %)) arguments)
-                   arguments)
-      :temporal-constraints (and temporal-constraints (copy-temporal-constraint temporal-constraints)) ;; FIXME
+               (htn-expanded-nonprimitive-task old-task))
+        {:keys [temporal-constraints arguments]} task
+        new-arguments (if argument-mapping
+                        (mapv #(get argument-mapping %) arguments)
+                        arguments)]
+    (println "MET arguments:" arguments)
+    (println "MET new-arguments:" new-arguments)
+    (assoc-if task
+      :arguments arguments
+      :temporal-constraints (and temporal-constraints
+                              (copy-temporal-constraints temporal-constraints))
       )))
 
+;; return methods vector
 (defn find-methods-that-expand-task [task]
   (let [{:keys [type pclass name arguments]} task
         all-methods (seq (get @*htn-methods* pclass))]
-    (when (= type :htn-nonprimitive-task)
+    ;; DAN.. CLOSism: was (when (= type :htn-nonprimitive-task)
+    (when (#{:htn-nonprimitive-task :htn-expanded-nonprimitive-task} type)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
+        (println "METHOD EXPANDS?" mname)
         (if-not mname
           methods
           (let [{:keys [nonprimitive-task]} method
@@ -382,6 +562,7 @@
                          (= (count arguments) (count (:arguments nonprimitive-task)))
                          (every? compatible?
                            (map vector arguments (:arguments nonprimitive-task))))
+                _ (println "..." match?)
                 methods (if match? (conj methods method) methods)]
             (recur methods (first more) (rest more))))))))
 
@@ -401,14 +582,16 @@
 (defn contains-non-default-values? [temporal-constraint]
   (let [{:keys [lb ub start-delay start-time end-time]} temporal-constraint]
     (or (and lb (not (zero? lb)))
-        (and ub (not (= ub :infinity)))
-        start-delay
-        start-time
-        end-time)))
+      (and ub (not (= ub :infinity)))
+      start-delay
+      start-time
+      end-time)))
 
 (defn make-temporal-constraint-for-sequential-subtasks [from-temporal-constraint]
   (temporal-constraint
     (assoc (dissoc from-temporal-constraint :uid) :lb 0)))
+
+;; -------------------------------------------------------------------------
 
 ;; -------------------------------------------------------------------------
 
@@ -431,7 +614,7 @@
 
 ;; return [pclass method args]
 (defn identify-root-task [ir root-task]
-  (log/warn "ID RT" root-task)
+  (log/warn "root-task" root-task) ;; DEBUG or trace
   (let [parser (parser/build-parser "root-task.ebnf")
         tree (if root-task
                (insta/parses parser root-task))
@@ -498,13 +681,41 @@
 ;;   -- here symbol would not be supported
 ;;   NOTE: may need equivalent of the "?variable", perhaps
 ;; "-t" "(isr-htn.main \"A\" \"B\" \"C\" {:type :lvar, :name \"last-location\"})"
-;;
-;;
+
+;; return args-mappings map
+(defn arg-mappings-for-task-and-method [task method]
+  (let [static-task-args (get-in method [:nonprimitive-task :arguments])
+        dynamic-task-args (:arguments task)]
+    (if (or (not (vector? static-task-args))
+          (not (vector? dynamic-task-args))
+          (not= (count static-task-args) (count dynamic-task-args)))
+      (throw
+        (AssertionError.
+          (str "cannot create arg-mappings with static-task-args: "
+            static-task-args " and dynamic-task-args: " dynamic-task-args))))
+    (zipmap static-task-args dynamic-task-args)))
+
 ;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
-(defn plan-htn [ir root-task]
+;; NOTE: root-task is a string (or nil)!!!
+;; Examples
+;;   "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"
+;;   "(isr-htn.get-data-and-interpret \"A\" \"B\")"
+(defn plan-htn
+  "Weaves a 'plan' from the root task, using the HTN methods.  Minimally hard-coded."
+  [ir root-task]
+  (reinitialize-htn-method-table)
+  (reinitialize-htn-object-table)
+  (transform-htn ir)
   (let [[pclass method args] (identify-root-task ir root-task)
-        ]
-    ))
+        nonprimitive-root-task (htn-nonprimitive-task
+                                 {:pclass pclass
+                                  :name method
+                                  :arguments args})
+        expanded-root-task (make-expanded-task nonprimitive-root-task)]
+    (plan-htn-task expanded-root-task)
+    (println "PLAN-HTN COMPLETE")
+    expanded-root-task))
+
 ;;     rt {:type :root-task
 ;;         :pclass pclass
 ;;         :method method
@@ -646,15 +857,18 @@
           )
         )
       )
-    (println "HTN-METHODS")
+    (println "HTN-METHODS BEGIN -------------------")
     (pprint @*htn-methods*)
+    (println "HTN-METHODS END -------------------")
     )
   )
 
+;; NOTE: root-task is a string (or nil)!!!
 (defn isr-test []
   (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
-        ir (parser/parse {:input [htn]})]
-    (reinitialize-htn-method-table)
-    (transform-htn ir)
-    ;; HTN generation here using *htn-methods* and ir
+        ir (parser/parse {:input [htn]})
+        root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"]
+    (plan-htn ir root-task)
+    (println "HTN-OBJECTS -------------------")
+    (pprint @*htn-objects*)
     ))
