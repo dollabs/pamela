@@ -122,7 +122,7 @@
            start-delay ;; Wait for this long (sec) before starting this task (included in lb/ub time)
            start-time
            end-time]
-    :or {prefix "cnstr-"}}]
+    :or {prefix "tc-"}}]
   (update-htn-object!
     (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
       :type :temporal-constraint
@@ -135,7 +135,7 @@
 (defn inter-task-constraint
   "inter-task-constraint"
   [{:keys [prefix uid ancestry-path]
-    :or {prefix "cnstr-"}}]
+    :or {prefix "itc-"}}]
   (update-htn-object!
     (assoc (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
       :type :inter-task-constraint)))
@@ -144,7 +144,7 @@
   "List of tasks that must be executed in sequential order.
    This is shorthand for a set of FS constraints."
   [{:keys [prefix uid ancestry-path tasks]
-    :or {prefix "cnstr-"
+    :or {prefix "tsc-"
          tasks []}}]
   (update-htn-object!
     (assoc (inter-task-constraint {:prefix prefix :uid uid :ancestry-path ancestry-path})
@@ -157,7 +157,7 @@
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges]
-    :or {prefix "hid-"
+    :or {prefix "task-"
          task-type :communications
          temporal-constraints []}}]
   (let [network-flows (if (network-flow-types name)
@@ -189,10 +189,9 @@
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges]
-    :or {prefix "hid-"}
     :as options}]
   (update-htn-object!
-    (assoc (htn-task options)
+    (assoc (htn-task (assoc options :prefix (or prefix "hpt-")))
       :type :htn-primitive-task)))
 
 (defn htn-nonprimitive-task
@@ -201,10 +200,9 @@
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges]
-    :or {prefix "hid-"}
     :as options}]
   (update-htn-object!
-    (assoc (htn-task options)
+    (assoc (htn-task (assoc options :prefix (or prefix "hnpt-")))
       :type :htn-nonprimitive-task)))
 
 (defn htn-expanded-nonprimitive-task
@@ -213,11 +211,10 @@
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight task-expansions
            label incidence-set edges]
-    :or {prefix "hid-"
-         task-expansions []}
+    :or {task-expansions []}
     :as options}]
   (update-htn-object!
-    (assoc-if (htn-nonprimitive-task options)
+    (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
       :type :htn-expanded-nonprimitive-task
       :task-expansions task-expansions)))
 
@@ -236,7 +233,7 @@
            choice-weight
            task-expansions
            label incidence-set network edges]
-    :or {prefix "hid-"
+    :or {prefix "hm-"
          subtasks []
          subtask-constraints []
          task-expansions []}}]
@@ -293,7 +290,7 @@
            subtasks
            subtask-constraints
            label incidence-set network]
-    :or {prefix "hid-"
+    :or {prefix "hem-"
          subtasks []
          subtask-constraints []}}]
   (let [orig-method expansion-method
@@ -448,6 +445,77 @@
     (AssertionError.
       (str "cannot plan-htn-task for object type: " (:type object)))))
 
+;; pprint-htn-object multi-methods --------------------------------------
+
+(defmulti pprint-htn-object
+  "pprint based on object type"
+  (fn [object] (:type object))
+  :default nil)
+
+(defmethod pprint-htn-object nil
+  [object]
+  ;; (throw
+  ;;   (AssertionError.
+  ;;     (str "cannot pprint-htn-object for object type: " (:type object))))
+  (pprint object)
+  )
+
+(defn just-uid [objects]
+  (if (map? objects)
+    (:uid objects)
+    (mapv :uid objects)))
+
+(defmethod pprint-htn-object :task-sequential-constraint
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:tasks] just-uid))))
+
+(defmethod pprint-htn-object :htn-primitive-task
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:temporal-constraints] just-uid))))
+
+(defmethod pprint-htn-object :htn-nonprimitive-task
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:temporal-constraints] just-uid))))
+
+(defmethod pprint-htn-object :htn-expanded-nonprimitive-task
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:temporal-constraints] just-uid)
+            (update-in [:task-expansions] just-uid)
+            )))
+
+(defmethod pprint-htn-object :htn-method
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:nonprimitive-task] just-uid)
+            (update-in [:subtasks] just-uid)
+            (update-in [:subtask-constraints] just-uid)
+            (update-in [:task-expansions] just-uid)
+            )))
+
+(defmethod pprint-htn-object :htn-expanded-method
+  [object]
+  (pprint (-> object
+            (update-in [:ancestry-path] just-uid)
+            (update-in [:expansion-method] just-uid)
+            (update-in [:subtasks] just-uid)
+            (update-in [:subtask-constraints] just-uid)
+            )))
+
+(defn pprint-htn-objects []
+  (doseq [object (vals @*htn-objects*)]
+    (pprint-htn-object object)))
+
+;; ---------------------------------------------------------------
+
 ;; "Nothing to do for primitive tasks"
 (defmethod plan-htn-task :htn-primitive-task
   [object])
@@ -461,18 +529,18 @@
   (let [task object
         methods (find-methods-that-expand-task task)]
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
-      (println "PLAN-HTN-TASK w/" (count methods) "methods @" *htn-plan-ancestry*)
-      (println "TASK" task)
+      ;; (println "PLAN-HTN-TASK w/" (count methods) "methods @" *htn-plan-ancestry*)
+      ;; (println "TASK" task)
       (doseq [method methods]
         (let [{:keys [pclass name subtasks]} method]
-          (println "METHOD" name)
+          ;; (println "METHOD" name)
           (let [arg-mappings (arg-mappings-for-task-and-method task method)
-                _ (println "  ARG-MAPPINGS" (pr-str arg-mappings))
-                _ (println "  METHOD")
-                _ (pprint method)
+                ;; _ (println "  ARG-MAPPINGS" (pr-str arg-mappings))
+                ;; _ (println "  METHOD")
+                ;; _ (pprint method)
                 subtasks (mapv #(make-expanded-task % arg-mappings) subtasks)
-                _ (println "  SUBTASKS")
-                _ (pprint subtasks)
+                ;; _ (println "  SUBTASKS")
+                ;; _ (pprint subtasks)
                 expanded-method (htn-expanded-method
                                   {:expansion-method method
                                    :argument-mappings arg-mappings
@@ -483,9 +551,9 @@
                                   expanded-method)
                 task (assoc task :task-expansions task-expansions)]
             (update-htn-object! task)
-            (println "EXPANSION BEGIN --------------------")
-            (pprint expanded-method)
-            (println "EXPANSION end --------------------")
+            ;; (println "EXPANSION BEGIN --------------------")
+            ;; (pprint expanded-method)
+            ;; (println "EXPANSION end --------------------")
             )))
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
         (let [{:keys [subtasks]} expanded-method]
@@ -513,6 +581,18 @@
             )
           )
         )
+      (doseq [expansion-method (:task-expansions (get-htn-object task))]
+        (binding [*htn-plan-ancestry* (cons expansion-method *htn-plan-ancestry*)]
+          (let [{:keys [subtasks]} expansion-method]
+            (doseq [subtask subtasks]
+              (let [{:keys [ancestry-path]} subtask
+                    subtask (assoc subtask
+                              :ancestry-path *htn-plan-ancestry*)]
+                (plan-htn-task (update-htn-object! subtask))
+                )
+              )
+            )
+          ))
       )))
 
 ;; Expansion -------------------------------------------------
@@ -535,8 +615,8 @@
         new-arguments (if argument-mapping
                         (mapv #(get argument-mapping %) arguments)
                         arguments)]
-    (println "MET arguments:" arguments)
-    (println "MET new-arguments:" new-arguments)
+    ;; (println "MET arguments:" arguments)
+    ;; (println "MET new-arguments:" new-arguments)
     (assoc-if task
       :arguments arguments
       :temporal-constraints (and temporal-constraints
@@ -550,7 +630,7 @@
     ;; DAN.. CLOSism: was (when (= type :htn-nonprimitive-task)
     (when (#{:htn-nonprimitive-task :htn-expanded-nonprimitive-task} type)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
-        (println "METHOD EXPANDS?" mname)
+        ;; (println "METHOD EXPANDS?" mname)
         (if-not mname
           methods
           (let [{:keys [nonprimitive-task]} method
@@ -562,7 +642,7 @@
                          (= (count arguments) (count (:arguments nonprimitive-task)))
                          (every? compatible?
                            (map vector arguments (:arguments nonprimitive-task))))
-                _ (println "..." match?)
+                ;; _ (println "..." match?)
                 methods (if match? (conj methods method) methods)]
             (recur methods (first more) (rest more))))))))
 
@@ -713,7 +793,7 @@
                                   :arguments args})
         expanded-root-task (make-expanded-task nonprimitive-root-task)]
     (plan-htn-task expanded-root-task)
-    (println "PLAN-HTN COMPLETE")
+    ;; (println "PLAN-HTN COMPLETE")
     expanded-root-task))
 
 ;;     rt {:type :root-task
@@ -725,12 +805,12 @@
 
 ;; will return subtasks, if any (and create htn-methods as a side effect)
 (defn make-htn-methods [pclass mname margs body]
-  (println "make-htn-methods for" pclass mname margs)
+  ;; (println "make-htn-methods for" pclass mname margs)
   (loop [subtasks [] f (first body) more (rest body)]
     (if-not f
       subtasks
       (let [{:keys [type name field method args body temporal-constraints]} f
-            _ (println "SUBTASK" type "NAME" name "METHOD" method "BODY size" (count body))
+            ;; _ (println "SUBTASK" type "NAME" name "METHOD" method "BODY size" (count body))
             subtask (cond
                       ;; (#{:plant-fn-symbol :plant-fn-field} type)
                       ;; (htn-primitive-task {:pclass pclass :name method :arguments args})
@@ -788,7 +868,7 @@
                             subtask-constraints (if (= type :sequence)
                                                   [(task-sequential-constraint {:tasks subtasks})]
                                                   [])]
-                        (println "  method:" mname "is an htn-method")
+                        ;; (println "  method:" mname "is an htn-method")
                         ;; work here
                         (htn-method {:pclass pclass :name mname
                                      :nonprimitive-task nonprimitive-task
@@ -808,7 +888,7 @@
                             (let [{:keys [type body]} b
                                   cname (symbol (str mname "-choice-" i))
                                   subtasks (make-htn-methods pclass :choice nil body)]
-                              (println "  method:" cname "is an htn-method choice" i)
+                              ;; (println "  method:" cname "is an htn-method choice" i)
                               (if (not= type :choice)
                                 (println "HEY, I EXPECTED a :choice")) ;; FIXME
                               (htn-method {:pclass pclass :name cname
@@ -834,19 +914,19 @@
       (if-not k
         nil ;; (println "done")
         (let [{:keys [type methods]} v]
-          (println "key:" k "is a" type)
+          ;; (println "key:" k "is a" type)
           (when (and (= type :pclass) methods)
-            (println "  there are" (count methods) "methods")
+            ;; (println "  there are" (count methods) "methods")
             (let [method-syms (seq methods)]
               ;; (println "METHOD-SYMS" method-syms)
               (loop [[mname method] (first method-syms) moar (rest method-syms)]
-                (println "METHOD NAME" mname)
+                ;; (println "METHOD NAME" mname)
                 (if-not mname
                   (println "no more methods")
                   (let [{:keys [temporal-constraints args body]} method]
                     (if body
-                      (make-htn-methods k mname args body)
-                      (println "  METHOD:" mname "is NOT an htn-method"))
+                      (make-htn-methods k mname args body))
+                      ;; (println "  METHOD:" mname "is NOT an htn-method"))
                     (recur (first moar) (rest moar))
                     )
                   )
@@ -857,7 +937,7 @@
           )
         )
       )
-    (println "HTN-METHODS BEGIN -------------------")
+    (println "HTN-METHODS BEGIN" (count @*htn-methods*) "-------------------")
     (pprint @*htn-methods*)
     (println "HTN-METHODS END -------------------")
     )
@@ -869,6 +949,7 @@
         ir (parser/parse {:input [htn]})
         root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"]
     (plan-htn ir root-task)
-    (println "HTN-OBJECTS -------------------")
-    (pprint @*htn-objects*)
+    (println "HTN-OBJECTS" (count @*htn-objects*) "-------------------")
+    ;; (pprint @*htn-objects*)
+    (pprint-htn-objects)
     ))
