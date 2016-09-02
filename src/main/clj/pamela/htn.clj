@@ -37,6 +37,8 @@
 
 (def ^{:dynamic true} *htn-objects* (atom {}))
 
+(def ^{:dynamic true} *htn-plan-map* (atom {}))
+
 (def ^{:dynamic true} *htn-plan-ancestry*
   "Used to keep track of the parents of the current node.  A list, with oldest at the end"
   '())
@@ -54,6 +56,20 @@
     (when (and (not method) error-if-not-found?)
       (throw (AssertionError. (str "method not found: " name " in pclass " pclass))))
     method))
+
+(defn reinitialize-htn-plan-table []
+  (reset! *htn-plan-map* {}))
+
+(defn get-htn-plan-map [uid-or-object]
+  (let [uid (if (keyword? uid-or-object)
+              uid-or-object
+              (:uid uid-or-object))]
+    (get @*htn-plan-map* uid)))
+
+(defn update-htn-plan-map! [object]
+  (let [uid (:uid object)]
+    (swap! *htn-plan-map* assoc uid object)
+    object))
 
 ;; helper functions -------------------------------------
 
@@ -213,10 +229,13 @@
            label incidence-set edges]
     :or {task-expansions []}
     :as options}]
-  (update-htn-object!
-    (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
-      :type :htn-expanded-nonprimitive-task
-      :task-expansions task-expansions)))
+  (let [task (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
+               :type :htn-expanded-nonprimitive-task
+               :task-expansions task-expansions)
+        _ (println "LABEL arg" (type label) "=" label)
+        label (if (empty? label) (name-with-args task) label)]
+    (println "HENPT" (:uid task) "LABEL" label "<<=" (type label))
+    (update-htn-object! (assoc task :label label))))
 
 (defn htn-method
   "An HTN-method is used to decompose a nonprimitive-task into one or more subtasks"
@@ -237,8 +256,7 @@
          subtasks []
          subtask-constraints []
          task-expansions []}}]
-  (let [method (update-htn-object!
-                 (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+  (let [method (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                    :type :htn-method
                    :pclass pclass
                    :name name
@@ -249,10 +267,11 @@
                    :mission-task-combination mission-task-combination
                    :choice-weight choice-weight
                    :task-expansions task-expansions
-                   :label label
                    :incidence-set incidence-set ;; NOTE should be a clojure set
                    :edges edges
-                   :network network))]
+                   :network network)
+        label (if (empty? label) (name-with-args method) label)
+        method (update-htn-object! (assoc method :label label))]
     (add-htn-method method)
     method))
 
@@ -263,18 +282,20 @@
          rootnodes []}}]
   (update-htn-object!
     (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :type :htn-network
       :label label
       :rootnodes rootnodes
       :parentid parentid)))
 
 (defn htn-edge
   "HTN edge"
-  [{:keys [prefix uid ancestry-path label edge-type] ;; edge-type is usually only :choice (if not nil)
-    :or {prefix "hedge-"
-         rootnodes []}}]
+  [{:keys [prefix uid ancestry-path label end-node edge-type] ;; edge-type is usually only :choice (if not nil)
+    :or {prefix "hedge-"}}]
   (update-htn-object!
     (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+      :type :edge
       :label label
+      :end-node end-node
       :edge-type edge-type)))
 
 (declare copy-constraint-into-expansion)
@@ -300,16 +321,16 @@
                               #(copy-constraint-into-expansion %
                                  orig-method orig-subtasks new-subtasks)
                               (:subtask-constraints orig-method))
-        hem   (update-htn-object!
-                (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
-                  :type :htn-expanded-method
-                  :expansion-method expansion-method
-                  :argument-mappings argument-mappings
-                  :subtasks (vec subtasks)
-                  :subtask-constraints (vec subtask-constraints)
-                  :label label
-                  :incidence-set incidence-set ;; NOTE should be a clojure set
-                  :network network))]
+        hem   (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+                :type :htn-expanded-method
+                :expansion-method expansion-method
+                :argument-mappings argument-mappings
+                :subtasks (vec subtasks)
+                :subtask-constraints (vec subtask-constraints)
+                :incidence-set incidence-set ;; NOTE should be a clojure set
+                :network network)
+        label (if (empty? label) (name-with-args hem) label)
+        hem   (update-htn-object! (assoc hem :label label))]
     hem))
 
 ;; name-with-args multi-methods --------------------------------------
@@ -331,7 +352,7 @@
 
 (defmethod name-with-args nil
   [object & [max-line-length]]
-  "")
+  "FRED") ;; FIXME
 
 (defmethod name-with-args :htn-task
   [object & [max-line-length]]
@@ -340,10 +361,34 @@
       (str name (if name-with-args-include-args? (or arguments '())))
       (or max-line-length name-with-args-max-line-length))))
 
+;;; UGLY ==========
+(defmethod name-with-args :htn-primitive-task
+  [object & [max-line-length]]
+  (let [{:keys [name arguments]} object]
+    (add-newlines-if-needed
+      (str name (if name-with-args-include-args? (or arguments '())))
+      (or max-line-length name-with-args-max-line-length))))
+
+(defmethod name-with-args :htn-nonprimitive-task
+  [object & [max-line-length]]
+  (let [{:keys [name arguments]} object]
+    (add-newlines-if-needed
+      (str name (if name-with-args-include-args? (or arguments '())))
+      (or max-line-length name-with-args-max-line-length))))
+
+(defmethod name-with-args :htn-expanded-nonprimitive-task
+  [object & [max-line-length]]
+  (let [{:keys [name arguments]} object]
+    (add-newlines-if-needed
+      (str name (if name-with-args-include-args? (or arguments '())))
+      (or max-line-length name-with-args-max-line-length))))
+
+;;; UGLY ==========
+
 (defmethod name-with-args :htn-method
   [object & [max-line-length]]
   (let [{:keys [name nonprimitive-task]} object
-        method-name name
+        method-name (str name)
         {:keys [name arguments]} nonprimitive-task]
     (str
       (add-newlines-if-needed
@@ -358,15 +403,18 @@
   [object & [max-line-length]]
   (let [{:keys [expansion-method argument-mappings]} object
         {:keys [name nonprimitive-task]} expansion-method
-        method-name name
+        method-name (str name)
         {:keys [name arguments]} nonprimitive-task
-        argvals (map #(get argument-mappings %) arguments)]
+        argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
     (str
+      ;; (add-newlines-if-needed
+      ;;   method-name
+      ;;   (or max-line-length name-with-args-max-line-length))
       (add-newlines-if-needed
-        method-name
-        (or max-line-length name-with-args-max-line-length))
-      (add-newlines-if-needed
-        (str name (if name-with-args-include-args? (or argvals '())))
+        (str method-name
+          (if name-with-args-include-args? "(")
+          (if name-with-args-include-args? argvals)
+          (if name-with-args-include-args? ")"))
         (or max-line-length name-with-args-max-line-length)))))
 
 
@@ -607,7 +655,7 @@
   "Make an expanded task"
   [old-task & [argument-mapping]]
   (let [task-type (:type old-task)
-        old-task (dissoc old-task :uid)
+        old-task (dissoc old-task :uid :label)
         task (if (= task-type :htn-primitive-task)
                (htn-primitive-task old-task)
                (htn-expanded-nonprimitive-task old-task))
@@ -617,11 +665,12 @@
                         arguments)]
     ;; (println "MET arguments:" arguments)
     ;; (println "MET new-arguments:" new-arguments)
-    (assoc-if task
-      :arguments arguments
-      :temporal-constraints (and temporal-constraints
-                              (copy-temporal-constraints temporal-constraints))
-      )))
+    (update-htn-object!
+      (assoc-if task
+        :arguments arguments
+        :temporal-constraints (and temporal-constraints
+                                (copy-temporal-constraints temporal-constraints))
+        ))))
 
 ;; return methods vector
 (defn find-methods-that-expand-task [task]
@@ -785,6 +834,7 @@
   [ir root-task]
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
+  (reinitialize-htn-plan-table)
   (transform-htn ir)
   (let [[pclass method args] (identify-root-task ir root-task)
         nonprimitive-root-task (htn-nonprimitive-task
@@ -794,8 +844,44 @@
         expanded-root-task (make-expanded-task nonprimitive-root-task)]
     (plan-htn-task expanded-root-task)
     ;; (println "PLAN-HTN COMPLETE")
-    expanded-root-task))
+    (get-htn-object expanded-root-task)))
 
+(defn construct-htn-plan-map [ir expanded-root-task]
+  (let [{:keys [uid label]} expanded-root-task
+        net (htn-network {:label label :rootnodes #{uid}})
+        task-expansions (:task-expansions expanded-root-task)
+        ert (assoc
+              (dissoc expanded-root-task :pclass :arguments :task-expansions :name
+                :task-type :ancestry-path :temporal-constraints)
+              :incidence-set #{}
+              :edges #{})]
+    (update-htn-plan-map! ert)
+    (update-htn-plan-map! net)
+    (swap! *htn-plan-map* assoc :network (:uid net)) ;; ENTRY POINT
+    ;; now walk the graph
+    (if (pos? (count task-expansions))
+      (doseq [task-expansion task-expansions]
+        (let [hem (assoc
+                    (dissoc task-expansion
+                      :ancestry-path :expansion-method :argument-mappings :subtasks
+                      :subtask-constraints)
+                    :incidence-set #{}
+                    :edges [])
+              edge (htn-edge {:end-node (:uid hem)})
+              edge-uid (:uid edge)
+              hem (update-in hem [:incidence-set] conj edge-uid)]
+          (update-htn-plan-map! (update-in (get-htn-plan-map ert)
+                                  [:edges] conj edge-uid))
+          (update-htn-plan-map! edge)
+          (update-htn-plan-map! hem)
+          ;; HERE we need to recurse and
+          ;; 1) create a network of tasks
+          ;; 2) create edges to child hems
+          )
+        )
+      )
+    )
+  )
 ;;     rt {:type :root-task
 ;;         :pclass pclass
 ;;         :method method
@@ -947,9 +1033,15 @@
 (defn isr-test []
   (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
         ir (parser/parse {:input [htn]})
-        root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"]
-    (plan-htn ir root-task)
+        root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"
+        expanded-root-task (plan-htn ir root-task)]
+    (construct-htn-plan-map ir expanded-root-task)
+    ;; WALK the graph from the expanded-root-task
+    (println "ERT:")
+    (pprint-htn-object expanded-root-task)
     (println "HTN-OBJECTS" (count @*htn-objects*) "-------------------")
     ;; (pprint @*htn-objects*)
     (pprint-htn-objects)
+    (println "HTN-PLAN size" (count @*htn-plan-map*) "-------------------")
+    (pprint @*htn-plan-map*)
     ))
