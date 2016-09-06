@@ -13,11 +13,12 @@
 
 (ns pamela.cli
   "PAMELA command line interface."
-  (:require [clojure.java.io :refer :all] ;; for as-file
+  (:require ;; [clojure.java.io :refer :all] ;; for as-file
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.data.json :as json]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
+            [me.raynes.fs :as fs]
             [pamela.mode :as mode]
             [pamela.utils :refer [get-input var-of repl?]]
             [pamela.db :as db]
@@ -235,7 +236,7 @@
                  (vec output-formats))]]
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
-    :validate [#(or (daemon/running?) (= "-" %) (.exists (as-file %)))
+    :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
                 (let [oldv (get m k [])
@@ -244,6 +245,10 @@
    ["-l" "--load" "List models in memory only"]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
     :default "-"]
+   ["-a" "--magic MAGIC" "Magic lvar initializtions"
+    :default nil
+    :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
+               "MAGIC file does not exist"]]
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--simple" "Simple operation"]

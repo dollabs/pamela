@@ -249,16 +249,24 @@
 
 (defn ir-choice [& args]
   (loop [choice-opts {} body [] a (first args) more (rest args)]
+    ;; (log/warn "IR-CHOICE" a)
     (if-not a
       (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)
       (if (and (vector? a) (= :choice-opt (first a)))
         (let [choice-opt (second a)
-              [opt val] choice-opt]
-          (if (= opt :guard)
-            (recur (assoc choice-opts :condition val)
-              body (first more) (rest more))
-            (recur (assoc choice-opts opt val)
-              body (first more) (rest more))))
+              ;; _ (log/warn "IR-CHOICE OPT" choice-opt)
+              ]
+          (if (and (map? choice-opt) (:temporal-constraints choice-opt))
+            (let [opt :temporal-constraints
+                  val (get choice-opt opt)]
+              (recur (assoc choice-opts opt val)
+                body (first more) (rest more)))
+            (let [[opt val] choice-opt]
+              (if (= opt :guard)
+                (recur (assoc choice-opts :condition val)
+                  body (first more) (rest more))
+                (recur (assoc choice-opts opt val)
+                  body (first more) (rest more))))))
         (recur choice-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choose [f & args]
@@ -750,9 +758,50 @@
               vir (assoc vir sym val)]
           (recur vir (first more) (rest more)))))))
 
+(defn ir-magic [& args]
+  args)
+
+(def magic-ir {:boolean ir-boolean
+               :bounds-literal ir-bounds-literal
+               ;; :float handled in :ir-number
+               :integer ir-integer
+               :keyword keyword
+               :literal identity
+               :lvar-ctor ir-lvar-ctor
+               :lvar-init identity
+               :natural ir-integer
+               :number ir-number
+               :magic ir-magic
+               :string identity
+               })
+
+
+(defn parse-magic [magic]
+  (let [magic-parser (build-parser "magic.ebnf")
+        magic-tree (insta/parses magic-parser (slurp magic))]
+    (cond
+      (insta/failure? magic-tree)
+      (do
+        (log/errorf "parse: invalid magic file: %s" magic)
+        (log/errorf (with-out-str (pprint (insta/get-failure magic-tree))))
+        false)
+      (not= 1 (count magic-tree))
+      (do
+        (log/errorf "parse: grammar is ambiguous for magic file: %s" magic)
+        (log/errorf (with-out-str (pprint magic-tree)))
+        false)
+      :else
+      (let [lvars (insta/transform magic-ir (first magic-tree))]
+        (loop [mir {} lvar (first lvars) more (rest lvars)]
+          (if-not lvar
+            mir
+            (let [{:keys [name default]} lvar]
+              (recur (assoc mir name default)
+                (first more) (rest more)))))))))
+
 ;; return PAMELA IR
 (defn parse [options]
-  (let [{:keys [cwd input]} options
+  (let [{:keys [cwd input magic]} options
         filename (if (= 1 (count input)) (first input))
         file (if file (as-file filename))
         file (if (and file (.exists file))
@@ -780,4 +829,9 @@
         (log/errorf (with-out-str (pprint tree)))
         false)
       :else
-      (validate-pamela (insta/transform pamela-ir (first tree))))))
+      (let [ir (validate-pamela (insta/transform pamela-ir (first tree)))
+            mir (if (and ir magic) (parse-magic magic))]
+        (when mir
+          (log/warn "MAGIC")
+          (log/warn (with-out-str (pprint mir))))
+        ir))))
