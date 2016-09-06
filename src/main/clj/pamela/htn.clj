@@ -221,6 +221,7 @@
     (assoc (htn-task (assoc options :prefix (or prefix "hnpt-")))
       :type :htn-nonprimitive-task)))
 
+;; FIXME minimize forward declarations
 (declare name-with-args)
 
 (defn htn-expanded-nonprimitive-task
