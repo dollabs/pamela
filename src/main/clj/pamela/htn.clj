@@ -221,6 +221,8 @@
     (assoc (htn-task (assoc options :prefix (or prefix "hnpt-")))
       :type :htn-nonprimitive-task)))
 
+(declare name-with-args)
+
 (defn htn-expanded-nonprimitive-task
   "Expanded NonPrimitive tasks have already been decomposed into other tasks, by using HTN methods"
   [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
@@ -570,6 +572,7 @@
 
 (declare find-methods-that-expand-task)
 (declare arg-mappings-for-task-and-method)
+(declare make-expanded-task)
 
 ;;   "Expand"
 (defmethod plan-htn-task :htn-expanded-nonprimitive-task
@@ -823,6 +826,8 @@
           (str "cannot create arg-mappings with static-task-args: "
             static-task-args " and dynamic-task-args: " dynamic-task-args))))
     (zipmap static-task-args dynamic-task-args)))
+
+(declare transform-htn)
 
 ;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
 ;; NOTE: root-task is a string (or nil)!!!
