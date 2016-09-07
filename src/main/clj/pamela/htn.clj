@@ -85,10 +85,10 @@
     (swap! *htn-plan-map* assoc uid object)
     object))
 
+
 (def ^{:dynamic true} *htn-plan-ancestry*
   "Used to keep track of the parents of the current node.  A list, with oldest at the end"
   '())
-
 
 ;; helper functions -------------------------------------
 
@@ -127,6 +127,7 @@
                      (derive :htn-nonprimitive-task :htn-task)
                      (derive :htn-expanded-nonprimitive-task :htn-nonprimitive-task)
                      (derive :htn-method :htn-object)
+                     (derive :htn-expanded-method :htn-object)
                      (derive :htn-network :htn-object)
                      (derive :edge :htn-object)))
 
@@ -148,6 +149,7 @@
              [:htn-nonprimitive-task :htn-task]
              [:htn-expanded-nonprimitive-task :htn-nonprimitive-task]
              [:htn-method :htn-object]
+             [:htn-expanded-method :htn-object]
              [:htn-network :htn-object]
              [:edge :htn-object]
              ;; transitive = 1
@@ -891,6 +893,78 @@
     ;; (println "PLAN-HTN COMPLETE")
     (get-htn-object expanded-root-task)))
 
+(defn construct-hem-plan-map [ir hem henpt]
+  (println "construct-hem-plan-map" (:uid hem) (:uid henpt))
+  (let [{:keys [label subtasks subtask-constraints edges ancestry-path]} hem
+        {:keys [task-expansions]} henpt
+        hem-map (assoc
+                  (dissoc hem
+                    :ancestry-path :expansion-method :argument-mappings :subtasks
+                    :subtask-constraints)
+                  :incidence-set #{}
+                  :edges [])
+        edge (htn-edge {:end-node (:uid hem-map)})
+        edge-uid (:uid edge)
+        hem-map (update-in hem-map [:incidence-set] conj edge-uid)
+        tsc (if (and subtask-constraints
+                  (= (count subtask-constraints) 1)
+                  (= (:type (first subtask-constraints))
+                    :task-sequential-constraint))
+              (first subtask-constraints))
+        sequential? (not (nil? tsc))
+        subtask-order (mapv :uid (if tsc (:tasks tsc) subtasks))
+        net-map (if (pos? (count subtasks))
+                  (htn-network {:label label :rootnodes #{}}))]
+    (update-htn-plan-map! (update-in (get-htn-plan-map henpt)
+                            [:edges] conj edge-uid))
+    (update-htn-plan-map! edge)
+    (if net-map
+      (do
+        (update-htn-plan-map! net-map)
+        (update-htn-plan-map! (assoc hem-map :network (:uid net-map))))
+      (update-htn-plan-map! hem-map))
+
+    ;; HERE we need to recurse and
+    ;; 1) create a network of tasks
+    ;; 2) create edges to child hems
+    ;; follow the subtasks of task-expansion (henpt)
+    ;;   then add the hems from task-expansions of that henpt
+    (println "SUBTASK-ORDER" subtask-order)
+    (println "SUBTASK TYPES"  (map :type subtasks))
+    (doseq [i (range (count subtask-order))]
+      (let [subtask-uid (get subtask-order i)
+            ;; _ (println "SUBTASK-UID" subtask-uid)
+            edge (if (and sequential? (pos? i))
+                   (htn-edge {:end-node subtask-uid}))
+            subtask (get-htn-object subtask-uid)
+            subtask-map (assoc
+                          (dissoc subtask :pclass :arguments :task-expansions
+                            :name :task-type :ancestry-path :temporal-constraints)
+                          :label (name-with-args subtask)
+                          :incidence-set #{}
+                          :edges #{})]
+        (update-htn-plan-map! subtask-map)
+        (if (or (not sequential?) (zero? i))
+          (update-htn-plan-map! (update-in (get-htn-plan-map net-map)
+                                  [:rootnodes] conj (:uid subtask-map))))
+        (when edge ;; we know it's sequential? here and (pos? i)
+          (update-htn-plan-map! edge)
+          (update-htn-plan-map!
+            (update-in (get-htn-plan-map (get subtask-order (dec i)))
+              [:edges] conj (:uid edge))))
+
+        ))
+
+    ;; recurse down hem graph
+    ;; (println "RECURSE-HEM" (map :uid task-expansions))
+    ;; (if (pos? (count task-expansions))
+    ;;   (doseq [task-expansion task-expansions]
+    ;;     (let [ancestry-path (:ancestry-path task-expansion)
+    ;;           henpt (first ancestry-path)]
+    ;;       (construct-hem-plan-map ir task-expansion henpt)
+    ;;       )))
+    ))
+
 (defn construct-htn-plan-map [ir expanded-root-task]
   (let [{:keys [uid label]} expanded-root-task
         net (htn-network {:label label :rootnodes #{uid}})
@@ -906,23 +980,30 @@
     ;; now walk the graph
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
-        (let [hem (assoc
-                    (dissoc task-expansion
-                      :ancestry-path :expansion-method :argument-mappings :subtasks
-                      :subtask-constraints)
-                    :incidence-set #{}
-                    :edges [])
-              edge (htn-edge {:end-node (:uid hem)})
-              edge-uid (:uid edge)
-              hem (update-in hem [:incidence-set] conj edge-uid)]
-          (update-htn-plan-map! (update-in (get-htn-plan-map ert)
-                                  [:edges] conj edge-uid))
-          (update-htn-plan-map! edge)
-          (update-htn-plan-map! hem)
-          ;; HERE we need to recurse and
-          ;; 1) create a network of tasks
-          ;; 2) create edges to child hems
-          )))))
+        (construct-hem-plan-map ir task-expansion ert)))
+    ;; (if (pos? (count task-expansions))
+    ;;   (doseq [task-expansion task-expansions]
+    ;;     (let [hem (assoc
+    ;;                 (dissoc task-expansion
+    ;;                   :ancestry-path :expansion-method :argument-mappings :subtasks
+    ;;                   :subtask-constraints)
+    ;;                 :incidence-set #{}
+    ;;                 :edges [])
+    ;;           edge (htn-edge {:end-node (:uid hem)})
+    ;;           edge-uid (:uid edge)
+    ;;           hem (update-in hem [:incidence-set] conj edge-uid)]
+    ;;       (update-htn-plan-map! (update-in (get-htn-plan-map ert)
+    ;;                               [:edges] conj edge-uid))
+    ;;       (update-htn-plan-map! edge)
+    ;;       (update-htn-plan-map! hem)
+    ;;       ;; HERE we need to recurse and
+    ;;       ;; 1) create a network of tasks
+    ;;       ;; 2) create edges to child hems
+    ;;       ;; follow the subtasks of task-expansion (henpt)
+    ;;       ;;   then add the hems from task-expansions of that henpt
+    ;;       )))
+    ))
+
 ;; rt {:type :root-task
 ;;         :pclass pclass
 ;;         :method method
