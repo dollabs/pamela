@@ -387,14 +387,15 @@
                 ;; _ (println "  ARG-MAPPINGS" (pr-str arg-mappings))
                 ;; _ (println "  METHOD")
                 ;; _ (pprint method)
-                subtasks (mapv #(make-expanded-task % arg-mappings) subtasks)
-                ;; _ (println "  SUBTASKS")
-                ;; _ (pprint subtasks)
+                expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
+                                    subtasks)
+                _ (println "DAN Claims these are henpts  SUBTASKS")
+                _ (pprint expanded-subtasks)
                 expanded-method (htn-expanded-method
                                   {:expansion-method method
                                    :argument-mappings arg-mappings
                                    :ancestry-path *htn-plan-ancestry*
-                                   :subtasks subtasks})
+                                   :subtasks expanded-subtasks})
                 ;; conj onto :task-expansions of task
                 task-expansions (conj (:task-expansions (get-htn-object task))
                                   expanded-method)
@@ -694,11 +695,13 @@
          subtask-constraints []}}]
   (let [orig-method expansion-method
         orig-subtasks (:subtasks orig-method)
-        new-subtasks (:subtasks expansion-method)
+        new-subtasks subtasks ;; expanded henpt's
         subtask-constraints (map
                               #(copy-constraint-into-expansion %
                                  orig-method orig-subtasks new-subtasks)
                               (:subtask-constraints orig-method))
+        _ (println "NEW-SUBTASKS" new-subtasks)
+        _ (println "ST" subtask-constraints)
         hem   (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                 :type :htn-expanded-method
                 :expansion-method expansion-method
@@ -893,19 +896,20 @@
     ;; (println "PLAN-HTN COMPLETE")
     (get-htn-object expanded-root-task)))
 
-(defn construct-hem-plan-map [ir hem henpt]
-  (println "construct-hem-plan-map" (:uid hem) (:uid henpt))
+(defn construct-hem-plan-map [ir hem henpt root?]
+  (println "construct-hem-plan-map" (:uid hem) (:uid henpt) "root?" root?)
   (let [{:keys [label subtasks subtask-constraints edges ancestry-path]} hem
-        {:keys [task-expansions]} henpt
         hem-map (assoc
                   (dissoc hem
                     :ancestry-path :expansion-method :argument-mappings :subtasks
                     :subtask-constraints)
                   :incidence-set #{}
                   :edges [])
-        edge (htn-edge {:end-node (:uid hem-map)})
+        edge (if root? (htn-edge {:end-node (:uid hem-map)}))
         edge-uid (:uid edge)
-        hem-map (update-in hem-map [:incidence-set] conj edge-uid)
+        hem-map (if root?
+                  (update-in hem-map [:incidence-set] conj edge-uid)
+                  hem-map)
         tsc (if (and subtask-constraints
                   (= (count subtask-constraints) 1)
                   (= (:type (first subtask-constraints))
@@ -915,9 +919,10 @@
         subtask-order (mapv :uid (if tsc (:tasks tsc) subtasks))
         net-map (if (pos? (count subtasks))
                   (htn-network {:label label :rootnodes #{}}))]
-    (update-htn-plan-map! (update-in (get-htn-plan-map henpt)
-                            [:edges] conj edge-uid))
-    (update-htn-plan-map! edge)
+    (when root?
+      (update-htn-plan-map! (update-in (get-htn-plan-map henpt)
+                              [:edges] conj edge-uid))
+      (update-htn-plan-map! edge))
     (if net-map
       (do
         (update-htn-plan-map! net-map)
@@ -937,11 +942,12 @@
             edge (if (and sequential? (pos? i))
                    (htn-edge {:end-node subtask-uid}))
             subtask (get-htn-object subtask-uid)
+            {:keys [task-expansions]} subtask
             subtask-map (assoc
                           (dissoc subtask :pclass :arguments :task-expansions
                             :name :task-type :ancestry-path :temporal-constraints)
                           :label (name-with-args subtask)
-                          :incidence-set #{}
+                          :incidence-set (if edge #{(:uid edge)} #{})
                           :edges #{})]
         (update-htn-plan-map! subtask-map)
         (if (or (not sequential?) (zero? i))
@@ -953,16 +959,16 @@
             (update-in (get-htn-plan-map (get subtask-order (dec i)))
               [:edges] conj (:uid edge))))
 
+        ;; recurse down hem graph
+        (if (pos? (count task-expansions))
+          (doseq [task-expansion task-expansions]
+            (let [hedge (htn-edge {:end-node (:uid task-expansion)})]
+              (update-htn-plan-map! hedge)
+              (update-htn-plan-map!
+                (update-in (get-htn-plan-map hem-map)
+                  [:edges] conj (:uid hedge)))
+              (construct-hem-plan-map ir task-expansion subtask false))))
         ))
-
-    ;; recurse down hem graph
-    ;; (println "RECURSE-HEM" (map :uid task-expansions))
-    ;; (if (pos? (count task-expansions))
-    ;;   (doseq [task-expansion task-expansions]
-    ;;     (let [ancestry-path (:ancestry-path task-expansion)
-    ;;           henpt (first ancestry-path)]
-    ;;       (construct-hem-plan-map ir task-expansion henpt)
-    ;;       )))
     ))
 
 (defn construct-htn-plan-map [ir expanded-root-task]
@@ -980,7 +986,7 @@
     ;; now walk the graph
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
-        (construct-hem-plan-map ir task-expansion ert)))
+        (construct-hem-plan-map ir task-expansion ert true)))
     ;; (if (pos? (count task-expansions))
     ;;   (doseq [task-expansion task-expansions]
     ;;     (let [hem (assoc
