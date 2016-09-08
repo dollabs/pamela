@@ -71,7 +71,7 @@
 ;; {uid htn-object} where htn-object has keys trimmed
 (def ^{:dynamic true} *htn-plan-map* (atom {}))
 
-(defn reinitialize-htn-plan-table []
+(defn reinitialize-htn-plan-map []
   (reset! *htn-plan-map* {}))
 
 (defn get-htn-plan-map [uid-or-object]
@@ -134,37 +134,6 @@
 (defn htn-isa? [child parent]
   (isa? htn-hierarchy child parent))
 
-;; DEBUGGING
-(defn test-htn-isa? [child parent]
-  (println "isa?" child parent "==" (htn-isa? child parent)))
-
-;; DEBUGGING
-(defn test-htn []
-  (let [cps [;; direct
-             [:temporal-constraint :htn-object]
-             [:inter-task-constraint :htn-object]
-             [:task-sequential-constraint :inter-task-constraint]
-             [:htn-task :htn-object]
-             [:htn-primitive-task :htn-task]
-             [:htn-nonprimitive-task :htn-task]
-             [:htn-expanded-nonprimitive-task :htn-nonprimitive-task]
-             [:htn-method :htn-object]
-             [:htn-expanded-method :htn-object]
-             [:htn-network :htn-object]
-             [:edge :htn-object]
-             ;; transitive = 1
-             [:task-sequential-constraint :htn-object]
-             [:htn-primitive-task :htn-object]
-             [:htn-nonprimitive-task :htn-object]
-             ;; transitive = 2
-             [:htn-expanded-nonprimitive-task :htn-object]
-             ;; false
-             [:htn-method :htn-network]
-             ]]
-    (doseq [cp cps]
-      (let [[c p] cp]
-        (test-htn-isa? c p)))))
-
 ;; name-with-args multi-methods --------------------------------------
 
 ;; FUTURE: add pclass to name-with-args
@@ -193,7 +162,7 @@
   [object & [max-line-length]]
   (let [{:keys [name arguments]} object]
     (add-newlines-if-needed
-      (str name (if name-with-args-include-args? (or arguments '())))
+      (str name (if name-with-args-include-args? (or (seq arguments) '())))
       (or max-line-length name-with-args-max-line-length))))
 
 (defmethod name-with-args :htn-method
@@ -207,7 +176,7 @@
         (or max-line-length name-with-args-max-line-length))
       (if max-line-length "\n" " - ")
       (add-newlines-if-needed
-        (str name (if name-with-args-include-args? (or arguments '())))
+        (str name (if name-with-args-include-args? (or (seq arguments) '())))
         (or max-line-length name-with-args-max-line-length)))))
 
 (defmethod name-with-args :htn-expanded-method
@@ -217,16 +186,12 @@
         method-name (str name)
         {:keys [name arguments]} nonprimitive-task
         argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
-    (str
-      ;; (add-newlines-if-needed
-      ;;   method-name
-      ;;   (or max-line-length name-with-args-max-line-length))
-      (add-newlines-if-needed
-        (str method-name
-          (if name-with-args-include-args? "(")
-          (if name-with-args-include-args? argvals)
-          (if name-with-args-include-args? ")"))
-        (or max-line-length name-with-args-max-line-length)))))
+    (add-newlines-if-needed
+      (str method-name
+        (if name-with-args-include-args? "(")
+        (if name-with-args-include-args? argvals)
+        (if name-with-args-include-args? ")"))
+      (or max-line-length name-with-args-max-line-length))))
 
 ;; print-object multi-methods --------------------------------------
 
@@ -351,8 +316,7 @@
       (assoc-if task
         :arguments arguments
         :temporal-constraints (and temporal-constraints
-                                (copy-temporal-constraints temporal-constraints))
-        ))))
+                                (copy-temporal-constraints temporal-constraints))))))
 
 ;; plan-htn-task multi-methods --------------------------------------
 
@@ -450,9 +414,6 @@
 
 (defmethod pprint-htn-object nil
   [object]
-  ;; (throw
-  ;;   (AssertionError.
-  ;;     (str "cannot pprint-htn-object for object type: " (:type object))))
   (pprint object))
 
 (defmethod pprint-htn-object :task-sequential-constraint
@@ -884,7 +845,7 @@
   [ir root-task]
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
-  (reinitialize-htn-plan-table)
+  (reinitialize-htn-plan-map)
   (transform-htn ir)
   (let [[pclass method args] (identify-root-task ir root-task)
         nonprimitive-root-task (htn-nonprimitive-task
@@ -894,8 +855,11 @@
         expanded-root-task (make-expanded-task nonprimitive-root-task)]
     (plan-htn-task expanded-root-task)
     ;; (println "PLAN-HTN COMPLETE")
-    (get-htn-object expanded-root-task)))
+    (construct-htn-plan-map ir (get-htn-object expanded-root-task))
+    ))
 
+;; root? is true to create the "synthetic" htn-network at the very
+;; top of the HTN
 (defn construct-hem-plan-map [ir hem henpt root?]
   (println "construct-hem-plan-map" (:uid hem) (:uid henpt) "root?" root?)
   (let [{:keys [label subtasks subtask-constraints edges ancestry-path]} hem
@@ -943,6 +907,8 @@
                    (htn-edge {:end-node subtask-uid}))
             subtask (get-htn-object subtask-uid)
             {:keys [task-expansions]} subtask
+            parallel? (not sequential?)
+            choice? (and (not parallel?) (> (count task-expansions) 1))
             subtask-map (assoc
                           (dissoc subtask :pclass :arguments :task-expansions
                             :name :task-type :ancestry-path :temporal-constraints)
@@ -961,8 +927,13 @@
 
         ;; recurse down hem graph
         (if (pos? (count task-expansions))
-          (doseq [task-expansion task-expansions]
-            (let [hedge (htn-edge {:end-node (:uid task-expansion)})]
+          (doseq [j (range (count task-expansions))]
+            (let [task-expansion (get task-expansions j)
+                  edge-type (if choice? :choice nil)
+                  label (if parallel? nil (str (inc i)))
+                  hedge (htn-edge {:end-node (:uid task-expansion)
+                                   :label label
+                                   :edge-type edge-type})]
               (update-htn-plan-map! hedge)
               (update-htn-plan-map!
                 (update-in (get-htn-plan-map hem-map)
@@ -987,28 +958,7 @@
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
         (construct-hem-plan-map ir task-expansion ert true)))
-    ;; (if (pos? (count task-expansions))
-    ;;   (doseq [task-expansion task-expansions]
-    ;;     (let [hem (assoc
-    ;;                 (dissoc task-expansion
-    ;;                   :ancestry-path :expansion-method :argument-mappings :subtasks
-    ;;                   :subtask-constraints)
-    ;;                 :incidence-set #{}
-    ;;                 :edges [])
-    ;;           edge (htn-edge {:end-node (:uid hem)})
-    ;;           edge-uid (:uid edge)
-    ;;           hem (update-in hem [:incidence-set] conj edge-uid)]
-    ;;       (update-htn-plan-map! (update-in (get-htn-plan-map ert)
-    ;;                               [:edges] conj edge-uid))
-    ;;       (update-htn-plan-map! edge)
-    ;;       (update-htn-plan-map! hem)
-    ;;       ;; HERE we need to recurse and
-    ;;       ;; 1) create a network of tasks
-    ;;       ;; 2) create edges to child hems
-    ;;       ;; follow the subtasks of task-expansion (henpt)
-    ;;       ;;   then add the hems from task-expansions of that henpt
-    ;;       )))
-    ))
+    @*htn-plan-map*))
 
 ;; rt {:type :root-task
 ;;         :pclass pclass
@@ -1119,11 +1069,11 @@
   (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
         ir (parser/parse {:input [htn]})
         root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"
-        expanded-root-task (plan-htn ir root-task)]
-    (construct-htn-plan-map ir expanded-root-task)
+        htn (plan-htn ir root-task)]
+    ;; (construct-htn-plan-map ir expanded-root-task)
     ;; WALK the graph from the expanded-root-task
-    (println "ERT:")
-    (pprint-htn-object expanded-root-task)
+    ;; (println "ERT:")
+    ;; (pprint-htn-object expanded-root-task)
     (println "HTN-OBJECTS" (count @*htn-objects*) "-------------------")
     ;; (pprint @*htn-objects*)
     (pprint-htn-objects)
