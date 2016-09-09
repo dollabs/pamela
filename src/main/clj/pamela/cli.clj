@@ -180,17 +180,15 @@
         ir (parser/parse options)]
     (if-not ir
       (do
-        (println "unable to parse: %s" input)
+        (println "unable to parse:" input)
         (log/errorf "unable to parse: %s" input)
         false)
-      ;; root-task may be nil for the default case
-      (let [htn (htn/plan-htn ir root-task)
-            out (if (= file-format "json")
-                  (with-out-str (json/pprint htn))
-                  (with-out-str (pprint htn)))]
-        (if (daemon/stdout? output)
-          (println out)
-          (spit output out))))))
+      (if-not (#{"edn" "json"} file-format)
+        (do
+          (println "illegal file-format for htn:" file-format)
+          (log/errorf "illegal file-format for htn: %s" file-format)
+          false)
+        (htn/plan-htn ir root-task file-format cwd output)))))
 
 (def #^{:added "0.2.0"}
   actions
@@ -214,6 +212,12 @@
 
 ;; command line processing -----------------------------------
 
+(defn expand-home [filename]
+  (if (string/starts-with? filename "~/")
+    (let [home (:user-home env)]
+      (str home (subs filename 1)))
+    filename))
+
 (def #^{:added "0.2.0"}
   cli-options
   "Command line options"
@@ -236,6 +240,7 @@
                  (vec output-formats))]]
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
+    :parse-fn #(expand-home %)
     :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
@@ -247,6 +252,7 @@
     :default "-"]
    ["-a" "--magic MAGIC" "Magic lvar initializtions"
     :default nil
+    :parse-fn #(expand-home %)
     :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
                "MAGIC file does not exist"]]
    ["-m" "--model MODEL" "Model name"]
@@ -340,6 +346,7 @@
         action (get actions cmd)
         {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
+        output (expand-home output)
         output (if-not (daemon/stdout-option? output)
                  (if (.startsWith output "/")
                    output ;; absolute
