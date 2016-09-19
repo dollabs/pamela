@@ -270,23 +270,27 @@
         (recur choice-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choose [f & args]
+  (log/warn "IR-CHOOSE" f (pr-str args))
   (loop [choose-opts {} body [] a (first args) more (rest args)]
     (if-not a
       (merge {:type f :body (if (empty? body) nil body)} choose-opts)
       (if (and (vector? a) (#{:choose-opt :delay-opt} (first a)))
         (if (vector? (second a))
-          (let [a1 (second a)
-                opt (first a1)
-                opt (if (= opt [:MIN])
-                      :min
-                      (if (= opt [:MAX])
-                        :max
-                        (if (= opt [:EXACTLY])
-                          :exactly
-                          :unknown-choose-opt ;; FIXME
-                          )))
-                val (second a1)]
-            (recur (assoc choose-opts opt val) body (first more) (rest more)))
+          (if (= (first (second a)) :fn-opt)
+            (let [fn-opt (second (second a))]
+              (recur (merge choose-opts fn-opt) body (first more) (rest more)))
+            (let [a1 (second a)
+                  opt (first a1)
+                  opt (if (= opt [:MIN])
+                        :min
+                        (if (= opt [:MAX])
+                          :max
+                          (if (= opt [:EXACTLY])
+                            :exactly
+                            :unknown-choose-opt ;; FIXME
+                            )))
+                  val (second a1)]
+              (recur (assoc choose-opts opt val) body (first more) (rest more))))
           (recur (merge choose-opts (second a)) body (first more) (rest more)))
         (recur choose-opts (conj body a) (first more) (rest more))))))
 
