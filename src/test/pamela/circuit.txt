@@ -49,7 +49,10 @@
       [:cond [:post [:keyword "on"]]]
       [:cond
        [:opt-bounds
-        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "3"]]]]]]
       [:cond [:doc [:string "turns on the power supply"]]]]
      [:args]]
     [:defpmethod
@@ -59,7 +62,10 @@
       [:cond [:post [:keyword "off"]]]
       [:cond
        [:opt-bounds
-        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "3"]]]]]]
       [:cond [:doc [:string "turns off the power supply"]]]]
      [:args]]
     [:defpmethod
@@ -88,7 +94,7 @@
       [:trans
        [:probability
         [:number-ref
-         [:number [:float [:integer "0"] [:integer "0000001"]]]]]]
+         [:number [:float [:integer "0"] [:natural "0000001"]]]]]]
       [:trans [:doc [:string "spontaneous switch failure"]]]]]]]]
  [:defpclass
   [:symbol "lightvals"]
@@ -178,7 +184,10 @@
       [:trans [:post [:keyword "on"]]]
       [:trans
        [:opt-bounds
-        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "3"]]]]]]
       [:trans [:doc [:string "turning on bulb"]]]]]
     [:transition
      [:keyword "on:off"]
@@ -200,7 +209,10 @@
       [:trans [:post [:keyword "off"]]]
       [:trans
        [:opt-bounds
-        [:bounds [:number [:integer "1"]] [:number [:integer "3"]]]]]
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "3"]]]]]]
       [:trans [:doc [:string "turning off bulb"]]]]]
     [:transition
      [:keyword "*:fail"]
@@ -234,16 +246,16 @@
      [:keyword "bulb1"]
      [:field-type
       [:pclass-ctor
-       [:symbol "bulb"]
-       [:symbol "source"]
-       [:symbol "drain"]
-       [:pclass-ctor-arg [:id [:string "Bulb1"]]]]]]
+       [:pclass-name [:symbol "bulb"]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
+       [:pclass-ctor-option [:id [:string "Bulb1"]]]]]]
     [:field
      [:keyword "switchedpower"]
      [:field-type
       [:pclass-ctor
-       [:symbol "psw"]
-       [:symbol "source"]
-       [:symbol "drain"]
-       [:pclass-ctor-arg [:id [:string "PSW1"]]]
-       [:pclass-ctor-arg [:interface [:string "RMQ"]]]]]]]]]]
+       [:pclass-name [:symbol "psw"]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
+       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
+       [:pclass-ctor-option [:id [:string "PSW1"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]]]

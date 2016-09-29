@@ -13,22 +13,26 @@
 
 (ns pamela.cli
   "PAMELA command line interface."
-  (:require [clojure.java.io :refer :all] ;; for as-file
+  (:require ;; [clojure.java.io :refer :all] ;; for as-file
             [clojure.tools.cli :refer [parse-opts]]
+            [clojure.data.json :as json]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
+            [me.raynes.fs :as fs]
             [pamela.mode :as mode]
-            [pamela.utils :refer [get-input var-of repl?]]
+            [pamela.utils :refer [get-input var-of repl? output-file]]
             [pamela.db :as db]
             [pamela.daemon :as daemon]
-            [pamela.pclass :as pclass :refer [get-model-var]]
-            [pamela.models :as models]
+            [pamela.parser :as parser]
+            [pamela.htn :as htn]
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
             [environ.core :refer [env]])
   (:import [java.security
-            PrivilegedActionException]))
+            PrivilegedActionException]
+            [java.util
+             Base64])) ;; requires JDK 8
 
 ;; actions ----------------------------------------------
 
@@ -36,11 +40,10 @@
   "Simply copies the input to output (for debugging)"
   {:added "0.2.0"}
   [options]
-  (let [[_ data] (get-input options)
-        output (:output options)]
-    (if (daemon/stdout? output)
-      (print data)
-      (spit output data))))
+  (let [{:keys [cwd output]} options
+        [_ data] (get-input options)
+        stdout? (daemon/stdout? output)]
+    (output-file stdout? cwd output "edn" data)))
 
 (defn delete-model
   "Deletes given model from the database"
@@ -74,81 +77,98 @@
   "List models (--simple for names only, --load for memory only)"
   {:added "0.2.0"}
   [options]
-  (if (:load options) ;; memory only
-    (println (pclass/list-models false))
-    (db/with-db options
-      (let [models (db/list-models options)]
-        (if (:simple options)
-          (doseq [m models] (println m))
-          (pprint models))))))
+  (let [msg "list-models not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
 
 (defn load-models
   "Load model(s) in memory only"
   {:added "0.2.0"}
   [options]
-  (binding [pclass/*pclasses* (atom [])]
-    (let [{:keys [verbose]} options
-          [url source] (get-input options)
-          load-result (models/load-pamela-string source url)]
-          (if-not (empty? load-result)
-            (do
-              (log/errorf "unable to load: %s" load-result)
-              false)
-            (do
-              (if (> verbose 1)
-                (println "loaded classes:" @pclass/*pclasses*))
-              @pclass/*pclasses*)))))
+  (let [msg "load-models not implemented yet"]
+    (println msg)
+    (log/error msg)
+    false))
 
 (defn build-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [model output]} options
-        loaded (load-models options)
-        model-var (if model (get-model-var model))
-        model-args-count (count (:args (meta model-var)))
-        model-ctor (if (zero? model-args-count) (deref model-var))
-        instance (if model-ctor (model-ctor))
-        instance-str (with-out-str (pprint instance))]
-    (cond
-      (nil? model-var)
+  (let [{:keys [cwd input output]} options
+        stdout? (daemon/stdout? output)
+        ir (parser/parse options)]
+    (if-not ir
       (do
-        (log/errorf "unable to find model: %s" (or model "<unspecified>"))
+        (println "unable to parse: %s" input)
+        (log/errorf "unable to parse: %s" input)
         false)
-      (pos? model-args-count)
-      (do
-        (log/errorf "model to build: %s takes %d arguments (need a zero arg constructor)" model model-args-count)
-        false)
-      (nil? model-ctor)
-      (do
-        (log/errorf "unable to get constructor for model to build: %s" model)
-        false)
-      :else
+      (output-file stdout? cwd output "edn" ir))))
+
+(defn parse-model
+  "Load model(s) in memory, construct --model PCLASS, save as EDN"
+  {:added "0.3.0"}
+  [options]
+  (let [{:keys [cwd input output]} options
+        filename (if (= 1 (count input)) (first input))
+        pir (if filename (parser/parse options))]
+    (if pir
       (if (daemon/stdout? output)
-        (print instance-str)
-        (spit output instance-str)))))
+        (print pir)
+        (spit output pir))
+      (if filename
+        (do
+          (log/errorf "unable to parse: %s" filename)
+          false)
+        (do
+          (log/errorf "invalid input to parse: %s" input)
+          false)))))
 
 (defn tpn
   "Load model(s) in memory only, process as a TPN"
   {:added "0.2.0"}
   [options]
-  (let [{:keys [construct-tpn file-format output visualize]} options
-        loaded (load-models options)
-        tpn (if loaded
-              (if construct-tpn
-                (tpn/construct-tpn-cfm construct-tpn file-format)
-                (tpn/load-tpn loaded file-format)))]
-    (when (and loaded tpn)
-      (if (daemon/stdout? output)
-        (print tpn)
-        (spit output tpn))
+  (let [{:keys [construct-tpn file-format cwd input output visualize]} options
+        stdout? (daemon/stdout? output)
+        ir (parser/parse options)
+        tpn (cond
+              (not ir)
+              (do
+                (println "unable to parse: %s" input)
+                (log/errorf "unable to parse: %s" input)
+                false)
+              :else
+              (tpn/load-tpn ir options))]
+    (when tpn
+      (output-file stdout? cwd output file-format tpn)
       (when visualize
-        (tpn/visualize tpn options)))))
+        ;; (tpn/visualize tpn options)
+        (log/error "visualize not implemented yet")
+        ))))
+
+(defn htn
+  "Load model(s) in memory only, process as a HTN"
+  {:added "0.4.0"}
+  [options]
+  (let [{:keys [root-task file-format cwd input output]} options
+        ir (parser/parse options)]
+    (if-not ir
+      (do
+        (println "unable to parse:" input)
+        (log/errorf "unable to parse: %s" input)
+        false)
+      (if-not (#{"edn" "json"} file-format)
+        (do
+          (println "illegal file-format for htn:" file-format)
+          (log/errorf "illegal file-format for htn: %s" file-format)
+          false)
+        (htn/plan-htn ir root-task file-format cwd output)))))
 
 (def #^{:added "0.2.0"}
   actions
   "Valid PAMELA command line actions"
   {"build" (var build-model)
+   "parse" (var parse-model)
    "cat" (var cat-input-output)
    "delete" (var delete-model)
    "describe" (var describe-model)
@@ -156,12 +176,13 @@
    "import" (var import-model)
    "list" (var list-models)
    "load" (var load-models)
-   "tpn" (var tpn)})
+   "tpn" (var tpn)
+   "htn" (var htn)})
 
 (def #^{:added "0.2.0"}
   output-formats
   "Valid PAMELA output file formats"
-  #{"tpn" "cytoscape" "dot" "json"})
+  #{"edn" "cytoscape" "dot" "json"})
 
 ;; command line processing -----------------------------------
 
@@ -180,14 +201,15 @@
     :validate [#(< 80 % 0x10000) "Must be a number between 80 and 65536"]]
    ["-e" "--database DATABASE" "Remote database server name (ES_SERVER)"
     :default (:es-server env)]
-   ["-f" "--file-format FORMAT" "Output file format"
-    :default "dot"
+   ["-f" "--file-format FORMAT" "Output file format [edn]"
+    :default "edn"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
-    :validate [#(or (daemon/running?) (= "-" %) (.exists (as-file %)))
+    :parse-fn #(fs/expand-home %)
+    :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
                 (let [oldv (get m k [])
@@ -196,9 +218,15 @@
    ["-l" "--load" "List models in memory only"]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
     :default "-"]
+   ["-a" "--magic MAGIC" "Magic lvar initializtions"
+    :default nil
+    :parse-fn #(fs/expand-home %)
+    :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
+               "MAGIC file does not exist"]]
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--simple" "Simple operation"]
+   ["-t" "--root-task ROOTTASK" "Label for HTN root-task [main]"]
    ["-g" "--visualize" "Render TPN as SVG (set -f dot)"]
    ["-w" "--web WEB" "Web request hints (internal use only)"]
    ;; NOT Supported: all imports will currently update
@@ -269,10 +297,13 @@
     (System/exit status))
   true)
 
+(defn base-64-decode [b64]
+  (String. (.decode (Base64/getDecoder) b64)))
+
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.3.0"}
+   :version "0.4.0"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))
@@ -284,13 +315,17 @@
         (parse-opts args cli-options)
         cmd (first arguments)
         action (get actions cmd)
-        {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive simple visualize web]} options
+        {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
+        output (fs/expand-home output)
         output (if-not (daemon/stdout-option? output)
-                 (if (.startsWith output "/")
+                 (if (fs/absolute? output)
                    output ;; absolute
                    (str cwd "/" output)))
-        options (assoc options :output output)
+        root-task (if (and root-task (string/ends-with? root-task "=="))
+                    (base-64-decode root-task)
+                    root-task)
+        options (assoc options :output output :root-task root-task)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
@@ -323,6 +358,7 @@
       (println "output:" output)
       (println "model:" model)
       (println "recursive:" recursive)
+      (println "root-task:" root-task)
       (println "simple:" simple)
       (println "visualize:" visualize)
       ;; (println "update:" (:update options))
@@ -333,6 +369,7 @@
         (usage summary))
       (try
         (action (assoc options :cwd cwd))
+        ;; DEBUG
         (catch Throwable e ;; note AssertionError not derived from Exception
           ;; NOTE: this alternate exception is to help generate a stack trace
           ;; perhaps it's better to generate a stack trace in every case

@@ -1,0 +1,137 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+(defpclass pwrvals []
+  :meta {:version "0.2.0"
+         :doc "Enum for power values"}
+  :modes [:high :none])
+
+;; Pamela plant class
+(defpclass box []
+  ;; :inherit [thing cube]
+  :meta {:version "0.0.1"
+         :depends [[pwrvals "0.2.0"]]
+         :icon "box.svg"
+         :doc "Box"}
+  :fields {:ball-in-motion {:initial false
+                            :observable true
+                            :access :public}
+           :fred (lvar "fred")
+           :dummy (lvar)
+           :pwr (mode-of pwrvals :high)
+           }
+  :modes [:open :close]
+  :transitions {:open:close {:pre :open :post :close :doc "lid closes"}
+                :close:open {:pre :close
+                             :post (and (= :pwr :high)
+                                     (= (:fred this) 123.456)
+                                     (mode-of this :wacky))
+                             :doc "lid opens"
+                             :bounds [12 34]
+                             :cost 10
+                             :reward 100
+                             :probability 0.99}}
+  :methods [(defpmethod open-lid
+              {:pre :close :post :open}
+              [])
+            (defpmethod close-lid
+              {:pre :open ;; (mode-of this :open)
+               :post :close
+               :doc "Close method"
+               :bounds [123 456]
+               :cost 100
+               :reward 1000
+               :controllable true}
+              [])
+            (defpmethod reset
+              {:post :open}
+              [])])
+
+;; Pamela plant class
+(defpclass cannon []
+  :fields {:ammunitions {:initial 5
+                         :observable true}
+           :ready       {:initial false
+                         :access :public
+                         :observable true}}
+  :methods [(defpmethod fire
+              [arg1 arg2])
+            (defpmethod reset
+              {:bounds [1 2]}
+              [])])
+
+;; Pamela main / class or entry point for a control program
+(defpclass game [power]
+  :fields {:cannon-f (cannon true "fred" 123 bob :id "first-cannon" :interface "ZMQ")
+           :box-f    (box)}
+
+  :modes {:wacky true
+          :bizarre (= :cannon-f.:ammunitions 5)
+          :weird (and (= :box-f.:pwr :high)
+                   (= power :high)
+                   (= global-state true))
+          }
+  :methods [(defpmethod main
+              [initial-state]
+              (parallel :bounds [1 60]
+                (whenever (= :box-f.:ball-in-motion true)
+                  (tell (= all-clear initial-state))) ;;all-clear is a state var
+                (whenever (= :cannon-f.:ready true)
+                  (unless (= :cannon-f.:ammunitions 0)
+                    (try :bounds [2 20]
+                         (sequence
+                           (assert (= :box-f :open))
+                           (maintain (= :box-f :open)
+                             (sequence :label :my :bounds [98 101]
+                               :cost<= 11 :reward>= 90
+                               (magic.doit :label :doit :bounds [99 100]
+                                 :cost 9 :reward 99 :controllable true
+                                 :a 1 "two" 2.3)
+                               (:cannon-f.fire :bounds [1 7] 123.45  "456")
+                               (ask (= all-clear true) :bounds [200 300]
+                                 ) ;; wait / rendezvous
+                               ))
+                           (:box-f.close)
+                           (choose :label :pickme :bounds [36 37]
+                             :cost<= 45 :reward>= 46
+                             (choice :label :chance
+                               :cost 9 :reward 99 :probability 0.67
+                               (delay :label :aaa)
+                               )
+                             (choice :bounds [7 8] :guard (= :box-f :open)
+                               (delay :label :bbb)
+                               )
+                             ))
+                         (catch
+                             (sequence
+                               (parallel
+                                 (:box-f.reset)
+                                 (:cannon-f.reset))
+                               (delay :bounds [30 30]))))))
+                (slack-sequence :label :slack-sequence
+                  (:box-f.reset)
+                  (:cannon-f.reset))
+                (slack-parallel :label :slack-parallel
+                  (:box-f.reset)
+                  (:cannon-f.reset))
+                (optional :label :optional
+                  (:cannon-f.reset))
+                (soft-sequence :label :soft-sequence
+                  (:box-f.reset)
+                  (:cannon-f.reset))
+                (soft-parallel :label :soft-parallel
+                  (:box-f.reset)
+                  (:cannon-f.reset)))
+                (between :my :pickme :bounds [50 :infinity])
+                (between-starts :doit :aaa :cost<= 51)
+                (between-ends :chance :bbb :reward>= 17))])

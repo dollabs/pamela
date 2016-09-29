@@ -52,19 +52,21 @@ trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 pre = <PRE> ( keyword | cond-expr )
 post = <POST> ( keyword | cond-expr )
 
-fn = ( ask | assert | choose | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever )
+fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever )
 
 ask = <LP> <ASK> cond-expr opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
 choice = <LP> <CHOICE> choice-opt* fn <RP>
-choose = <LP> <CHOOSE> fn-opt* choice+ <RP>
+choose = <LP> <CHOOSE> choose-opt* choice+ <RP>
+choose-whenever = <LP> <CHOOSE_WHENEVER> choose-opt* choice+ <RP>
 optional = <LP> <OPTIONAL> fn-opt* fn <RP>
 maintain = <LP> <MAINTAIN> cond-expr opt-bounds? fn <RP>
 delay = <LP> <DELAY> delay-opt*  <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt* argval* <RP>
+plant-fn = <LP> ( symbol <'.'> symbol | plant-fn-symbol | keyword ) plant-opt* argval* <RP>
+plant-fn-symbol = !DELAY symbol
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
@@ -81,10 +83,11 @@ between-ends = <LP> <BETWEEN-ENDS> keyword keyword between-opt+ <RP>
 between-starts = <LP> <BETWEEN-STARTS> keyword keyword between-opt+ <RP>
 
 fn-opt = ( label | opt-bounds | cost-le | reward-ge )
+choose-opt = ( fn-opt | exactly | min | max )
 delay-opt = ( label | opt-bounds | cost-le | reward-ge | controllable )
 between-opt = ( opt-bounds | cost-le | reward-ge )
 plant-opt = ( label | opt-bounds | cost | reward | controllable )
-choice-opt = ( label | opt-bounds | cost | reward | probability | guard )
+choice-opt = ( label | opt-bounds | cost | reward | probability | guard | enter | leave )
 
 opt-bounds = <BOUNDS> bounds
 label = <LABEL> keyword
@@ -95,10 +98,16 @@ cost-le = <COST_LE> number-ref
 reward-ge = <REWARD_GE> number-ref
 guard = <GUARD> cond-expr
 controllable = <CONTROLLABLE> boolean
+min = MIN integer
+max = MAX integer
+exactly = EXACTLY integer
+enter = <ENTER> fn
+leave = <LEAVE> fn
 
 number-ref = ( symbol | lvar-ctor | number )
 
-lvar-ctor = <LP> <LVAR> string? <RP>
+lvar-ctor = ( <LP> <LVAR> <RP> | <LP> <LVAR> string lvar-init? <RP> )
+lvar-init = literal | bounds-literal
 
 pclass-ctor = <LP> pclass-name pclass-ctor-arg* pclass-ctor-option* <RP>
 pclass-name = !MODE_OF symbol
@@ -109,7 +118,8 @@ reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> )
 id = <ID> string
 interface = <INTERFACE> string
 
-bounds = <LB> number ( number | INFINITY ) <RB>
+bounds = bounds-literal | lvar-ctor
+bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
 symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
 literal = ( boolean | string | keyword | number )
@@ -135,6 +145,7 @@ BOUNDS = <':bounds'>
 CATCH = <'catch'>
 CHOICE = <'choice'>
 CHOOSE = <'choose'>
+CHOOSE_WHENEVER = <'choose-whenever'>
 CONTROLLABLE = <':controllable'>
 COST = <':cost'>
 COST_LE = <':cost<='>
@@ -143,7 +154,9 @@ DEFPMETHOD = <'defpmethod'>
 DELAY = <'delay'>
 DEPENDS = <':depends'>
 DOC = <':doc'>
+ENTER = <':enter'>
 EQUAL = <'='>
+EXACTLY = <':exactly'>
 FALSE = <'false'>
 FIELDS = <':fields'>
 GUARD = <':guard'>
@@ -155,10 +168,13 @@ INHERIT = <':inherit'>
 INITIAL = <':initial'>
 INTERFACE = <':interface'>
 LABEL = <':label'>
+LEAVE = <':leave'>
 LVAR = <'lvar'>
 MAINTAIN = <'maintain'>
+MAX = <':max'>
 META = <':meta'>
 METHODS = <':methods'>
+MIN = <':min'>
 MODES = <':modes'>
 MODE_OF = <'mode-of'>
 NOT = <'not'>

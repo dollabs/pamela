@@ -12,7 +12,7 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 (defpclass qc-demo []
-  :meta {:version "0.2.0"
+  :meta {:version "0.2.1"
          :depends [[qc "0.2.1"]
                    [qc-waypoints "0.2.1"]]
          :doc "Quadcopter test waypoints"}
