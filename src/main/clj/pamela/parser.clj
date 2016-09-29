@@ -18,15 +18,18 @@
             [clojure.pprint :as pp :refer [pprint]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
-            ;; [me.raynes.fs :as fs]
-            [clojure.java.io :refer :all] ;; for as-file
-            [pamela.pclass :refer :all]
-            [pamela.utils :refer [make-url get-url]]
+            [me.raynes.fs :as fs]
+            [clojure.java.io :refer [resource]]
+            [pamela.utils :refer [make-url get-url output-file]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
   (:import [java.lang
             Long Double]))
 
+(def #^{:added "0.3.0"}
+  default-bounds
+  "Default bounds"
+  [0 :infinity])
 
 (def zero-bounds [0 0])
 
@@ -253,14 +256,11 @@
     (if-not a
       (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)
       (if (and (vector? a) (= :choice-opt (first a)))
-        (let [choice-opt (second a)
-              ;; _ (log/warn "IR-CHOICE OPT" choice-opt)
-              ]
-          (if (and (map? choice-opt) (:temporal-constraints choice-opt))
-            (let [opt :temporal-constraints
-                  val (get choice-opt opt)]
-              (recur (assoc choice-opts opt val)
-                body (first more) (rest more)))
+        (let [choice-opt (second a)]
+          ;; (log/warn "IR-CHOICE OPT" choice-opt);;
+          (if (map? choice-opt)
+            (recur (merge choice-opts choice-opt)
+              body (first more) (rest more))
             (let [[opt val] choice-opt]
               (if (= opt :guard)
                 (recur (assoc choice-opts :condition val)
@@ -270,7 +270,7 @@
         (recur choice-opts (conj body a) (first more) (rest more))))))
 
 (defn ir-choose [f & args]
-  (log/warn "IR-CHOOSE" f (pr-str args))
+  ;; (log/warn "IR-CHOOSE" f (pr-str args))
   (loop [choose-opts {} body [] a (first args) more (rest args)]
     (if-not a
       (merge {:type f :body (if (empty? body) nil body)} choose-opts)
@@ -806,36 +806,37 @@
 ;; return PAMELA IR
 (defn parse [options]
   (let [{:keys [cwd input magic]} options
-        filename (if (= 1 (count input)) (first input))
-        file (if file (as-file filename))
-        file (if (and file (.exists file))
-               file
-               (as-file (str cwd "/" filename)))
-        parser (build-parser)
-        tree (if (.exists file) (insta/parses parser (slurp file)))]
-    (cond
-      (not= 1 (count input))
-      (do
-        (log/errorf "parse: expecting one input file: %s" input)
-        false)
-      (not (.exists file))
-      (do
-        (log/errorf "parse: input file not found: %s" filename)
-        false)
-      (insta/failure? tree)
-      (do
-        (log/errorf "parse: invalid input file: %s" filename)
-        (log/errorf (with-out-str (pprint (insta/get-failure tree))))
-        false)
-      (not= 1 (count tree))
-      (do
-        (log/errorf "parse: grammar is ambiguous for input file: %s" filename)
-        (log/errorf (with-out-str (pprint tree)))
-        false)
-      :else
-      (let [ir (validate-pamela (insta/transform pamela-ir (first tree)))
-            mir (if (and ir magic) (parse-magic magic))]
-        (when mir
-          (log/warn "MAGIC")
-          (log/warn (with-out-str (pprint mir))))
-        ir))))
+        parser (build-parser)]
+    (loop [ir {} input-filename (first input) more (rest input)]
+      (if (or (false? ir) (not input-filename))
+        ir
+        (let [input-file (fs/file (if (fs/exists? input-filename)
+                                    input-filename
+                                    (str cwd "/" input-filename)))
+              tree (if (fs/exists? input-file)
+                     (insta/parses parser (slurp input-file)))
+              ir (cond
+                   (not (fs/exists? input-file))
+                   (do
+                     (log/errorf "parse: input file not found: %s" input-filename)
+                     false)
+                   (insta/failure? tree)
+                   (do
+                     (log/errorf "parse: invalid input file: %s" input-filename)
+                     (log/errorf (with-out-str (pprint (insta/get-failure tree))))
+                     false)
+                   (not= 1 (count tree))
+                   (do
+                     (log/errorf "parse: grammar is ambiguous for input file: %s"
+                       input-filename)
+                     (log/errorf (with-out-str (pprint tree)))
+                     false)
+                   :else
+                   (let [pir (validate-pamela
+                               (insta/transform pamela-ir (first tree)))
+                         mir (if (and ir magic) (parse-magic magic))]
+                     (when mir
+                       (log/warn "MAGIC")
+                       (log/warn (with-out-str (pprint mir))))
+                     (merge ir pir)))]
+          (recur ir (first more) (rest more)))))))

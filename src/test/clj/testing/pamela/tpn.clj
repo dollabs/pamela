@@ -14,13 +14,13 @@
 (ns testing.pamela.tpn
   (:require [clojure.test :refer :all]
             [pamela.tpn :refer :all]
-            ;; [pamela.pclass :refer [lvar get-model]]
+            [pamela.parser :refer [default-bounds]]
             ;; [pamela.models :refer [load-pamela-project load-pamela-string]]
             ))
 
 (deftest testing-pamela-tpn
   (testing "testing-pamela-tpn"
-    (is (= (:p-begin cytoscape-tpn-types) "TPN-PARALLEL-BEGIN")))
+    (is (= default-bounds [0 :infinity]))))
   ;; FIXME
   ;; (testing "testing-tpn-demo"
   ;;   (let [tpn (load-tpn-files "src/test/pamela/tpn-demo.pamela")
@@ -85,4 +85,3 @@
   ;;     (is (not (nil? begin-node-id)))
   ;;     (is (not (nil? begin-node)))
   ;;     (is (= tpn-type :p-begin))))
-    )

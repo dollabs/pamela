@@ -20,10 +20,10 @@
               (parallel
                 (sequence
                   (qc1.location :bounds [5 20] 42.445370 -71.227891 1.0 80)
-                  (qc1.location :bounds [5 20] 42.445435 -71.227843 2.0 170)
-                  (qc1.location :bounds [5 20] 42.445389 -71.227734 3.0 260)
-                  (qc1.location :bounds [5 20] 42.445327 -71.227788 4.0 350)
-                  (qc1.location :bounds [5 20] 42.445370 -71.227891 1.0 80))
+                  (qc1.location :bounds [6 20] 42.445435 -71.227843 2.0 170)
+                  (qc1.location :bounds [7 20] 42.445389 -71.227734 3.0 260)
+                  (qc1.location :bounds [8 20] 42.445327 -71.227788 4.0 350)
+                  (qc1.location :bounds [9 20] 42.445370 -71.227891 1.0 80))
                 (sequence
                   (qc2.wp2)
                   (qc2.wp3)
@@ -35,5 +35,13 @@
                   (qc3.wp4)
                   (qc3.wp1)
                   (qc3.wp2)
-                  (qc3.wp3))))
+                  (qc3.wp3))
+                ;; DEBUG
+                (choose
+                  (choice (delay))
+                  (choice (delay)))
+                (parallel
+                  (delay)
+                  (delay))
+                ))
             ])

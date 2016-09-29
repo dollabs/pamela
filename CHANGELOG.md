@@ -4,14 +4,18 @@ All notable changes to this project will be documented in this file. This change
 
 ### [Unreleased]
 Added
-* Added flexible field initializer and pclass constructor types
-* Changed method invocation to use '.' instead of '$'
 
-### [0.4.0] - 2016-08-02
+### [0.4.0] - 2016-09-29
 
-Change
+Changes
 - New PAMELA intermediate representation
 - Reset non-passing tests as functionality is replaced with the new IR
+- Complete conversion to the new Instaparse based parser
+- New HTN + TPN generation from PAMELA
+- TPN generation from PAMELA
+- Added flexible field initializer and pclass constructor types
+- Changed method invocation to use '.' instead of '$'
+- Updated dependencies
 
 ### [0.3.0] - 2016-07-11
 

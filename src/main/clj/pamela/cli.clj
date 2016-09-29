@@ -20,11 +20,9 @@
             [clojure.pprint :as pp :refer [pprint]]
             [me.raynes.fs :as fs]
             [pamela.mode :as mode]
-            [pamela.utils :refer [get-input var-of repl?]]
+            [pamela.utils :refer [get-input var-of repl? output-file]]
             [pamela.db :as db]
             [pamela.daemon :as daemon]
-            ;; [pamela.pclass :as pclass :refer [get-model-var]]
-            ;; [pamela.models :as models]
             [pamela.parser :as parser]
             [pamela.htn :as htn]
             [pamela.tpn :as tpn]
@@ -32,7 +30,9 @@
             [pamela.log :as plog]
             [environ.core :refer [env]])
   (:import [java.security
-            PrivilegedActionException]))
+            PrivilegedActionException]
+            [java.util
+             Base64])) ;; requires JDK 8
 
 ;; actions ----------------------------------------------
 
@@ -40,11 +40,10 @@
   "Simply copies the input to output (for debugging)"
   {:added "0.2.0"}
   [options]
-  (let [[_ data] (get-input options)
-        output (:output options)]
-    (if (daemon/stdout? output)
-      (print data)
-      (spit output data))))
+  (let [{:keys [cwd output]} options
+        [_ data] (get-input options)
+        stdout? (daemon/stdout? output)]
+    (output-file stdout? cwd output "edn" data)))
 
 (defn delete-model
   "Deletes given model from the database"
@@ -82,13 +81,6 @@
     (println msg)
     (log/error msg)
     false))
-  ;; (if (:load options) ;; memory only
-  ;;   (println (pclass/list-models false))
-  ;;   (db/with-db options
-  ;;     (let [models (db/list-models options)]
-  ;;       (if (:simple options)
-  ;;         (doseq [m models] (println m))
-  ;;         (pprint models))))))
 
 (defn load-models
   "Load model(s) in memory only"
@@ -98,35 +90,20 @@
     (println msg)
     (log/error msg)
     false))
-  ;; (binding [pclass/*pclasses* (atom [])]
-  ;;   (let [{:keys [verbose]} options
-  ;;         [url source] (get-input options)
-  ;;         load-result (models/load-pamela-string source url)]
-  ;;         (if-not (empty? load-result)
-  ;;           (do
-  ;;             (log/errorf "unable to load: %s" load-result)
-  ;;             false)
-  ;;           (do
-  ;;             (if (> verbose 1)
-  ;;               (println "loaded classes:" @pclass/*pclasses*))
-  ;;             @pclass/*pclasses*)))))
 
 (defn build-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [input output]} options
+  (let [{:keys [cwd input output]} options
+        stdout? (daemon/stdout? output)
         ir (parser/parse options)]
-    (cond
-      (not ir)
+    (if-not ir
       (do
         (println "unable to parse: %s" input)
         (log/errorf "unable to parse: %s" input)
         false)
-      :else
-      (if (daemon/stdout? output)
-        (pprint ir)
-        (spit output (with-out-str (pprint ir)))))))
+      (output-file stdout? cwd output "edn" ir))))
 
 (defn parse-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
@@ -152,21 +129,18 @@
   {:added "0.2.0"}
   [options]
   (let [{:keys [construct-tpn file-format cwd input output visualize]} options
-        ;; loaded (load-models options)
-        filename (if (= 1 (count input))
-                   (first input)
-                   (log/error "multiple TPN input files not implemented yet")
-                   )
-        loaded (if filename (parser/parse options))
-        tpn (if loaded
-              (if construct-tpn
-                ;; FIXME (tpn/construct-tpn-cfm construct-tpn file-format)
-                (log/error "construct-tpn not implemented yet")
-                (tpn/load-tpn loaded file-format)))]
-    (when (and loaded tpn)
-      (if (daemon/stdout? output)
-        (print tpn)
-        (spit output tpn))
+        stdout? (daemon/stdout? output)
+        ir (parser/parse options)
+        tpn (cond
+              (not ir)
+              (do
+                (println "unable to parse: %s" input)
+                (log/errorf "unable to parse: %s" input)
+                false)
+              :else
+              (tpn/load-tpn ir options))]
+    (when tpn
+      (output-file stdout? cwd output file-format tpn)
       (when visualize
         ;; (tpn/visualize tpn options)
         (log/error "visualize not implemented yet")
@@ -323,6 +297,9 @@
     (System/exit status))
   true)
 
+(defn base-64-decode [b64]
+  (String. (.decode (Base64/getDecoder) b64)))
+
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
@@ -345,7 +322,10 @@
                  (if (fs/absolute? output)
                    output ;; absolute
                    (str cwd "/" output)))
-        options (assoc options :output output)
+        root-task (if (and root-task (string/ends-with? root-task "=="))
+                    (base-64-decode root-task)
+                    root-task)
+        options (assoc options :output output :root-task root-task)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
@@ -390,11 +370,11 @@
       (try
         (action (assoc options :cwd cwd))
         ;; DEBUG
-        ;; (catch Throwable e ;; note AssertionError not derived from Exception
+        (catch Throwable e ;; note AssertionError not derived from Exception
           ;; NOTE: this alternate exception is to help generate a stack trace
           ;; perhaps it's better to generate a stack trace in every case
           ;; HOWEVER pamelad *must* trap all exceptions at the top level
-        (catch PrivilegedActionException e
+          ;; (catch PrivilegedActionException e
           ;; FIXME: use proper logging
           (binding [*out* *err*]
             (println "ERROR caught exception:" (.getMessage e)))

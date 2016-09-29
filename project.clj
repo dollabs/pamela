@@ -19,56 +19,36 @@
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
                  ;; logging
-                 [com.taoensso/timbre "4.7.4"
-                  ;; :exclusions [org.clojure/tools.reader]
-                  ]
+                 [com.taoensso/timbre "4.7.4"]
                  [org.slf4j/slf4j-api "1.7.21"]
                  [com.fzakaria/slf4j-timbre "0.3.2"]
                  [avenir "0.2.1"]
-                 [org.clojure/tools.logging "0.3.1"
-                  ;; :exclusions [org.clojure/clojure]
-                  ]
+                 [org.clojure/tools.logging "0.3.1"]
                  [instaparse "1.4.3"]
                  ;; -------
-                 [org.clojure/clojurescript "1.9.227"
-                  :scope "provided"
-                  ;; :exclusions [org.clojure/tools.reader]
-                  ]
-                 [org.clojure/core.async "0.2.385"]
+                 [org.clojure/clojurescript "1.9.229" :scope "provided"]
+                 [org.clojure/core.async "0.2.391"]
                  [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
                  [environ "1.1.0"]
                  [me.raynes/fs "1.4.6"]
                  ;; required for elastich
-                 [clj-http "3.2.0"
-                  ;; :exclusions [commons-io]
-                  ]
-                 [clojurewerkz/elastisch "2.2.2"
-                  ;; :exclusions [clj-http]
-                  ]
-                 [aleph "0.4.2-alpha6"]
+                 [clj-http "3.3.0"]
+                 [clojurewerkz/elastisch "2.2.2"]
+                 [aleph "0.4.2-alpha8"]
                  [clj-time "0.12.0"]
-                 [ring "1.5.0"
-                  ;; :exclusions [clj-time]
-                  ]
+                 [ring "1.5.0"]
                  [ring/ring-defaults "0.2.1"]
-                 [compojure "1.5.1"
-                  ;; :exclusions [commons-codec]
-                  ]
+                 [compojure "1.5.1"]
                  [enlive "1.1.6"]
                  [org.clojure/data.json "0.2.6"]
                  [cljsjs/react-dom-server "15.3.1-0"]  ;; for sablono
                  [cljsjs/react-dom "15.3.1-0"] ;; for sablono
-                 [org.omcljs/om "1.0.0-alpha42"]
+                 [org.omcljs/om "1.0.0-alpha46"]
                  [sablono "0.7.4"]
-                 [cljs-http "0.1.41"
-                  ;; :exclusions [org.clojure/core.async]
-                  ]
-                 ;; the following are to resolve dependency conflicts
-                 ;; [commons-codec "1.10"] ;; compojure
-                 ]
+                 [cljs-http "0.1.41"]]
 
-  :plugins [[lein-environ "1.0.3"]
+  :plugins [[lein-environ "1.1.0"]
             [lein-codox "0.9.5" :exclusions
              [org.clojure/clojure org.clojure/clojurescript]]
             [lein-cljsbuild "1.1.3" :exclusions [org.clojure/clojure]]

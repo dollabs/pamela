@@ -19,11 +19,11 @@
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
-            [clojure.data.json :as json]
             [instaparse.core :as insta]
+            [pamela.utils :refer [output-file]]
             [pamela.daemon :as daemon]
             [pamela.parser :as parser]
-            [pamela.tpn2 :as tpn]))
+            [pamela.tpn :as tpn]))
 
 
 ;; definitions -----------------------------------------------
@@ -322,7 +322,6 @@
     ;; DAN.. CLOSism: was (when (= type :htn-nonprimitive-task)
     (when (#{:htn-nonprimitive-task :htn-expanded-nonprimitive-task} type)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
-        ;; (println "METHOD EXPANDS?" mname)
         (if-not mname
           methods
           (let [{:keys [nonprimitive-task]} method
@@ -334,7 +333,6 @@
                          (= (count arguments) (count (:arguments nonprimitive-task)))
                          (every? compatible?
                            (map vector arguments (:arguments nonprimitive-task))))
-                ;; _ (println "..." match?)
                 methods (if match? (conj methods method) methods)]
             (recur methods (first more) (rest more))))))))
 
@@ -369,8 +367,6 @@
         new-arguments (if argument-mapping
                         (mapv #(get argument-mapping %) arguments)
                         arguments)]
-    ;; (println "MET arguments:" arguments)
-    ;; (println "MET new-arguments:" new-arguments)
     (update-htn-object!
       (assoc-if task
         :arguments arguments
@@ -401,19 +397,11 @@
   (let [task object
         methods (find-methods-that-expand-task task)]
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
-      ;; (println "PLAN-HTN-TASK w/" (count methods) "methods @" *htn-plan-ancestry*)
-      ;; (println "TASK" task)
       (doseq [method methods]
         (let [{:keys [pclass name subtasks irks]} method]
-          ;; (println "METHOD" name)
           (let [arg-mappings (arg-mappings-for-task-and-method task method)
-                ;; _ (println "  ARG-MAPPINGS" (pr-str arg-mappings))
-                ;; _ (println "  METHOD")
-                ;; _ (pprint method)
                 expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
                                     subtasks)
-                ;; _ (println "DAN Claims these are henpts  SUBTASKS")
-                ;; _ (pprint expanded-subtasks)
                 expanded-method (htn-expanded-method
                                   {:expansion-method method
                                    :argument-mappings arg-mappings
@@ -424,11 +412,7 @@
                 task-expansions (conj (:task-expansions (get-htn-object task))
                                   expanded-method)
                 task (assoc task :task-expansions task-expansions)]
-            (update-htn-object! task)
-            ;; (println "EXPANSION BEGIN --------------------")
-            ;; (pprint expanded-method)
-            ;; (println "EXPANSION end --------------------")
-            )))
+            (update-htn-object! task))))
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
         (let [{:keys [subtasks]} expanded-method]
           (doseq [subtask subtasks]
@@ -636,9 +620,7 @@
   (let [task (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
                :type :htn-expanded-nonprimitive-task
                :task-expansions task-expansions)
-        ;; _ (println "LABEL arg" (type label) "=" label)
         label (if (empty? label) (name-with-args task) label)]
-    ;; (println "HENPT" (:uid task) "LABEL" label "<<=" (type label))
     (update-htn-object! (assoc task :label label))))
 
 (defn htn-method
@@ -726,8 +708,6 @@
                               #(copy-constraint-into-expansion %
                                  orig-method orig-subtasks new-subtasks)
                               (:subtask-constraints orig-method))
-        ;; _ (println "NEW-SUBTASKS" new-subtasks)
-        ;; _ (println "ST" subtask-constraints)
         hem   (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                 :type :htn-expanded-method
                 :expansion-method expansion-method
@@ -866,202 +846,29 @@
 
 ;; walk ir, look for pclasses that have non-empty methods
 (defn transform-htn [ir]
-  ;; (pprint ir)
-  ;; (println "transform-htn")
   (let [ir-syms (seq ir)]
     (loop [[k v] (first ir-syms) more (rest ir-syms)]
       (if-not k
-        nil ;; (println "done")
+        nil
         (let [{:keys [type methods]} v]
-          ;; (println "key:" k "is a" type)
           (when (and (= type :pclass) methods)
-            ;; (println "  there are" (count methods) "methods")
             (let [method-syms (seq methods)]
-              ;; (println "METHOD-SYMS" method-syms)
               (loop [[mname method] (first method-syms) moar (rest method-syms)]
-                ;; (println "METHOD NAME" mname)
                 (if mname ;; else (println "no more methods")
                   (let [{:keys [temporal-constraints args body]} method]
-                    ;; (println "METHOD NAME" mname "TC" temporal-constraints)
                     (if body
                       (make-htn-methods k mname args body))
-                    ;; (println "  METHOD:" mname "is NOT an htn-method"))
-                    (recur (first moar) (rest moar))
-                    )
-                  )
-                )
-              )
-            )
-          (recur (first more) (rest more))
-          )
-        )
-      )
-    ;; (println "HTN-METHODS BEGIN" (count @*htn-methods*) "-------------------")
-    ;; (pprint @*htn-methods*)
-    ;; (println "HTN-METHODS END -------------------")
-    ))
-
-;; remove invalid slots
-(defn remove-invalid-tpn-attributes []
-  (doseq [uid (keys @tpn/*tpn-plan-map*)]
-    (let [object (tpn/get-tpn-plan-map uid)
-          {:keys [tpn-type end-node constraints]} object]
-      (cond
-        (and (#{:state :c-end :p_end} tpn-type) end-node)
-        (tpn/update-tpn-plan-map! (dissoc object :end-node))
-        (and (= :null-activity tpn-type) constraints)
-        (tpn/update-tpn-plan-map! (dissoc object :constraints))
-        ))))
-
-(defn get-tpn-end-node-ids [activity-ids]
-  (mapv #(:end-node (tpn/get-tpn-plan-map %)) activity-ids))
-
-;; move all constraints that end on from-end to to-end
-(defn move-constraints [tc-end from-end to-end]
-  ;; (println "MOVE FROM" from-end "TO" to-end)
-  (let [tc-ends @tc-end
-        from-uids (or (get tc-ends from-end) [])
-        to-uids (or (get tc-ends to-end) [])]
-    (when (pos? (count from-uids))
-      ;; (println "  FROM-UIDS" from-uids "TO-UIDS" to-uids)
-      (doseq [from-uid from-uids]
-        (tpn/update-tpn-plan-map!
-          (assoc (tpn/get-tpn-plan-map from-uid)
-            :end-node to-end)))
-      (swap! tc-end
-        (fn [tc-ends]
-          (assoc (dissoc tc-ends from-end)
-            to-end (concatv to-uids from-uids)))))))
-
-(defn remove-superfluous [tc-end a-uid a-done]
-  (let [a (tpn/get-tpn-plan-map a-uid)
-        {:keys [tpn-type constraints activities]} a
-        a-type tpn-type
-        a-constraints constraints
-        a-activities activities
-        an (count a-activities)
-        a-todo (set/difference a-activities a-done)
-        a0-uid (first a-todo)
-        a0 (if a0-uid (tpn/get-tpn-plan-map a0-uid))
-        a0-type (:tpn-type a0)
-        s-uid (:end-node a0)
-        s (if s-uid (tpn/get-tpn-plan-map s-uid))
-        {:keys [tpn-type constraints activities]} s
-        move-constraints? (pos? (count constraints))
-        sn (count activities)
-        s0-uid (first activities)
-        s0 (if s0-uid (tpn/get-tpn-plan-map s0-uid))
-        s0-type (:tpn-type s0)
-        b-uid (:end-node s0)
-        b (if b-uid (tpn/get-tpn-plan-map b-uid))
-        b-constraints (:constraints b)
-        b-type (:tpn-type b)
-        move-tc-to-b? (or (#{:p-begin :c-begin} a-type)
-                         (#{:p-begin :c-begin} b-type))]
-    ;; (println "CHECK an" an "tpn-type" tpn-type "s0-type" s0-type
-    ;;   "b-type" b-type "a0-type" a0-type "a-uid" a-uid "s-uid" s-uid "b-uid" b-uid)
-    (if (and (or (#{:state :c-end :p-end} a-type) (= s0-type :null-activity))
-          (= a0-type :null-activity)
-          (= tpn-type :state)) ;; (= sn 1) b)
-      ;; s/ A na S a B / A a B /
-      (let [a-activities (disj a-activities a0-uid)
-            a-activities (if s0-uid (conj a-activities s0-uid) a-activities)
-            a (assoc a :activities a-activities)
-            [a b] (if move-constraints?
-                    (if (and b move-tc-to-b?)
-                      [a (assoc b
-                           :constraints (set/union b-constraints constraints))]
-                      [(assoc a
-                         :constraints (set/union a-constraints constraints))])
-                    [a b])]
-        (tpn/update-tpn-plan-map! a)
-        (when (and b move-constraints?)
-          (tpn/update-tpn-plan-map! b))
-        ;; at the end of the graph b-uid may be nil
-        (move-constraints tc-end s-uid
-          (if b-uid
-            (if (#{:c-end :p-end} a-type) a-uid b-uid)
-            a-uid))
-        (tpn/remove-tpn-plan-map! a0-uid)
-        (tpn/remove-tpn-plan-map! s-uid)
-        ;; (println "  REMOVE s/ A na S a B / A a B /" a0-uid s-uid
-        ;;   "A" a-activities "S0-UID" s0-uid "TC" constraints)
-        (remove-superfluous tc-end a-uid (conj a-done a0-uid)))
-      (if (and (= an 1) (= tpn-type :state)
-            (= s0-type :null-activity) b
-            (or (#{:state :c-begin :p-begin} b-type) (= a0-type :null-activity)))
-        ;; s/ A a S na B / A a B /
-        (let [a0 (assoc a0 :end-node b-uid)
-              b (if b
-                  (assoc b :incidence-set
-                    (conj (disj (:incidence-set b) s0-uid) a0-uid)))
-              [a b] (if move-constraints?
-                      (if (and b move-tc-to-b?)
-                        [a (assoc b
-                             :constraints (set/union b-constraints constraints))]
-                        [(assoc a
-                           :constraints (set/union a-constraints constraints))])
-                      [a b])]
-          (tpn/update-tpn-plan-map! a0)
-          (tpn/update-tpn-plan-map! a)
-          (if b
-            (tpn/update-tpn-plan-map! b))
-          (move-constraints tc-end s-uid
-            (if b-uid
-              (if (#{:c-end :p-end} a-type) a-uid b-uid)
-              a-uid))
-          (tpn/remove-tpn-plan-map! s-uid)
-          (tpn/remove-tpn-plan-map! s0-uid)
-          ;; (println "  REMOVE s/ A a S na B / A a B /" s-uid s0-uid
-          ;;   "TC" constraints)
-          ;; (if (#{:c-begin :p-begin} b-type)
-          (remove-superfluous tc-end a-uid #{}) ;; re-evaluate a!
-          ;; (remove-superfluous a-uid (conj a-done a0-uid)))
-          ;; (remove-superfluous a-uid
-          ;;   (if (#{:c-begin :p-begin} b-type)
-          ;;     a-done
-          ;;     (conj a-done a0-uid)))
-          )
-        (let [node-ids (get-tpn-end-node-ids a-activities)]
-          ;; (println "  ... no more to remove for" a-uid)
-          (doseq [node-id node-ids]
-            (remove-superfluous tc-end node-id #{})))))))
-
-;;superfluous nodes/null-activities
-;; s/ A na S a  B / A a B /
-;; s/ A a  S na B / A a B /
-(defn remove-superfluous-null-activities []
-  (let [network-id (tpn/get-tpn-plan-map :network-id)
-        network (tpn/get-tpn-plan-map network-id)
-        {:keys [begin-node]} network
-        tc-end (atom {})]
-    ;; (println "REMOVE SUPERFLUOUS NA's network-id" network-id
-    ;;   "begin-node" begin-node)
-    (doseq [uid (keys @tpn/*tpn-plan-map*)]
-      (let [object (tpn/get-tpn-plan-map uid)
-            {:keys [tpn-type end-node]} object]
-        (if (= tpn-type :temporal-constraint)
-          (swap! tc-end update-in [end-node]
-            (fn [tc-uids]
-              (if tc-uids (conj tc-uids uid) [uid]))))))
-    ;; (pprint @tc-end)
-    ;; (println "GO ------")
-    (remove-superfluous tc-end begin-node #{})))
-
-(defn optimize-tpn-map []
-  (remove-superfluous-null-activities)
-  (remove-invalid-tpn-attributes))
+                    (recur (first moar) (rest moar)))))))
+          (recur (first more) (rest more)))))))
 
 ;; consider memoizing or caching result
 (defn find-plant-fn-bounds [ir plant-fn-pclass ctor-arg-i method]
-  ;; (println "FPFB" plant-fn-pclass ctor-arg-i method)
   (let [ks (keys ir)]
     (loop [bounds nil k (first ks) more (rest ks)]
       (if (or bounds (not k))
         bounds
         (let [object (get ir k)
               {:keys [type fields]} object]
-          ;; (println "  OBJ" type k)
           (if (and (= type :pclass) fields)
             (let [fk-fields (seq fields)
                   bounds
@@ -1071,7 +878,6 @@
                       (let [[fk field] fk-field
                             {:keys [type pclass args]} (:initial field)
                             arg (if args (get args ctor-arg-i))
-                            ;; _ (println "    FIELD" fk "INIT" type pclass args)
                             arg-kw (if (and (= type :pclass-ctor )
                                          (= pclass plant-fn-pclass) arg)
                                      (keyword arg))
@@ -1105,16 +911,12 @@
                              (vec-index-of args name))
                 bounds (if ctor-arg-i
                          (find-plant-fn-bounds ir pclass ctor-arg-i method))]
-            ;; (println "PFN-BOUNDS" pclass "NAME" name "is arg#" ctor-arg-i
-            ;;   "BOUNDS" bounds)
-            bounds
-            ))))))
+            bounds))))))
 
 ;; root? is true to create the "synthetic" htn-network at the very
 ;; top of the HTN
 ;; begin is the state node of the parent task
 (defn construct-hem-plan-map [ir hem henpt root? parent-begin-uid]
-  ;; (println "construct-hem-plan-map" (:uid hem) (:uid henpt) "root?" root?)
   (let [{:keys [uid label subtasks subtask-constraints edges
                 ancestry-path argument-mappings irks]} hem
         hem-irks irks
@@ -1152,19 +954,14 @@
         parent-end (tpn/get-tpn-plan-map end-node)
         hem-tc (if hem-bounds (tpn/tpn-temporal-constraint
                                 {:value hem-bounds :end-node end-node}))
+        parent-begin (assoc parent-begin
+                       :htn-node (:uid hem-map)
+                       :constraints (if hem-tc
+                                      (conj (:constraints parent-begin)
+                                        (:uid hem-tc))
+                                      (:constraints parent-begin)))
         prev-end (atom nil)]
-    ;; (when top-irks
-    ;;   (println "TOP-IRKS" top-irks "TOP-BOUNDS" top-bounds "="
-    ;;     (with-out-str (pprint (dissoc (get-in ir top-irks) :body)))))
-    ;; (when hem-irks
-    ;;   (println "HEM-IRKS" hem-irks "BOUNDS" bounds "="
-    ;;     (with-out-str (pprint (dissoc (get-in ir hem-irks) :body)))))
-    (when hem-tc
-      ;; (println "HEM-TC" hem-tc "PB2"
-        (tpn/update-tpn-plan-map!
-          (update-in parent-begin [:constraints] conj (:uid hem-tc)))
-        ;; )
-        )
+    (tpn/update-tpn-plan-map! parent-begin)
     (when root?
       (update-htn-plan-map! (update-in (get-htn-plan-map henpt)
                               [:edges] conj edge-uid))
@@ -1174,14 +971,10 @@
         (update-htn-plan-map! net-map)
         (update-htn-plan-map! (assoc hem-map :network (:uid net-map))))
       (update-htn-plan-map! hem-map))
-
-    ;; (println "CHPM:" hem-uid "sequential?" sequential?
-    ;;   "PB" (:uid parent-begin) "PE" (:uid parent-end)
-    ;;   "AM" argument-mappings)
-    ;; HERE we need to recurse and, create a network of tasks, edges to child hems
+    ;; HERE we need to recurse and, create a network of tasks, edges
+    ;; to child hems
     (doseq [i (range n-subtasks)]
       (let [subtask-uid (get subtask-order i)
-            ;; _ (println "  SUBTASK-UID" i "=" subtask-uid)
             edge (if (and sequential? (pos? i))
                    (htn-edge {:end-node subtask-uid}))
             subtask (get-htn-object subtask-uid)
@@ -1204,7 +997,9 @@
             se (tpn/tpn-state {})
             activity (if primitive?
                        (tpn/tpn-activity ;; :task subtask
-                         {:name label :end-node (:uid se)}))
+                         {:name label
+                          :htn-node (:uid hem-map)
+                          :end-node (:uid se)}))
             tc (if bounds (tpn/tpn-temporal-constraint
                             {:value bounds :end-node (:uid se)}))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
@@ -1224,7 +1019,7 @@
                                   begin (tpn/get-tpn-plan-map
                                           (:end-node parent-na-begin))
                                   end (tpn/get-tpn-plan-map
-                                          (:end-node begin))]
+                                        (:end-node begin))]
                               [begin end]))
                           (if choice?
                             (let [end (tpn/tpn-c-end {}) ;; choice
@@ -1235,8 +1030,6 @@
                                                 butlast
                                                 vec)
                                   bounds (irks->bounds ir choose-irks)
-                                  ;; _ (println "CHOICE IRKS" choose-irks
-                                  ;;     "BOUNDS" bounds)
                                   choice-tc (if bounds
                                               (tpn/tpn-temporal-constraint
                                                 {:value bounds
@@ -1246,19 +1039,7 @@
                                            :constraints (if choice-tc
                                                           #{(:uid choice-tc)})})]
                               [begin end])
-                            [sb se])) ;; sequence
-            ]
-        ;; (println "CHPM[" i "] " hem-uid "parallel?" parallel? "choice?" choice?
-        ;;   "M" m-task-expansions
-        ;;   "SB" (:uid sb) "SE" (:uid se)
-        ;;   "BEGIN" (:uid begin) "END" (:uid end)
-        ;;   "LABEL" label
-        ;;   "ARGS" arguments)
-        ;; (when irks
-        ;;   (println "SUBTASK-IRKS" irks "BOUNDS" bounds "="
-        ;;     (with-out-str (pprint (dissoc (get-in ir irks) :body)))))
-        ;; (when tc
-        ;;   (println "TC" tc))
+                            [sb se]))]
         (update-htn-plan-map! subtask-map)
         (if (or (not sequential?) (zero? i))
           (update-htn-plan-map! (update-in (get-htn-plan-map net-map)
@@ -1288,7 +1069,6 @@
               (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
         (when (and (not parallel?) (pos? i))
           ;; choice or sequence, interstitial na
-          ;; (println "  LINK prev-end" (:uid @prev-end))
           (tpn/update-tpn-plan-map!
             (update-in @prev-end [:activities] conj
               (:uid (tpn/tpn-null-activity {:end-node (:uid begin)})))))
@@ -1307,7 +1087,6 @@
                 hedge (htn-edge {:end-node (:uid task-expansion)
                                  :label label
                                  :edge-type edge-type})]
-            ;; (println "CHPM-TE[" i j "] " hem-uid "SB" (:uid sb) "SE" (:uid se))
             (update-htn-plan-map! hedge)
             (update-htn-plan-map!
               (update-in (get-htn-plan-map hem-map)
@@ -1336,18 +1115,18 @@
               :edges #{})
         end (tpn/tpn-state {})
         begin (tpn/tpn-state {:end-node (:uid end)})]
-    ;; (println "ERT-IRKS" irks "="
-    ;;   (with-out-str (pprint (dissoc (get-in ir irks) :body))))
     (update-htn-plan-map! ert)
     (update-htn-plan-map! net)
     (swap! *htn-plan-map* assoc :network (:uid net)) ;; ENTRY POINT
     (swap! tpn/*tpn-plan-map* assoc
-      :network-id (:uid (tpn/tpn-network {:begin-node (:uid begin)})))
+      :network-id (:uid (tpn/tpn-network
+                          {:begin-node (:uid begin)
+                           :end-node (:uid end)})))
     ;; now walk the graph
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
         (construct-hem-plan-map ir task-expansion ert true (:uid begin))))
-    (optimize-tpn-map)
+    (tpn/optimize-tpn-map)
     @*htn-plan-map*))
 
 ;; rt {:type :root-task
@@ -1359,7 +1138,6 @@
 ;; will return subtasks, if any (and create htn-methods as a side effect)
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
 (defn make-htn-methods [pclass mname margs body & [irks]]
-  ;; (println "make-htn-methods for" pclass mname margs)
   (let [irks (conj (or irks [pclass :methods mname]) :body)
         n (count body)]
     (loop [subtasks [] i 0]
@@ -1368,8 +1146,6 @@
         (let [f (get body i)
               irks-i (conj irks i)
               {:keys [type name field method args body temporal-constraints]} f
-              ;; _ (println "SUBTASK" type "NAME" name "METHOD" method
-              ;;     "BODY size" (count body) "TC" temporal-constraints)
               subtask (cond
                         ;; (#{:plant-fn-symbol :plant-fn-field} type)
                         ;; (htn-primitive-task {:pclass pclass :name method :arguments args})
@@ -1435,7 +1211,6 @@
                               subtask-constraints (if (= type :sequence)
                                                     [(task-sequential-constraint {:tasks subtasks})]
                                                     [])]
-                          ;; (println "  method:" mname "is an htn-method")
                           ;; work here
                           (htn-method {:pclass pclass :name mname
                                        :nonprimitive-task nonprimitive-task
@@ -1452,8 +1227,6 @@
                                                    :temporal-constraints temporal-constraints
                                                    :irks irks-i})
                               m (count body)]
-                          ;; (println "CHOOSE IRKS" irks-i
-                          ;;   "HNPT" (:uid nonprimitive-task))
                           (loop [j 0]
                             (if (= j m)
                               nil
@@ -1462,7 +1235,6 @@
                                     {:keys [type body]} b
                                     cname (symbol (str mname "-choice-" j))
                                     subtasks (make-htn-methods pclass :choice nil body irks-j)]
-                                ;; (println "  method:" cname "is an htn-method choice" i)
                                 (if (not= type :choice)
                                   (println "HEY, I EXPECTED a :choice")) ;; FIXME
                                 (htn-method {:pclass pclass :name cname
@@ -1475,14 +1247,6 @@
                         :TBD)
               subtasks (if subtask (conj subtasks subtask) subtasks)]
           (recur subtasks (inc i)))))))
-
-(defn output-file [filename stdout? file-format edn]
-  (let [out (if (= file-format "json")
-              (with-out-str (json/pprint edn))
-              (with-out-str (pprint edn)))]
-    (if stdout?
-      (println out)
-      (spit filename out))))
 
 ;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
 ;; NOTE: root-task is a string (or nil)!!!
@@ -1514,27 +1278,7 @@
         tpn-filename (str output-prefix ".tpn." file-format)
         _ (plan-htn-task expanded-root-task)
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
-        tpn @tpn/*tpn-plan-map*
-        ]
+        tpn @tpn/*tpn-plan-map*]
     (println "Saving HTN to" htn-filename "and TPN to" tpn-filename)
-    (output-file htn-filename stdout? file-format htn)
-    (output-file tpn-filename stdout? file-format tpn)
-    ;; (println "PLAN-HTN COMPLETE")
-    ))
-
-;; NOTE: root-task is a string (or nil)!!!
-(defn isr-test []
-  (let [htn "/home/tmarble/src/lispmachine/pamela/notes/language-examples/isr-htn.pamela"
-        ir (parser/parse {:input [htn]})
-        root-task "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"
-        htn (plan-htn ir root-task "edn" "." "output")]
-    (reset! *debug-ir* ir) ;; DEBUG
-    ;; (construct-htn-plan-map ir expanded-root-task)
-    ;; WALK the graph from the expanded-root-task
-    ;; (println "ERT:")
-    ;; (pprint-htn-object expanded-root-task)
-    (println "HTN-OBJECTS" (count @*htn-objects*) "-------------------")
-    ;; (pprint @*htn-objects*)
-    (pprint-htn-objects)
-    (println "HTN-PLAN size" (count @*htn-plan-map*) "-------------------")
-    (pprint @*htn-plan-map*)))
+    (output-file stdout? cwd htn-filename file-format htn)
+    (output-file stdout? cwd tpn-filename file-format tpn)))

@@ -48,4 +48,4 @@
                   :doc "Test methods"}
   :fields {:qc1 (plant-methods :id "qc1")
            :qc2 (plant-methods :id "qc2")
-           :go (tpn-methods :qc1 :qc2)})
+           :go (tpn-methods qc1 qc2)})

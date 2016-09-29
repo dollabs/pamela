@@ -16,18 +16,31 @@
 
   (:refer-clojure :exclude [update]) ;; clj-http
   (:require [clojure.string :as string]
-            [clojure.java.io :refer :all] ;; for as-file
+            [clojure.pprint :as pp :refer [pprint]]
+            [clojure.java.io :refer [as-url]]
+            [me.raynes.fs :as fs]
             [clojure.pprint :as pp]
             ;; to be replaced with aleph
             [clj-http.client :as http]
             [environ.core :refer [env]]
-            ;; [cheshire.core :as json]
             [clojure.data.json :as json]
             [pamela.mode :as mode]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
             URL]))
+
+(defn output-file [stdout? cwd filename file-format edn]
+  (let [output-filename (if (not stdout?)
+                          (if (fs/absolute? filename)
+                            filename
+                            (str cwd "/" filename)))
+        out (if (= file-format "json")
+              (with-out-str (json/pprint edn))
+              (with-out-str (pprint edn)))]
+    (if stdout?
+      (println out)
+      (spit output-filename out))))
 
 ;; will contain file data iff set by daemon
 (defonce input-data (atom nil))
@@ -115,11 +128,11 @@
                   @input-data))
               (let [project-dir (:user-dir env)
                     url (make-url in)
-                    file (if-not url (as-file in))
+                    file (if-not url (fs/file in))
                     path (if file
                            (if (.exists file)
                              file
-                             (as-file (str project-dir in))))]
+                             (fs/file (str project-dir in))))]
                 (if url
                   (let [_ (log/debugf "get-input: GET from url: %s" url)
                         remote-filename (str url)

@@ -32,10 +32,7 @@
             [pamela.utils :refer [get-input sleep repl? http-get]]
             [avenir.utils :refer [and-fn assoc-if]]
             [clojure.tools.logging :as log]
-            [pamela.daemon :as daemon]
-            ;; [pamela.pclass :as pclass]
-            ;; [pamela.models :as models]
-            )
+            [pamela.daemon :as daemon])
   (:import [java.net.URL]))
 
 ;; (def #^{:added "0.2.0"} db
