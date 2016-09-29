@@ -128,7 +128,8 @@ while [ $# -gt 0 ]; do
             args="$args -F $field=select -F ${field}.s=$1"
             leinargs="$leinargs $1"
             ;;
-        (-c|--construct-tpn|-d|--daemonize|-e|--database|-m|--model|-f|--format)
+        (-c|--construct-tpn|-d|--daemonize|-e|--database|-m|--model|-f|--format|-t|--root-task)
+            sw="$1"
             if [ $# -gt 1 ]; then
                 args="$args -F $field=select -F ${field}.s=$1"
                 leinargs="$leinargs $1"
@@ -136,7 +137,12 @@ while [ $# -gt 0 ]; do
                 i=$(( $i + 1 ))
                 field=$(printf "%03d" $i)
                 args="$args -F $field=text -F ${field}.t=$1"
-                leinargs="$leinargs $1"
+                if [ "$sw" = "-t" ] || [ "$sw" = "--root-task" ]; then
+                    # escape special characters from the shell
+                    leinargs="$leinargs $(echo $1 | base64)"
+                else
+                    leinargs="$leinargs $1"
+                fi
             else
                 usage
             fi

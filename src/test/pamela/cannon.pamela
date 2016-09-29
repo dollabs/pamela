@@ -1,0 +1,69 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Pamela plant class
+(defpclass box []
+  :fields {:ball-in-motion {:initial false
+                            :observable true
+                            :access :public}}
+  :modes [:open :close]
+  :methods [(defpmethod open-lid
+              {:pre :close :post :open}
+              [])
+            (defpmethod close-lid
+              {:pre :open :post :close}
+              [])
+            (defpmethod reset
+              {:post :open}
+              [])])
+
+;; Pamela plant class
+(defpclass cannon []
+  :fields {:ammunitions {:initial 5
+                         :observable true}
+           :ready       {:initial false
+                         :access :public
+                         :observable true}}
+  :methods [(defpmethod fire
+              [arg1 arg2])
+            (defpmethod reset
+              [])])
+
+;; Pamela main / class or entry point for a control program
+(defpclass game []
+  :fields {:cannon-f (cannon)
+           :box-f    (box)}
+
+  :methods [(defpmethod main
+              []
+              (parallel :bounds [1 60]
+                (whenever (= :box-f.:ball-in-motion true)
+                  (tell (= all-clear true))) ;; all-clear is a state variable
+                (whenever (= :cannon-f.:ready true)
+                  (unless (= :cannon-f.:ammunitions 0)
+                    (try :bounds [2 20]
+                      (sequence
+                        (assert (= :box-f :open))
+                        (maintain (= :box-f :open)
+                          (sequence
+                            (:cannon-f.fire :bounds [1 7] 123 "456")
+                            (ask (= all-clear true)
+                              ) ;; wait / rendezvous
+                            ))
+                        (:box-f.close))
+                      (catch
+                          (sequence
+                            (parallel
+                              (:box-f.reset)
+                              (:cannon-f.reset))
+                            (delay :bounds [30 30]))))))))])

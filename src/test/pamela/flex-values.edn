@@ -1,41 +1,61 @@
-{:pclass test-flex,
- :args [],
- :fields
- {:flex1
-  {:initial
-   {:pclass flex1,
-    :args [],
-    :fields
-    {:number {:initial 3.14, :access :private, :observable false},
-     :string
-     {:initial {:initial "foo", :access :public},
-      :access :public,
-      :observable false},
-     :boolean
-     {:initial {:initial false, :observable true},
-      :access :private,
-      :observable true},
-     :enum {:initial :red, :access :private, :observable false}},
-    :modes {},
-    :transitions {},
-    :id "flex1",
-    :interface "ZMQ"},
-   :access :private,
-   :observable false},
-  :flex2
-  {:initial
-   {:pclass flex2,
-    :args [a b c d],
-    :fields
-    {:number {:initial 1000, :access :private, :observable false},
-     :string
-     {:initial "elephant", :access :private, :observable false},
-     :boolean {:initial true, :access :private, :observable false},
-     :enum {:initial :blue, :access :private, :observable false}},
-    :modes {},
-    :transitions {},
-    :id "flex2"},
-   :access :private,
-   :observable false}},
- :modes {},
- :transitions {}}
+{flex1
+ {:type :pclass,
+  :args [],
+  :fields
+  {:number
+   {:access :private,
+    :observable false,
+    :initial {:type :literal, :value 3.14}},
+   :string
+   {:access :public,
+    :observable false,
+    :initial {:type :literal, :value "foo"}},
+   :boolean
+   {:access :private,
+    :observable true,
+    :initial {:type :literal, :value false}},
+   :enum
+   {:access :private,
+    :observable false,
+    :initial {:type :literal, :value :red}}}},
+ flex2
+ {:type :pclass,
+  :args [a b c d],
+  :fields
+  {:number
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name a}},
+   :string
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name b}},
+   :boolean
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name c}},
+   :enum
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name d}}}},
+ test-flex
+ {:type :pclass,
+  :args [],
+  :fields
+  {:flex1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass flex1,
+     :args [],
+     :id "flex1",
+     :interface "ZMQ"}},
+   :flex2
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass flex2,
+     :args [1000 "elephant" true [:pclass-arg-keyword :blue]],
+     :id "flex2"}}}}}

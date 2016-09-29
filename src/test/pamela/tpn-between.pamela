@@ -51,11 +51,11 @@
               [])
             (defpmethod picture-analysis-type-2-fast
               {:doc "Picture Analysis Type-2: Fast"
-               :bounds [0 10]}
+               :bounds [0 8]}
               [])
             (defpmethod picture-analysis-type-2-slow
               {:doc "Picture Analysis Type-2: Slow"
-               :bounds [0 10]}
+               :bounds [0 9]}
               [])
             (defpmethod picture-analysis-type-3
               {:doc "Picture Analysis Type-3"
@@ -76,8 +76,8 @@
               (parallel
                 (plant.track-elephant :bounds [160 170])
                 (parallel :bounds [20 25]
-                  (plant.watch-right-hemisphere :label :watch-right)
-                  (plant.watch-left-hemisphere))
+                  (plant.watch-right-hemisphere :label :watch-right) ;;in 10 20
+                  (plant.watch-left-hemisphere)) ;; none
                 (sequence :label :process :bounds [123 456]
                   (choose :label :acquire
                     (choice (sequence
@@ -92,8 +92,9 @@
                     (plant.picture-analysis-type-1 :bounds [0 6])
                     (choose :bounds [0 15] ;; :label :analyze ;; dup label
                       (choice :label :slow-path
-                        (plant.picture-analysis-type-2-slow :bounds [0 10]))
-                      (choice (plant.picture-analysis-type-2-fast :bounds [0 10])))
+                        (plant.picture-analysis-type-2-slow)) ;;in 0 9
+                      (choice
+                        (plant.picture-analysis-type-2-fast :bounds [0 10])))
                     (plant.picture-analysis-type-3 :label :phase-3 :bounds [0 7]))
                   (plant.picture-distribution :bounds [0 5])))
               (between :acquire :analyze :bounds [5 20])

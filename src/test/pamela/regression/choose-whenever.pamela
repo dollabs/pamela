@@ -1,0 +1,90 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+(defpclass plant []
+  :meta {:doc "The Plant API"}
+
+  :methods [(defpmethod one
+              {} [])
+            (defpmethod two
+              {} [])
+            (defpmethod three
+              {} [])
+            (defpmethod four
+              {} [])
+            (defpmethod acquire
+              {} [resource])
+            (defpmethod release
+              {} [resource])
+            ])
+
+(defpclass choice-tpn1 [plant]
+  :meta {:doc "New choose-whenever example"}
+  :fields {:priority (lvar "plant-priority")}
+  :methods [(defpmethod choose-by-priority
+              {}
+              []
+              (choose-whenever
+                (choice :guard (= :priority 1)
+                  :enter (plant.acquire :foo)
+                  :leave (plant.release :foo)
+                  (plant.one))
+                (choice :guard (= :priority 2)
+                  :enter (plant.acquire :bar)
+                  :leave (plant.release :bar)
+                  (plant.two))
+                (choice :guard (= :priority 3)
+                  :enter (plant.acquire :baz)
+                  :leave (plant.release :baz)
+                  (plant.three))
+                (choice :guard (= :priority 4)
+                  :enter (plant.acquire :xyzzy)
+                  :leave (plant.release :xyzzy)
+                  (plant.four))
+                ))])
+
+(defpclass choice-tpn2 [plant]
+  :meta {:doc "New choose-whenever example"}
+  :fields {:priority {:initial 4}} ;as an example, this could have remained as an lvar
+  :methods [(defpmethod choose-by-priority
+              {}
+              []
+              (choose-whenever
+               (choice ;;There is some obvious redundancy between :guard and :enter declarations!
+                :guard (= :priority 1)
+                :enter (set-priority 1) ;Is this the correct syntax for a "local" method? YES
+                (plant.one))
+               (choice
+                :guard (= :priority 2)
+                :enter (set-priority 2)
+                (plant.two))
+               (choice
+                :guard (= :priority 3)
+                :enter (set-priority 3)
+                (plant.three))
+               (choice
+                :guard (= :priority 4)
+                :enter (set-priority 4)
+                (plant.four))
+               ))
+            ;;set-priority is a bit of a tease, leaving the undefined implementation up to the planner
+            (defpmethod set-priority
+              {}
+              [new-priority]
+              (assert (= :priority new-priority)))])
+;; BTW: Is it posssible/meaningful to set the value of a local field?  If so, what's the syntax?
+;; We have NOT defined mutations like that... Generally PAMELA tries to
+;; be declarative (not imperative). In this case I think it's more likely
+;; for the priority to be set externally (e.g. an lvar) and only when
+;; the planner decides to "jump the track" does it mutate the priority
+;; (making it unnecessary here).
