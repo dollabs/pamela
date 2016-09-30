@@ -323,9 +323,12 @@
                  (if (fs/absolute? output)
                    output ;; absolute
                    (str cwd "/" output)))
-        root-task (if (and root-task (string/starts-with? root-task "("))
-                    root-task
-                    (base-64-decode root-task))
+        root-task (if (and root-task
+                        (string? root-task)
+                        (pos? (count root-task)))
+                    (if (string/starts-with? root-task "(")
+                      root-task
+                      (base-64-decode root-task)))
         options (assoc options :output output :root-task root-task)
         verbose? (pos? (or verbose 0))
         exit?
