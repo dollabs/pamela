@@ -10,13 +10,15 @@ Options:
   -c, --construct-tpn CFM          Construct TPN using class C field F method M (as C:F:M)
   -d, --daemonize PORT      0      Run PAMELA as a daemon on the given PORT
   -e, --database DATABASE          Remote database server name (ES_SERVER)
-  -f, --file-format FORMAT  dot    Output file format
+  -f, --file-format FORMAT  edn    Output file format [edn]
   -i, --input INPUT         ["-"]  Input file (or - for STDIN)
   -l, --load                       List models in memory only
   -o, --output OUTPUT       -      Output file (or - for STDOUT)
+  -a, --magic MAGIC                Magic lvar initializtions
   -m, --model MODEL                Model name
   -r, --recursive                  Recursively process model
   -s, --simple                     Simple operation
+  -t, --root-task ROOTTASK         Label for HTN root-task [main]
   -g, --visualize                  Render TPN as SVG (set -f dot)
   -w, --web WEB                    Web request hints (internal use only)
 
@@ -26,7 +28,9 @@ Actions:
   delete	Deletes given model from the database
   describe	Analyze and describe the given model
   export	Export model source from the database
+  htn	Load model(s) in memory only, process as a HTN
   import	Import model into the database
   list	List models (--simple for names only, --load for memory only)
   load	Load model(s) in memory only
+  parse	Load model(s) in memory, construct --model PCLASS, save as EDN
   tpn	Load model(s) in memory only, process as a TPN
