@@ -16,6 +16,7 @@
   (:require ;; [clojure.java.io :refer :all] ;; for as-file
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.data.json :as json]
+            [clojure.data.codec.base64 :as base64]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
             [me.raynes.fs :as fs]
@@ -30,9 +31,7 @@
             [pamela.log :as plog]
             [environ.core :refer [env]])
   (:import [java.security
-            PrivilegedActionException]
-            [java.util
-             Base64])) ;; requires JDK 8
+            PrivilegedActionException]))
 
 ;; actions ----------------------------------------------
 
@@ -298,7 +297,9 @@
   true)
 
 (defn base-64-decode [b64]
-  (String. (.decode (Base64/getDecoder) b64)))
+  ;; The following requires JDK 8
+  ;; (String. (.decode (Base64/getDecoder) b64))
+  (String. (base64/decode (.getBytes b64))))
 
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
@@ -322,9 +323,9 @@
                  (if (fs/absolute? output)
                    output ;; absolute
                    (str cwd "/" output)))
-        root-task (if (and root-task (string/ends-with? root-task "=="))
-                    (base-64-decode root-task)
-                    root-task)
+        root-task (if (and root-task (string/starts-with? root-task "("))
+                    root-task
+                    (base-64-decode root-task))
         options (assoc options :output output :root-task root-task)
         verbose? (pos? (or verbose 0))
         exit?
