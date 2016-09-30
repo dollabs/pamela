@@ -18,6 +18,7 @@
   :license {:name "Apache License, Version 2.0"
             :url "http://opensource.org/licenses/Apache-2.0"}
   :dependencies [[org.clojure/clojure "1.8.0" :scope "provided"]
+                 [org.clojure/data.codec "0.1.0"]
                  ;; logging
                  [com.taoensso/timbre "4.7.4"]
                  [org.slf4j/slf4j-api "1.7.21"]
