@@ -55,7 +55,7 @@
 
 (deftest testing-pamela-db
   (testing "testing-pamela-db"
-    (plog/initialize)
+    (plog/initialize :trace)
     ;; start the database (local iff ES_SERVER not set to a remote DB)
     (is (start-db-pamela (assoc-if {:verbose 0} :server (:es-server env))))
     (when-not (:es-server env)

@@ -12,7 +12,8 @@ Options:
   -e, --database DATABASE          Remote database server name (ES_SERVER)
   -f, --file-format FORMAT  edn    Output file format [edn]
   -i, --input INPUT         ["-"]  Input file (or - for STDIN)
-  -l, --load                       List models in memory only
+  -l, --log-level LEVEL     warn   Logging level
+  -L, --load                       List models in memory only
   -o, --output OUTPUT       -      Output file (or - for STDOUT)
   -a, --magic MAGIC                Magic lvar initializtions
   -m, --model MODEL                Model name

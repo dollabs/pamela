@@ -201,7 +201,7 @@
   [options]
   (let [{:keys [daemonize verbose]} options
         verbose? (pos? (or verbose 0))]
-    (plog/initialize)
+    (plog/initialize (:log-level options))
     (if (= daemonize 65535) ;; graceful shutdown
       ;; NOTE allow the remote request to complete first
       (future
