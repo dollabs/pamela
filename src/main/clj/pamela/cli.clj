@@ -29,9 +29,7 @@
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
-            [environ.core :refer [env]])
-  (:import [java.security
-            PrivilegedActionException]))
+            [environ.core :refer [env]]))
 
 ;; actions ----------------------------------------------
 
@@ -329,7 +327,7 @@
                     (if (string/starts-with? root-task "(")
                       root-task
                       (base-64-decode root-task)))
-        options (assoc options :output output :root-task root-task)
+        options (assoc options :output output :root-task root-task :cwd cwd)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
@@ -371,16 +369,12 @@
       (if-not exit?
         (exit 1 (str "Unknown action: \"" cmd "\". Must be one of " (keys actions)))
         (usage summary))
-      (try
-        (action (assoc options :cwd cwd))
-        ;; DEBUG
-        (catch Throwable e ;; note AssertionError not derived from Exception
-          ;; NOTE: this alternate exception is to help generate a stack trace
-          ;; perhaps it's better to generate a stack trace in every case
-          ;; HOWEVER pamelad *must* trap all exceptions at the top level
-          ;; (catch PrivilegedActionException e
-          ;; FIXME: use proper logging
-          (binding [*out* *err*]
-            (println "ERROR caught exception:" (.getMessage e)))
-          (exit 1))))
+      (if (> verbose 1) ;; throw full exception with stack trace when -v -v
+        (action options)
+        (try
+          (action options)
+          (catch Throwable e
+            (binding [*out* *err*]
+              (println "ERROR caught exception:" (.getMessage e)))
+            (exit 1)))))
     (exit 0)))
