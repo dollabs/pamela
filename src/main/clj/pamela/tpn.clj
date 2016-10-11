@@ -275,22 +275,6 @@
 
 ;; ---------------------------
 
-;; remove invalid slots
-(defn remove-invalid-tpn-attributes []
-  (doseq [uid (keys @*tpn-plan-map*)]
-    (let [object (get-tpn-plan-map uid)
-          {:keys [tpn-type end-node constraints]} object]
-      (cond
-        (and (#{:state :c-end :p-end} tpn-type) end-node)
-        ;; (and (#{:c-end :p-end} tpn-type) end-node)
-        ;; (and (#{:state} tpn-type) end-node)
-        (update-tpn-plan-map! (dissoc object :end-node :htn-node))
-        (#{:c-end :p-end} tpn-type)
-        (update-tpn-plan-map! (dissoc object :htn-node))
-        (and (= :null-activity tpn-type) constraints)
-        (update-tpn-plan-map! (dissoc object :constraints))
-        ))))
-
 (defn get-tpn-end-node-ids [activity-ids]
   (mapv #(:end-node (get-tpn-plan-map %)) activity-ids))
 
@@ -562,9 +546,35 @@
               (if tc-uids (conj tc-uids uid) [uid]))))))
     (remove-superfluous tpn-notes begin-node)))
 
+;; remove invalid slots
+(defn remove-invalid-tpn-attributes []
+  (doseq [uid (keys @*tpn-plan-map*)]
+    (let [object (get-tpn-plan-map uid)
+          {:keys [tpn-type end-node constraints]} object]
+      (cond
+        (and (#{:state :c-end :p-end} tpn-type) end-node)
+        ;; (and (#{:c-end :p-end} tpn-type) end-node)
+        ;; (and (#{:state} tpn-type) end-node)
+        (update-tpn-plan-map! (dissoc object :end-node :htn-node))
+        (#{:c-end :p-end} tpn-type)
+        (update-tpn-plan-map! (dissoc object :htn-node))
+        (and (= :null-activity tpn-type) constraints)
+        (update-tpn-plan-map! (dissoc object :constraints))))))
+
+(defn update-incidence-set []
+  (doseq [uid (keys @*tpn-plan-map*)]
+    (let [object (get-tpn-plan-map uid)
+          {:keys [tpn-type end-node]} object
+          node (if (and (pamela.tpn/tpn-isa? tpn-type :null-activity) end-node)
+                 (get-tpn-plan-map end-node))]
+      (when node
+        (update-tpn-plan-map!
+          (update-in node [:incidence-set] conj uid))))))
+
 (defn optimize-tpn-map []
   (remove-superfluous-null-activities)
-  (remove-invalid-tpn-attributes))
+  (remove-invalid-tpn-attributes)
+  (update-incidence-set))
 
 (defn get-tc-from-body [body end-node]
   (let [{:keys [temporal-constraints
