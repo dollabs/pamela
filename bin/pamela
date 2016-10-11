@@ -27,6 +27,7 @@ cd ..
 # top="$(pwd -P)"
 top="."
 logs="$top/logs"
+rc=0
 
 if [ ! -d "$logs" ]; then
     mkdir "$logs"
@@ -50,7 +51,7 @@ fi
 unset PAGER
 
 verbose=$PAMELA_VERBOSE
-logfile="$logs/$program.log"
+# logfile="$logs/$program-script.log"
 errfile="$logs/${program}-errors.log"
 target="$top/target"
 jar="$target/uberjar/$program.jar"
@@ -104,7 +105,7 @@ leinargs="run --"
 
 usage() {
     if [ -z "$PAMELAD" ]; then
-        err "invalid command line"
+        err "invalid command line (type 'pamela -h' for usage)"
     else
         curl -s -XPOST $url -F 001=select -F 001.s=--help
     fi
@@ -124,11 +125,11 @@ while [ $# -gt 0 ]; do
             leinargs="$leinargs $1"
             verbose=$(( $verbose + 1 ))
             ;;
-        (-h|--help|-V|--version|-r|--recursive|-s|--simple|-l|--load|-g|--visualize)
+        (-h|--help|-V|--version|-r|--recursive|-s|--simple|-L|--load|-g|--visualize)
             args="$args -F $field=select -F ${field}.s=$1"
             leinargs="$leinargs $1"
             ;;
-        (-c|--construct-tpn|-d|--daemonize|-e|--database|-m|--model|-f|--format|-t|--root-task)
+        (-c|--construct-tpn|-d|--daemonize|-e|--database|-m|--model|-f|--format|-t|--root-task|-l|--log-level)
             sw="$1"
             if [ $# -gt 1 ]; then
                 args="$args -F $field=select -F ${field}.s=$1"
@@ -227,20 +228,6 @@ done
 if [ -z "$PAMELAD" ]; then
     vvlog lein $leinargs
     lein $leinargs  | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
-    # lein sometimes returns non-zero when things are fine
-    rc=0
-    if [ -s "$errfile" ]; then
-        # err "errors were found, please see $errfile"
-        cat "$errfile" 1>&2
-        # no longer required as logging has been all captured with slf4j
-        # egrep -v '(^INFO|org.elasticsearch)' "$errfile" > "$errfile.summary"
-        # if [ -s "$errfile.summary" ]; then
-        #     rc=1
-        # fi
-        rc=1
-    else
-        rm -f "$errfile" "$errfile.summary"
-    fi
 else
     vvlog curl $args
     curl $args
@@ -255,5 +242,13 @@ fi
 if [ -n "$inputtemp" ]; then
     rm "$inputtemp"
 fi
+
+# lein sometimes returns non-zero when things are fine
+if [ -s "$errfile" ]; then
+    # err "errors were found, please see $errfile"
+    cat "$errfile" 1>&2
+    rc=1
+fi
+rm -f "$errfile"
 
 exit $rc

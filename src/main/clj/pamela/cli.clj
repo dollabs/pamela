@@ -75,7 +75,6 @@
   {:added "0.2.0"}
   [options]
   (let [msg "list-models not implemented yet"]
-    (println msg)
     (log/error msg)
     false))
 
@@ -84,7 +83,6 @@
   {:added "0.2.0"}
   [options]
   (let [msg "load-models not implemented yet"]
-    (println msg)
     (log/error msg)
     false))
 
@@ -97,7 +95,6 @@
         ir (parser/parse options)]
     (if-not ir
       (do
-        (println "unable to parse: %s" input)
         (log/errorf "unable to parse: %s" input)
         false)
       (output-file stdout? cwd output "edn" ir))))
@@ -131,7 +128,6 @@
         tpn (cond
               (not ir)
               (do
-                (println "unable to parse: %s" input)
                 (log/errorf "unable to parse: %s" input)
                 false)
               :else
@@ -151,12 +147,10 @@
         ir (parser/parse options)]
     (if-not ir
       (do
-        (println "unable to parse:" input)
         (log/errorf "unable to parse: %s" input)
         false)
       (if-not (#{"edn" "json"} file-format)
         (do
-          (println "illegal file-format for htn:" file-format)
           (log/errorf "illegal file-format for htn: %s" file-format)
           false)
         (htn/plan-htn ir root-task file-format cwd output)))))
@@ -175,6 +169,8 @@
    "load" (var load-models)
    "tpn" (var tpn)
    "htn" (var htn)})
+
+(def log-levels #{"trace" "debug" "info" "warn" "error" "fatal" "report"})
 
 (def #^{:added "0.2.0"}
   output-formats
@@ -212,7 +208,14 @@
                 (let [oldv (get m k [])
                       oldv (if (= oldv ["-"]) [] oldv)]
                   (assoc m k (conj oldv v))))]
-   ["-l" "--load" "List models in memory only"]
+   ["-l" "--log-level LEVEL" "Logging level"
+    :default "warn"
+    :parse-fn (fn [level]
+                (if (log-levels level)
+                  level
+                  (throw (Exception. (str "\nlog-level must be one of: "
+                                       log-levels)))))]
+   ["-L" "--load" "List models in memory only"]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
     :default "-"]
    ["-a" "--magic MAGIC" "Magic lvar initializtions"
@@ -285,7 +288,10 @@
   "Exit PAMELA with given status code (and optional messages)."
   {:added "0.2.0"}
   [status & msgs]
-  (if msgs (println (string/join \newline msgs)))
+  (when msgs
+    (if (zero? status)
+      (println (string/join \newline msgs))
+      (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
   (when-not (daemon/running?)
     (when (repl?)
@@ -308,13 +314,15 @@
           (not= (:pamela-version env) (:version (meta #'pamela))))
     (exit 1 (str "ERROR: please update pamela meta data version to: "
               (:pamela-version env))))
-  (plog/initialize)
-  (log/info (str "args: " (pr-str args)))
   (let [{:keys [options arguments errors summary]}
         (parse-opts args cli-options)
+        {:keys [help version verbose construct-tpn daemonize database
+                file-format input log-level load output model recursive root-task
+                simple visualize web]} options
+        log-level (keyword (or log-level "warn"))
+        _ (plog/initialize log-level (apply pr-str args))
         cmd (first arguments)
         action (get actions cmd)
-        {:keys [help version verbose construct-tpn daemonize database file-format input load output model recursive root-task simple visualize web]} options
         cwd (or (:pamela-cwd env) (:user-dir env))
         output (fs/expand-home output)
         output (if-not (daemon/stdout-option? output)
@@ -327,7 +335,8 @@
                     (if (string/starts-with? root-task "(")
                       root-task
                       (base-64-decode root-task)))
-        options (assoc options :output output :root-task root-task :cwd cwd)
+        options (assoc options :output output :root-task root-task
+                  :cwd cwd :log-level log-level)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
@@ -351,6 +360,7 @@
         (println "version:" (:pamela-version env))
         (println "web:" web))
       (println "verbosity level:" verbose)
+      (println "log level:" log-level)
       (println "construct-tpn:" construct-tpn)
       (println "daemonize:" daemonize)
       (println "database:" database)
@@ -363,7 +373,6 @@
       (println "root-task:" root-task)
       (println "simple:" simple)
       (println "visualize:" visualize)
-      ;; (println "update:" (:update options))
       (println "cmd:" cmd (if action "(valid)" "(invalid)")))
     (if-not action
       (if-not exit?
@@ -374,7 +383,5 @@
         (try
           (action options)
           (catch Throwable e
-            (binding [*out* *err*]
-              (println "ERROR caught exception:" (.getMessage e)))
-            (exit 1)))))
+            (exit 1 "ERROR caught exception:" (.getMessage e))))))
     (exit 0)))

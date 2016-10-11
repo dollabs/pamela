@@ -18,12 +18,13 @@
             [pamela.mode :as mode]
             [environ.core :refer [env]]
             [clojure.tools.logging :as log]
-            [taoensso.timbre :as timbre]))
+            [taoensso.timbre :as timbre]
+            [avenir.utils :refer [assoc-if]]))
 
 (defonce pamela-logging (atom nil))
 
 (def config
-  {:level :info  ; e/o #{:trace :debug :info :warn :error :fatal :report}
+  {:level :warn  ; e/o #{:trace :debug :info :warn :error :fatal :report}
 
    ;; Control log filtering by namespaces/patterns. Useful for turning off
    ;; logging in noisy libraries, etc.:
@@ -38,7 +39,8 @@
    :output-fn timbre/default-output-fn ; (fn [data]) -> string
 
    :appenders
-   {:spit (timbre/spit-appender {:fname "./logs/pamela-service.log"})}})
+   {:println (timbre/println-appender {:stream :*err*})
+    :spit (timbre/spit-appender {:fname "./logs/pamela.log"})}})
 
 (defn initialized?
   "Return true if the log is ready"
@@ -49,8 +51,15 @@
 (defn initialize
   "Initialize the log"
   {:added "0.2.0"}
-  []
+  [log-level & [debug-args]]
   (when-not (initialized?)
-    (timbre/set-config! config)
-    (log/info "PAMELA logging initialized")
-    (reset! pamela-logging true)))
+    (let [debug? (and (#{:trace :debug} log-level) debug-args)
+          banner? (or debug? (= :info log-level))
+          line-break "\n--------------------------------------------------------------------------------"]
+      (timbre/set-config! (assoc-if config :log-level log-level))
+      (if banner?
+        (log/warn "PAMELA logging initialized at level" log-level
+          (if debug?
+            (str line-break "\nargs: " debug-args)
+            line-break)))
+      (reset! pamela-logging true))))

@@ -1236,7 +1236,7 @@
                                     cname (symbol (str mname "-choice-" j))
                                     subtasks (make-htn-methods pclass :choice nil body irks-j)]
                                 (if (not= type :choice)
-                                  (println "HEY, I EXPECTED a :choice")) ;; FIXME
+                                  (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
                                 (htn-method {:pclass pclass :name cname
                                              :nonprimitive-task nonprimitive-task
                                              :subtasks subtasks
@@ -1279,6 +1279,6 @@
         _ (plan-htn-task expanded-root-task)
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
         tpn @tpn/*tpn-plan-map*]
-    (println "Saving HTN to" htn-filename "and TPN to" tpn-filename)
+    (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)
     (output-file stdout? cwd htn-filename file-format htn)
     (output-file stdout? cwd tpn-filename file-format tpn)))

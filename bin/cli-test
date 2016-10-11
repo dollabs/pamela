@@ -23,7 +23,8 @@ code="$(pwd -P)"
 
 cd "src/test/cli"
 
-export PATH=${PATH}:"$code/bin"
+# ensure the pamela script we use is from this directory
+export PATH="$code/bin":${PATH}
 export CODE="$code"
 export RESULTS="$code/target/cli-test"
 
