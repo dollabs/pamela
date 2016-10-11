@@ -296,6 +296,7 @@
 
 ;; move all constraints that end on from-end to to-end
 (defn move-constraints [tpn-notes from-end to-end]
+  ;; (println "  MOVE CONSTRAINTS FROM" from-end "TO" to-end)
   (let [{:keys [tc-ends network]} @tpn-notes
         {:keys [network-id begin-node end-node]} network
         from-uids (or (get tc-ends from-end) [])
@@ -370,8 +371,21 @@
         b (if b-uid (get-tpn-plan-map b-uid))
         b-constraints (:constraints b)
         b-type (:tpn-type b)
-        move-tc-to-b? (or (#{:p-begin :c-begin} a-type)
-                        (#{:p-begin :c-begin} b-type))
+        move-tc-to-b? (or
+                        (and (#{:p-begin :c-begin} a-type)
+                          (> an 1))
+                        (and (#{:p-begin :c-begin} b-type)
+                          (= :state a-type)
+                          (= an 1))
+                        (and (#{:p-end :c-end} a-type)
+                          ;; (= :state b-type)
+                          (= an 1)))
+        ;; _ (println "CHECK a-uid" a-uid "a-type" a-type "AN" an "A0-UID" a0-uid
+        ;;     "\n  todo" (count a-todo) "=" a-todo
+        ;;     "\n  done" (count a-done) "=" a-done
+        ;;     "\n  a0-type" a0-type "s-uid" s-uid  "SN" sn "tpn-type" tpn-type
+        ;;     "\n  constraints" constraints "move-tc-to-b?" move-tc-to-b?
+        ;;     "\n  s0-type" s0-type "b-type" b-type "b-uid" b-uid)
         next-uid
         (cond
           (zero? (count a-todo))
@@ -385,16 +399,11 @@
             (= a0-type :null-activity))
           (let [a-activities (disj a-activities a0-uid)
                 a-activities (if s0-uid (conj a-activities s0-uid) a-activities)
-                ;; a-constraints (set/union a-constraints constraints)
                 a (assoc-if a
                     :activities a-activities
                     :htn-node (or a-htn-node htn-node))
-                ;; a (assoc a
-                ;;     :activities a-activities
-                ;;     :constraints a-constraints)
-                move-to-b? (and b move-tc-to-b?)
                 [a b] (if move-constraints?
-                        (if move-to-b?
+                        (if move-tc-to-b?
                           [a
                            (assoc-if b
                              :constraints
@@ -408,12 +417,12 @@
                              :sequence-label sequence-label)
                            b])
                         [a b])
-                a (if move-to-b?
+                a (if move-tc-to-b?
                     a
                     (assoc-if a
                       :label label
                       :sequence-label sequence-label))
-                b (if move-to-b?
+                b (if move-tc-to-b?
                     (assoc-if b
                       :label label
                       :sequence-label sequence-label)
@@ -426,9 +435,10 @@
                   :cost a0-cost
                   :reward a0-reward
                   :probability a0-probability
-                  :htn-node a0-htn-node
-                  )))
-            (move-constraints tpn-notes s-uid (if move-to-b? b-uid a-uid))
+                  :htn-node a0-htn-node)))
+            (move-constraints tpn-notes s-uid
+              (if (and move-tc-to-b? (not (#{:p-end :c-end} a-type)))
+                b-uid a-uid))
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! s-uid)
             ;; (println "  REMOVE s/ A na S a B / A a B /" a0-uid s-uid
@@ -456,8 +466,7 @@
                   :cost s0-cost
                   :reward s0-reward
                   :probability s0-probability
-                  :htn-node s0-htn-node
-                  )))
+                  :htn-node s0-htn-node)))
             (move-constraints tpn-notes s-uid b-uid) ;; for other constraints
             (remove-tpn-plan-map! s0-uid)
             (remove-tpn-plan-map! s-uid)
@@ -504,8 +513,7 @@
                   :cost a0-cost
                   :reward a0-reward
                   :probability a0-probability
-                  :htn-node a0-htn-node
-                  )))
+                  :htn-node a0-htn-node)))
             (move-constraints tpn-notes a-uid s-uid)
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! a-uid)
@@ -519,8 +527,8 @@
                 s (assoc s :constraints (set/union constraints a-constraints))]
             (update-tpn-plan-map! a)
             (update-tpn-plan-map! s)
-            ;; (println "  MOVE constraints on state node before begin to the begin"
-            ;;   s-uid)
+            ;; (println "  MOVE a-constraints" a-constraints
+            ;;   "on state node before begin to the begin" s-uid)
             ;; (remove-superfluous tpn-notes s-uid)
             s-uid)
           :else
