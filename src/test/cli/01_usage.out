@@ -18,7 +18,8 @@ Options:
   -a, --magic MAGIC                Magic lvar initializtions
   -m, --model MODEL                Model name
   -r, --recursive                  Recursively process model
-  -s, --simple                     Simple operation
+  -s, --strict                     Enforce strict plan schema checking
+  -S, --simple                     Simple operation
   -t, --root-task ROOTTASK         Label for HTN root-task [main]
   -g, --visualize                  Render TPN as SVG (set -f dot)
   -w, --web WEB                    Web request hints (internal use only)
