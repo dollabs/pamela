@@ -13,7 +13,6 @@ Changes
 - Allow plan-schema to be more flexible
   https://github.com/dollabs/planviz/issues/24
 - Fixed: Planviz disagrees with Pamela (plan-schema) #18
-- Added the ability to set logging hooks (set-logger!)
 - Added command line switch --strict to enforce schema checking
 - Expand home in pathnames properly
 - Updated dependencies
