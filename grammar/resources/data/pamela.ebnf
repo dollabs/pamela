@@ -46,19 +46,20 @@ transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
-cond = ( doc | pre | post | opt-bounds | cost | reward | controllable )
+cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive )
 trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
 pre = <PRE> ( keyword | cond-expr )
 post = <POST> ( keyword | cond-expr )
 
-fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever )
+fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes )
 
 ask = <LP> <ASK> cond-expr opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
 choice = <LP> <CHOICE> choice-opt* fn <RP>
 choose = <LP> <CHOOSE> choose-opt* choice+ <RP>
 choose-whenever = <LP> <CHOOSE_WHENEVER> choose-opt* choice+ <RP>
+dotimes = <LP> <DOTIMES> natural fn <RP>
 optional = <LP> <OPTIONAL> fn-opt* fn <RP>
 maintain = <LP> <MAINTAIN> cond-expr opt-bounds? fn <RP>
 delay = <LP> <DELAY> delay-opt*  <RP>
@@ -98,6 +99,7 @@ cost-le = <COST_LE> number-ref
 reward-ge = <REWARD_GE> number-ref
 guard = <GUARD> cond-expr
 controllable = <CONTROLLABLE> boolean
+primitive = <PRIMITIVE> boolean
 min = MIN integer
 max = MAX integer
 exactly = EXACTLY integer
@@ -154,6 +156,7 @@ DEFPMETHOD = <'defpmethod'>
 DELAY = <'delay'>
 DEPENDS = <':depends'>
 DOC = <':doc'>
+DOTIMES = <'dotimes'>
 ENTER = <':enter'>
 EQUAL = <'='>
 EXACTLY = <':exactly'>
@@ -184,6 +187,7 @@ OR = <'or'>
 PARALLEL = <'parallel'>
 POST = <':post'>
 PRE = <':pre'>
+PRIMITIVE = <':primitive'>
 PROBABILITY = <':probability'>
 REWARD = <':reward'>
 REWARD_GE = <':reward>='>

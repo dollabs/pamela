@@ -184,12 +184,13 @@
             :controllable false
             :temporal-constraints [default-bounds-type]
             :betweens []
+            :primitive false
             :body nil}
          args-seen? false
          a (first args)
          more (rest args)]
     (if-not a
-      {method m}
+      {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
       (let [[args-seen? m] (if (not args-seen?)
                              (if (map? a)
                                [false (merge m a)] ;; merge in cond-map
@@ -365,6 +366,10 @@
 (defn ir-inherit [& args]
   {:inherit (vec args)})
 
+(defn ir-dotimes [times fn]
+  {:type :sequence
+   :body (vec (repeat times fn))})
+
 (def pamela-ir {
                 ;; :access handled in ir-field
                 :and-expr (partial ir-cond-expr :and)
@@ -399,6 +404,7 @@
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
                 :doc (partial ir-map-kv :doc)
+                :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
                 :exactly ir-vec

@@ -597,7 +597,7 @@
     tc))
 
 (defn build-tpn [ir labels plant-args pfn parent-begin-uid & [parent-order]]
-  (let [{:keys [type name method args temporal-constraints body
+  (let [{:keys [type name method args temporal-constraints primitive body
                 label cost reward controllable]} pfn
         sequence? (= :sequence type)
         [label sequence-label] (if sequence? [nil label] [label nil])
@@ -693,12 +693,12 @@
           (:uid na-begin))))
     ;; (println "BUILD-TPN begin" (:uid begin) "end" (:uid end)
     ;; "BODY" (count body))
-    (when (#{:parallel :choose :sequence} type)
+    (when (and (not primitive) (#{:parallel :choose :sequence} type))
         (doseq [b body]
           ;; NOTE: not cost reward, etc.
           (let [{:keys [type temporal-constraints
                         label sequence-label cost<= reward>=
-                        probability cost reward guard body]} b
+                        probability cost reward guard primitive body]} b
                 plant-fn? (= type :plant-fn-symbol)
                 ;; _ (println "--B" (dissoc b :body))
                 se (tpn-state {})
@@ -721,7 +721,7 @@
                      :guard guard
                      )
                    nil ;; (get-tc-from-body (first body) (:uid se))
-                   (first body)]
+                   (and (not primitive) (first body))]
                   [nil
                    {}
                    tc

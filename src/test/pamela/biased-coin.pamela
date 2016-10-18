@@ -1,0 +1,66 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; A coin that transitions between biased and unbiased mode
+
+
+(defpclass coin-faces []
+  :meta {:doc "Enumeration of coin faces"}
+  :modes [:head :tail])
+
+(defpclass coin []
+  :modes [:biased :unbiased]
+
+  :fields {:observed-face (coin-faces :observable true :initial :head)}
+
+  :transitions {:biased:unbiased   {:pre         :biased :post :unbiased
+                                    :probability (lvar "tBU" 0.9)}
+                :unbiased:biased   {:pre         :unbiased :post :biased
+                                    :probability (lvar "tUB" 0.52)}
+                :biased:biased     {:pre         :biased :post :biased
+                                    :probability (lvar "tBB" 0.1)}
+                :unbiased:unbiased {:pre         :unbiased :post :unbiased
+                                    :probability (lvar "tUU" 0.48)}}
+
+  :methods [(defpmethod emit-head
+              {:doc "Heads"
+               :pre (= :observed-face (mode-of coin-faces :head))}
+              []) ;; no body ==> :primitive
+            (defpmethod emit-tail
+              {:doc "Tails"
+               :pre (= :observed-face (mode-of coin-faces :tail))}
+              [])
+            (defpmethod flip
+              {:doc "Flip the coin"
+               :primitive true} ;; plant method with an estimation model
+              []
+              (choose
+                (choice :guard (= :biased true)
+                  (choose
+                    (choice :probability (lvar "eBH" 0.8)
+                      (emit-head))
+                    (choice :probability (lvar "eBT" 0.2)
+                      (emit-tail))))
+                (choice :guard (= :unbiased true)
+                  (choose
+                    (choice :probability (lvar "eUH" 0.51)
+                      (emit-head))
+                    (choice :probability (lvar "eUT" 0.49)
+                      (emit-tail))))))
+            (defpmethod flip-sequence
+              {:doc "Series of coin flips"}
+              []
+              (dotimes 10 (flip)))])
+
+(defpclass main []
+  :fields {:coin (coin)})

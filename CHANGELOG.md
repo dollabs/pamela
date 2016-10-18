@@ -7,6 +7,12 @@ All notable changes to this project will be documented in this file. This change
 Added
 - _TBD_
 
+### [0.4.2] - 2016-10-18
+
+Changes
+- Added :primitive #23
+- Added dotimes #24
+
 ### [0.4.1] - 2016-10-17
 
 Changes
@@ -70,4 +76,5 @@ Added
 [0.2.6]: https://github.com/dollabs/pamela/compare/0.2.5...0.2.6
 [0.3.0]: https://github.com/dollabs/pamela/compare/0.2.6...0.3.0
 [0.4.1]: https://github.com/dollabs/pamela/compare/0.3.0...0.4.1
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.4.1...HEAD
+[0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.4.2...HEAD
