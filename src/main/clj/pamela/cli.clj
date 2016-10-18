@@ -201,7 +201,7 @@
                  (vec output-formats))]]
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
-    :parse-fn #(fs/expand-home %)
+    :parse-fn #(-> % fs/expand-home str)
     :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
@@ -217,7 +217,8 @@
                                        log-levels)))))]
    ["-L" "--load" "List models in memory only"]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
-    :default "-"]
+    :default "-"
+    :parse-fn #(-> % fs/expand-home str)]
    ["-a" "--magic MAGIC" "Magic lvar initializtions"
     :default nil
     :parse-fn #(fs/expand-home %)
@@ -225,7 +226,8 @@
                "MAGIC file does not exist"]]
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
-   ["-s" "--simple" "Simple operation"]
+   ["-s" "--strict" "Enforce strict plan schema checking"]
+   ["-S" "--simple" "Simple operation"]
    ["-t" "--root-task ROOTTASK" "Label for HTN root-task [main]"]
    ["-g" "--visualize" "Render TPN as SVG (set -f dot)"]
    ["-w" "--web WEB" "Web request hints (internal use only)"]
@@ -254,7 +256,7 @@
   - -o, --output *OUTPUT*   **Output file (or - for STDOUT)**
   - -m, --model *MODEL*     **Model name**
   - -r, --recursive         **Recursively process model**
-  - -s, --simple            **Simple operation**
+  - -S, --simple            **Simple operation**
   - -g, --visualize         **Render TPN as SVG (set -f dot)**
   - -w, --web *WEB*         **Web request hints (_internal use only_)**
 
@@ -308,7 +310,7 @@
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.4.0"}
+   :version "0.4.1"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))
@@ -318,7 +320,7 @@
         (parse-opts args cli-options)
         {:keys [help version verbose construct-tpn daemonize database
                 file-format input log-level load output model recursive root-task
-                simple visualize web]} options
+                simple strict visualize web]} options
         log-level (keyword (or log-level "warn"))
         _ (plog/initialize log-level (apply pr-str args))
         cmd (first arguments)
@@ -372,6 +374,7 @@
       (println "recursive:" recursive)
       (println "root-task:" root-task)
       (println "simple:" simple)
+      (println "strict:" strict)
       (println "visualize:" visualize)
       (println "cmd:" cmd (if action "(valid)" "(invalid)")))
     (if-not action
