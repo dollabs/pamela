@@ -224,6 +224,9 @@
     :parse-fn #(fs/expand-home %)
     :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
                "MAGIC file does not exist"]]
+   ["-b" "--output-magic OUTPUT-MAGIC" "Output magic file"
+    :default nil
+    :parse-fn #(-> % fs/expand-home str)]
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--strict" "Enforce strict plan schema checking"]
@@ -320,7 +323,7 @@
         (parse-opts args cli-options)
         {:keys [help version verbose construct-tpn daemonize database
                 file-format input log-level load output model recursive root-task
-                simple strict visualize web]} options
+                simple strict visualize web magic output-magic]} options
         log-level (keyword (or log-level "warn"))
         _ (plog/initialize log-level (apply pr-str args))
         cmd (first arguments)
@@ -370,6 +373,8 @@
       (println "input:" input)
       (println "load:" load)
       (println "output:" output)
+      (println "magic:" magic)
+      (println "output-magic:" output-magic)
       (println "model:" model)
       (println "recursive:" recursive)
       (println "root-task:" root-task)

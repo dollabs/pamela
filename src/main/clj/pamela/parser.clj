@@ -26,6 +26,15 @@
   (:import [java.lang
             Long Double]))
 
+;; When a magic file is read in the lvar "name" is assigned a value
+;;   in pamela-lvars
+;; Then when the PAMELA is parsed each time an lvar is encountered
+;;   If it is NOT already in pamela-lvars (or is :unset) then it is added
+;;   with the default value (if specified) or :unset
+;; Upon emitting the IR all the pamela-lvars are recorded
+;;   under the pamela/lvars symbol
+(def pamela-lvars (atom {}))
+
 (def #^{:added "0.3.0"}
   default-bounds
   "Default bounds"
@@ -81,7 +90,10 @@
        :value v})))
 
 (defn ir-lvar-ctor [& args]
-  (let [[name lvar-init] args]
+  (let [[name lvar-init] args
+        magic-init (if name (get @pamela-lvars name))]
+    (when (and name (nil? magic-init)) ;; not in pamela-lvars
+      (swap! pamela-lvars assoc name (or lvar-init :unset)))
     (assoc-if
       {:type :lvar
        :name (or name :gensym)}
@@ -806,16 +818,37 @@
           (if-not lvar
             mir
             (let [{:keys [name default]} lvar]
-              (recur (assoc mir name default)
+              (recur (assoc mir name (or default :unset))
                 (first more) (rest more)))))))))
 
 ;; return PAMELA IR
 (defn parse [options]
-  (let [{:keys [cwd input magic]} options
-        parser (build-parser)]
+  (let [{:keys [cwd input magic output-magic]} options
+        parser (build-parser)
+        mir (if magic (parse-magic magic) {})]
+    (when magic
+      (println "Magic" magic "MIR" mir)  ;; DEBUG
+      (log/debug "MAGIC input\n" (with-out-str (pprint mir))))
+    (reset! pamela-lvars mir)
     (loop [ir {} input-filename (first input) more (rest input)]
       (if (or (false? ir) (not input-filename))
-        ir
+        (let [lvars @pamela-lvars
+              out-magic (if (pos? (count lvars))
+                          (apply str
+                            ";; -*- Mode: clojure; coding: utf-8  -*-\n"
+                            ";; magic file corresponding to:\n"
+                            ";; " input "\n"
+                            (for [k (keys lvars)]
+                              (str "(lvar \"" k "\" " (get lvars k) ")\n"))))]
+          (if out-magic
+            (do
+              (if output-magic
+                (spit output-magic out-magic))
+              (assoc ir
+                'pamela/lvars
+                {:type :lvars
+                 :lvars lvars}))
+            ir))
         (let [input-file (fs/file (if (fs/exists? input-filename)
                                     input-filename
                                     (str cwd "/" input-filename)))
@@ -839,10 +872,6 @@
                      false)
                    :else
                    (let [pir (validate-pamela
-                               (insta/transform pamela-ir (first tree)))
-                         mir (if (and ir magic) (parse-magic magic))]
-                     (when mir
-                       (log/warn "MAGIC")
-                       (log/warn (with-out-str (pprint mir))))
+                               (insta/transform pamela-ir (first tree)))]
                      (merge ir pir)))]
           (recur ir (first more) (rest more)))))))

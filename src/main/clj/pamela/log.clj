@@ -56,7 +56,7 @@
     (let [debug? (and (#{:trace :debug} log-level) debug-args)
           banner? (or debug? (= :info log-level))
           line-break "\n--------------------------------------------------------------------------------"]
-      (timbre/set-config! (assoc-if config :log-level log-level))
+      (timbre/set-config! (assoc-if config :level log-level))
       (if banner?
         (log/warn "PAMELA logging initialized at level" log-level
           (if debug?
