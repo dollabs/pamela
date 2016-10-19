@@ -1,0 +1,11 @@
+;; -*- Mode: clojure; coding: utf-8  -*-
+;; magic file corresponding to:
+;; ["src/test/pamela/biased-coin.pamela"]
+(lvar "tBU" 0.8)
+(lvar "tUB" 0.6)
+(lvar "tBB" 0.09)
+(lvar "tUU" 0.49)
+(lvar "eBH" 0.9)
+(lvar "eBT" 0.1)
+(lvar "eUH" 0.52)
+(lvar "eUT" 0.48)

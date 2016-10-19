@@ -175,6 +175,47 @@ while [ $# -gt 0 ]; do
                 usage
             fi
             ;;
+        (-a|--magic)
+            if [ $# -gt 1 ]; then
+                args="$args -F $field=select -F ${field}.s=$1"
+                leinargs="$leinargs $1"
+                shift
+                i=$(( $i + 1 ))
+                field=$(printf "%03d" $i)
+                args="$args -F $field=file -F ${field}.f=@$1"
+                leinargs="$leinargs $1"
+            else
+                usage
+            fi
+            ;;
+        (-b|--output-magic)
+            if [ $# -gt 1 ]; then
+                leinargs="$leinargs $1"
+                shift
+                moutput="$1"
+                moutdir="$(dirname $moutput)"
+                if [ "$moutdir" = "." ]; then
+                    moutdir="$PAMELA_CWD"
+                else
+                    if [ ! -d "$moutdir" ]; then
+                        err "magic-output directory does not exist: $moutdir"
+                        exit 1
+                    fi
+                fi
+                moutput="$moutdir/$(basename $moutput)"
+                leinargs="$leinargs $moutput"
+                # this will tell NOT curl to save to $output
+                # as it conflicts with --output
+                # args="$args --output $output"
+                # this will tell pamelad the filename
+                args="$args -F $field=select -F ${field}.s=-b"
+                i=$(( $i + 1 ))
+                field=$(printf "%03d" $i)
+                args="$args -F $field=text -F ${field}.t=$1"
+            else
+                usage
+            fi
+            ;;
         (-o|--output)
             if [ $# -gt 1 ]; then
                 leinargs="$leinargs $1"

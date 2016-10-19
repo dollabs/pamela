@@ -168,11 +168,11 @@
  pamela/lvars
  {:type :lvars,
   :lvars
-  {"tBU" 0.9,
-   "tUB" 0.52,
-   "tBB" 0.1,
-   "tUU" 0.48,
-   "eBH" 0.8,
-   "eBT" 0.2,
-   "eUH" 0.51,
-   "eUT" 0.49}}}
+  {"tBU" 0.8,
+   "tUB" 0.6,
+   "tBB" 0.9,
+   "tUU" 0.49,
+   "eBH" 0.9,
+   "eBT" 0.1,
+   "eUH" 0.52,
+   "eUT" 0.48}}}
