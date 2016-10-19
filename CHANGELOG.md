@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Added
+- Better support for magic files (including --output-magic)
 - _TBD_
 
 ### [0.4.2] - 2016-10-18
