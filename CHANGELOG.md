@@ -6,7 +6,10 @@ All notable changes to this project will be documented in this file. This change
 
 Added
 - Better support for magic files (including --output-magic)
-- _TBD_
+- Fixed minor bugs with the pamela launcher
+- Ensured top level actions properly return an exit code
+- Quieted the intial logging by the netty (dependency of aleph)
+- Properly handle default plant bounds as lvars
 
 ### [0.4.2] - 2016-10-18
 

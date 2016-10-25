@@ -596,7 +596,8 @@
                 }))]
     tc))
 
-(defn build-tpn [ir labels plant-args pfn parent-begin-uid & [parent-order]]
+(defn build-tpn [ir labels plant plant-args pfn parent-begin-uid
+                 & [parent-order]]
   (let [{:keys [type name method args temporal-constraints primitive body
                 label cost reward controllable]} pfn
         sequence? (= :sequence type)
@@ -608,9 +609,9 @@
         plant-def (if (and plant-fn? name) (get plant-args name))
         {:keys [access observable initial]} plant-def
         {:keys [pclass id interface]} initial
-        plant (or pclass name)
-        plant-method (if plant-fn? (get-in ir [plant :methods method]))
-        plant (if plant (str plant))
+        plant-sym (or pclass name)
+        plant-sym (if (= plant-sym 'this) plant plant-sym)
+        plant-method (if plant-fn? (get-in ir [plant-sym :methods method]))
         plantid (if id (str id (if interface "@") interface))
         method-args (if plant-fn? (map str (:args plant-method)))
         argsmap (if plant-fn? (zipmap method-args args))
@@ -649,7 +650,7 @@
                         {:value bounds :end-node (:uid end)}))
         activity (if basic-fn?
                    (tpn-activity
-                     {:plant plant
+                     {:plant (if plant-sym (str plant-sym))
                       :plantid plantid
                       :command command
                       :args args
@@ -773,7 +774,7 @@
                             ;; :constraints (if choice-tc #{(:uid choice-tc)})
                             )]
                 (update-tpn-plan-map! begin)))
-            (build-tpn ir labels plant-args b (:uid sb) @order)
+            (build-tpn ir labels plant plant-args b (:uid sb) @order)
             (swap! order inc)))
         (when sequence?
           (let [na-end (tpn-null-activity {:end-node (:uid end)})]
@@ -801,7 +802,8 @@
 ;; assumes args are to the tpn-pclass constructor!
 (defn create-tpn [ir tpn-ks tpn-args]
   (reinitialize-tpn-plan-map)
-  (let [tpn-class (get ir (first tpn-ks))
+  (let [plant (first tpn-ks)
+        tpn-class (get ir plant)
         {:keys [args]} tpn-class
         tpn-method (get-in ir tpn-ks)
         ;; not pre post cost reward controllable betweens
@@ -820,7 +822,7 @@
     (swap! *tpn-plan-map* assoc
       :network-id (:uid (tpn-network {:begin-node (:uid begin)
                                       :end-node (:uid end)})))
-    (build-tpn ir labels plant-args (first body) (:uid begin))
+    (build-tpn ir labels plant plant-args (first body) (:uid begin))
     (add-between-constraints labels betweens)
     (optimize-tpn-map)
     @*tpn-plan-map*))
@@ -901,4 +903,8 @@
                           (if (fs/absolute? output)
                             output
                             (str cwd "/" output)))]
-    (output-file stdout? cwd output-filename file-format tpn)))
+    (if tpn
+      (do
+        (output-file stdout? cwd output-filename file-format tpn)
+        true)
+      false))) ;; return success

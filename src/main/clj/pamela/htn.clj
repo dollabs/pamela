@@ -1281,4 +1281,5 @@
         tpn @tpn/*tpn-plan-map*]
     (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)
     (output-file stdout? cwd htn-filename file-format htn)
-    (output-file stdout? cwd tpn-filename file-format tpn)))
+    (output-file stdout? cwd tpn-filename file-format tpn)
+    0)) ;; exit code
