@@ -11,7 +11,7 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-(defpclass plant []
+(defpclass camera []
   :methods [(defpmethod take-high-res-images
               {:doc "Take High Res Image"
                :bounds (lvar "high-res-bounds" [5 10])}
@@ -19,15 +19,14 @@
             (defpmethod take-medium-res-images
               {:doc "Take Medium Res Image"}
               [])
-            ])
-
-(defpclass example [plant]
-  :methods [(defpmethod main
+            (defpmethod main
               {:doc "the tpn"}
               []
               (choose
                 (choice
-                  (plant.take-high-res-images))
+                  (take-high-res-images))
                 (choice :bounds (lvar "med-res-bounds" [3 6])
-                  (plant.take-medium-res-images)))
-              )])
+                  (take-medium-res-images))))])
+
+(defpclass example [camera]
+  :fields {:imager (camera)})

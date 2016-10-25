@@ -24,8 +24,7 @@ cd "$dir"
 # dir="$(pwd -P)"
 # run from the top directory
 cd ..
-# top="$(pwd -P)"
-top="."
+top="$(pwd -P)"
 logs="$top/logs"
 rc=0
 
@@ -85,7 +84,8 @@ if [ -z "$PAMELAD" ]; then
     if [ -e "$jar" ]; then
         if [ "$PAMELA_MODE" != "dev" ]; then
             vvlog java $PAMELA_OPTS -jar $jar $*
-            exec java $PAMELA_OPTS -jar $jar $* | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
+            ## exec java $PAMELA_OPTS -jar $jar $* | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
+            exec java $PAMELA_OPTS -jar $jar $*
         fi
     else
         if [ "$PAMELA_MODE" = "prod" ]; then

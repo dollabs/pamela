@@ -11,6 +11,11 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
+;; Prevent aleph from pulling in netty's logging at :debug level
+;; before we properly initialize logging
+(require '(taoensso timbre))
+(taoensso.timbre/set-level! :warn)
+
 (ns pamela.daemon
   "PAMELA daemon support."
   (:require [clojure.java.io :refer :all] ;; for as-file

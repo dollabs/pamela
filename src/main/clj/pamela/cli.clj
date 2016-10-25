@@ -40,35 +40,40 @@
   (let [{:keys [cwd output]} options
         [_ data] (get-input options)
         stdout? (daemon/stdout? output)]
-    (output-file stdout? cwd output "edn" data)))
+    (output-file stdout? cwd output "edn" data)
+    0))
 
 (defn delete-model
   "Deletes given model from the database"
   {:added "0.2.0"}
   [options]
   (db/with-db options
-    (db/delete-model options)))
+    (db/delete-model options))
+  0)
 
 (defn describe-model
   "Analyze and describe the given model"
   {:added "0.2.0"}
   [options]
   (db/with-db options
-    (db/describe-model options)))
+    (db/describe-model options))
+  0)
 
 (defn export-model
   "Export model source from the database"
   {:added "0.2.0"}
   [options]
   (db/with-db options
-    (db/export-model options)))
+    (db/export-model options))
+  0)
 
 (defn import-model
   "Import model into the database"
   {:added "0.2.0"}
   [options]
   (db/with-db options
-    (db/import-model options)))
+    (db/import-model options))
+  0)
 
 (defn list-models
   "List models (--simple for names only, --load for memory only)"
@@ -76,7 +81,7 @@
   [options]
   (let [msg "list-models not implemented yet"]
     (log/error msg)
-    false))
+    1))
 
 (defn load-models
   "Load model(s) in memory only"
@@ -84,7 +89,7 @@
   [options]
   (let [msg "load-models not implemented yet"]
     (log/error msg)
-    false))
+    1))
 
 (defn build-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
@@ -93,11 +98,13 @@
   (let [{:keys [cwd input output]} options
         stdout? (daemon/stdout? output)
         ir (parser/parse options)]
-    (if-not ir
+    (if ir
+      (do
+        (output-file stdout? cwd output "edn" ir)
+        0)
       (do
         (log/errorf "unable to parse: %s" input)
-        false)
-      (output-file stdout? cwd output "edn" ir))))
+        1))))
 
 (defn parse-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
@@ -107,16 +114,18 @@
         filename (if (= 1 (count input)) (first input))
         pir (if filename (parser/parse options))]
     (if pir
-      (if (daemon/stdout? output)
-        (print pir)
-        (spit output pir))
+      (do
+        (if (daemon/stdout? output)
+          (print pir)
+          (spit output pir))
+        0)
       (if filename
         (do
           (log/errorf "unable to parse: %s" filename)
-          false)
+          1)
         (do
           (log/errorf "invalid input to parse: %s" input)
-          false)))))
+          1)))))
 
 (defn tpn
   "Load model(s) in memory only, process as a TPN"
@@ -132,12 +141,17 @@
                 false)
               :else
               (tpn/load-tpn ir options))]
-    (when tpn
-      (output-file stdout? cwd output file-format tpn)
-      (when visualize
-        ;; (tpn/visualize tpn options)
-        (log/error "visualize not implemented yet")
-        ))))
+    (if tpn
+      (do
+        ;; (println "TPN is valid")
+        ;;(output-file stdout? cwd output file-format tpn)
+        (if visualize
+          ;; (tpn/visualize tpn options)
+          (do
+            (log/error "visualize not implemented yet")
+            1)
+          0))
+      1)))
 
 (defn htn
   "Load model(s) in memory only, process as a HTN"
@@ -293,6 +307,7 @@
   "Exit PAMELA with given status code (and optional messages)."
   {:added "0.2.0"}
   [status & msgs]
+  (log/trace "EXIT(" status ")")
   (when msgs
     (if (zero? status)
       (println (string/join \newline msgs))
@@ -387,9 +402,9 @@
         (exit 1 (str "Unknown action: \"" cmd "\". Must be one of " (keys actions)))
         (usage summary))
       (if (> verbose 1) ;; throw full exception with stack trace when -v -v
-        (action options)
+        (exit (action options))
         (try
-          (action options)
+          (exit (action options))
           (catch Throwable e
             (exit 1 "ERROR caught exception:" (.getMessage e))))))
     (exit 0)))
