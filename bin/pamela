@@ -35,7 +35,7 @@ fi
 LEIN_JVM_OPTS="${LEIN_JVM_OPTS:--server}"
 JVM_OPTS="${JVM_OPTS:-$LEIN_JVM_OPTS}"
 PAMELA_OPTS="${PAMELA_OPTS:-$JVM_OPTS}"
-PAMELA_MODE="${PAMELA_MODE:-dev}"
+PAMELA_MODE="${PAMELA_MODE:-prod}"
 PAMELA_VERBOSE="${PAMELA_VERBOSE:-0}"
 
 # attempt to silence leiningen unless the user has set LEIN_SILENT=false
@@ -89,7 +89,7 @@ if [ -z "$PAMELAD" ]; then
         fi
     else
         if [ "$PAMELA_MODE" = "prod" ]; then
-            err "jar not present in production mode: $jar"
+            err "jar not present in PAMELA_MODE=prod : $jar"
             exit 1
         fi
         if [ ! -e "project.clj" ]; then

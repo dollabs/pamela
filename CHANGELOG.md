@@ -10,6 +10,7 @@ Added
 - Ensured top level actions properly return an exit code
 - Quieted the intial logging by the netty (dependency of aleph)
 - Properly handle default plant bounds as lvars
+- Changed default PAMELA_MODE=prod in ./bin/pamela (requires uberjar)
 
 ### [0.4.2] - 2016-10-18
 
