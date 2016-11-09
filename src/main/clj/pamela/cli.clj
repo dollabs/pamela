@@ -21,7 +21,8 @@
             [clojure.pprint :as pp :refer [pprint]]
             [me.raynes.fs :as fs]
             [pamela.mode :as mode]
-            [pamela.utils :refer [get-input var-of repl? output-file]]
+            [pamela.utils :refer [get-input var-of repl? set-cwd!
+                                  input-file output-file]]
             [pamela.db :as db]
             [pamela.daemon :as daemon]
             [pamela.parser :as parser]
@@ -37,10 +38,9 @@
   "Simply copies the input to output (for debugging)"
   {:added "0.2.0"}
   [options]
-  (let [{:keys [cwd output]} options
-        [_ data] (get-input options)
-        stdout? (daemon/stdout? output)]
-    (output-file stdout? cwd output "edn" data)
+  (let [{:keys [output]} options
+        [_ data] (get-input options)]
+    (output-file output "edn" data)
     0))
 
 (defn delete-model
@@ -95,15 +95,14 @@
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [cwd input output]} options
-        stdout? (daemon/stdout? output)
+  (let [{:keys [input output]} options
         ir (parser/parse options)]
     (if (:error ir)
       (do
         (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
         1)
       (do
-        (output-file stdout? cwd output "edn" ir)
+        (output-file output "edn" ir)
         0))))
 
 (defn parse-model
@@ -117,7 +116,7 @@
   "Load model(s) in memory only, process as a TPN"
   {:added "0.2.0"}
   [options]
-  (let [{:keys [construct-tpn file-format cwd input output visualize]} options
+  (let [{:keys [construct-tpn file-format input output visualize]} options
         stdout? (daemon/stdout? output)
         ir (parser/parse options)
         tpn (cond
@@ -134,7 +133,6 @@
         1)
       (do
         ;; (println "TPN is valid")
-        ;;(output-file stdout? cwd output file-format tpn)
         (if visualize
           ;; (tpn/visualize tpn options)
           (do
@@ -146,7 +144,7 @@
   "Load model(s) in memory only, process as a HTN"
   {:added "0.4.0"}
   [options]
-  (let [{:keys [root-task file-format cwd input output]} options
+  (let [{:keys [root-task file-format input output]} options
         ir (parser/parse options)]
     (if (:error ir)
       (do
@@ -156,7 +154,7 @@
         (do
           (log/errorf "illegal file-format for htn: %s" file-format)
           1)
-        (htn/plan-htn ir root-task file-format cwd output)))))
+        (htn/plan-htn ir root-task file-format output)))))
 
 (def #^{:added "0.2.0"}
   actions
@@ -204,7 +202,7 @@
                  (vec output-formats))]]
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
-    :parse-fn #(-> % fs/expand-home str)
+    :parse-fn #(input-file %)
     :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
@@ -220,16 +218,14 @@
                                        log-levels)))))]
    ["-L" "--load" "List models in memory only"]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
-    :default "-"
-    :parse-fn #(-> % fs/expand-home str)]
+    :default "-"]
    ["-a" "--magic MAGIC" "Magic lvar initializtions"
     :default nil
-    :parse-fn #(fs/expand-home %)
+    :parse-fn #(input-file %)
     :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
                "MAGIC file does not exist"]]
    ["-b" "--output-magic OUTPUT-MAGIC" "Output magic file"
-    :default nil
-    :parse-fn #(-> % fs/expand-home str)]
+    :default nil]
    ["-m" "--model MODEL" "Model name"]
    ["-r" "--recursive" "Recursively process model"]
    ["-s" "--strict" "Enforce strict plan schema checking"]
@@ -323,6 +319,7 @@
           (not= (:pamela-version env) (:version (meta #'pamela))))
     (exit 1 (str "ERROR: please update pamela meta data version to: "
               (:pamela-version env))))
+  (set-cwd! (or (:pamela-cwd env) (:user-dir env)))
   (let [{:keys [options arguments errors summary]}
         (parse-opts args cli-options)
         {:keys [help version verbose construct-tpn daemonize database
@@ -332,20 +329,13 @@
         _ (plog/initialize log-level (apply pr-str args))
         cmd (first arguments)
         action (get actions cmd)
-        cwd (or (:pamela-cwd env) (:user-dir env))
-        output (fs/expand-home output)
-        output (if-not (daemon/stdout-option? output)
-                 (if (fs/absolute? output)
-                   output ;; absolute
-                   (str cwd "/" output)))
         root-task (if (and root-task
                         (string? root-task)
                         (pos? (count root-task)))
                     (if (string/starts-with? root-task "(")
                       root-task
                       (base-64-decode root-task)))
-        options (assoc options :output output :root-task root-task
-                  :cwd cwd :log-level log-level)
+        options (assoc options :root-task root-task :log-level log-level)
         verbose? (pos? (or verbose 0))
         exit?
         (cond
@@ -363,7 +353,6 @@
       (when (> verbose 1)
         (println "mode:" @mode/program-mode)
         (println "repl?:" (repl?))
-        (println "cwd:" cwd)
         (println "daemon?:" (daemon/running?))
         (println "database running?:" (db/running?))
         (println "version:" (:pamela-version env))
