@@ -27,7 +27,7 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [instaparse "1.4.3"]
                  ;; -------
-                 [org.clojure/clojurescript "1.9.229" :scope "provided"]
+                 [org.clojure/clojurescript "1.9.293" :scope "provided"]
                  [org.clojure/core.async "0.2.395"]
                  [org.clojure/tools.cli "0.3.5"]
                  [riddley "0.1.12"]
@@ -37,7 +37,7 @@
                  [clj-http "3.3.0"]
                  [clojurewerkz/elastisch "2.2.2"]
                  [aleph "0.4.2-alpha8"]
-                 [clj-time "0.12.0"]
+                 [clj-time "0.12.2"]
                  [ring "1.5.0"]
                  [ring/ring-defaults "0.2.1"]
                  [compojure "1.5.1"]
@@ -45,14 +45,14 @@
                  [org.clojure/data.json "0.2.6"]
                  [cljsjs/react-dom-server "15.3.1-0"]  ;; for sablono
                  [cljsjs/react-dom "15.3.1-0"] ;; for sablono
-                 [org.omcljs/om "1.0.0-alpha46"]
+                 [org.omcljs/om "1.0.0-alpha40"]
                  [sablono "0.7.5"]
                  [cljs-http "0.1.42"]]
 
   :plugins [[lein-environ "1.1.0"]
             [lein-codox "0.9.5" :exclusions
              [org.clojure/clojure org.clojure/clojurescript]]
-            [lein-cljsbuild "1.1.3" :exclusions [org.clojure/clojure]]
+            [lein-cljsbuild "1.1.2" :exclusions [org.clojure/clojure]]
             [lein-figwheel "0.5.3-1"
              :exclusions [org.clojure/clojure org.clojure/clojurescript]]]
 

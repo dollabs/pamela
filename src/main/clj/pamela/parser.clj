@@ -623,6 +623,7 @@
                 a)]
         (recur (conj vargs a) (first more) (rest more))))))
 
+;; return Validated condition or {:error "message"}
 (defn validate-condition [ir state-vars pclass fields modes context condition]
   ;; (log/info "VALIDATE-CONDITION for" pclass
   ;;   "\nfields:" (keys fields)
@@ -679,40 +680,59 @@
                    (conj context type))
                  args)}))))
 
-(defn validate-body [ir state-vars pclass fields modes method mbody]
+;; return Validated body or {:error "message"}
+(defn validate-body [ir state-vars pclass fields modes methods in-method mbody]
   (loop [vmbody []
          b (if (vector? mbody) (first mbody) mbody)
          more (if (vector? mbody) (rest mbody))]
-    (if-not b
+    (if (or (:error vmbody) (not b))
       vmbody
-      (let [{:keys [condition body]} b
-            condition (if condition
+      (let [{:keys [type name method condition body]} b
+            error (if (and (= type :plant-fn-symbol) (= name 'this)
+                        (nil? (get methods method)))
+                    (str "method " method " used in method " in-method
+                      " is not defined in the pclass " pclass))
+            condition (if (and (not error) condition)
                         (validate-condition ir state-vars pclass fields modes
                           [:method method :body] condition))
-            body (if body
-                   (validate-body ir state-vars pclass fields modes method body))
+            body (if (and (not error) (not (:error condition)) body)
+                   (validate-body ir state-vars pclass fields modes methods
+                     in-method body))
             vb (assoc-if b
                  :condition condition
-                 :body body)]
-        (recur (conj vmbody vb) (first more) (rest more))))))
+                 :body body)
+            vmbody (cond
+                     error
+                     {:error error}
+                     (:error condition)
+                     condition
+                     (:error body)
+                     body
+                     :else
+                     (conj vmbody vb))]
+        (recur vmbody (first more) (rest more))))))
 
-(defn validate-modes-new [ir state-vars pclass fields modes]
+;; return Validated modes or {:error "message"}
+(defn validate-modes [ir state-vars pclass fields modes]
   (let [mode-conds (seq modes)]
     (loop [vmodes {} mode-cond (first mode-conds) more (rest mode-conds)]
-      (if-not mode-cond
+      (if (or (:error vmodes) (not mode-cond))
         vmodes
         (let [[mode cond] mode-cond
               cond (validate-condition ir state-vars pclass fields modes
                      [:mode mode] cond)
-              vmodes (assoc vmodes mode cond)]
+              vmodes (if (:error cond)
+                       cond
+                       (assoc vmodes mode cond))]
           (recur vmodes (first more) (rest more)))))))
 
-(defn validate-transitions-new [ir state-vars pclass fields modes transitions]
+;; return Validated transitions or {:error "message"}
+(defn validate-transitions [ir state-vars pclass fields modes transitions]
   (let [from-to-transitions (seq transitions)]
     (loop [vtransitions {}
            from-to-transition (first from-to-transitions)
            more (rest from-to-transitions)]
-      (if-not from-to-transition
+      (if (or (:error vtransitions) (not from-to-transition))
         vtransitions
         (let [[from-to transition] from-to-transition
               [from to] (map keyword (string/split (name from-to) #":"))
@@ -727,15 +747,22 @@
               transition (assoc-if transition
                            :pre pre
                            :post post)
-              vtransitions (assoc vtransitions from-to transition)]
+              vtransitions (cond
+                             (:error pre)
+                             pre
+                             (:error post)
+                             post
+                             :else
+                             (assoc vtransitions from-to transition))]
           (recur vtransitions (first more) (rest more)))))))
 
-(defn validate-methods-new [ir state-vars pclass fields modes methods]
+;; return Validated methods or {:error "message"}
+(defn validate-methods [ir state-vars pclass fields modes methods]
   (let [method-mdefs (seq methods)]
     (loop [vmethods {}
            method-mdef (first method-mdefs)
            more (rest method-mdefs)]
-      (if-not method-mdef
+      (if (or (:error vmethods) (not method-mdef))
         vmethods
         (let [[method mdef] method-mdef
               {:keys [pre post args body]} mdef
@@ -746,38 +773,57 @@
                      (validate-condition ir state-vars pclass fields modes
                        [:method method :post] post))
               body (if-not (empty? body)
-                     (validate-body ir state-vars pclass fields modes
+                     (validate-body ir state-vars pclass fields modes methods
                        method body))
               mdef (assoc-if mdef
                      :pre pre
                      :post post
                      :body body)
-              vmethods (assoc vmethods method mdef)]
+              vmethods (cond
+                         (:error pre)
+                         pre
+                         (:error post)
+                         post
+                         (:error body)
+                         body
+                         :else
+                         (assoc vmethods method mdef))]
           (recur vmethods (first more) (rest more)))))))
 
 ;; Hoist state variables, disambiguate conditional expression operands
+;; return Validated PAMELA IR or {:error "message"}
 (defn validate-pamela [ir]
   (let [sym-vals (seq ir)
         state-vars (atom {})]
     (loop [vir {} sym-val (first sym-vals) more (rest sym-vals)]
-      (if-not sym-val
+      (if (or (:error vir) (not sym-val))
         (merge vir @state-vars)
         (let [[sym val] sym-val
               {:keys [type args fields modes transitions methods]} val
               pclass? (= type :pclass)
               modes (if (and pclass? modes)
-                      (validate-modes-new ir state-vars sym fields modes))
-              transitions (if (and pclass? transitions)
-                            (validate-transitions-new ir state-vars
+                      (validate-modes ir state-vars sym fields modes))
+              transitions (if (and pclass? transitions (not (:error modes)))
+                            (validate-transitions ir state-vars
                               sym fields modes transitions))
-              methods (if (and pclass? methods)
-                            (validate-methods-new ir state-vars
+              methods (if (and pclass? methods
+                            (not (:error modes))
+                            (not (:error transitions)))
+                            (validate-methods ir state-vars
                               sym fields modes methods))
               val (assoc-if val
                     :modes modes
                     :transitions transitions
                     :methods methods)
-              vir (assoc vir sym val)]
+              vir (cond
+                    (:error modes)
+                    modes
+                    (:error transitions)
+                    transitions
+                    (:error methods)
+                    methods
+                    :else
+                    (assoc vir sym val))]
           (recur vir (first more) (rest more)))))))
 
 (defn ir-magic [& args]
@@ -821,7 +867,7 @@
               (recur (assoc mir name (or default :unset))
                 (first more) (rest more)))))))))
 
-;; return PAMELA IR
+;; return PAMELA IR or {:error "message"}
 (defn parse [options]
   (let [{:keys [cwd input magic output-magic]} options
         parser (build-parser)
@@ -831,7 +877,7 @@
       (log/debug "MAGIC input\n" (with-out-str (pprint mir))))
     (reset! pamela-lvars mir)
     (loop [ir {} input-filename (first input) more (rest input)]
-      (if (or (false? ir) (not input-filename))
+      (if (or (:error ir) (not input-filename))
         (let [lvars @pamela-lvars
               out-magic (if (pos? (count lvars))
                           (apply str
@@ -856,22 +902,26 @@
                      (insta/parses parser (slurp input-file)))
               ir (cond
                    (not (fs/exists? input-file))
-                   (do
-                     (log/errorf "parse: input file not found: %s" input-filename)
-                     false)
+                   (let [msg (str "parse: input file not found: "
+                               input-filename)]
+                     (log/error msg)
+                     {:error msg})
                    (insta/failure? tree)
-                   (do
-                     (log/errorf "parse: invalid input file: %s" input-filename)
-                     (log/errorf (with-out-str (pprint (insta/get-failure tree))))
-                     false)
+                   (let [msg (str "parse: invalid input file: "
+                               input-filename)]
+                     (log/error msg)
+                     (log/error (with-out-str (pprint (insta/get-failure tree))))
+                     {:error msg})
                    (not= 1 (count tree))
-                   (do
-                     (log/errorf "parse: grammar is ambiguous for input file: %s"
-                       input-filename)
-                     (log/errorf (with-out-str (pprint tree)))
-                     false)
+                   (let [msg (str "parse: grammar is ambiguous for input file: "
+                               input-filename)]
+                     (log/error msg)
+                     (log/error (with-out-str (pprint tree)))
+                     {:error msg})
                    :else
                    (let [pir (validate-pamela
                                (insta/transform pamela-ir (first tree)))]
-                     (merge ir pir)))]
+                     (if (:error pir)
+                       pir
+                       (merge ir pir))))]
           (recur ir (first more) (rest more)))))))

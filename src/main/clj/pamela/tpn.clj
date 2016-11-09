@@ -890,6 +890,7 @@
 ;; else
 ;;   ONE of the pclasses must be the plant (zero args)
 ;;   and the OTHER pclass must be the TPN and have exactly one zero arg pmethod
+;; NOTE: return {:error "message"} on failure
 (defn load-tpn [ir options]
   (let [{:keys [construct-tpn file-format cwd output]} options
         [tpn-ks args] (if construct-tpn
@@ -897,14 +898,14 @@
                         (find-tpn-method-default ir))
         tpn (if tpn-ks
               (create-tpn ir tpn-ks args)
-              false)
+              {:error "unable to find TPN method based on --construct argument"})
         stdout? (daemon/stdout? output)
         output-filename (if (not stdout?)
                           (if (fs/absolute? output)
                             output
                             (str cwd "/" output)))]
-    (if tpn
+    (if (:error tpn)
+      tpn
       (do
         (output-file stdout? cwd output-filename file-format tpn)
-        true)
-      false))) ;; return success
+        tpn))))

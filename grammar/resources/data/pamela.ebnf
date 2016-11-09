@@ -52,7 +52,7 @@ trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 pre = <PRE> ( keyword | cond-expr )
 post = <POST> ( keyword | cond-expr )
 
-fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | plant-fn | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes )
+fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes | plant-fn )
 
 ask = <LP> <ASK> cond-expr opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
@@ -67,7 +67,8 @@ parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
 slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
 plant-fn = <LP> ( symbol <'.'> symbol | plant-fn-symbol | keyword ) plant-opt* argval* <RP>
-plant-fn-symbol = !DELAY symbol
+plant-fn-symbol = !reserved-fn-symbol symbol
+reserved-fn-symbol = ( <ASK> | <ASSERT> | <CHOOSE> | <CHOOSE_WHENEVER> | <OPTIONAL> | <MAINTAIN> | <DELAY> | <PARALLEL> | <SLACK_PARALLEL> | <SOFT_PARALLEL> | <SEQUENCE> | <SLACK_SEQUENCE> | <SOFT_SEQUENCE> | <TELL> | <TRY> | <UNLESS> | <WHEN> | <WHENEVER> | <DOTIMES> )
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>

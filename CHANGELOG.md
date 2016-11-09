@@ -11,6 +11,14 @@ Added
 - Quieted the intial logging by the netty (dependency of aleph)
 - Properly handle default plant bounds as lvars
 - Changed default PAMELA_MODE=prod in ./bin/pamela (requires uberjar)
+- Updated grammar to ensure reserved words are not interpreted
+  as plant functions
+- Added semantic check to validate the unqualifed plant functions
+  are defined elsewhere in the PAMELA class
+- Changed dependencies
+  * Upgraded clojurescript, clj-time
+  * Downgraded lein-cljsbuild to avoid migration to the new format
+  * Downgraded org.omcljs/om to 1.0.0-alpha40 to avoid breakage
 
 ### [0.4.2] - 2016-10-18
 

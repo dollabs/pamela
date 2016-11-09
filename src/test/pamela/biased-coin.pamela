@@ -57,10 +57,15 @@
                       (emit-head))
                     (choice :probability (lvar "eUT" 0.49)
                       (emit-tail))))))
-            (defpmethod flip-sequence
-              {:doc "Series of coin flips"}
+            (defpmethod flip-3
+              {:doc "Series of 3 coin flips"}
               []
-              (dotimes 10 (flip)))])
+              (dotimes 3 (flip)))
+            (defpmethod flip-1000
+              {:doc "Series of 1000 coin flips"}
+              []
+              (dotimes 1000 (flip)))
+            ])
 
 (defpclass main []
   :fields {:coin (coin)})
