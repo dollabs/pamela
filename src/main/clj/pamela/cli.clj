@@ -98,34 +98,20 @@
   (let [{:keys [cwd input output]} options
         stdout? (daemon/stdout? output)
         ir (parser/parse options)]
-    (if ir
+    (if (:error ir)
+      (do
+        (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+        1)
       (do
         (output-file stdout? cwd output "edn" ir)
-        0)
-      (do
-        (log/errorf "unable to parse: %s" input)
-        1))))
+        0))))
 
 (defn parse-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [cwd input output]} options
-        filename (if (= 1 (count input)) (first input))
-        pir (if filename (parser/parse options))]
-    (if pir
-      (do
-        (if (daemon/stdout? output)
-          (print pir)
-          (spit output pir))
-        0)
-      (if filename
-        (do
-          (log/errorf "unable to parse: %s" filename)
-          1)
-        (do
-          (log/errorf "invalid input to parse: %s" input)
-          1)))))
+  (log/error "The parse action is deprecated")
+  1)
 
 (defn tpn
   "Load model(s) in memory only, process as a TPN"
@@ -135,13 +121,17 @@
         stdout? (daemon/stdout? output)
         ir (parser/parse options)
         tpn (cond
-              (not ir)
+              (:error ir)
               (do
-                (log/errorf "unable to parse: %s" input)
-                false)
+                (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+                ir)
               :else
               (tpn/load-tpn ir options))]
-    (if tpn
+    (if (:error tpn)
+      (do
+        (if-not (:error ir)
+          (log/errorf "unable to create TPN: %s\nerror: %s" input (:error tpn)))
+        1)
       (do
         ;; (println "TPN is valid")
         ;;(output-file stdout? cwd output file-format tpn)
@@ -150,8 +140,7 @@
           (do
             (log/error "visualize not implemented yet")
             1)
-          0))
-      1)))
+          0)))))
 
 (defn htn
   "Load model(s) in memory only, process as a HTN"
@@ -159,14 +148,14 @@
   [options]
   (let [{:keys [root-task file-format cwd input output]} options
         ir (parser/parse options)]
-    (if-not ir
+    (if (:error ir)
       (do
-        (log/errorf "unable to parse: %s" input)
-        false)
+        (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+        1)
       (if-not (#{"edn" "json"} file-format)
         (do
           (log/errorf "illegal file-format for htn: %s" file-format)
-          false)
+          1)
         (htn/plan-htn ir root-task file-format cwd output)))))
 
 (def #^{:added "0.2.0"}
