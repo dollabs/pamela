@@ -30,17 +30,46 @@
   (:import [java.net
             URL]))
 
-(defn output-file [stdout? cwd filename file-format edn]
-  (let [output-filename (if (not stdout?)
+(def cwd (atom fs/*cwd*))
+
+(defn set-cwd! [new-cwd]
+  (reset! cwd (if (fs/file? new-cwd)
+                  new-cwd
+                  (fs/file new-cwd))))
+
+(defn get-cwd []
+  @cwd)
+
+(defn stdout? [filename]
+  (or (nil? filename) (= filename "-")))
+
+(defn output-file [filename file-format edn]
+  (let [is-stdout? (stdout? filename)
+        filename (if (and (not is-stdout?) (string? filename))
+                   (fs/expand-home filename)
+                   filename)
+        output-filename (if (not is-stdout?)
                           (if (fs/absolute? filename)
-                            filename
-                            (str cwd "/" filename)))
+                            (fs/file filename)
+                            (fs/file (get-cwd) filename)))
         out (if (= file-format "json")
               (with-out-str (json/pprint edn))
               (with-out-str (pprint edn)))]
-    (if stdout?
+    (if is-stdout?
       (println out)
       (spit output-filename out))))
+
+(defn input-file [filename]
+  (let [is-stdin? (stdout? filename)
+        filename (if (and (not is-stdin?) (string? filename))
+                   (fs/expand-home filename)
+                   filename)
+        input-filename (if is-stdin?
+                         filename
+                         (if (fs/absolute? filename)
+                           (fs/file filename)
+                           (fs/file (get-cwd) filename)))]
+    input-filename))
 
 ;; will contain file data iff set by daemon
 (defonce input-data (atom nil))

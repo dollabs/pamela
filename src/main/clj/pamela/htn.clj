@@ -20,7 +20,7 @@
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [instaparse.core :as insta]
-            [pamela.utils :refer [output-file]]
+            [pamela.utils :refer [stdout? output-file]]
             [pamela.daemon :as daemon]
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]))
@@ -1255,7 +1255,7 @@
 ;;   "(isr-htn.get-data-and-interpret \"A\" \"B\")"
 (defn plan-htn
   "Weaves a 'plan' from the root task, using the HTN methods.  Minimally hard-coded."
-  [ir root-task file-format cwd output]
+  [ir root-task file-format output]
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
   (reinitialize-htn-plan-map)
@@ -1268,18 +1268,14 @@
                                   :arguments args
                                   :irks [pclass :methods method]})
         expanded-root-task (make-expanded-task nonprimitive-root-task)
-        stdout? (daemon/stdout? output)
-        output-prefix (if stdout?
-                        "STDOUT"
-                        (if (string/starts-with? output "/")
-                          output
-                          (str cwd "/" output)))
-        htn-filename (str output-prefix ".htn." file-format)
-        tpn-filename (str output-prefix ".tpn." file-format)
+        is-stdout? (stdout? output)
+        output-prefix (if is-stdout? "STDOUT" output)
+        htn-filename (if is-stdout? "-" (str output-prefix ".htn." file-format))
+        tpn-filename (if is-stdout? "-" (str output-prefix ".tpn." file-format))
         _ (plan-htn-task expanded-root-task)
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
         tpn @tpn/*tpn-plan-map*]
     (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)
-    (output-file stdout? cwd htn-filename file-format htn)
-    (output-file stdout? cwd tpn-filename file-format tpn)
+    (output-file htn-filename file-format htn)
+    (output-file tpn-filename file-format tpn)
     0)) ;; exit code

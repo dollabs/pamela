@@ -869,7 +869,7 @@
 
 ;; return PAMELA IR or {:error "message"}
 (defn parse [options]
-  (let [{:keys [cwd input magic output-magic]} options
+  (let [{:keys [input magic output-magic]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
@@ -889,19 +889,16 @@
           (if out-magic
             (do
               (if output-magic
-                (spit output-magic out-magic))
+                (output-file output-magic "edn" out-magic))
               (assoc ir
                 'pamela/lvars
                 {:type :lvars
                  :lvars lvars}))
             ir))
-        (let [input-file (fs/file (if (fs/exists? input-filename)
-                                    input-filename
-                                    (str cwd "/" input-filename)))
-              tree (if (fs/exists? input-file)
-                     (insta/parses parser (slurp input-file)))
+        (let [tree (if (fs/exists? input-filename)
+                     (insta/parses parser (slurp input-filename)))
               ir (cond
-                   (not (fs/exists? input-file))
+                   (not (fs/exists? input-filename))
                    (let [msg (str "parse: input file not found: "
                                input-filename)]
                      (log/error msg)

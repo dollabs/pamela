@@ -19,6 +19,8 @@ Added
   * Upgraded clojurescript, clj-time
   * Downgraded lein-cljsbuild to avoid migration to the new format
   * Downgraded org.omcljs/om to 1.0.0-alpha40 to avoid breakage
+- Redesigned input-file and output-file processing (to expand-home
+  and prepend the current working directory as needed)
 
 ### [0.4.2] - 2016-10-18
 
