@@ -596,7 +596,7 @@
                 }))]
     tc))
 
-(defn build-tpn [ir labels plant plant-args pfn parent-begin-uid
+(defn build-tpn [ir labels plant plant-id plant-args pfn parent-begin-uid
                  & [parent-order]]
   (let [{:keys [type name method args temporal-constraints primitive body
                 label cost reward controllable]} pfn
@@ -612,6 +612,7 @@
         plant-sym (or pclass name)
         plant-sym (if (= plant-sym 'this) plant plant-sym)
         plant-method (if plant-fn? (get-in ir [plant-sym :methods method]))
+        id (if plant-fn? (or id plant-id))
         plantid (if id (str id (if interface "@") interface))
         method-args (if plant-fn? (map str (:args plant-method)))
         argsmap (if plant-fn? (zipmap method-args args))
@@ -774,7 +775,7 @@
                             ;; :constraints (if choice-tc #{(:uid choice-tc)})
                             )]
                 (update-tpn-plan-map! begin)))
-            (build-tpn ir labels plant plant-args b (:uid sb) @order)
+            (build-tpn ir labels plant plant-id plant-args b (:uid sb) @order)
             (swap! order inc)))
         (when sequence?
           (let [na-end (tpn-null-activity {:end-node (:uid end)})]
@@ -800,11 +801,11 @@
             (:uid tc)))))))
 
 ;; assumes args are to the tpn-pclass constructor!
-(defn create-tpn [ir tpn-ks tpn-args]
+(defn create-tpn [ir plant-id tpn-ks tpn-args]
   (reinitialize-tpn-plan-map)
   (let [plant (first tpn-ks)
-        tpn-class (get ir plant)
-        {:keys [args]} tpn-class
+        tpn-pclass (get ir plant)
+        {:keys [args]} tpn-pclass
         tpn-method (get-in ir tpn-ks)
         ;; not pre post cost reward controllable betweens
         {:keys [temporal-constraints body betweens]} tpn-method
@@ -822,7 +823,7 @@
     (swap! *tpn-plan-map* assoc
       :network-id (:uid (tpn-network {:begin-node (:uid begin)
                                       :end-node (:uid end)})))
-    (build-tpn ir labels plant plant-args (first body) (:uid begin))
+    (build-tpn ir labels plant plant-id plant-args (first body) (:uid begin))
     (add-between-constraints labels betweens)
     (optimize-tpn-map)
     @*tpn-plan-map*))
@@ -836,18 +837,18 @@
         tpn-method (symbol tpn-method)
         tpn-pclass (if (= :pclass (get-in ir [demo-pclass :type]))
                      (get-in ir [demo-pclass :fields tpn-field :initial :pclass]))
-        tpn-args (get-in ir [demo-pclass :fields tpn-field :initial :args])
+        {:keys [args id]} (get-in ir [demo-pclass :fields tpn-field :initial])
         tpn-ks [tpn-pclass :methods tpn-method]
         tpn-method-def (get-in ir tpn-ks)
         field-def (fn [field-sym]
                     (get-in ir [demo-pclass :fields (keyword field-sym)]))
-        args (mapv field-def tpn-args)]
+        tpn-args (mapv field-def args)]
     (if-not tpn-method-def
       (do
         (log/errorf "parse: --construct-tpn argument invalid:"
           construct-tpn)
-        [nil nil])
-      [tpn-ks args])))
+        [nil nil nil])
+      [id tpn-ks tpn-args])))
 
 ;; NOTE there might not be a plant (there may be just one pclass)
 (defn find-tpn-method-default [ir]
@@ -855,10 +856,10 @@
     (loop [tpn-ks nil plant nil tpn-args nil k (first ir-syms) more (rest ir-syms)]
       (if-not k
         (if (and tpn-ks tpn-args)
-          [tpn-ks tpn-args]
+          [nil tpn-ks tpn-args]
           (do
             (log/error "unable to find the default TPN method: please specify --construct-tpn pclass:field:method")
-            [nil nil]))
+            [nil nil nil]))
         (let [k-def (get ir k)
               {:keys [type methods args]} k-def
               plant (if (and (= :pclass type) (zero? (count args)))
@@ -893,11 +894,11 @@
 ;; NOTE: return {:error "message"} on failure
 (defn load-tpn [ir options]
   (let [{:keys [construct-tpn file-format output]} options
-        [tpn-ks args] (if construct-tpn
-                        (find-tpn-method-construct ir construct-tpn)
-                        (find-tpn-method-default ir))
+        [plant-id tpn-ks args] (if construct-tpn
+                                 (find-tpn-method-construct ir construct-tpn)
+                                 (find-tpn-method-default ir))
         tpn (if tpn-ks
-              (create-tpn ir tpn-ks args)
+              (create-tpn ir plant-id tpn-ks args)
               {:error
                "unable to find TPN method based on --construct argument"})]
     (if (:error tpn)
