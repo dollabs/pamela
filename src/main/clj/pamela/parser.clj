@@ -23,8 +23,22 @@
             [pamela.utils :refer [make-url get-url output-file]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
-  (:import [java.lang
+  (:import [java.io
+            File]
+           [java.lang
             Long Double]))
+
+
+;; This is a complement to me.raynes.fs and will return the name
+;; of each file (or string).
+(defn fs-file-name [path]
+  (cond
+    (= (type path) File) ;; (fs/file? path)
+    (.getName path)
+    (string? path)
+    path
+    :else
+    (str path)))
 
 ;; When a magic file is read in the lvar "name" is assigned a value
 ;;   in pamela-lvars
@@ -879,17 +893,18 @@
     (loop [ir {} input-filename (first input) more (rest input)]
       (if (or (:error ir) (not input-filename))
         (let [lvars @pamela-lvars
+              input-names (mapv fs-file-name input)
               out-magic (if (pos? (count lvars))
                           (apply str
                             ";; -*- Mode: clojure; coding: utf-8  -*-\n"
                             ";; magic file corresponding to:\n"
-                            ";; " input "\n"
+                            ";; " input-names "\n"
                             (for [k (keys lvars)]
                               (str "(lvar \"" k "\" " (get lvars k) ")\n"))))]
           (if out-magic
             (do
               (if output-magic
-                (output-file output-magic "edn" out-magic))
+                (output-file output-magic "string" out-magic))
               (assoc ir
                 'pamela/lvars
                 {:type :lvars
