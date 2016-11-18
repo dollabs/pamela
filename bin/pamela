@@ -101,7 +101,7 @@ fi
 
 url="http://$PAMELAD/pamela"
 args="-s -XPOST $url"
-leinargs="run --"
+leinargs="run -a \""
 
 usage() {
     if [ -z "$PAMELAD" ]; then
@@ -267,8 +267,9 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "$PAMELAD" ]; then
-    vvlog lein $leinargs
-    lein $leinargs  | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
+    leinargs="$leinargs\""
+    vvlog boot $leinargs
+    boot $leinargs 2> $errfile
 else
     vvlog curl $args
     curl $args

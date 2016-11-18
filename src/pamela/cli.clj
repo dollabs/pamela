@@ -23,8 +23,8 @@
             [pamela.mode :as mode]
             [pamela.utils :refer [get-input var-of repl? set-cwd!
                                   input-file output-file]]
-            [pamela.db :as db]
-            [pamela.daemon :as daemon]
+            ;; [pamela.db :as db]
+            ;; [pamela.daemon :as daemon]
             [pamela.parser :as parser]
             [pamela.htn :as htn]
             [pamela.tpn :as tpn]
@@ -47,32 +47,32 @@
   "Deletes given model from the database"
   {:added "0.2.0"}
   [options]
-  (db/with-db options
-    (db/delete-model options))
+  ;; (db/with-db options
+  ;;   (db/delete-model options))
   0)
 
 (defn describe-model
   "Analyze and describe the given model"
   {:added "0.2.0"}
   [options]
-  (db/with-db options
-    (db/describe-model options))
+  ;; (db/with-db options
+  ;;   (db/describe-model options))
   0)
 
 (defn export-model
   "Export model source from the database"
   {:added "0.2.0"}
   [options]
-  (db/with-db options
-    (db/export-model options))
+  ;; (db/with-db options
+  ;;   (db/export-model options))
   0)
 
 (defn import-model
   "Import model into the database"
   {:added "0.2.0"}
   [options]
-  (db/with-db options
-    (db/import-model options))
+  ;; (db/with-db options
+  ;;   (db/import-model options))
   0)
 
 (defn list-models
@@ -117,7 +117,6 @@
   {:added "0.2.0"}
   [options]
   (let [{:keys [construct-tpn file-format input output visualize]} options
-        stdout? (daemon/stdout? output)
         ir (parser/parse options)
         tpn (cond
               (:error ir)
@@ -203,7 +202,7 @@
    ["-i" "--input INPUT" "Input file (or - for STDIN)"
     :default ["-"]
     :parse-fn #(input-file %)
-    :validate [#(or (daemon/running?) (= "-" %) (fs/exists? %))
+    :validate [#(or (= "-" %) (fs/exists? %))
                "INPUT file does not exist"]
     :assoc-fn (fn [m k v]
                 (let [oldv (get m k [])
@@ -222,7 +221,7 @@
    ["-a" "--magic MAGIC" "Magic lvar initializtions"
     :default nil
     :parse-fn #(input-file %)
-    :validate [#(or (daemon/running?) (nil? %) (fs/exists? %))
+    :validate [#(or (nil? %) (fs/exists? %))
                "MAGIC file does not exist"]]
    ["-b" "--output-magic OUTPUT-MAGIC" "Output magic file"
     :default nil]
@@ -298,11 +297,10 @@
       (println (string/join \newline msgs))
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
-  (when-not (daemon/running?)
-    (when (repl?)
-      (throw (Exception. (str "DEV MODE exit(" status ")"))))
-    (shutdown-agents)
-    (System/exit status))
+  (when (repl?)
+    (throw (Exception. (str "DEV MODE exit(" status ")"))))
+  (shutdown-agents)
+  (System/exit status)
   true)
 
 (defn base-64-decode [b64]
@@ -339,8 +337,6 @@
         verbose? (pos? (or verbose 0))
         exit?
         (cond
-          (pos? daemonize)
-          (or (daemon/server-start options) true)
           help
           (exit 0 (usage summary))
           errors
@@ -353,8 +349,8 @@
       (when (> verbose 1)
         (println "mode:" @mode/program-mode)
         (println "repl?:" (repl?))
-        (println "daemon?:" (daemon/running?))
-        (println "database running?:" (db/running?))
+        ;; (println "daemon?:" (daemon/running?))
+        ;; (println "database running?:" (db/running?))
         (println "version:" (:pamela-version env))
         (println "web:" web))
       (println "verbosity level:" verbose)

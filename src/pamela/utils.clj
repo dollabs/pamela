@@ -1,4 +1,4 @@
-;; Copyright © 2016 Dynamic Object Language Labs Inc.
+x;; Copyright © 2016 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
@@ -14,14 +14,14 @@
 (ns pamela.utils
   "Utility helper functions."
 
-  (:refer-clojure :exclude [update]) ;; clj-http
+  ;; (:refer-clojure :exclude [update]) ;; clj-http
   (:require [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
             [clojure.java.io :refer [as-url]]
             [me.raynes.fs :as fs]
             [clojure.pprint :as pp]
             ;; to be replaced with aleph
-            [clj-http.client :as http]
+            ;; [clj-http.client :as http]
             [environ.core :refer [env]]
             [clojure.data.json :as json]
             [pamela.mode :as mode]
@@ -29,6 +29,12 @@
             [clojure.tools.logging :as log])
   (:import [java.net
             URL]))
+
+(defn stdout?
+  "Returns true if the output file name is STDOUT (or running as pamelad)"
+  {:added "0.2.0"}
+  [output]
+  (or (nil? output) (= output "-")))
 
 (def cwd (atom fs/*cwd*))
 
@@ -39,9 +45,6 @@
 
 (defn get-cwd []
   @cwd)
-
-(defn stdout? [filename]
-  (or (nil? filename) (= filename "-")))
 
 ;; file-format's supported: edn json string
 (defn output-file [filename file-format edn]
@@ -113,11 +116,13 @@
 (defn http-get
   "Wrapper for GET requests"
   {:added "0.2.0"}
-  ([url]
-   (http-get url nil))
-  ([url req]
-   (let [url (if (string? url) url (.toString url))]
-     (http/get url req))))
+  [& args]
+  ;; ([url]
+  ;;  (http-get url nil))
+  ;; ([url req]
+  ;;  (let [url (if (string? url) url (.toString url))]
+  ;;    (http/get url req)))
+  )
 
 (defn get-url
   "Will retrieve the data at url (returns nil on failure)."

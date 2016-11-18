@@ -21,7 +21,7 @@
             [environ.core :refer [env]]
             [instaparse.core :as insta]
             [pamela.utils :refer [stdout? output-file]]
-            [pamela.daemon :as daemon]
+            ;; [pamela.daemon :as daemon]
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]))
 
