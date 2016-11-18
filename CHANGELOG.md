@@ -22,6 +22,9 @@ Added
 - Redesigned input-file and output-file processing (to expand-home
   and prepend the current working directory as needed)
 - Fixed missing plantid slot in TPN output
+- Fix --output-magic to properly list input filenames and save as EDN
+  Closes #37
+
 
 ### [0.4.2] - 2016-10-18
 

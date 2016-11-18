@@ -43,6 +43,7 @@
 (defn stdout? [filename]
   (or (nil? filename) (= filename "-")))
 
+;; file-format's supported: edn json string
 (defn output-file [filename file-format edn]
   (let [is-stdout? (stdout? filename)
         filename (if (and (not is-stdout?) (string? filename))
@@ -52,9 +53,13 @@
                           (if (fs/absolute? filename)
                             (fs/file filename)
                             (fs/file (get-cwd) filename)))
-        out (if (= file-format "json")
+        out (cond
+              (= file-format "edn")
+              (with-out-str (pprint edn))
+              (= file-format "json")
               (with-out-str (json/pprint edn))
-              (with-out-str (pprint edn)))]
+              :else
+              edn)]
     (if is-stdout?
       (println out)
       (spit output-filename out))))
