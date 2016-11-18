@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. This change
 
 ### [Unreleased]
 
+Changes
+* _TBD_
+
+### [0.4.3] - 2016-11-18
+
 Added
 - Better support for magic files (including --output-magic)
 - Fixed minor bugs with the pamela launcher
@@ -24,7 +29,8 @@ Added
 - Fixed missing plantid slot in TPN output
 - Fix --output-magic to properly list input filenames and save as EDN
   Closes #37
-
+- This is planned to be the last version with pamelad and database
+  functionality
 
 ### [0.4.2] - 2016-10-18
 
@@ -96,4 +102,5 @@ Added
 [0.3.0]: https://github.com/dollabs/pamela/compare/0.2.6...0.3.0
 [0.4.1]: https://github.com/dollabs/pamela/compare/0.3.0...0.4.1
 [0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.4.2...HEAD
+[0.4.3]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.3
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.4.3...HEAD
