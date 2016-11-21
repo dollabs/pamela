@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
+* Fixed HTN generation for elaborated primitive methods (Closes #39)
 * _TBD_
 
 ### [0.4.3] - 2016-11-18
