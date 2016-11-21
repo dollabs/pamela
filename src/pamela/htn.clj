@@ -21,7 +21,7 @@
             [environ.core :refer [env]]
             [instaparse.core :as insta]
             [pamela.utils :refer [stdout? output-file]]
-            ;; [pamela.daemon :as daemon]
+            [pamela.daemon :as daemon]
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]))
 
@@ -320,6 +320,7 @@
   (let [{:keys [type pclass name arguments]} task
         all-methods (seq (get @*htn-methods* pclass))]
     ;; DAN.. CLOSism: was (when (= type :htn-nonprimitive-task)
+    ;; (println "FMTET" task)
     (when (#{:htn-nonprimitive-task :htn-expanded-nonprimitive-task} type)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
         (if-not mname
@@ -358,6 +359,7 @@
 (defn make-expanded-task
   "Make an expanded task"
   [old-task & [argument-mapping]]
+  ;; (println "MET" old-task argument-mapping)
   (let [task-type (:type old-task)
         old-task (dissoc old-task :uid :label)
         task (if (= task-type :htn-primitive-task)
@@ -367,6 +369,7 @@
         new-arguments (if argument-mapping
                         (mapv #(get argument-mapping %) arguments)
                         arguments)]
+    ;; (println "  MET TASK" task)
     (update-htn-object!
       (assoc-if task
         :arguments arguments
@@ -398,21 +401,22 @@
         methods (find-methods-that-expand-task task)]
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
       (doseq [method methods]
-        (let [{:keys [pclass name subtasks irks]} method]
-          (let [arg-mappings (arg-mappings-for-task-and-method task method)
-                expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
-                                    subtasks)
-                expanded-method (htn-expanded-method
-                                  {:expansion-method method
-                                   :argument-mappings arg-mappings
-                                   :ancestry-path *htn-plan-ancestry*
-                                   :subtasks expanded-subtasks
-                                   :irks irks})
-                ;; conj onto :task-expansions of task
-                task-expansions (conj (:task-expansions (get-htn-object task))
-                                  expanded-method)
-                task (assoc task :task-expansions task-expansions)]
-            (update-htn-object! task))))
+        (let [{:keys [pclass name subtasks irks]} method
+              arg-mappings (arg-mappings-for-task-and-method task method)
+              expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
+                                  subtasks)
+              expanded-method (htn-expanded-method
+                                {:expansion-method method
+                                 :argument-mappings arg-mappings
+                                 :ancestry-path *htn-plan-ancestry*
+                                 :subtasks expanded-subtasks
+                                 :irks irks})
+              ;; conj onto :task-expansions of task
+              task-expansions (conj (:task-expansions (get-htn-object task))
+                                expanded-method)
+              task (assoc task :task-expansions task-expansions)]
+          ;; (println "PHT method" method "SUBTASKS" subtasks)
+          (update-htn-object! task)))
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
         (let [{:keys [subtasks]} expanded-method]
           (doseq [subtask subtasks]
@@ -774,7 +778,7 @@
 
 ;; return [pclass method args]
 (defn identify-root-task [ir root-task]
-  (log/warn "root-task" root-task) ;; DEBUG or trace
+  (log/trace "root-task" root-task)
   (let [parser (parser/build-parser "root-task.ebnf")
         tree (if root-task
                (insta/parses parser root-task))
@@ -851,13 +855,15 @@
       (if-not k
         nil
         (let [{:keys [type methods]} v]
+          ;; (println "TRANSFORM-HTN" k)
           (when (and (= type :pclass) methods)
             (let [method-syms (seq methods)]
               (loop [[mname method] (first method-syms) moar (rest method-syms)]
                 (if mname ;; else (println "no more methods")
-                  (let [{:keys [temporal-constraints args body]} method]
-                    (if body
-                      (make-htn-methods k mname args body))
+                  (let [{:keys [temporal-constraints args primitive body]} method]
+                    ;; (println "  METHOD" mname "PRIMITIVE" primitive)
+                    (if (and (not primitive) body)
+                      (make-htn-methods ir k mname args body))
                     (recur (first moar) (rest moar)))))))
           (recur (first more) (rest more)))))))
 
@@ -1004,11 +1010,16 @@
                             {:value bounds :end-node (:uid se)}))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
                                :constraints (if tc #{(:uid tc)})
-                               :end-node (:uid se)})
+                               :end-node (:uid se)
+                               :htn-node (:uid hem-map)
+                               })
             [begin end] (if parallel?
                           (if (zero? i)
                             (let [end (tpn/tpn-p-end {})
-                                  begin (tpn/tpn-p-begin {:end-node (:uid end)})]
+                                  begin (tpn/tpn-p-begin {:end-node (:uid end)
+                                                          :htn-node
+                                                          (:uid hem-map)
+                                                          })]
                               [begin end])
                             (let [parent-na-begin (tpn/get-tpn-plan-map
                                                     (->
@@ -1037,7 +1048,9 @@
                                   begin (tpn/tpn-c-begin
                                           {:end-node (:uid end)
                                            :constraints (if choice-tc
-                                                          #{(:uid choice-tc)})})]
+                                                          #{(:uid choice-tc)})
+                                           :htn-node (:uid hem-map)
+                                           })]
                               [begin end])
                             [sb se]))]
         (update-htn-plan-map! subtask-map)
@@ -1137,7 +1150,7 @@
 
 ;; will return subtasks, if any (and create htn-methods as a side effect)
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
-(defn make-htn-methods [pclass mname margs body & [irks]]
+(defn make-htn-methods [ir pclass mname margs body & [irks]]
   (let [irks (conj (or irks [pclass :methods mname]) :body)
         n (count body)]
     (loop [subtasks [] i 0]
@@ -1145,106 +1158,124 @@
         subtasks
         (let [f (get body i)
               irks-i (conj irks i)
-              {:keys [type name field method args body temporal-constraints]} f
-              subtask (cond
-                        ;; (#{:plant-fn-symbol :plant-fn-field} type)
-                        ;; (htn-primitive-task {:pclass pclass :name method :arguments args})
-                        ;; FIXME :plant-fn is WRONG.. is a user-fn
+              {:keys [type name field method args
+                      primitive body temporal-constraints]} f
+              ;; _ (println "MAKE-HTN-METHODS" i "TYPE" type
+              ;;     "NAME" name "METHOD" method
+              ;;     "MNAME" mname "symbol?" (symbol? mname)
+              ;;     "PRIMITIVE" primitive "BODY" body)
+              subtask
+              (cond
+                ;; FIXME :plant-fn is WRONG.. is a user-fn
+                (= :plant-fn-symbol type)
+                (let [make-htn-method? (symbol? mname)
+                      plant-class (if (= name 'this) pclass name)
+                      plant-fn-primitive?
+                      (get-in ir [plant-class :methods method :primitive])
+                      non-primitive? (and (= name 'this)
+                                       (not plant-fn-primitive?))
+                      ;; _ (println "  make-htn-method?" make-htn-method?
+                      ;;     "plant-class" plant-class
+                      ;;     "plant-fn-primitive?" plant-fn-primitive?
+                      ;;     "non-primitive?" non-primitive?)
+                      task ((if non-primitive?
+                              htn-nonprimitive-task
+                              htn-primitive-task)
+                            {:pclass plant-class
+                             :name method
+                             :arguments args
+                             :temporal-constraints temporal-constraints
+                             :irks irks-i})
+                      nt (if make-htn-method?
+                           (htn-nonprimitive-task
+                             {:pclass pclass :name mname
+                              :arguments margs
+                              :irks irks-i}))
+                      st (if make-htn-method? [task])]
+                  ;; (println "  PLANT-FN-SYMBOL TASK" task)
+                  ;; (println "  PLANT-FN-SYMBOL SUBTASKS" st)
+                  (when make-htn-method? ;; make htn-method
+                    (htn-method {:pclass pclass
+                                 :name mname
+                                 :nonprimitive-task nt
+                                 :subtasks st
+                                 :irks irks-i}))
+                  task)
 
-                        ;; if (symbol? mname) we need to make an htn-method
-                        (= :plant-fn-symbol type)
-                        (let [task
-                              (if (= name 'this)
-                                (htn-nonprimitive-task {:pclass pclass
-                                                        :name method
-                                                        :arguments args
-                                                        :temporal-constraints temporal-constraints
-                                                        :irks irks-i})
-                                (htn-primitive-task {:pclass name
-                                                     :name method
-                                                     :arguments args
-                                                     :temporal-constraints temporal-constraints
-                                                     :irks irks-i}))
-                              nt (if (symbol? mname)
-                                   (htn-nonprimitive-task
-                                     {:pclass pclass :name mname
-                                      :arguments margs
-                                      :irks irks-i}))
-                              st (if (symbol? mname) [task])]
-                          (when (symbol? mname) ;; make htn-method
-                            (htn-method {:pclass pclass
-                                         :name mname
-                                         :nonprimitive-task nt
-                                         :subtasks st
-                                         :irks irks-i}))
-                          task)
+                ;; if (symbol? mname) we need to make an htn-method
+                (= :plant-fn-field type)
+                (let [make-htn-method? (symbol? mname)
+                      task (htn-primitive-task
+                             {:pclass field
+                              :name method
+                              :arguments args
+                              :temporal-constraints temporal-constraints
+                              :irks irks-i})
+                      nt (if make-htn-method?
+                           (htn-nonprimitive-task
+                             {:pclass pclass :name mname
+                              :arguments margs
+                              :irks irks-i}))
+                      st (if make-htn-method? [task])]
+                  (when make-htn-method?
+                    (htn-method {:pclass pclass
+                                 :name mname
+                                 :nonprimitive-task nt
+                                 :subtasks st
+                                 :irks irks-i}))
+                  task)
 
-                        ;; if (symbol? mname) we need to make an htn-method
-                        (= :plant-fn-field type)
-                        (let [task (htn-primitive-task {:pclass field
-                                                        :name method
-                                                        :arguments args
-                                                        :temporal-constraints temporal-constraints
-                                                        :irks irks-i})
-                              nt (if (symbol? mname)
-                                   (htn-nonprimitive-task
-                                     {:pclass pclass :name mname
-                                      :arguments margs
-                                      :irks irks-i}))
-                              st (if (symbol? mname) [task])]
-                          (when (symbol? mname) ;; make htn-method
-                            (htn-method {:pclass pclass
-                                         :name mname
-                                         :nonprimitive-task nt
-                                         :subtasks st
-                                         :irks irks-i}))
-                          task)
+                (#{:sequence :parallel} type)
+                (let [nonprimitive-task (htn-nonprimitive-task
+                                          {:pclass pclass
+                                           :name mname
+                                           :arguments margs
+                                           :temporal-constraints
+                                           temporal-constraints
+                                           :irks irks-i})
+                      subtasks (make-htn-methods ir pclass type nil body irks-i)
+                      subtask-constraints (if (= type :sequence)
+                                            [(task-sequential-constraint
+                                               {:tasks subtasks})]
+                                            [])]
+                  ;; (println " SEQ SUBTASKS" subtasks)
+                  ;; work here
+                  (htn-method {:pclass pclass :name mname
+                               :nonprimitive-task nonprimitive-task
+                               :subtasks subtasks
+                               :subtask-constraints subtask-constraints
+                               :irks irks-i})
+                  nil)
 
-                        (#{:sequence :parallel} type)
-                        (let [nonprimitive-task (htn-nonprimitive-task
-                                                  {:pclass pclass
-                                                   :name mname
-                                                   :arguments margs
-                                                   :temporal-constraints temporal-constraints
-                                                   :irks irks-i})
-                              subtasks (make-htn-methods pclass type nil body irks-i)
-                              subtask-constraints (if (= type :sequence)
-                                                    [(task-sequential-constraint {:tasks subtasks})]
-                                                    [])]
-                          ;; work here
-                          (htn-method {:pclass pclass :name mname
-                                       :nonprimitive-task nonprimitive-task
-                                       :subtasks subtasks
-                                       :subtask-constraints subtask-constraints
-                                       :irks irks-i})
-                          nil)
+                (= type :choose)
+                 ;; shared for all choices
+                (let [nonprimitive-task (htn-nonprimitive-task
+                                          {:pclass pclass
+                                           :name mname
+                                           :arguments margs
+                                           :temporal-constraints
+                                           temporal-constraints
+                                           :irks irks-i})
+                      m (count body)]
+                  (loop [j 0]
+                    (if (= j m)
+                      nil
+                      (let [b (get body j)
+                            irks-j (conj (conj irks-i :body) j)
+                            {:keys [type body]} b
+                            cname (symbol (str mname "-choice-" j))
+                            subtasks (make-htn-methods ir pclass
+                                       :choice nil body irks-j)]
+                        (if (not= type :choice)
+                          (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
+                        (htn-method {:pclass pclass :name cname
+                                     :nonprimitive-task nonprimitive-task
+                                     :subtasks subtasks
+                                     :irks irks-j})
+                        (recur (inc j))))))
 
-                        (= type :choose)
-                        (let [nonprimitive-task (htn-nonprimitive-task ;; shared for all choices
-                                                  {:pclass pclass
-                                                   :name mname
-                                                   :arguments margs
-                                                   :temporal-constraints temporal-constraints
-                                                   :irks irks-i})
-                              m (count body)]
-                          (loop [j 0]
-                            (if (= j m)
-                              nil
-                              (let [b (get body j)
-                                    irks-j (conj (conj irks-i :body) j)
-                                    {:keys [type body]} b
-                                    cname (symbol (str mname "-choice-" j))
-                                    subtasks (make-htn-methods pclass :choice nil body irks-j)]
-                                (if (not= type :choice)
-                                  (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
-                                (htn-method {:pclass pclass :name cname
-                                             :nonprimitive-task nonprimitive-task
-                                             :subtasks subtasks
-                                             :irks irks-j})
-                                (recur (inc j))))))
-
-                        :else
-                        :TBD)
+                :else
+                :TBD)
               subtasks (if subtask (conj subtasks subtask) subtasks)]
           (recur subtasks (inc i)))))))
 

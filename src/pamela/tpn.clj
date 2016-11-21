@@ -19,7 +19,7 @@
             [clojure.tools.logging :as log]
             [me.raynes.fs :as fs]
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
-            ;; [pamela.daemon :as daemon]
+            [pamela.daemon :as daemon]
             [pamela.utils :refer [output-file]]))
 
 ;; helpers
@@ -326,6 +326,7 @@
   (let [a (get-tpn-plan-map a-uid)
         {:keys [tpn-type constraints activities htn-node]} a
         a-type tpn-type
+        a-begin? (#{:p-begin :c-begin} a-type)
         a-constraints constraints
         a-activities activities
         a-htn-node htn-node
@@ -356,7 +357,7 @@
         b-constraints (:constraints b)
         b-type (:tpn-type b)
         move-tc-to-b? (or
-                        (and (#{:p-begin :c-begin} a-type)
+                        (and a-begin?
                           (> an 1))
                         (and (#{:p-begin :c-begin} b-type)
                           (= :state a-type)
@@ -364,10 +365,12 @@
                         (and (#{:p-end :c-end} a-type)
                           ;; (= :state b-type)
                           (= an 1)))
-        ;; _ (println "CHECK a-uid" a-uid "a-type" a-type "AN" an "A0-UID" a0-uid
+        ;; _ (println "CHECK a-uid" a-uid "a-type" a-type "a-htn-node" a-htn-node
+        ;;     "\n  AN" an "A0-UID" a0-uid
         ;;     "\n  todo" (count a-todo) "=" a-todo
         ;;     "\n  done" (count a-done) "=" a-done
         ;;     "\n  a0-type" a0-type "s-uid" s-uid  "SN" sn "tpn-type" tpn-type
+        ;;     "\n  htn-node" htn-node
         ;;     "\n  constraints" constraints "move-tc-to-b?" move-tc-to-b?
         ;;     "\n  s0-type" s0-type "b-type" b-type "b-uid" b-uid)
         next-uid
@@ -384,8 +387,9 @@
           (let [a-activities (disj a-activities a0-uid)
                 a-activities (if s0-uid (conj a-activities s0-uid) a-activities)
                 a (assoc-if a
-                    :activities a-activities
-                    :htn-node (or a-htn-node htn-node))
+                    :activities a-activities)
+                b (assoc-if b
+                    :htn-node htn-node)
                 [a b] (if move-constraints?
                         (if move-tc-to-b?
                           [a
@@ -428,7 +432,6 @@
             ;; (println "  REMOVE s/ A na S a B / A a B /" a0-uid s-uid
             ;;   "A" a-activities "S0-UID" s0-uid "A-TC" a-constraints)
             (update-todo tpn-notes a-uid a0-uid s0-uid)
-            ;; (remove-superfluous tpn-notes a-uid)
             a-uid)
           ;; s/ A a S na B / A a B /
           (and (= tpn-type :state) (= s0-type :null-activity) (= 1 sn)
@@ -455,9 +458,8 @@
             (remove-tpn-plan-map! s0-uid)
             (remove-tpn-plan-map! s-uid)
             ;; (println "  REMOVE s/ A a S na B / A a B /" s0-uid s-uid)
-            ;; (remove-superfluous tpn-notes a-uid)
             a-uid)
-          ;; s/ A na S / A /
+          ;; s/ A na S / A / ;; END OF GRAPH
           (and (= a0-type :null-activity) (= 1 an) (zero? (count a-constraints))
             (= tpn-type :state) (not b))
           (do
@@ -466,20 +468,13 @@
                 :activities #{}
                 :label label
                 :sequence-label sequence-label
-                :htn-node htn-node))
-            (when (or a0-cost a0-reward a0-probability a0-htn-node)
-              (update-tpn-plan-map!
-                (assoc-if s0
-                  :cost a0-cost
-                  :reward a0-reward
-                  :probability a0-probability
-                  :htn-node a0-htn-node)))
+                :htn-node (or a-htn-node htn-node)))
             (move-constraints tpn-notes s-uid a-uid)
             ;; (println "  REMOVE s/ A na S / A /" a0-uid s-uid)
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! s-uid)
             nil)
-          ;; s/ S na A / A /
+          ;; s/ A na S / S / ;; BEGINNING OF GRAPH
           (and (= a-type :state) (= a0-type :null-activity) (= 1 an)
             (not (#{:c-end :p-end} tpn-type))
             (= a-uid (get-in @tpn-notes [:network :begin-node])))
@@ -491,35 +486,38 @@
                                  constraints
                                  (set/union a-constraints constraints))
                   :htn-node a-htn-node)))
-            (when (or a0-cost a0-reward a0-probability a0-htn-node)
+            (when (or a0-cost a0-reward a0-probability
+                    (and (not s0-htn-node) a0-htn-node))
               (update-tpn-plan-map!
                 (assoc-if s0
                   :cost a0-cost
                   :reward a0-reward
                   :probability a0-probability
-                  :htn-node a0-htn-node)))
+                  ;; give priority to the lower level hem on the right
+                  ;; iff present in s0
+                  :htn-node (or s0-htn-node a0-htn-node))))
             (move-constraints tpn-notes a-uid s-uid)
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! a-uid)
             ;; (println "  REMOVE s/ S na A / A /" a0-uid a-uid)
-            ;; (remove-superfluous tpn-notes s-uid)
             s-uid)
-          ;; move constraints on state node before begin to the begin
-          (and (pos? (count a-constraints)) (= a-type :state) (= 1 an)
-            (#{:p-begin :c-begin} tpn-type))
-          (let [a (assoc a :constraints #{})
-                s (assoc s :constraints (set/union constraints a-constraints))]
+          ;; move constraints, htn-node on state node before begin to the begin
+          (and (= a-type :state) (= 1 an) (#{:p-begin :c-begin} tpn-type)
+            (or (pos? (count a-constraints)) a-htn-node))
+          (let [a (assoc (dissoc a :htn-node) :constraints #{})
+                s (assoc-if s
+                    :constraints (set/union constraints a-constraints)
+                    :htn-node a-htn-node)]
             (update-tpn-plan-map! a)
             (update-tpn-plan-map! s)
             ;; (println "  MOVE a-constraints" a-constraints
+            ;;   "a-htn-node" a-htn-node
             ;;   "on state node before begin to the begin" s-uid)
-            ;; (remove-superfluous tpn-notes s-uid)
             s-uid)
           :else
           (do
             ;; (println "  DONE for" a0-uid)
             (update-todo tpn-notes a-uid a0-uid nil)
-            ;; (remove-superfluous tpn-notes a-uid)
             a-uid))]
     (if next-uid
       (recur tpn-notes next-uid))))
@@ -553,9 +551,8 @@
           {:keys [tpn-type end-node constraints]} object]
       (cond
         (and (#{:state :c-end :p-end} tpn-type) end-node)
-        ;; (and (#{:c-end :p-end} tpn-type) end-node)
-        ;; (and (#{:state} tpn-type) end-node)
-        (update-tpn-plan-map! (dissoc object :end-node :htn-node))
+        ;; NOTE: preserve htn-node
+        (update-tpn-plan-map! (dissoc object :end-node))
         (#{:c-end :p-end} tpn-type)
         (update-tpn-plan-map! (dissoc object :htn-node))
         (and (= :null-activity tpn-type) constraints)
