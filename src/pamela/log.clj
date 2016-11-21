@@ -15,7 +15,7 @@
   "PAMELA logging."
   (:require [clojure.string :as string]
             [clojure.pprint :as pp]
-            [pamela.mode :as mode]
+            ;; [pamela.mode :as mode]
             [environ.core :refer [env]]
             [clojure.tools.logging :as log]
             [taoensso.timbre :as timbre]

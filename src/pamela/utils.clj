@@ -1,4 +1,4 @@
-x;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
@@ -24,7 +24,7 @@ x;; Copyright © 2016 Dynamic Object Language Labs Inc.
             ;; [clj-http.client :as http]
             [environ.core :refer [env]]
             [clojure.data.json :as json]
-            [pamela.mode :as mode]
+            ;; [pamela.mode :as mode]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
@@ -96,7 +96,7 @@ x;; Copyright © 2016 Dynamic Object Language Labs Inc.
   "Helper function returns true if on the REPL (for development)"
   {:added "0.2.0"}
   []
-  (and (mode/development?) (= (:pager env) "cat")))
+  (= (:pager env) "cat"))
 
 (defn var-of
   "Returns the var corresponding the value v (if defined in ns)."

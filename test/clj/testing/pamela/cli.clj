@@ -11,13 +11,10 @@
 ;;; in this material are those of the author(s) and do necessarily reflect the
 ;;; views of the Army Contracting Command and DARPA.
 
-(ns testing.pamela.core
+(ns testing.pamela.cli
   (:require [clojure.test :refer :all]
-            [pamela.core :refer :all]
-            [pamela.mode :refer :all]))
+            [pamela.cli :refer :all]))
 
-(deftest testing-pamela-core
-  (testing "testing-pamela-core"
-    (is (not (development?)))
-    (is (testing?))
-    (is (not (production?)))))
+(deftest testing-pamela-cli
+  (testing "testing-pamela-cli"
+    (is (= 1 1))))

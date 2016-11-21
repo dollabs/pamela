@@ -11,14 +11,14 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-(def project 'bottine)
+(def project 'dollabs/pamela)
 (def version "0.5.0")
 (def description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)")
 (def project-url "https://github.com/dollabs/pamela")
-(def main 'pamela.core)
+(def main 'pamela.cli)
 
 (set-env!
-  :source-paths #{"src" "test"}
+  :source-paths #{"src" "test/clj"}
   :resource-paths #{"resources"}
   :dependencies   '[[org.clojure/clojure "1.8.0"]
                     [org.clojure/data.codec "0.1.0"]
@@ -36,14 +36,12 @@
                     [me.raynes/fs "1.4.6"]
                     [clj-time "0.12.2"]
                     ;; testing
-                    [adzerk/boot-test "1.1.2" :scope "test"]
-                    ])
+                    [adzerk/boot-test "1.1.2" :scope "test"]])
 
 (require
   '[clojure.string :as string]
   '[boot.util :as util]
-  '[adzerk.boot-test :refer [test]]
-  )
+  '[adzerk.boot-test :refer [test]])
 
 (task-options!
   pom {:project     project
@@ -54,9 +52,8 @@
        :license     {"Apache-2.0" "http://opensource.org/licenses/Apache-2.0"}}
   aot {:namespace   #{main}}
   jar {:main        main}
-  test {:namespaces #{'testing.pamela.core}
-        }
-  )
+  test {:namespaces #{'testing.pamela.cli 'testing.pamela.tpn
+                      'testing.pamela.utils}})
 
 (deftask clj-dev
   "Clojure REPL for CIDER"
@@ -71,33 +68,21 @@
   []
   (clj-dev))
 
-(deftask cli
-  "Run the project with arguments"
-  [a args ARG [str] "the arguments for the application."]
-  (require [main :as 'app])
-  (let [argv (if (pos? (count args))
-               (clojure.string/split (first args) #" ")
-               '())]
-    (with-post-wrap [_]
-      (apply (resolve 'app/-main) argv))))
-
 (deftask run
-  "Build and run the project."
-  [a args ARG [str] "the arguments for the application."]
-  ;; (reset! util/*verbosity* 0) ;; quiet output
-  (let [args (if (pos? (count args))
-               args
-               "--help")]
-    (cli :args args)
-    ))
+  "Run the project."
+  [A args ARG [str] "preface each app arg with -A"]
+  (require [main :as 'app])
+  (with-post-wrap [_]
+    (apply (resolve 'app/-main) args)))
 
 (deftask build-jar
   "Build the project locally as an uberjar."
   [d dir PATH #{str} "the set of directories to write to (target)."]
   (let [dir (if (seq dir) dir #{"target"})]
     (comp
-      (sift :include #{#"~$"} :invert true) ;; don't include emacs backups
+      ;; do not include these files...
+      (sift :include #{#"~$" #"\.xhtml$"  #"\.w3c$"} :invert true)
       (aot)
-        (uber)
+      (uber)
       (jar :file (str (name project) ".jar"))
       (target :dir dir))))

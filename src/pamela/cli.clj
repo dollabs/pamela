@@ -20,7 +20,7 @@
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
             [me.raynes.fs :as fs]
-            [pamela.mode :as mode]
+            ;; [pamela.mode :as mode]
             [pamela.utils :refer [get-input var-of repl? set-cwd!
                                   input-file output-file]]
             ;; [pamela.db :as db]
@@ -30,7 +30,8 @@
             [pamela.tpn :as tpn]
             [clojure.tools.logging :as log]
             [pamela.log :as plog]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]])
+  (:gen-class)) ;; required for uberjar
 
 ;; actions ----------------------------------------------
 
@@ -199,7 +200,7 @@
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
-   ["-i" "--input INPUT" "Input file (or - for STDIN)"
+   ["-i" "--input INPUT" "Input file(s) (or - for STDIN)"
     :default ["-"]
     :parse-fn #(input-file %)
     :validate [#(or (= "-" %) (fs/exists? %))
@@ -347,7 +348,6 @@
           (exit 1 "Specify exactly one action" (usage summary)))]
     (when (and verbose? (not exit?))
       (when (> verbose 1)
-        (println "mode:" @mode/program-mode)
         (println "repl?:" (repl?))
         ;; (println "daemon?:" (daemon/running?))
         ;; (println "database running?:" (db/running?))
@@ -382,3 +382,9 @@
           (catch Throwable e
             (exit 1 "ERROR caught exception:" (.getMessage e))))))
     (exit 0)))
+
+(defn -main
+  "PAMELA main entry point (see pamela)"
+  {:added "0.2.0"}
+  [& args]
+  (apply pamela args))
