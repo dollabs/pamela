@@ -52,7 +52,8 @@ usage() {
 
 # main program -----------------------------------------------
 
-if ! type java > /dev/null; then
+javapath="$(which java)"
+if [ -z "$javapath" ]; then
     err "java not found: please install the JDK (and update your PATH)"
     echo "open http://www.oracle.com/technetwork/java/javase/downloads/index.html"
     exit 1
@@ -60,7 +61,8 @@ else
     vlog "OK java is installed"
 fi
 
-if ! type git > /dev/null; then
+gitpath="$(which git)"
+if [ -z "$gitpath" ]; then
     err "git not found: please install git (and update your PATH)"
     exit 1
 else
@@ -84,7 +86,8 @@ else
     vlog "OK user ~/bin/ directory is in PATH"
 fi
 
-if ! type boot > /dev/null; then
+bootpath="$(which boot)"
+if [ -z "$bootpath" ]; then
     vlog "boot not found, installing..."
     curl -fsSLo "$bin/boot" https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh
     chmod 755 "$bin/boot"
