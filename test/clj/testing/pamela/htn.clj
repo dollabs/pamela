@@ -11,14 +11,11 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-(ns testing.pamela.cli
+(ns testing.pamela.htn
   (:require [clojure.test :refer :all]
-            [pamela.cli :refer :all]))
+            [pamela.htn :refer :all]))
 
-(deftest testing-pamela-cli
-  (testing "testing-pamela-cli"
-    (is (= log-levels #{"trace" "debug" "info" "warn" "error" "fatal" "report"}))
-    (is (= output-formats #{"edn" "json"}))
-    (is (= (sort (keys actions)) '("build" "htn" "tpn")))
-    (is (= (base-64-decode "KGNvaW4uZmxpcC0zKQ==") "(coin.flip-3)"))
+(deftest testing-pamela-htn
+  (testing "testing-pamela-htn"
+    (is (= true (htn-isa? :htn-primitive-task :htn-task)))
     ))

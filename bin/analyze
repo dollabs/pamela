@@ -15,6 +15,11 @@
 # views of the Army Contracting Command and DARPA.
 
 program=$(basename $0)
+
+echo "$program under construction"
+exit 1
+
+
 dir=$(dirname $0)
 export PAMELA_CWD="$(pwd -P)"
 cd "$dir/.."

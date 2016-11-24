@@ -19,7 +19,6 @@
             [clojure.tools.logging :as log]
             [me.raynes.fs :as fs]
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
-            ;; [pamela.daemon :as daemon]
             [pamela.utils :refer [output-file]]))
 
 ;; helpers

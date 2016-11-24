@@ -13,9 +13,16 @@
 # in this material are those of the author(s) and do necessarily reflect the
 # views of the Army Contracting Command and DARPA.
 
+dir=$(dirname $0)
 set -e
 
-# pamela -m three describe
+# Demonstrate building the IR
 
-# FIXME
-cat "$(dirname $0)/30_describe.out"
+pamela -i "$CODE/test/pamela/circuit.pamela" \
+       -o "$RESULTS/${NUMBER}_circuit.ir.edn" \
+       build
+
+if ! diff -u "$dir/${NUMBER}_circuit.ir.edn" \
+     "$RESULTS/${NUMBER}_circuit.ir.edn"; then
+    exit 1
+fi

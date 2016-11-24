@@ -34,13 +34,10 @@
                     [instaparse "1.4.3"]
                     [avenir "0.2.1"]
                     [me.raynes/fs "1.4.6"]
-                    [clj-time "0.12.2"]
                     ;; testing
                     [adzerk/boot-test "1.1.2" :scope "test"]])
 
 (require
-  '[clojure.string :as string]
-  '[boot.util :as util]
   '[adzerk.boot-test :refer [test]])
 
 (task-options!
@@ -52,24 +49,13 @@
        :license     {"Apache-2.0" "http://opensource.org/licenses/Apache-2.0"}}
   aot {:namespace   #{main}}
   jar {:main        main}
-  test {:namespaces #{'testing.pamela.cli 'testing.pamela.tpn
-                      'testing.pamela.utils}})
-
-(deftask clj-dev
-  "Clojure REPL for CIDER"
-  []
-  (comp
-    (cider)
-    (repl :server true)
-    (wait)))
-
-(deftask cider-boot
-  "Cider boot params task"
-  []
-  (clj-dev))
+  test {:namespaces #{'testing.pamela.cli 'testing.pamela.utils
+                      'testing.pamela.parser
+                      'testing.pamela.tpn 'testing.pamela.htn
+                      }})
 
 (deftask run
-  "Run the project."
+  "Run the project (build from source)."
   [A args ARG [str] "preface each app arg with -A"]
   (require [main :as 'app])
   (with-post-wrap [_]
@@ -86,3 +72,20 @@
       (uber)
       (jar :file (str (name project) ".jar"))
       (target :dir dir))))
+
+;; NOTE: Requires PAMELA_MODE=prod (or unset)
+(deftask cli-test
+  "Run the command line tests."
+  []
+  (let [cmd ["./bin/cli-test"]]
+    (comp
+      (build-jar)
+      (with-post-wrap [_]
+        (apply dosh cmd))))) ;; will throw exception on non-zero exit
+
+(deftask all-tests
+  "Run the Clojure and command line tests."
+  []
+  (comp
+    (test)
+    (cli-test)))

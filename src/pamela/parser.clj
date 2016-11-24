@@ -20,7 +20,7 @@
             [environ.core :refer [env]]
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
-            [pamela.utils :refer [make-url get-url output-file]]
+            [pamela.utils :refer [output-file]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
   (:import [java.io
@@ -73,7 +73,7 @@
 
 (defn build-parser [& [ebnf-filename]]
   (let [ebnf-filename (or ebnf-filename "pamela.ebnf")
-        ebnf (slurp (resource (str "data/" ebnf-filename)))
+        ebnf (slurp (resource (str "public/" ebnf-filename)))
         whitespace (insta/parser "whitespace = #'([,\\s]+|;.*\\n)+'")
         parser (insta/parser ebnf
                  :input-format :ebnf
@@ -560,6 +560,8 @@
         field-ref (get fields m-or-f)
         field-pclass (if field-ref (get-in field-ref [:initial :pclass]))
         mode-ref (get modes m-or-f)]
+    ;; (log/info "VALIDATE-KEYWORD context" context "m-or-f" m-or-f
+    ;;   "ref" ref "field-ref" field-ref "mode-ref" mode-ref)
     (if field-ref
       (if ref
         (if (get-in ir [field-pclass :fields ref])
@@ -587,6 +589,8 @@
            :pclass 'this
            :mode m-or-f})
         (do
+          ;; could look in context to see if we can get type hints
+          ;; from other arguments
           (log/warn "unable to determine if this keyword"
             "value is valid in pclass" pclass kw)
           {:type :literal

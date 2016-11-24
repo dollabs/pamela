@@ -13,20 +13,32 @@
 # in this material are those of the author(s) and do necessarily reflect the
 # views of the Army Contracting Command and DARPA.
 
+dir=$(dirname $0)
 set -e
 
 # demonstrate processing a TPN
-# FIXME
-# pamela -i $CODE/src/test/pamela/plant.pamela -i $CODE/src/test/pamela/parallel-choice-tpn.pamela -f json -o $RESULTS/parallel-choice-tpn.json tpn
 
-# NOTE Naive graph comparison does not work! :)
+format="edn"
+#NOTE sed commands below use : instead of " for edn format
 
-# remove gensym artifacts, remove blank lines, sort
-# sed -e 's/\-[0-9]*//g' -e 's/}/}\n/g' $RESULTS/parallel-choice-tpn.json | sort > $RESULTS/parallel-choice-tpn.safe.json
+pamela -i "$CODE/test/pamela/plant.pamela" \
+       -i "$CODE/test/pamela/parallel-choice-tpn.pamela" \
+       -f $format \
+       -o "$RESULTS/${NUMBER}_parallel-choice-tpn.$format" \
+       tpn
 
-# if ! diff -u $CODE/src/test/cli/parallel-choice-tpn.safe.json $RESULTS/parallel-choice-tpn.safe.json; then
-#     exit 1
-# fi
+# remove gensym artifacts
+# NOTE: maps should be sorted by key
 
-# FIXME
-true
+sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
+    "$dir/${NUMBER}_parallel-choice-tpn.$format" > \
+    "$RESULTS/${NUMBER}_EXPECTED_parallel-choice-tpn.safe.$format"
+
+sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
+    "$RESULTS/${NUMBER}_parallel-choice-tpn.$format" > \
+    "$RESULTS/${NUMBER}_parallel-choice-tpn.safe.$format"
+
+if ! diff -u "$RESULTS/${NUMBER}_EXPECTED_parallel-choice-tpn.safe.$format" \
+     "$RESULTS/${NUMBER}_parallel-choice-tpn.safe.$format"; then
+    exit 1
+fi

@@ -13,9 +13,34 @@
 # in this material are those of the author(s) and do necessarily reflect the
 # views of the Army Contracting Command and DARPA.
 
+dir=$(dirname $0)
 set -e
 
-# pamela -v -v -i $CODE/src/test/pamela/qc.pamela -i $CODE/src/test/pamela/qc-waypoints.pamela -i $CODE/src/test/pamela/qc-demo.pamela -o $RESULTS/qc.dot -c qc-demo:qc-waypoints:waypoints -f dot -g tpn
+# demonstrate processing a TPN using --construct-tpn
 
-# FIXME
-true
+format="edn"
+#NOTE sed commands below use : instead of " for edn format
+
+pamela -i "$CODE/test/pamela/qc.pamela" \
+       -i "$CODE/test/pamela/qc-waypoints.pamela" \
+       -i "$CODE/test/pamela/qc-demo.pamela" \
+       -c "qc-demo:qc-waypoints:waypoints" \
+       -f $format \
+       -o "$RESULTS/${NUMBER}_qc-demo-tpn.$format" \
+       tpn
+
+# remove gensym artifacts
+# NOTE: maps should be sorted by key
+
+sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
+    "$dir/${NUMBER}_qc-demo-tpn.$format" > \
+    "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format"
+
+sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
+    "$RESULTS/${NUMBER}_qc-demo-tpn.$format" > \
+    "$RESULTS/${NUMBER}_qc-demo-tpn.safe.$format"
+
+if ! diff -u "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format" \
+     "$RESULTS/${NUMBER}_qc-demo-tpn.safe.$format"; then
+    exit 1
+fi
