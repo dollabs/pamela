@@ -24,13 +24,13 @@
   :fields {:observed-face (coin-faces :observable true :initial :head)}
 
   :transitions {:biased:unbiased   {:pre         :biased :post :unbiased
-                                    :probability (lvar "tBU" 0.9)}
+                                    :probability (lvar "tBU" 0.1)}
                 :unbiased:biased   {:pre         :unbiased :post :biased
-                                    :probability (lvar "tUB" 0.52)}
+                                    :probability (lvar "tUB" 0.1)}
                 :biased:biased     {:pre         :biased :post :biased
-                                    :probability (lvar "tBB" 0.1)}
+                                    :probability (lvar "tBB" 0.9)}
                 :unbiased:unbiased {:pre         :unbiased :post :unbiased
-                                    :probability (lvar "tUU" 0.48)}}
+                                    :probability (lvar "tUU" 0.9)}}
 
   :methods [(defpmethod emit-head
               {:doc "Heads"
@@ -56,16 +56,15 @@
                     (choice :probability (lvar "eUH" 0.51)
                       (emit-head))
                     (choice :probability (lvar "eUT" 0.49)
-                      (emit-tail))))))
-            (defpmethod flip-3
-              {:doc "Series of 3 coin flips"}
-              []
-              (dotimes 3 (flip)))
-            (defpmethod flip-1000
-              {:doc "Series of 1000 coin flips"}
-              []
-              (dotimes 1000 (flip)))
-            ])
+                      (emit-tail))))))])
 
 (defpclass main []
-  :fields {:coin (coin)})
+  :fields {:coin (coin)}
+  :methods [(defpmethod flip-3
+                        {:doc "Series of 3 coin flips"}
+                        []
+                        (dotimes 3 (coin.flip)))
+            (defpmethod flip-1000
+                        {:doc "Series of 1000 coin flips"}
+                        []
+                        (dotimes 1000 (coin.flip)))])
