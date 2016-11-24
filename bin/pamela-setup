@@ -117,8 +117,9 @@ for repo in $repos; do
     gitrepo="$giturl/$repo"
     # DEBUGGING until the streamline branch is merged
     if [ "$repo" = "pamela" ]; then
-        mkdir -p "$github/tmarble"
-        dollrepo="$github/tmarble/$repo"
+        dollabs="$github/tmarble"
+        mkdir -p "$dollabs"
+        dollrepo="$dollabs/$repo"
         gitrepo="https://github.com/tmarble/$repo"
     fi
     if [ ! -d "$dollrepo" ]; then

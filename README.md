@@ -56,6 +56,28 @@ Now open tpn-demo.svg in your browser. It should appear as the following image
 
 ![TPN](doc/tpn-demo.png)
 
+## NEW pamela-setup
+
+This script will:
+* Verify that **java** is installed
+* Verify that **git** is installed
+* Ensure that the `~/bin` directory exists (and create it if necessary)
+* Check that the `~/bin` is in the `PATH`<br/>
+  _NOTE: the script will not attempt to change `~/.bashrc` -- this must be done manually if required_
+* Ensure that the `~/src/github/dollabs` directory exists (and create it if necessary)
+* Verify that **boot** is installed (and install it if necessary)
+* Will install the DOLL labs repositories:
+  - webkeys (will install this library locally)
+  - webtasks (will install this library locally)
+  - plan-schema (will install this library locally)
+  - planviz (will build the PLANVIZ jar)
+  - pamela (will build the PAMELA jar)
+* Will run the PAMELA Clojure tests and command line tests
+
+```
+curl -fsSLo pamela-setup https://raw.githubusercontent.com/tmarble/pamela/streamline/bin/pamela-setup && chmod +x pamela-setup && ./pamela-setup
+```
+
 ## Requirements
 
 PAMELA has been developed using the [Clojure](http://clojure.org)
