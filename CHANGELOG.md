@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 
 Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
+* Fixed parser bug with floating point numbers
 * _TBD_
 
 ### [0.4.3] - 2016-11-18
