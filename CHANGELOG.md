@@ -45,12 +45,14 @@ Changes
 ### [0.4.1] - 2016-10-17
 
 Changes
+* Fixed HTN generation for elaborated primitive methods (Closes #39)
+* Fixed parser bug with floating point numbers
+- Updated dependencies
 - Allow plan-schema to be more flexible
   https://github.com/dollabs/planviz/issues/24
 - Fixed: Planviz disagrees with Pamela (plan-schema) #18
 - Added command line switch --strict to enforce schema checking
 - Expand home in pathnames properly
-- Updated dependencies
 
 ### 0.4.0 - 2016-09-29
 

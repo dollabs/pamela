@@ -88,11 +88,8 @@
 (defn ir-integer [v]
   (Long/parseLong v))
 
-(defn ir-number [v]
-  (if (integer? v)
-    v
-    (let [[float-kw whole fraction] v]
-      (Double/parseDouble (str whole "." fraction)))))
+(defn ir-float [v]
+  (Double/parseDouble v))
 
 (defn ir-field-type [v]
   (if (map? v)
@@ -439,7 +436,7 @@
                 ;; :field-init handled in ir-field
                 :field-type ir-field-type
                 :fields (partial ir-k-merge :fields)
-                ;; :float handled in :ir-number
+                :float ir-float
                 :fn identity
                 ;; :fn-opt handled in ir-fn and ir-fn-cond
                 ;; :guard handled in ir-choice
@@ -469,7 +466,7 @@
                 :modes (partial ir-map-kv :modes)
                 :natural ir-integer
                 :not-expr (partial ir-cond-expr :not)
-                :number ir-number
+                :number identity
                 :number-ref identity
                 ;; :observable handled in ir-field
                 :opt-bounds ir-opt-bounds
@@ -849,14 +846,14 @@
 
 (def magic-ir {:boolean ir-boolean
                :bounds-literal ir-bounds-literal
-               ;; :float handled in :ir-number
+               :float ir-float
                :integer ir-integer
                :keyword keyword
                :literal identity
                :lvar-ctor ir-lvar-ctor
                :lvar-init identity
                :natural ir-integer
-               :number ir-number
+               :number identity
                :magic ir-magic
                :string identity
                })
@@ -891,7 +888,7 @@
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
-      (println "Magic" magic "MIR" mir)  ;; DEBUG
+      ;; (println "Magic" magic "MIR" mir)  ;; DEBUG
       (log/debug "MAGIC input\n" (with-out-str (pprint mir))))
     (reset! pamela-lvars mir)
     (loop [ir {} input-filename (first input) more (rest input)]

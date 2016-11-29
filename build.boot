@@ -20,22 +20,22 @@
 (set-env!
   :source-paths #{"src" "test/clj"}
   :resource-paths #{"resources"}
-  :dependencies   '[[org.clojure/clojure "1.8.0"]
-                    [org.clojure/data.codec "0.1.0"]
-                    [org.clojure/tools.cli "0.3.5"]
-                    [org.clojure/data.json "0.2.6"]
+  :dependencies   '[[org.clojure/clojure       "1.8.0"]
+                    [org.clojure/data.codec    "0.1.0"]
+                    [org.clojure/tools.cli     "0.3.5"]
+                    [org.clojure/data.json     "0.2.6"]
                     ;; logging
-                    [org.clojure/tools.logging "0.3.1"]
-                    [com.taoensso/timbre "4.7.4"]
-                    [org.slf4j/slf4j-api "1.7.21"]
+                    [com.taoensso/timbre       "4.7.4"]
+                    [org.slf4j/slf4j-api       "1.7.21"]
                     [com.fzakaria/slf4j-timbre "0.3.2"]
+                    [org.clojure/tools.logging "0.3.1"]
                     ;; utilities
-                    [environ "1.1.0"]
-                    [instaparse "1.4.3"]
-                    [avenir "0.2.1"]
-                    [me.raynes/fs "1.4.6"]
+                    [environ                   "1.1.0"]
+                    [instaparse                "1.4.3"]
+                    [avenir                    "0.2.1"]
+                    [me.raynes/fs              "1.4.6"]
                     ;; testing
-                    [adzerk/boot-test "1.1.2" :scope "test"]])
+                    [adzerk/boot-test          "1.1.2" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])

@@ -209,7 +209,7 @@
    {:pre {:type :mode-reference, :pclass this, :mode :on},
     :post {:type :mode-reference, :pclass this, :mode :off},
     :doc "turning off"},
-   :*:fail {:probability 0.1, :doc "spontaneous switch failure"}}},
+   :*:fail {:probability 1.0E-7, :doc "spontaneous switch failure"}}},
  pwrvals
  {:type :pclass,
   :args [],

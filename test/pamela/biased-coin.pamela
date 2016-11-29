@@ -13,14 +13,15 @@
 
 ;; A coin that transitions between biased and unbiased mode
 
-(defpclass face-up []
-  :meta {:doc "Observed value of the coin after flip"}
+
+(defpclass coin-faces []
+  :meta {:doc "Enumeration of coin faces"}
   :modes [:head :tail])
 
 (defpclass coin []
   :modes [:biased :unbiased]
 
-  :fields {:observed-face (face-up :observable true :initial :head)}
+  :fields {:observed-face (coin-faces :observable true :initial :head)}
 
   :transitions {:biased:unbiased   {:pre         :biased :post :unbiased
                                     :probability (lvar "tBU" 0.1)}
@@ -33,11 +34,11 @@
 
   :methods [(defpmethod emit-head
               {:doc "Heads"
-               :pre (= :observed-face (mode-of face-up :head))}
-              [])
+               :pre (= :observed-face (mode-of coin-faces :head))}
+              []) ;; no body ==> :primitive
             (defpmethod emit-tail
               {:doc "Tails"
-               :pre (= :observed-face (mode-of face-up :tail))}
+               :pre (= :observed-face (mode-of coin-faces :tail))}
               [])
             (defpmethod flip
               {:doc "Flip the coin"
@@ -46,25 +47,24 @@
               (choose
                 (choice :guard (= :biased true)
                   (choose
-                    (choice :probability (lvar "eBH" 0.9)
+                    (choice :probability (lvar "eBH" 0.8)
                       (emit-head))
-                    (choice :probability (lvar "eBT" 0.1)
+                    (choice :probability (lvar "eBT" 0.2)
                       (emit-tail))))
                 (choice :guard (= :unbiased true)
                   (choose
-                    (choice :probability (lvar "eUH" 0.50)
+                    (choice :probability (lvar "eUH" 0.51)
                       (emit-head))
-                    (choice :probability (lvar "eUT" 0.50)
-                      (emit-tail))))))
-            (defpmethod flip-3
-              {:doc "Series of 3 coin flips"}
-              []
-              (dotimes 3 (flip)))
-            (defpmethod flip-1000
-              {:doc "Series of 1000 coin flips"}
-              []
-              (dotimes 1000 (flip)))
-            ])
+                    (choice :probability (lvar "eUT" 0.49)
+                      (emit-tail))))))])
 
 (defpclass main []
-  :fields {:coin (coin :id "coin-plant")})
+  :fields {:coin (coin)}
+  :methods [(defpmethod flip-3
+                        {:doc "Series of 3 coin flips"}
+                        []
+                        (dotimes 3 (coin.flip)))
+            (defpmethod flip-1000
+                        {:doc "Series of 1000 coin flips"}
+                        []
+                        (dotimes 1000 (coin.flip)))])
