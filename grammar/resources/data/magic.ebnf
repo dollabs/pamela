@@ -11,7 +11,7 @@ string = <'"'>  #'[^"]*' <'"'>
 boolean = ( TRUE | FALSE )
 keyword = <':'> #'[A-Za-z0-9:*-.]+'
 number = ( float | integer )
-float = integer <'.'> natural
+float = #'[-]?[0-9]+\.[0-9]+'
 integer = #'[-]?[0-9]+'
 natural = #'[0-9]+'
 

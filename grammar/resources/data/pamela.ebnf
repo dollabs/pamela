@@ -133,7 +133,7 @@ keyword = <':'> #'[A-Za-z0-9:*-.]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
-float = #'[-]?[0-9]+.[0-9]+'
+float = #'[-]?[0-9]+\.[0-9]+'
 integer = #'[-]?[0-9]+'
 natural = #'[0-9]+'
 
