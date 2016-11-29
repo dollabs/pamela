@@ -63,7 +63,8 @@ This script will:
 * Verify that **git** is installed
 * Ensure that the `~/bin` directory exists (and create it if necessary)
 * Check that the `~/bin` is in the `PATH`<br/>
-  _NOTE: the script will not attempt to change `~/.bashrc` -- this must be done manually if required_
+  _NOTE: the script will not attempt to change the initial setting of your **PATH** (_this must be done manually if required). You can add the following to your
+  `.profile` or `.bashrc` as appropriate: `export PATH=$HOME/bin:$PATH`
 * Ensure that the `~/src/github/dollabs` directory exists (and create it if necessary)
 * Verify that **boot** is installed (and install it if necessary)
 * Will install the DOLL labs repositories:
