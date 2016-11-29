@@ -765,11 +765,11 @@
 (def root-task-ir {
                    :argval identity
                    :boolean parser/ir-boolean
-                   ;; :float handled in :ir-number
+                   :float parser/ir-float
                    :integer parser/ir-integer
                    :keyword keyword
                    :natural parser/ir-integer
-                   :number parser/ir-number
+                   :number identity
                    :root-task ir-root-task
                    :safe-keyword identity
                    :string identity
