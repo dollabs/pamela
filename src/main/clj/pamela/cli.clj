@@ -105,6 +105,34 @@
         (output-file output "edn" ir)
         0))))
 
+(defn check-model
+  "Perform syntatic check on a PAMELA model"
+  {:added "0.4.4"}
+  [options]
+  (let [{:keys [input output magic output-magic]} options]
+    (cond
+      (not= 1 (count input))
+      (do
+        (log/error "check action only accepts one input file")
+        1)
+      magic
+      (do
+        (log/error "check action does not accept magic input")
+        1)
+      output-magic
+      (do
+        (log/error "check action does not accept magic output")
+        1)
+      :else
+      (let [tree (parser/parse (assoc options :check-only? true))]
+        (if (:error tree)
+          (do
+            (log/errorf "unable to parse: %s\nerror: %s" input (:error tree))
+            1)
+          (do
+            (output-file output "edn" (:tree tree))
+            0))))))
+
 (defn parse-model
   "Load model(s) in memory, construct --model PCLASS, save as EDN"
   {:added "0.3.0"}
@@ -160,6 +188,7 @@
   actions
   "Valid PAMELA command line actions"
   {"build" (var build-model)
+   "check" (var check-model)
    "parse" (var parse-model)
    "cat" (var cat-input-output)
    "delete" (var delete-model)

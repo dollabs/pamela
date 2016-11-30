@@ -98,5 +98,5 @@
 
   :fields {:source (lvar "source")
            :drain (lvar "drain")
-           :bulb1 (bulb :source :drain :id "Bulb1")
-           :switchedpower (psw :source :drain :id "PSW1" :interface "RMQ")})
+           :bulb1 (bulb :source :drain :id "switchedcircuit" :plant-part "Bulb1")
+           :switchedpower (psw :source :drain :id "switchedcircuit" :plant-part "PSW1" :interface "RMQ")})
