@@ -113,8 +113,7 @@
     :initial
     {:type :pclass-ctor,
      :pclass bulb,
-     :args
-     [[:pclass-arg-keyword :source] [:pclass-arg-keyword :drain]],
+     :args [:source :drain],
      :id "Bulb1"}},
    :switchedpower
    {:access :private,
@@ -122,8 +121,7 @@
     :initial
     {:type :pclass-ctor,
      :pclass psw,
-     :args
-     [[:pclass-arg-keyword :source] [:pclass-arg-keyword :drain]],
+     :args [:source :drain],
      :id "PSW1",
      :interface "RMQ"}}}},
  lightvals

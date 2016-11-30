@@ -113,6 +113,9 @@
 (defn ir-id [id]
   {:id id})
 
+(defn ir-plant-part [plant-part]
+  {:plant-part plant-part})
+
 (defn ir-interface [interface]
   {:interface interface})
 
@@ -475,7 +478,7 @@
                 :or-expr (partial ir-cond-expr :or)
                 :pamela ir-merge
                 :parallel (partial ir-fn :parallel)
-                ;; pclass-arg-keyword
+                :pclass-arg-keyword identity
                 :pclass-ctor ir-pclass-ctor
                 :pclass-ctor-arg identity
                 :pclass-ctor-option identity
@@ -483,6 +486,7 @@
                 :plant-fn ir-plant-fn
                 :plant-fn-symbol identity
                 ;; :plant-opt handled in ir-plant-fn
+                :plant-part ir-plant-part
                 :post (partial ir-map-kv :post)
                 :pre (partial ir-map-kv :pre)
                 :probability (partial ir-map-kv :probability)
@@ -882,9 +886,13 @@
               (recur (assoc mir name (or default :unset))
                 (first more) (rest more)))))))))
 
-;; return PAMELA IR or {:error "message"}
+;; Will parse the pamela input file(s)
+;; and return {:error "message"} on errors
+;; else the PAMELA IR
+;;   unless check-only? in which case it will return the parse
+;;   tree as txt
 (defn parse [options]
-  (let [{:keys [input magic output-magic]} options
+  (let [{:keys [input magic output-magic check-only?]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
@@ -893,7 +901,7 @@
     (reset! pamela-lvars mir)
     (loop [ir {} input-filename (first input) more (rest input)]
       (if (or (:error ir) (not input-filename))
-        (let [lvars @pamela-lvars
+        (let [lvars (if check-only? [] @pamela-lvars)
               input-names (mapv fs-file-name input)
               out-magic (if (pos? (count lvars))
                           (apply str
@@ -932,8 +940,11 @@
                      (log/error (with-out-str (pprint tree)))
                      {:error msg})
                    :else
-                   (let [pir (validate-pamela
-                               (insta/transform pamela-ir (first tree)))]
+                   (let [tree0 (first tree)
+                         pir (if check-only?
+                               {:tree tree0}
+                               (validate-pamela
+                                 (insta/transform pamela-ir tree0)))]
                      (if (:error pir)
                        pir
                        (merge ir pir))))]

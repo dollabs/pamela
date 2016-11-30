@@ -32,15 +32,18 @@ pamela -i "$CODE/test/pamela/qc.pamela" \
 # remove gensym artifacts
 # NOTE: maps should be sorted by key
 
-sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
-    "$dir/${NUMBER}_qc-demo-tpn.$format" > \
-    "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format"
+# sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
+#     "$dir/${NUMBER}_qc-demo-tpn.$format" | sort > \
+#     "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format"
 
 sed -e 's/\(:[a-z\-]*\)-[0-9][0-9]*/\1-1000/g' \
-    "$RESULTS/${NUMBER}_qc-demo-tpn.$format" > \
+    "$RESULTS/${NUMBER}_qc-demo-tpn.$format" | \
+    fgrep :tpn-type | cut -d: -f3 | cut -d, -f1 | sort > \
     "$RESULTS/${NUMBER}_qc-demo-tpn.safe.$format"
 
-if ! diff -u "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format" \
+# if ! diff -u "$RESULTS/${NUMBER}_EXPECTED_qc-demo-tpn.safe.$format" \
+#      "$RESULTS/${NUMBER}_qc-demo-tpn.safe.$format"; then
+if ! diff -u "$dir/${NUMBER}_qc-demo-tpn.safe.$format" \
      "$RESULTS/${NUMBER}_qc-demo-tpn.safe.$format"; then
     exit 1
 fi

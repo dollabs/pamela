@@ -18,5 +18,6 @@ Options:
 
 Actions:
   build	Load model(s) and build intermediate representation (IR)
+  check	Perform syntatic check on a PAMELA model
   htn	Load model(s) and construct HTN and TPN
   tpn	Load model(s) and construct as a TPN
