@@ -1163,7 +1163,8 @@
               ;; _ (println "MAKE-HTN-METHODS" i "TYPE" type
               ;;     "NAME" name "METHOD" method
               ;;     "MNAME" mname "symbol?" (symbol? mname)
-              ;;     "PRIMITIVE" primitive "BODY" body)
+              ;;     "PRIMITIVE" primitive "BODY" body
+              ;;     "TC" temporal-constraints)
               subtask
               (cond
                 ;; FIXME :plant-fn is WRONG.. is a user-fn
@@ -1274,8 +1275,22 @@
                                      :irks irks-j})
                         (recur (inc j))))))
 
+                (= type :delay)
+                (let [task (htn-primitive-task
+                             {:name 'delay
+                              :temporal-constraints temporal-constraints
+                              :irks irks-i})]
+                  task)
+
                 :else
-                :TBD)
+                (let [msg (str "unhandled function type in HTN: " type)
+                      task (htn-primitive-task
+                             {:name 'error
+                              :arguments [msg]
+                              :irks irks-i})]
+                  (log/error msg)
+                  task)
+                )
               subtasks (if subtask (conj subtasks subtask) subtasks)]
           (recur subtasks (inc i)))))))
 

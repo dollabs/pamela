@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file. This change
 Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
 * Fixed parser bug with floating point numbers
+* Added "check" action for syntatic checks (Closes #44)
+* Added :plant-part to pclass-ctor (Closes #45)
+* Fixed TPN generation with delay statements
 * _TBD_
 
 ### [0.4.3] - 2016-11-18
