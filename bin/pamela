@@ -26,7 +26,6 @@ cd "$dir"
 cd ..
 top="$(pwd -P)"
 logs="$top/logs"
-rc=0
 
 if [ ! -d "$logs" ]; then
     mkdir "$logs"
@@ -38,22 +37,12 @@ PAMELA_OPTS="${PAMELA_OPTS:-$JVM_OPTS}"
 PAMELA_MODE="${PAMELA_MODE:-prod}"
 PAMELA_VERBOSE="${PAMELA_VERBOSE:-0}"
 
-# attempt to silence leiningen unless the user has set LEIN_SILENT=false
-if [ "$LEIN_SILENT" = "false" ]; then
-    unset LEIN_SILENT
-else
-    # assumes https://github.com/emezeske/lein-cljsbuild/issues/417
-    LEIN_SILENT="true"
-fi
-
 # ensure pamela does not use PAGER to guess we are in the repl
 unset PAGER
 
 verbose=$PAMELA_VERBOSE
-# logfile="$logs/$program-script.log"
-errfile="$logs/${program}-errors.log"
 target="$top/target"
-jar="$target/uberjar/$program.jar"
+jar="$target/$program.jar"
 
 # functions ------------------------------------------
 log() {
@@ -78,218 +67,32 @@ err() {
 
 # main program -----------------------------------------------
 
-# vlog "-- starting $program at $(date) --"
-
-if [ -z "$PAMELAD" ]; then
-    if [ -e "$jar" ]; then
-        if [ "$PAMELA_MODE" != "dev" ]; then
-            vvlog java $PAMELA_OPTS -jar $jar $*
-            ## exec java $PAMELA_OPTS -jar $jar $* | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
-            exec java $PAMELA_OPTS -jar $jar $*
-        fi
-    else
-        if [ "$PAMELA_MODE" = "prod" ]; then
-            err "jar not present in PAMELA_MODE=prod : $jar"
-            exit 1
-        fi
-        if [ ! -e "project.clj" ]; then
-            err "missing project.clj"
-            exit 1
-        fi
+if [ "$PAMELA_MODE" != "dev" ] && [ -e "$jar" ]; then
+    vvlog java $PAMELA_OPTS -jar $jar $*
+    exec java $PAMELA_OPTS -jar $jar $*
+else
+    if [ "$PAMELA_MODE" = "prod" ]; then
+        err "jar not present in PAMELA_MODE=prod : $jar"
+        err "to run in development mode, export PAMELA_MODE=dev"
+        exit 1
+    fi
+    if [ ! -e "build.boot" ]; then
+        err "missing build.boot"
+        exit 1
     fi
 fi
 
-url="http://$PAMELAD/pamela"
-args="-s -XPOST $url"
-leinargs="run --"
 
 usage() {
-    if [ -z "$PAMELAD" ]; then
-        err "invalid command line (type 'pamela -h' for usage)"
-    else
-        curl -s -XPOST $url -F 001=select -F 001.s=--help
-    fi
+    err "invalid command line (type 'pamela -h' for usage)"
     exit 1
 }
 
-i=0
-input=""
-inputtemp=""
-output=""
+args="run"
 while [ $# -gt 0 ]; do
-    i=$(( $i + 1 ))
-    field=$(printf "%03d" $i)
-    case "$1" in
-        (-v|--verbose)
-            args="$args -F $field=select -F ${field}.s=$1"
-            leinargs="$leinargs $1"
-            verbose=$(( $verbose + 1 ))
-            ;;
-        (-h|--help|-V|--version|-r|--recursive|-s|--simple|-L|--load|-g|--visualize)
-            args="$args -F $field=select -F ${field}.s=$1"
-            leinargs="$leinargs $1"
-            ;;
-        (-c|--construct-tpn|-d|--daemonize|-e|--database|-m|--model|-f|--format|-t|--root-task|-l|--log-level)
-            sw="$1"
-            if [ $# -gt 1 ]; then
-                args="$args -F $field=select -F ${field}.s=$1"
-                leinargs="$leinargs $1"
-                shift
-                i=$(( $i + 1 ))
-                field=$(printf "%03d" $i)
-                args="$args -F $field=text -F ${field}.t=$1"
-                if [ "$sw" = "-t" ] || [ "$sw" = "--root-task" ]; then
-                    # escape special characters from the shell
-                    leinargs="$leinargs $(echo $1 | base64)"
-                else
-                    leinargs="$leinargs $1"
-                fi
-            else
-                usage
-            fi
-            ;;
-        (-i|--input)
-            if [ $# -gt 1 ]; then
-                args="$args -F $field=select -F ${field}.s=$1"
-                leinargs="$leinargs $1"
-                shift
-                if [ "$1" = "-" ]; then
-                    inputtemp=$(mktemp /tmp/pamela.STDIN.XXXXXX)
-                    input=$inputtemp
-                    cat > $input
-                else
-                    input="$1"
-                fi
-                if [ ! -e "$input" ]; then
-                    input="$PAMELA_CWD/$input"
-                    if [ ! -e "$input" ]; then
-                        err "input file does not exist: $input"
-                        exit 1
-                    fi
-                fi
-                i=$(( $i + 1 ))
-                field=$(printf "%03d" $i)
-                args="$args -F $field=file -F ${field}.f=@$input"
-                leinargs="$leinargs $input"
-            else
-                usage
-            fi
-            ;;
-        (-a|--magic)
-            if [ $# -gt 1 ]; then
-                args="$args -F $field=select -F ${field}.s=$1"
-                leinargs="$leinargs $1"
-                shift
-                i=$(( $i + 1 ))
-                field=$(printf "%03d" $i)
-                args="$args -F $field=file -F ${field}.f=@$1"
-                leinargs="$leinargs $1"
-            else
-                usage
-            fi
-            ;;
-        (-b|--output-magic)
-            if [ $# -gt 1 ]; then
-                leinargs="$leinargs $1"
-                shift
-                moutput="$1"
-                moutdir="$(dirname $moutput)"
-                if [ "$moutdir" = "." ]; then
-                    moutdir="$PAMELA_CWD"
-                else
-                    if [ ! -d "$moutdir" ]; then
-                        err "magic-output directory does not exist: $moutdir"
-                        exit 1
-                    fi
-                fi
-                moutput="$moutdir/$(basename $moutput)"
-                leinargs="$leinargs $moutput"
-                # this will tell NOT curl to save to $output
-                # as it conflicts with --output
-                # args="$args --output $output"
-                # this will tell pamelad the filename
-                args="$args -F $field=select -F ${field}.s=-b"
-                i=$(( $i + 1 ))
-                field=$(printf "%03d" $i)
-                args="$args -F $field=text -F ${field}.t=$1"
-            else
-                usage
-            fi
-            ;;
-        (-o|--output)
-            if [ $# -gt 1 ]; then
-                leinargs="$leinargs $1"
-                shift
-                if [ "$1" = "-" ]; then
-                    output="-"
-                    leinargs="$leinargs $output"
-                    i=$(( $i + 1 ))
-                    # treat "--output -" as if it didn't happen
-                    # i=$(( $i - 1 ))
-                else
-                    output="$1"
-                    outdir="$(dirname $output)"
-                    if [ "$outdir" = "." ]; then
-                        outdir="$PAMELA_CWD"
-                    else
-                        if [ ! -d "$outdir" ]; then
-                            err "output directory does not exist: $outdir"
-                            exit 1
-                        fi
-                    fi
-                    output="$outdir/$(basename $output)"
-                    leinargs="$leinargs $output"
-                    # this will tell curl to save to $output
-                    args="$args --output $output"
-                    # this will tell pamelad the filename
-                    args="$args -F $field=select -F ${field}.s=-o"
-                    i=$(( $i + 1 ))
-                    field=$(printf "%03d" $i)
-                    args="$args -F $field=text -F ${field}.t=$1"
-                fi
-            else
-                usage
-            fi
-            ;;
-        (-*)
-            usage
-            ;;
-        (*)
-            if [ $# -gt 1 ]; then
-                usage
-            else
-                args="$args -F $field=text -F ${field}.t=$1"
-                leinargs="$leinargs $1"
-            fi
-            ;;
-    esac
+    args="$args -A $1"
     shift
 done
 
-if [ -z "$PAMELAD" ]; then
-    vvlog lein $leinargs
-    lein $leinargs  | grep -v -E '(^[0-9][0-9]-[0-9][0-9]-[0-9][0-9] |^Successfully compiled)' 2> $errfile
-else
-    vvlog curl $args
-    curl $args
-    rc=$?
-    case $rc in
-        (0) ;;
-        (7) err "unable to connect to PAMELAD at $PAMELAD, is it running?" ;;
-        (*) err "error conneting with PAMELAD at $PAMELAD (see curl error $rc)" ;;
-    esac
-fi
-
-if [ -n "$inputtemp" ]; then
-    rm "$inputtemp"
-fi
-
-# lein sometimes returns non-zero when things are fine
-if [ -s "$errfile" ]; then
-    # err "errors were found, please see $errfile"
-    cat "$errfile" 1>&2
-    rc=1
-fi
-rm -f "$errfile"
-
-exit $rc
+vvlog boot $args
+boot $args
