@@ -1,0 +1,45 @@
+{:hedge-1073 {:type :edge, :uid :hedge-1073, :end-node :hem-1067},
+ :hedge-1079 {:type :edge, :uid :hedge-1079, :end-node :hpt-1065},
+ :hedge-1084 {:type :edge, :uid :hedge-1084, :end-node :hpt-1066},
+ :hem-1067
+ {:type :htn-expanded-method,
+  :uid :hem-1067,
+  :label "flip-3()",
+  :incidence-set #{:hedge-1073},
+  :edges [],
+  :network :net-1074},
+ :henpt-1063
+ {:uid :henpt-1063,
+  :type :htn-expanded-nonprimitive-task,
+  :label "flip-3()",
+  :incidence-set #{},
+  :edges #{:hedge-1073}},
+ :hpt-1064
+ {:type :htn-primitive-task,
+  :uid :hpt-1064,
+  :label "flip()",
+  :incidence-set #{},
+  :edges #{:hedge-1079}},
+ :hpt-1065
+ {:type :htn-primitive-task,
+  :uid :hpt-1065,
+  :label "flip()",
+  :incidence-set #{:hedge-1079},
+  :edges #{:hedge-1084}},
+ :hpt-1066
+ {:type :htn-primitive-task,
+  :uid :hpt-1066,
+  :label "flip()",
+  :incidence-set #{:hedge-1084},
+  :edges #{}},
+ :net-1069
+ {:type :htn-network,
+  :uid :net-1069,
+  :label "flip-3()",
+  :rootnodes #{:henpt-1063}},
+ :net-1074
+ {:type :htn-network,
+  :uid :net-1074,
+  :label "flip-3()",
+  :rootnodes #{:hpt-1064}},
+ :network :net-1069}

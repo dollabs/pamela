@@ -19,6 +19,11 @@
 set -e
 
 program=$(basename $0)
+
+echo "$program under construction"
+exit 1
+
+
 code=$(dirname $0)
 cd "$code/.."
 code="$(pwd -P)"

@@ -17,16 +17,15 @@
 # views of the Army Contracting Command and DARPA.
 
 program=$(basename $0)
-code=$(dirname $0)
-cd "$code/.."
-code="$(pwd -P)"
+dir=$(dirname $0)
+cd "$dir/.."
+export CODE="$(pwd -P)"
 
-cd "src/test/cli"
+cd "test/cli"
 
 # ensure the pamela script we use is from this directory
-export PATH="$code/bin":${PATH}
-export CODE="$code"
-export RESULTS="$code/target/cli-test"
+export PATH="$CODE/bin":${PATH}
+export RESULTS="$CODE/target/cli-test"
 
 mkdir -p "$RESULTS"
 
@@ -36,7 +35,9 @@ tests=0
 runonly="$*"
 only="$1"
 for script in $scripts; do
-    name=$(echo $script | cut -d_ -f2 | sed 's/.sh$//')
+    export NUMBER=$(echo $script | cut -d_ -f1)
+    # name=$(echo $script | cut -d_ -f2 | sed 's/.sh$//')
+    name=$(echo $script | sed -e "s/^${NUMBER}_//" -e 's/.sh$//')
     if [ -n "$runonly" ]; then
         if [ "$name" = "$only" ]; then
             # echo "DO THIS ONE"
@@ -49,8 +50,10 @@ for script in $scripts; do
     fi
     echo "$program $name"
     goodout=$(echo $script | sed 's/.sh$/.out/')
-    out="$RESULTS/$name.out"
-    err="$RESULTS/$name.err"
+    # out="$RESULTS/$name.out"
+    # err="$RESULTS/$name.err"
+    out="$RESULTS/${NUMBER}_$name.out"
+    err="$RESULTS/${NUMBER}_$name.err"
     # NOTE: lein-cljsbuild pollutes the output (when run from lein run)
     if ./$script < /dev/null > "$out.raw" 2> "$err"; then
         echo "PASSED"
