@@ -76,7 +76,7 @@ This script will:
 * Will run the PAMELA Clojure tests and command line tests
 
 ```
-curl -fsSLo pamela-setup https://raw.githubusercontent.com/tmarble/pamela/streamline/bin/pamela-setup && chmod +x pamela-setup && ./pamela-setup
+curl -fsSLo pamela-setup https://raw.githubusercontent.com/dollabs/pamela/master/bin/pamela-setup && chmod +x pamela-setup && ./pamela-setup
 ```
 
 ## Requirements
