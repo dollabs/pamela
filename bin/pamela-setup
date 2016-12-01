@@ -118,13 +118,6 @@ for repo in $repos; do
     echo $repo
     dollrepo="$dollabs/$repo"
     gitrepo="$giturl/$repo"
-    # DEBUGGING until the streamline branch is merged
-    if [ "$repo" = "pamela" ]; then
-        dollabs="$github/tmarble"
-        mkdir -p "$dollabs"
-        dollrepo="$dollabs/$repo"
-        gitrepo="https://github.com/tmarble/$repo"
-    fi
     if [ ! -d "$dollrepo" ]; then
         vlog "cloning the $repo repo now..."
         cd "$dollabs"
@@ -146,8 +139,6 @@ for repo in $repos; do
             ;;
         (pamela)
             vlog "building jar and testing $repo..."
-            # DEBUGGING until the streamline branch is merged
-            git checkout streamline
             boot all-tests
             ;;
     esac
