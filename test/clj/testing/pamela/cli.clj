@@ -19,6 +19,6 @@
   (testing "testing-pamela-cli"
     (is (= log-levels #{"trace" "debug" "info" "warn" "error" "fatal" "report"}))
     (is (= output-formats #{"edn" "json"}))
-    (is (= (sort (keys actions)) '("build" "htn" "tpn")))
+    (is (= (sort (keys actions)) '("build" "check" "htn" "tpn")))
     (is (= (base-64-decode "KGNvaW4uZmxpcC0zKQ==") "(coin.flip-3)"))
     ))
