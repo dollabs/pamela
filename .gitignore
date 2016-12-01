@@ -3,12 +3,10 @@
 /dev-resources
 /logs
 /pom.xml
-/bin/pamelad.env
 /resources/public/js/compiled
 /resources/public/downloads
-/src/test/pamela/*.txt
-/src/test/pamela/*.png
-/test
+/test/pamela/*.txt
+/test/pamela/*.png
 
 # auto generated documentation
 /doc/clj

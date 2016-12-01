@@ -1,0 +1,220 @@
+{bulb
+ {:type :pclass,
+  :args [vcc vdd],
+  :meta
+  {:version "0.2.1",
+   :depends {lightvals "0.2.0"},
+   :doc "A light bulb",
+   :icon "bulb.svg"},
+  :fields
+  {:anode
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name vcc}},
+   :cathode
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name vdd}},
+   :illumination
+   {:access :public,
+    :observable false,
+    :initial {:type :mode-reference, :pclass lightvals, :mode :dark}},
+   :sensed-illumination
+   {:access :public,
+    :observable true,
+    :initial {:type :mode-reference, :pclass lightvals, :mode :dark}}},
+  :modes
+  {:on
+   {:type :and,
+    :args
+    [{:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :illumination}
+       {:type :mode-reference, :pclass lightvals, :mode :bright}]}
+     {:type :equal,
+      :args
+      [{:type :field-reference,
+        :pclass this,
+        :field :sensed-illumination}
+       {:type :mode-reference, :pclass lightvals, :mode :bright}]}]},
+   :off
+   {:type :and,
+    :args
+    [{:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :illumination}
+       {:type :mode-reference, :pclass lightvals, :mode :dark}]}
+     {:type :equal,
+      :args
+      [{:type :field-reference,
+        :pclass this,
+        :field :sensed-illumination}
+       {:type :mode-reference, :pclass lightvals, :mode :dark}]}]},
+   :fail {:type :literal, :value true}},
+  :transitions
+  {:off:on
+   {:pre
+    {:type :and,
+     :args
+     [{:type :mode-reference, :pclass this, :mode :off}
+      {:type :equal,
+       :args
+       [{:type :field-reference, :pclass this, :field :anode}
+        {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+      {:type :equal,
+       :args
+       [{:type :field-reference,
+         :pclass this,
+         :field :sensed-illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :bright}]}]},
+    :post {:type :mode-reference, :pclass this, :mode :on},
+    :temporal-constraints [{:type :bounds, :value [1 3]}],
+    :doc "turning on bulb"},
+   :on:off
+   {:pre
+    {:type :and,
+     :args
+     [{:type :mode-reference, :pclass this, :mode :on}
+      {:type :equal,
+       :args
+       [{:type :field-reference, :pclass this, :field :anode}
+        {:type :mode-reference, :pclass pwrvals, :mode :none}]}
+      {:type :equal,
+       :args
+       [{:type :field-reference,
+         :pclass this,
+         :field :sensed-illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :dark}]}]},
+    :post {:type :mode-reference, :pclass this, :mode :off},
+    :temporal-constraints [{:type :bounds, :value [1 3]}],
+    :doc "turning off bulb"},
+   :*:fail
+   {:probability {:type :lvar, :name "pfbulb"},
+    :doc "spontaneous bulb failure"}}},
+ circuit1
+ {:type :pclass,
+  :args [],
+  :meta
+  {:version "0.2.1",
+   :depends {psw "0.2.1", bulb "0.2.1"},
+   :doc "An example circuit with a power switch and light bulb"},
+  :fields
+  {:source
+   {:access :private,
+    :observable false,
+    :initial {:type :lvar, :name "source"}},
+   :drain
+   {:access :private,
+    :observable false,
+    :initial {:type :lvar, :name "drain"}},
+   :bulb1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass bulb,
+     :args [:source :drain],
+     :id "Bulb1"}},
+   :switchedpower
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass psw,
+     :args [:source :drain],
+     :id "PSW1",
+     :interface "RMQ"}}}},
+ lightvals
+ {:type :pclass,
+  :args [],
+  :meta {:version "0.2.0", :doc "Enum for lighting values"},
+  :modes
+  {:bright {:type :literal, :value true},
+   :dark {:type :literal, :value true}}},
+ psw
+ {:type :pclass,
+  :args [gnd pwr],
+  :meta
+  {:version "0.2.1", :depends {pwrvals "0.2.0"}, :doc "Power Switch"},
+  :fields
+  {:TP1
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name gnd}},
+   :TP2
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name pwr}},
+   :pwr
+   {:access :private,
+    :observable false,
+    :initial {:type :mode-reference, :pclass pwrvals, :mode :none}}},
+  :modes
+  {:on
+   {:type :equal,
+    :args
+    [{:type :field-reference, :pclass this, :field :pwr}
+     {:type :mode-reference, :pclass pwrvals, :mode :high}]},
+   :off
+   {:type :equal,
+    :args
+    [{:type :field-reference, :pclass this, :field :pwr}
+     {:type :mode-reference, :pclass pwrvals, :mode :none}]},
+   :fail {:type :literal, :value true}},
+  :methods
+  {turn-on
+   {:args [],
+    :pre {:type :mode-reference, :pclass this, :mode :off},
+    :temporal-constraints [{:type :bounds, :value [1 3]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :post {:type :mode-reference, :pclass this, :mode :on},
+    :cost 0,
+    :body nil,
+    :doc "turns on the power supply"},
+   turn-off
+   {:args [],
+    :pre {:type :mode-reference, :pclass this, :mode :on},
+    :temporal-constraints [{:type :bounds, :value [1 3]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :post {:type :mode-reference, :pclass this, :mode :off},
+    :cost 0,
+    :body nil,
+    :doc "turns off the power supply"},
+   reset
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :post {:type :mode-reference, :pclass this, :mode :off},
+    :cost 0,
+    :body nil,
+    :doc "resets the power supply"}},
+  :transitions
+  {:off:on
+   {:pre {:type :mode-reference, :pclass this, :mode :off},
+    :post {:type :mode-reference, :pclass this, :mode :on},
+    :doc "turning on"},
+   :on:off
+   {:pre {:type :mode-reference, :pclass this, :mode :on},
+    :post {:type :mode-reference, :pclass this, :mode :off},
+    :doc "turning off"},
+   :*:fail {:probability 1.0E-7, :doc "spontaneous switch failure"}}},
+ pwrvals
+ {:type :pclass,
+  :args [],
+  :meta {:version "0.2.0", :doc "Enum for power values"},
+  :modes
+  {:high {:type :literal, :value true},
+   :none {:type :literal, :value true}}},
+ pamela/lvars
+ {:type :lvars,
+  :lvars {"pfbulb" :unset, "source" :unset, "drain" :unset}}}
