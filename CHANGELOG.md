@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
+* _TBD_
+
+### [0.5.0] - 2016-12-01
+
+Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
 * Switched build tool from lein to boot
 * Streamlined the directory layout
