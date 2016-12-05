@@ -1,0 +1,1946 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  data-reactroot="" id="plans">
+<style type="text/css">
+<![CDATA[
+/* Copyright (c) 2016 Dynamic Object Language Labs Inc.
+
+   This software is licensed under the terms of the
+   Apache License, Version 2.0 which can be found in
+   the file LICENSE at the root of this distribution.
+*/
+
+@import url('https://fonts.googleapis.com/css?family=PT+Sans+Narrow');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+/* at 300 you get light and regular, at 400 FAIL */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300');
+/* at 300 you get light and regular, at 400 you get regular and bold */
+@import url('https://fonts.googleapis.com/css?family=Nunito:400');
+
+.font-family-helvetica {
+    font-family: Helvetica, Verdana, Arial, sans-serif;
+}
+
+.font-family-pt-sans-narrow { font-family: 'PT Sans Narrow'; }
+.font-family-roboto { font-family: 'Roboto'; }
+.font-family-open-sans-condensed { font-family: 'Open Sans Condensed'; }
+.font-family-nunito { font-family: 'Nunito'; }
+
+.font-weight-light { font-weight: 300; }
+.font-weight-regular { font-weight: 400; }
+.font-weight-bold { font-weight: 700; }
+
+.font-size-7 { font-size: 7px; }
+.font-size-8 { font-size: 8px; }
+.font-size-9 { font-size: 9px; }
+.font-size-10 { font-size: 10px; }
+.font-size-11 { font-size: 11px; }
+.font-size-12 { font-size: 12px; }
+.font-size-13 { font-size: 13px; }
+
+svg, g, rect, circle, text, symbol, use {
+    pointer-events: all;
+}
+
+.plain {
+    fill: none;
+    stroke: black;
+    stroke-width: 1px;
+}
+
+#arrowhead {
+    fill: #444; /* controls color for all the arrowheads; */
+}
+
+/* state specific arrowheads */
+#arrowhead-normal { fill: #66ccff; }
+#arrowhead-impossible { fill: silver; }
+#arrowhead-start { fill:  #80ff80; } /* previously negotiation */
+#arrowhead-negotiation { fill:  #80ff80; }
+#arrowhead-best { fill: #ffbf00; }
+#arrowhead-active { fill: #00ff00; }
+#arrowhead-started { fill: #00ff00; } /* previously active */
+#arrowhead-finished { fill: #009900; }
+#arrowhead-failed { fill: red; }
+
+#arrowlight {
+    fill: lightblue;
+}
+
+#arrow {
+    /* fill: #555; */
+    fill: rgba(100,100,100,0.9);
+}
+
+#arrow-long {
+    /* fill: #888; */
+    fill: rgba(150,150,150,0.9);
+}
+
+#arrow-very-long {
+    /* fill: #ccc; */
+    fill: rgba(200,200,200,0.9);
+}
+
+#choicehem > circle {
+    fill: blue;
+}
+
+.outline {
+    fill: none;
+    stroke: green;
+    stroke-width: 1px;
+}
+
+.planview {
+    fill: rgba(0,0,255,0.2);
+    stroke: none;
+}
+
+
+.activity-normal, .null-activity-normal, .delay-activity-normal, .parallel-edge-normal, .aggregation-normal {
+    fill: none;
+    stroke: #66ccff;  /* gray #444  light-blue  #66ccff */
+    stroke-width: 3.0px;
+}
+
+.aggregation-mixed
+{
+    fill: none;
+    stroke: #111;
+    stroke-width: 3.0px;
+}
+
+.activity-hidden, .null-activity-hidden, .delay-activity-hidden, .aggregation-hidden, .parallel-edge-hidden, .choice-edge-hidden {
+    fill: none;
+    stroke: none;
+    stroke-width: 3.0px;
+}
+
+.choice-edge-normal {
+    fill: none;
+    /* stroke: #888;         /*  Bookmark!  This needs to be talked about  */
+    stroke: #66ccff;  /* same as parallel-edge-normal */
+    stroke-width: 3.0px;
+}
+
+.target-unselected {
+    /* DEBUG */
+    /* fill: lightgrey; */
+    fill: none;
+}
+
+.node .target-unselected {
+    fill: none;
+    stroke: none;
+}
+
+.node .target-selected {
+    opacity: 0.67;
+    fill: yellow;
+}
+
+.node:hover .target-selected, .node:hover .target-unselected {
+                                  opacity: 0.67;
+                                  fill: Fuchsia;
+                              }
+
+.edge .target {
+    fill-opacity: 0.67;
+    opacity: 0.67;
+    stroke-width: 8px;
+}
+
+.edge .target-unselected {
+    fill-opacity: 0.67;
+    opacity: 0.67;
+    stroke: none;
+    stroke-width: 8px;
+}
+
+.edge .target-selected {
+    fill-opacity: 0.67;
+    opacity: 0.67;
+    stroke: yellow;
+    stroke-width: 8px;
+}
+
+.edge:hover .target-selected, .edge:hover .target-unselected {
+                                  stroke: Fuchsia;
+                                  stroke-width: 8px;
+                              }
+
+/*.............Activities(TPN)................*/
+
+.activity-active, .null-activity-active, .delay-activity-active, .activity-started, .null-activity-started, .delay-activity-started, .choice-edge-active, .parallel-edge-active, .choice-edge-started, .parallel-edge-started, .aggregation-started, .aggregation-active {
+    fill: none;
+    stroke: #00ff00;  /*flashing green*/
+    animation-name: example;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    stroke-width: 3.0px;
+}
+
+/* Standard syntax */
+@keyframes example {
+    0% {stroke: #80ff80;}
+    50% {stroke: #00b300;}
+    100% {stroke: #80ff80;}
+}
+
+.activity-finished, .null-activity-finished, .delay-activity-finished, .choice-edge-finished, .parallel-edge-finished, .aggregation-finished {
+    fill: none;
+    stroke: #009900;   /*dark green*/
+    stroke-width: 3.0px;
+}
+
+.activity-negotiation, .null-activity-negotiation, .delay-activity-negotiation, .activity-start, .null-activity-start, .delay-activity-start, .choice-edge-negotiation, .parallel-edge-negotiation, .aggregation-start, .aggregation-negotiation  {
+    fill: none;
+    stroke: #80ff80;   /*light green*/
+    stroke-width: 3.0px;
+}
+
+.activity-best, .null-activity-best, .delay-activity-best, .choice-edge-best, .parallel-edge-best, .aggregation-best {
+    fill: none;
+    stroke: #ffbf00;   /*gold*/
+    stroke-width: 3.0px;
+}
+/*TODO infeasile is same as impossible. Update as appropriate*/
+.activity-impossible, .null-activity-impossible, .delay-activity-impossible, .choice-edge-impossible, .parallel-edge-impossible, .aggregation-impossible  {
+    fill: none;
+    stroke: silver;    /*silver*/
+    stroke-width: 3.0px;
+}
+
+.activity-failed, .null-activity-failed, .delay-activity-failed, .choice-edge-failed, .parallel-edge-failed, .aggregation-failed  {
+    fill: none;
+    stroke: red;
+    stroke-width: 3.0px;
+}
+
+
+.edge-vedge {
+    fill: none;
+    stroke: yellow;
+    stroke-width: 3.0px;
+}
+
+.virtual-normal {
+    fill: none;
+    stroke: #eee;
+    stroke-width: 3.0px;
+}
+
+.temporal-constraint-normal {
+    fill: none;
+    stroke-dasharray: 2 2;
+    stroke: rgba(100,100,100,0.5);
+    stroke-width: 3.0px;
+}
+
+.temporal-constraint-hidden {
+    fill: none;
+    stroke: none;
+    /*
+    stroke-dasharray: 2 2;
+    stroke: rgba(100,100,100,0.1);
+    stroke-width: 3.0px;
+    */
+}
+
+.temporal-constraint-normal-long {
+    fill: none;
+    stroke-dasharray: 3 3;
+    stroke: rgba(150,150,150,0.5);
+    stroke-width: 3.0px;
+}
+
+.temporal-constraint-hidden-long {
+    fill: none;
+    /*
+    stroke-dasharray: 3 3;
+    stroke: rgba(150,150,150,0.1);
+    stroke-width: 3.0px;
+    */
+    stroke: none;
+}
+
+.temporal-constraint-normal-very-long {
+    fill: none;
+    stroke-dasharray: 4 4;
+    stroke: rgba(200,200,200,0.5);
+    stroke-width: 1px;
+}
+
+.temporal-constraint-hidden-very-long {
+    fill: none;
+    /*
+    stroke-dasharray: 4 4;
+    stroke: rgba(200,200,200,0.1);
+    stroke-width: 1px;
+   */
+    stroke: none;
+}
+
+.costle-constraint-normal {
+    fill: none;
+    stroke-dasharray: 3 1;
+    stroke: rgba(200,50,50,0.5);
+    stroke-width: 2.0px;
+}
+
+.costle-constraint-normal-long {
+    fill: none;
+    stroke-dasharray: 4 1;
+    stroke: rgba(228,70,70,0.5);
+    stroke-width: 1.5px;
+}
+
+.costle-constraint-normal-very-long {
+    fill: none;
+    stroke-dasharray: 5 1;
+    stroke: rgba(255,120,120,0.5);
+    stroke-width: 1px;
+}
+
+.rewardge-constraint-normal {
+    fill: none;
+    stroke-dasharray: 4 2;
+    stroke: rgba(50,200,50,0.5);
+    stroke-width: 2.0px;
+}
+
+.rewardge-constraint-normal-long {
+    fill: none;
+    stroke-dasharray: 5 2;
+    stroke: rgba(70,228,70,0.5);
+    stroke-width: 1.5px;
+}
+
+.rewardge-constraint-normal-very-long {
+    fill: none;
+    stroke-dasharray: 6 2;
+    stroke: rgba(120,255,120,0.5);
+    stroke-width: 1px;
+}
+
+/*.............Nodes(TPN)................*/
+
+.parallel-normal, .choice-normal, .unchoice-normal, .state-normal {
+    fill: #66ccff;
+    stroke: #66ccff;
+    /* DEBUG */
+    /* fill: none; */
+    /* stroke: none; */
+    stroke-width: 3px;
+}
+
+.parallel-hidden-normal, .choice-hidden-normal, .unchoice-hidden-normal, .state-hidden-normal, .parallel-hidden-best, .choice-hidden-best, .unchoice-hidden-best, .state-hidden-best, .parallel-hidden-impossible, .choice-hidden-impossible, .unchoice-hidden-impossible, .state-hidden-impossible, .parallel-hidden-reached, .choice-hidden-reached, .unchoice-hidden-reached, .state-hidden-reached, .parallel-hidden-failed, .choice-hidden-failed, .unchoice-hidden-failed, .state-hidden-failed, .parallel-hidden-started, .choice-hidden-started, .unchoice-hidden-started, .state-hidden-started {
+    /* fill: white; */
+    fill: none;
+    /* stroke: rgba(0,102,153,0.11); */
+    stroke: none;
+    stroke-width: 3px;
+}
+
+.parallel-best, .choice-best, .unchoice-best, .state-best {
+    fill: #ffbf00; /* gold #ffbf00; */
+    stroke: #ffbf00;  /* #b38600;*/
+    stroke-width: 3px;
+}
+
+.parallel-impossible, .choice-impossible, .unchoice-impossible, .state-impossible {
+    fill: silver; /* gray; */
+    stroke: silver; /*#555555;*/
+    stroke-width: 3px;
+}
+
+.parallel-reached, .choice-reached, .unchoice-reached, .state-reached {
+    fill: #009900; /* DARK GREENn; */
+    stroke: #009900;/*#004d00;*/
+    stroke-width: 3px;
+}
+
+.parallel-failed, .choice-failed, .unchoice-failed, .state-failed {
+    fill: #ff0000; /* red; */
+    stroke: #ff0000; /*#990000;*/
+    stroke-width: 3px;
+}
+
+/* typically :started is not used for TPN nodes */
+.parallel-started, .choice-started, .unchoice-started, .state-started {
+    fill: #00ff00; /* green; */
+    stroke: #009900; /* darker green; */
+    stroke-width: 3px;
+}
+
+.hem-normal {
+    fill: #b3e6ff; /* #66ccff = light-blue   #b3e6ff = lighter-blue  white*/
+    stroke: #b3e6ff;
+    stroke-width: 3.0px;
+}
+
+.hem-hidden {
+    fill: white;
+    stroke: rgba(0,0,0,0.1);
+    stroke-width: 3.0px;
+}
+
+/* Bookmark!   This one below seems redundant*/
+.hem-reached {
+    fill: #009900;
+    stroke: #009900;
+    stroke-width: 3.0px;
+}
+
+.hem-best {
+    fill: #ffbf00; /*gold*/
+    stroke: #ffbf00;
+    stroke-width: 3.0px;
+}
+
+.hem-impossible {
+    fill: silver;
+    stroke: silver;
+    stroke-width: 3.0px;
+}
+
+.hem-reached {
+    fill: #009900;
+    stroke: #009900;
+    stroke-width: 3.0px;
+}
+
+.hem-failed {
+    fill: #ff0000;
+    stroke: #ff0000;
+    stroke-width: 3.0px;
+}
+
+.hem-started {
+    /* fill: #0099cc; */
+    fill: #00ff00;
+    stroke: #00ff00;
+    stroke-width: 3.0px;
+}
+
+#tooltip1 {
+    fill: Cornsilk;
+    stroke: Chocolate;
+    stroke-width: 1.0px;
+}
+
+.active, .started {
+    fill: #00ff00; /*Light green*/
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.best {
+    fill: magenta;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.negotiation, .start  {
+    fill: orange;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.impossible {
+    fill: grey;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.failed {
+    fill: red;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.state-virtual-normal {
+    fill: #eee;
+    stroke: lightgray;
+    stroke-width: 4px;
+}
+
+.normal-probability {
+    fill: #0099cc;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.active-probability, .started-probability {
+    fill: blue;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.reached-probability {
+    fill: #00ff00;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.best-probability {
+    fill: magenta;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.negotiation-probability, .start-probability  {
+    fill: orange;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.impossible-probability {
+    fill: grey;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.failed-probability {
+    fill: red;
+    stroke: #006699;
+    stroke-width: 4px;
+}
+
+.parallel-path {
+    stroke: black;
+    stroke-width: 3px;
+}
+
+/* .parallel-normal parallel { */
+/* } */
+
+.parallel-path-hidden {
+    stroke: none;
+    stroke-width: 3px;
+}
+
+.choice-circle {
+    fill: none;
+    stroke: black;
+    /* stroke-width: 1.5px; */
+    stroke-width: 3px;
+}
+
+.choice-circle-hidden {
+    fill: none;
+    stroke: none;
+    stroke-width: 3px;
+}
+
+.unchoice-path {
+    fill: none;
+    stroke: #555;
+    stroke-width: 2.2px;
+}
+
+.unchoice-path-hidden {
+    fill: none;
+    stroke: rgba(0,0,0,0.1);
+    stroke-width: 2.2px;
+}
+
+text {
+    font-size: 9px;
+    font-family: Helvetica, Verdana, Arial, sans-serif;
+    /* font-family: Roboto Condensed, Liberation Sans Narrow, Nimbus Sans Condensed,  Helvetica Narrow, Helvetica, Verdana, Arial, sans-serif; */
+    pointer-events: none;
+    /* text-shadow: 0.16em 0.16em 0.10em white, -0.16em -0.16em 0.10em white, -0.16em 0.16em 0.10em white, 0.16em -0.16em 0.10em white; */
+}
+
+text.node-label {
+    /* font-size: 7px; */
+    fill: DarkSlateGrey;
+}
+
+.show, .node:hover .node-tooltip, .edge:hover .edge-tooltip {
+                                      fill-opacity: 1.0;
+                                      opacity: 1.0;
+                                  }
+
+.hide {
+    opacity: 0.0;
+    fill-opacity: 0.0;
+}
+
+.node {
+}
+
+.edge {
+}
+
+.node-tooltip, .edge-tooltip {
+    transition: opacity 0.5s ease;
+}
+.node-tooltip rect, .edge-tooltip rect {
+    fill: Cornsilk;
+    stroke: Chocolate;
+    stroke-width: 1.0px;
+}
+
+.menu-box {
+    fill: PowderBlue;
+    stroke: MediumBlue;
+    stroke-width: 1.0px;
+}
+
+.menu-stop1 {
+    stop-color: #888;
+}
+
+.menu-stop2 {
+    stop-color: white;
+}
+
+.menu-stop3 {
+    stop-color: #888;
+}
+
+.menu-option {
+    fill: white;
+    stroke: none;
+}
+
+.menu-option:hover {
+    fill: url(#menu-gradient);
+}
+
+]]>
+</style>
+<svg id="bigplan" viewBox="0 0 1529 460" width="1020px" height="306.8672334859385px" style="top:66.56638325703074px;left:0px;">
+<defs>
+<g id="state">
+<circle r="10" class="node">
+</circle>
+</g>
+<g id="state-hidden">
+<circle r="10" class="node">
+</circle>
+</g>
+<g id="parallel">
+<circle r="10" class="node">
+</circle>
+<path d="M-5 -7L-5 7M5 7L5 -7" class="parallel-path">
+</path>
+</g>
+<g id="parallel-hidden">
+<circle r="10" class="node">
+</circle>
+<path d="M-5 -7L-5 7M5 7L5 -7" class="parallel-path-hidden">
+</path>
+</g>
+<g id="choice">
+<circle r="10" class="node">
+</circle>
+<circle r="5" class="choice-circle">
+</circle>
+</g>
+<g id="choice-hidden">
+<circle r="10" class="node">
+</circle>
+<circle r="5" class="choice-circle-hidden">
+</circle>
+</g>
+<g id="unchoice">
+<circle r="10" class="node">
+</circle>
+<path d="M-4.719484489288494 2.7247956403269757L-4.719484489288494 -2.7247956403269757L0 -5.4495912806539515L4.719484489288494 -2.7247956403269757L4.719484489288494 2.7247956403269757L0 5.4495912806539515Z" class="unchoice-path">
+</path>
+</g>
+<g id="unchoice-hidden">
+<circle r="10" class="node">
+</circle>
+<path d="M-4.719484489288494 2.7247956403269757L-4.719484489288494 -2.7247956403269757L0 -5.4495912806539515L4.719484489288494 -2.7247956403269757L4.719484489288494 2.7247956403269757L0 5.4495912806539515Z" class="unchoice-path-hidden">
+</path>
+</g>
+<g id="hem">
+<rect x="-40" y="-20" rx="3" ry="3" width="80" height="40" class="hem">
+</rect>
+</g>
+<g id="hem-hidden">
+<rect x="-40" y="-20" rx="3" ry="3" width="80" height="40" class="hem-hidden">
+</rect>
+</g>
+<g id="markers">
+<marker id="arrowhead" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-normal" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-impossible" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-start" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-negotiation" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-best" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-active" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-started" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-finished" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowhead-failed" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="17" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="choicehem" orient="auto" markerHeight="5" markerWidth="5" refY="0" refX="-70" viewBox="-5 -5 10 10">
+<circle r="5">
+</circle>
+</marker>
+
+<marker id="arrowhem" orient="auto" markerHeight="5" markerWidth="5" refY="0" refX="5" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrowlight" orient="auto" markerHeight="4" markerWidth="4" refY="0" refX="19" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrow" orient="auto" markerHeight="3" markerWidth="3" refY="-2" refX="22" viewBox="0 -5 10 10">
+<path d="M0,-5L10,-1L1,5">
+</path>
+</marker>
+
+<marker id="arrow-long" orient="auto" markerHeight="3.5" markerWidth="3.5" refY="-0.5" refX="20" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+<marker id="arrow-very-long" orient="auto" markerHeight="8" markerWidth="8" refY="0" refX="24" viewBox="0 -5 10 10">
+<path d="M0,-5L10,0L0,5">
+</path>
+</marker>
+
+</g>
+<linearGradient id="menu-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+<stop offset="0%" class="menu-stop1">
+</stop>
+<stop offset="50%" class="menu-stop2">
+</stop>
+<stop offset="100%" class="menu-stop3">
+</stop>
+</linearGradient>
+</defs>
+<g id="planviz">
+<g>
+<g>
+<g class="edge">
+<path d="M25 180L75 280" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="-72.5" y="188" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="-65.5" y="204">
+na-7315 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M75 280L125 355" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="-22.5" y="275.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="-15.5" y="291.5">
+na-7324 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 355L175 380" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="27.5" y="325.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="34.5" y="341.5">
+na-7343 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 380L1183 380" class="target-unselected">
+</path>
+<path d="M175 380L1183 380" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="511" y="391" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="518" y="407">
+act-7341 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1183 380L1379 355" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1158.5" y="325.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1165.5" y="341.5">
+na-7337 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1379 355L1429 280" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1281.5" y="275.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1288.5" y="291.5">
+na-7318 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1429 280L1479 180" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1331.5" y="188" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1338.5" y="204">
+na-7310 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 355L175 330" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="27.5" y="300.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="34.5" y="316.5">
+na-7334 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 330L1183 330" class="target-unselected">
+</path>
+<path d="M175 330L1183 330" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="511" y="341" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="518" y="357">
+act-7332 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1183 330L1379 355" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1158.5" y="300.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1165.5" y="316.5">
+na-7327 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 330A14757.120000000003 14757.120000000003 0 0,1 1183 330" marker-end="url(#arrow-very-long)" class="temporal-constraint-normal-very-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="556.5" y="279.3909314262637" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="563.5" y="295.3909314262637">
+tc-7331 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 355A20565.600000000002 20565.600000000002 0 0,1 1379 355" marker-end="url(#arrow-very-long)" class="temporal-constraint-normal-very-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="629.5" y="303.43985109972346" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="636.5" y="319.43985109972346">
+tc-7322 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M75 280L125 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="-22.5" y="200.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="-15.5" y="216.5">
+na-7359 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 205L175 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="27.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="34.5" y="179">
+na-7376 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 205L385 205" class="target-unselected">
+</path>
+<path d="M175 205L385 205" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="112" y="216" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="119" y="232">
+act-7374 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M385 205L595 205" class="target-unselected">
+</path>
+<path d="M385 205L595 205" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="322" y="216" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="329" y="232">
+act-7383 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M595 205L645 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="497.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="504.5" y="179">
+na-7362 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M645 205L695 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="547.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="554.5" y="179">
+na-7431 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M695 205L745 130" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="597.5" y="125.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="604.5" y="141.5">
+na-7441 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 130L1083 130" class="target-unselected">
+</path>
+<path d="M745 130L1083 130" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="746" y="141" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="753" y="157">
+act-7439 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1083 130L1133 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="985.5" y="125.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="992.5" y="141.5">
+na-7434 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1133 205L1183 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1035.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1042.5" y="179">
+na-7488 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1183 205L1379 205" class="target-unselected">
+</path>
+<path d="M1183 205L1379 205" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1113" y="216" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="1120" y="232">
+act-7486 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1379 205L1429 280" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1281.5" y="200.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1288.5" y="216.5">
+na-7346 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1183 205A368.47999999999996 368.47999999999996 0 0,1 1379 205" marker-end="url(#arrow)" class="temporal-constraint-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1158.5" y="149.72910799133513" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1165.5" y="165.72910799133513">
+tc-7485 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 130A1389.662857142857 1389.662857142857 0 0,1 1083 130" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="791.5" y="77.68548773687235" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="798.5" y="93.68548773687235">
+tc-7438 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M695 205L745 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="597.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="604.5" y="179">
+na-7449 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 205L795 230" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="647.5" y="175.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="654.5" y="191.5">
+na-7469 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M795 230L1033 230" class="target-unselected">
+</path>
+<path d="M795 230L1033 230" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="746" y="241" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="753" y="257">
+act-7467 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1033 230L1083 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="935.5" y="175.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="942.5" y="191.5">
+na-7462 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M1083 205L1133 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="985.5" y="163" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="992.5" y="179">
+na-7444 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M795 230A604.52 604.52 0 0,1 1033 230" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="791.5" y="176.1716824116903" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="798.5" y="192.1716824116903">
+tc-7466 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 205L795 180" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="647.5" y="150.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="654.5" y="166.5">
+na-7459 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M795 180L1033 180" class="target-unselected">
+</path>
+<path d="M795 180L1033 180" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="746" y="191" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="753" y="207">
+act-7457 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1033 180L1083 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="935.5" y="150.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="942.5" y="166.5">
+na-7452 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M795 180A604.52 604.52 0 0,1 1033 180" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="791.5" y="126.17168241169031" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="798.5" y="142.1716824116903">
+tc-7456 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M695 205L745 280" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="597.5" y="200.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="604.5" y="216.5">
+na-7479 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 280L1083 280" class="target-unselected">
+</path>
+<path d="M745 280L1083 280" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="746" y="291" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="753" y="307">
+act-7477 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1083 280L1133 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="985.5" y="200.5" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="992.5" y="216.5">
+na-7472 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M745 280A1389.662857142857 1389.662857142857 0 0,1 1083 280" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="791.5" y="227.68548773687235" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="798.5" y="243.68548773687235">
+tc-7476 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M385 205A441 441 0 0,1 595 205" marker-end="url(#arrow)" class="temporal-constraint-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="367.5" y="150.3176391417939" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="374.5" y="166.3176391417939">
+tc-7382 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 205A441 441 0 0,1 385 205" marker-end="url(#arrow)" class="temporal-constraint-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="157.5" y="150.3176391417939" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="164.5" y="166.3176391417939">
+tc-7373 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 205L175 255" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="27.5" y="188" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="34.5" y="204">
+na-7396 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 255L595 255" class="target-unselected">
+</path>
+<path d="M175 255L595 255" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="217" y="266" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="224" y="282">
+act-7394 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M595 255L645 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="497.5" y="188" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="504.5" y="204">
+na-7389 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 255A2268 2268 0 0,1 595 255" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="262.5" y="203.2568498733708" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="269.5" y="219.2568498733708">
+tc-7393 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 205L175 155" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="27.5" y="138" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="34.5" y="154">
+na-7414 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 155L385 155" class="target-unselected">
+</path>
+<path d="M175 155L385 155" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="112" y="166" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="119" y="182">
+act-7412 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M385 155L595 155" class="target-unselected">
+</path>
+<path d="M385 155L595 155" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="322" y="166" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="329" y="182">
+act-7421 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M595 155L645 205" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="497.5" y="138" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="504.5" y="154">
+na-7400 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M385 155A441 441 0 0,1 595 155" marker-end="url(#arrow)" class="temporal-constraint-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="367.5" y="100.3176391417939" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="374.5" y="116.3176391417939">
+tc-7420 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 155A441 441 0 0,1 385 155" marker-end="url(#arrow)" class="temporal-constraint-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="157.5" y="100.3176391417939" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="164.5" y="116.3176391417939">
+tc-7411 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M175 155A2268 2268 0 0,1 595 155" marker-end="url(#arrow-long)" class="temporal-constraint-normal-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="262.5" y="103.25684987337081" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="269.5" y="119.25684987337081">
+tc-7398 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M125 205A20565.600000000002 20565.600000000002 0 0,1 1379 205" marker-end="url(#arrow-very-long)" class="temporal-constraint-normal-very-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="629.5" y="153.43985109972346" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="636.5" y="169.43985109972346">
+tc-7350 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M25 180L75 80" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="-72.5" y="88" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="-65.5" y="104">
+na-7307 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M75 80L1429 80" class="target-unselected">
+</path>
+<path d="M75 80L1429 80" marker-end="url(#arrowhead-normal)" class="activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="584" y="91" rx="3" ry="3" width="336" height="24">
+</rect>
+<text x="591" y="107">
+act-7305 normal : plant {} controllable: false</text>
+</g>
+</g>
+<g class="edge">
+<path d="M1429 80L1479 180" marker-end="url(#arrowhead-normal)" class="null-activity-normal">
+</path>
+<g class="edge-tooltip hide">
+<rect x="1331.5" y="88" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="1338.5" y="104">
+na-7300 normal :   controllable: </text>
+</g>
+</g>
+<g class="edge">
+<path d="M75 80A22205.600000000002 22205.600000000002 0 0,1 1429 80" marker-end="url(#arrow-very-long)" class="temporal-constraint-normal-very-long">
+</path>
+<g class="edge-tooltip hide">
+<rect x="629.5" y="27.67747877912916" rx="3" ry="3" width="245" height="24">
+</rect>
+<text x="636.5" y="43.67747877912916">
+tc-7304 normal :   controllable: </text>
+</g>
+</g>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<g class="node">
+<circle cx="25" cy="180" r="16" class="target-unselected">
+</circle>
+<use x="25" y="180" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="-52" y="140" rx="3" ry="3" width="154" height="24">
+</rect>
+<text x="-45" y="156">
+node-7296 normal [0]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="75" cy="280" r="16" class="target-unselected">
+</circle>
+<use x="75" y="280" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="-9" y="240" rx="3" ry="3" width="168" height="24">
+</rect>
+<text x="-2" y="256">
+node-7314 normal [0 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="125" cy="355" r="16" class="target-unselected">
+</circle>
+<use x="125" y="355" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="34" y="315" rx="3" ry="3" width="182" height="24">
+</rect>
+<text x="41" y="331">
+node-7323 normal [0 1 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="175" cy="380" r="16" class="target-unselected">
+</circle>
+<use x="175" y="380" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="77" y="340" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="84" y="356">
+node-7342 normal [0 1 1 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1183" cy="380" r="16" class="target-unselected">
+</circle>
+<use x="1183" y="380" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1085" y="340" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="1092" y="356">
+node-7335 normal [0 1 1 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1379" cy="355" r="16" class="target-unselected">
+</circle>
+<use x="1379" y="355" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1281" y="315" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="1288" y="331">
+node-7321 normal [0 1 1 7]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1429" cy="280" r="16" class="target-unselected">
+</circle>
+<use x="1429" y="280" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1338" y="240" rx="3" ry="3" width="182" height="24">
+</rect>
+<text x="1345" y="256">
+node-7313 normal [0 1 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1479" cy="180" r="16" class="target-unselected">
+</circle>
+<use x="1479" y="180" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1395" y="140" rx="3" ry="3" width="168" height="24">
+</rect>
+<text x="1402" y="156">
+node-7295 normal [0 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="175" cy="330" r="16" class="target-unselected">
+</circle>
+<use x="175" y="330" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="77" y="290" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="84" y="306">
+node-7333 normal [0 1 1 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1183" cy="330" r="16" class="target-unselected">
+</circle>
+<use x="1183" y="330" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1085" y="290" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="1092" y="306">
+node-7325 normal [0 1 1 9]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="125" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="125" y="205" xlink:href="#choice" class="choice-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="34" y="165" rx="3" ry="3" width="182" height="24">
+</rect>
+<text x="41" y="181">
+node-7358 normal [0 1 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="175" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="175" y="205" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="77" y="165" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="84" y="181">
+node-7375 normal [0 1 3 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="385" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="385" y="205" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="287" y="165" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="294" y="181">
+node-7384 normal [0 1 3 7]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="595" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="595" y="205" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="497" y="165" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="504" y="181">
+node-7360 normal [0 1 3 9]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="645" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="645" y="205" xlink:href="#choice" class="choice-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="543.5" y="165" rx="3" ry="3" width="203" height="24">
+</rect>
+<text x="550.5" y="181">
+node-7357 normal [0 1 3 11]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="695" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="695" y="205" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="604" y="165" rx="3" ry="3" width="182" height="24">
+</rect>
+<text x="611" y="181">
+node-7430 normal [0 1 7]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="745" cy="130" r="16" class="target-unselected">
+</circle>
+<use x="745" y="130" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="647" y="90" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="654" y="106">
+node-7440 normal [0 1 7 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1083" cy="130" r="16" class="target-unselected">
+</circle>
+<use x="1083" y="130" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="985" y="90" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="992" y="106">
+node-7432 normal [0 1 7 7]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1133" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="1133" y="205" xlink:href="#parallel" class="parallel-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1035" y="165" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="1042" y="181">
+node-7429 normal [0 1 7 9]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1183" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="1183" y="205" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1092" y="165" rx="3" ry="3" width="182" height="24">
+</rect>
+<text x="1099" y="181">
+node-7487 normal [0 1 9]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1379" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="1379" y="205" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1284.5" y="165" rx="3" ry="3" width="189" height="24">
+</rect>
+<text x="1291.5" y="181">
+node-7344 normal [0 1 11]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="745" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="745" y="205" xlink:href="#choice" class="choice-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="647" y="165" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="654" y="181">
+node-7448 normal [0 1 7 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="795" cy="230" r="16" class="target-unselected">
+</circle>
+<use x="795" y="230" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="690" y="190" rx="3" ry="3" width="210" height="24">
+</rect>
+<text x="697" y="206">
+node-7468 normal [0 1 7 3 1]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1033" cy="230" r="16" class="target-unselected">
+</circle>
+<use x="1033" y="230" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="928" y="190" rx="3" ry="3" width="210" height="24">
+</rect>
+<text x="935" y="206">
+node-7460 normal [0 1 7 3 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1083" cy="205" r="16" class="target-unselected">
+</circle>
+<use x="1083" y="205" xlink:href="#choice" class="choice-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="978" y="165" rx="3" ry="3" width="210" height="24">
+</rect>
+<text x="985" y="181">
+node-7447 normal [0 1 7 3 7]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="795" cy="180" r="16" class="target-unselected">
+</circle>
+<use x="795" y="180" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="690" y="140" rx="3" ry="3" width="210" height="24">
+</rect>
+<text x="697" y="156">
+node-7458 normal [0 1 7 3 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1033" cy="180" r="16" class="target-unselected">
+</circle>
+<use x="1033" y="180" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="928" y="140" rx="3" ry="3" width="210" height="24">
+</rect>
+<text x="935" y="156">
+node-7450 normal [0 1 7 3 9]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="745" cy="280" r="16" class="target-unselected">
+</circle>
+<use x="745" y="280" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="647" y="240" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="654" y="256">
+node-7478 normal [0 1 7 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1083" cy="280" r="16" class="target-unselected">
+</circle>
+<use x="1083" y="280" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="981.5" y="240" rx="3" ry="3" width="203" height="24">
+</rect>
+<text x="988.5" y="256">
+node-7470 normal [0 1 7 12]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="175" cy="255" r="16" class="target-unselected">
+</circle>
+<use x="175" y="255" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="77" y="215" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="84" y="231">
+node-7395 normal [0 1 3 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="595" cy="255" r="16" class="target-unselected">
+</circle>
+<use x="595" y="255" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="493.5" y="215" rx="3" ry="3" width="203" height="24">
+</rect>
+<text x="500.5" y="231">
+node-7387 normal [0 1 3 13]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="175" cy="155" r="16" class="target-unselected">
+</circle>
+<use x="175" y="155" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="77" y="115" rx="3" ry="3" width="196" height="24">
+</rect>
+<text x="84" y="131">
+node-7413 normal [0 1 3 5]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="385" cy="155" r="16" class="target-unselected">
+</circle>
+<use x="385" y="155" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="283.5" y="115" rx="3" ry="3" width="203" height="24">
+</rect>
+<text x="290.5" y="131">
+node-7422 normal [0 1 3 16]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="595" cy="155" r="16" class="target-unselected">
+</circle>
+<use x="595" y="155" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="493.5" y="115" rx="3" ry="3" width="203" height="24">
+</rect>
+<text x="500.5" y="131">
+node-7397 normal [0 1 3 18]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="75" cy="80" r="16" class="target-unselected">
+</circle>
+<use x="75" y="80" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="-9" y="40" rx="3" ry="3" width="168" height="24">
+</rect>
+<text x="-2" y="56">
+node-7306 normal [0 3]</text>
+</g>
+</g>
+<g class="node">
+<circle cx="1429" cy="80" r="16" class="target-unselected">
+</circle>
+<use x="1429" y="80" xlink:href="#state" class="state-normal">
+</use>
+<g class="node-tooltip hide">
+<rect x="1345" y="40" rx="3" ry="3" width="168" height="24">
+</rect>
+<text x="1352" y="56">
+node-7298 normal [0 7]</text>
+</g>
+</g>
+<text text-anchor="middle" x="45" y="225">
+</text>
+<text text-anchor="middle" x="95" y="312.5">
+</text>
+<text text-anchor="middle" x="145" y="362.5">
+</text>
+<text text-anchor="middle" x="674" y="375">
+watch-left-hemisphere()</text>
+<text text-anchor="middle" x="1276" y="362.5">
+</text>
+<text text-anchor="middle" x="1399" y="312.5">
+</text>
+<text text-anchor="middle" x="1449" y="225">
+</text>
+<text text-anchor="middle" x="145" y="337.5">
+</text>
+<text text-anchor="middle" x="674" y="325">
+watch-right-hemisphere()</text>
+<text text-anchor="middle" x="1276" y="337.5">
+</text>
+<text text-anchor="middle" x="674" y="316.3909314262637">
+[10 20]</text>
+<text text-anchor="middle" x="747" y="340.43985109972346">
+[20 25]</text>
+<text text-anchor="middle" x="95" y="237.5">
+</text>
+<text text-anchor="middle" x="145" y="200">
+</text>
+<text text-anchor="middle" x="275" y="200">
+take-high-res-images()</text>
+<text text-anchor="middle" x="485" y="200">
+move-high-res-images()</text>
+<text text-anchor="middle" x="615" y="200">
+</text>
+<text text-anchor="middle" x="665" y="200">
+</text>
+<text text-anchor="middle" x="715" y="162.5">
+</text>
+<text text-anchor="middle" x="909" y="125">
+picture-analysis-type-1()</text>
+<text text-anchor="middle" x="1103" y="162.5">
+</text>
+<text text-anchor="middle" x="1153" y="200">
+</text>
+<text text-anchor="middle" x="1276" y="200">
+picture-distribution()</text>
+<text text-anchor="middle" x="1399" y="237.5">
+</text>
+<text text-anchor="middle" x="1276" y="186.72910799133513">
+[0 5]</text>
+<text text-anchor="middle" x="909" y="114.68548773687235">
+[0 6]</text>
+<text text-anchor="middle" x="715" y="200">
+</text>
+<text text-anchor="middle" x="765" y="212.5">
+</text>
+<text text-anchor="middle" x="909" y="225">
+picture-analysis-type-2-fast()</text>
+<text text-anchor="middle" x="1053" y="212.5">
+</text>
+<text text-anchor="middle" x="1103" y="200">
+</text>
+<text text-anchor="middle" x="909" y="213.1716824116903">
+[0 10]</text>
+<text text-anchor="middle" x="765" y="187.5">
+</text>
+<text text-anchor="middle" x="909" y="175">
+picture-analysis-type-2-slow()</text>
+<text text-anchor="middle" x="1053" y="187.5">
+</text>
+<text text-anchor="middle" x="909" y="163.1716824116903">
+[0 10]</text>
+<text text-anchor="middle" x="715" y="237.5">
+</text>
+<text text-anchor="middle" x="909" y="275">
+picture-analysis-type-3()</text>
+<text text-anchor="middle" x="1103" y="237.5">
+</text>
+<text text-anchor="middle" x="909" y="264.68548773687235">
+[0 7]</text>
+<text text-anchor="middle" x="485" y="187.3176391417939">
+[0 4]</text>
+<text text-anchor="middle" x="275" y="187.3176391417939">
+[0 3]</text>
+<text text-anchor="middle" x="145" y="225">
+</text>
+<text text-anchor="middle" x="380" y="250">
+take-move-low-res-images()</text>
+<text text-anchor="middle" x="615" y="225">
+</text>
+<text text-anchor="middle" x="380" y="240.2568498733708">
+[0 3]</text>
+<text text-anchor="middle" x="145" y="175">
+</text>
+<text text-anchor="middle" x="275" y="150">
+take-medium-res-images()</text>
+<text text-anchor="middle" x="485" y="150">
+move-medium-res-images()</text>
+<text text-anchor="middle" x="615" y="175">
+</text>
+<text text-anchor="middle" x="485" y="137.3176391417939">
+[0 4]</text>
+<text text-anchor="middle" x="275" y="137.3176391417939">
+[0 3]</text>
+<text text-anchor="middle" x="380" y="140.2568498733708">
+[78 90]</text>
+<text text-anchor="middle" x="747" y="190.43985109972346">
+[123 456]</text>
+<text text-anchor="middle" x="45" y="125">
+</text>
+<text text-anchor="middle" x="747" y="75">
+track-elephant()</text>
+<text text-anchor="middle" x="1449" y="125">
+</text>
+<text text-anchor="middle" x="747" y="64.67747877912916">
+[160 170]</text>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+<desc>
+hidden</desc>
+</g>
+</g>
+</g>
+</svg>
+</svg>

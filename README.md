@@ -54,12 +54,15 @@ This mission is described in ./src/test/pamela/tpn-demo.pamela
 
 Example command line to visualize this TPN is below. Before trying out the command line, please ensure requirements outlined below are met.
 
-`./bin/pamela -v -v -i src/test/pamela/tpn-demo.pamela -o tpn-demo -f dot --visualize tpn
+`./bin/pamela -i test/pamela/tpn-demo.pamela -o tpn-demo.tpn.edn tpn
 `
+This network rendering was created with PLANVIZ as follows:
+1. `../planviz/bin/planviz -i tpn-demo.tpn.edn`
+2. When you see `PLANVIZ server ready` then open your browser to [http://localhost:8080](http://localhost:8080)
+3. Click into the command box and type `/show tpn-demo.tpn` and press return.
+4. When you see the TPN graph click the command `/export` and you will be prompted to save the file **tpn-demo.tpn.svg** as file (which you can view in your browser or any SVG capable tool).
 
-Now open tpn-demo.svg in your browser. It should appear as the following image
-
-![TPN](doc/tpn-demo.png)
+![tpn-demo.tpn.svg](http://dollabs.github.io/pamela/doc/tpn-demo.tpn.svg)
 
 ## NEW pamela-setup
 
