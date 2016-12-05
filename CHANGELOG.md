@@ -5,7 +5,6 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* Fixed HTN generation for elaborated primitive methods (Closes #39)
 * _TBD_
 
 ### [0.5.0] - 2016-12-01
@@ -16,6 +15,10 @@ Changes
 * Streamlined the directory layout
 * Updated tests
 * Created master install script: pamela-setup
+* Fixed HTN generation for elaborated primitive methods (Closes #39)
+* Fixed parser bug with floating point numbers
+* Added :plant-part to pclass-ctor (Closes #45)
+* Fixed TPN generation with delay statements
 
 ### [0.4.3] - 2016-11-18
 
@@ -115,4 +118,5 @@ Added
 [0.4.1]: https://github.com/dollabs/pamela/compare/0.3.0...0.4.1
 [0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
 [0.4.3]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.3
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.4.3...HEAD
+[0.5.0]: https://github.com/dollabs/pamela/compare/0.4.3...0.5.0
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.5.0...HEAD

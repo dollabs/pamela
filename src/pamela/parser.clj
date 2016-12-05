@@ -809,6 +809,7 @@
                          (assoc vmethods method mdef))]
           (recur vmethods (first more) (rest more)))))))
 
+;; PAMELA semantic checks
 ;; Hoist state variables, disambiguate conditional expression operands
 ;; return Validated PAMELA IR or {:error "message"}
 (defn validate-pamela [ir]

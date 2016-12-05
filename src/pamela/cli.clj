@@ -73,6 +73,13 @@
         (output-file output "edn" ir)
         0))))
 
+(defn parse-model
+  "Load model(s) in memory, construct --model PCLASS, save as EDN"
+  {:added "0.3.0"}
+  [options]
+  (log/error "The parse action is deprecated")
+  1)
+
 (defn tpn
   "Load model(s) and construct as a TPN"
   {:added "0.2.0"}

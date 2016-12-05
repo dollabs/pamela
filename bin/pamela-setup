@@ -138,7 +138,7 @@ for repo in $repos; do
             boot build-jar
             ;;
         (pamela)
-            vlog "building PAMELA jar and testing $repo..."
+            vlog "building jar and testing $repo..."
             boot all-tests
             ;;
     esac
