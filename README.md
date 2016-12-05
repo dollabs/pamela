@@ -50,18 +50,27 @@ high resolution, perform image analysis at high speed or low speed to conserve p
 addition to video sensors, our QC is also equipped with two additional sensors for self defensive
 maneuvering actions from other wild birds who mistake QC for prey.
 
-This mission is described in ./src/test/pamela/tpn-demo.pamela
+This mission is described in ./test/pamela/tpn-demo.pamela
 
-Example command line to visualize this TPN is below. Before trying out the command line, please ensure requirements outlined below are met.
+Example command line to visualize this TPN is below. Before trying out the command line, please run the **pamela-setup** script below first.
 
-`./bin/pamela -v -v -i src/test/pamela/tpn-demo.pamela -o tpn-demo -f dot --visualize tpn
-`
 
-Now open tpn-demo.svg in your browser. It should appear as the following image
+`./bin/pamela -i test/pamela/tpn-demo.pamela -o tpn-demo.tpn.edn tpn`
 
-![TPN](doc/tpn-demo.png)
 
-## NEW pamela-setup
+This network rendering was created with PLANVIZ as follows:
+
+1. `../planviz/bin/planviz -i tpn-demo.tpn.edn`
+2. When you see `PLANVIZ server ready` then open your browser to [http://localhost:8080](http://localhost:8080)
+3. Click into the command box and type `/show tpn-demo.tpn` and press return.
+4. When you see the TPN graph, type the command `/export` and you will be prompted to save **tpn-demo.tpn.svg** as a file (which you can view in your browser or any SVG capable tool).
+
+![tpn-demo.tpn.svg](http://dollabs.github.io/pamela/doc/tpn-demo.tpn.svg)
+
+## Installing PAMELA tools with pamela-setup
+
+The **pamela-setup** script is intended as an tool to help you
+get started quickly with the pamela tools (including planviz).
 
 This script will:
 * Verify that **java** is installed
@@ -73,9 +82,9 @@ This script will:
 * Ensure that the `~/src/github/dollabs` directory exists (and create it if necessary)
 * Verify that **boot** is installed (and install it if necessary)
 * Will install the DOLL labs repositories:
-  - webkeys (will install this library locally)
-  - webtasks (will install this library locally)
-  - plan-schema (will install this library locally)
+  - webkeys (will install this pre-release library locally)
+  - webtasks (will install this pre-release library locally)
+  - plan-schema (will install this pre-release library locally)
   - planviz (will build the PLANVIZ jar)
   - pamela (will build the PAMELA jar)
 * Will run the PAMELA Clojure tests and command line tests
@@ -83,16 +92,6 @@ This script will:
 ```
 curl -fsSLo pamela-setup https://raw.githubusercontent.com/dollabs/pamela/master/bin/pamela-setup && chmod +x pamela-setup && ./pamela-setup
 ```
-
-## Requirements
-
-PAMELA has been developed using the [Clojure](http://clojure.org)
-language which runs on the Java Virtual Machine.
-
-Running PAMELA requires the following to be installed
-
-* [JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) 7 (or later)
-* [Leiningen](http://leiningen.org/)
 
 ## Development status and Contributing
 
@@ -111,18 +110,6 @@ at some point soon)!
 * Detailed notes on generating [TPNs](TPN.md)
 * See the PAMELA [API docs](http://dollabs.github.io/pamela/doc/)
 * Command line **pamela** (see pamela in `src/main/clj/pamela/cli.clj`)
-* Jenkins:
-    * _Soon to be transitioned to a public Jenkins server_
-* Elasticsearch
-    * https://elastic.co/
-    * https://www.elastic.co/guide/index.html
-    * https://github.com/clojurewerkz/elastisch
-    * http://clojureelasticsearch.info/articles/getting_started.html
-    * http://reference.clojureelasticsearch.info/index.html
-
-## Startup time
-
-In order to speed up execution you can compile the PAMELA uberjar with `lein prod` or use the **pamelad** daemon as described in [TPN's](TPN.md)
 
 ## Copyright and license
 
