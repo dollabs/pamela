@@ -23,7 +23,12 @@ The [DOLL](http://dollabs.com/) team (including
 [Dan Cerys](https://twitter.com/dcerys),
 [Prakash Manghwani](https://twitter.com/manghwani), and
 [Tom Marble](https://twitter.com/tmarble)) recently presented
-the talk **Model based programming in PAMELA** at
+the talk **In situ model-based learning in PAMELA** at
+[Clojure Conj 2016](http://2016.clojure-conj.org/model-based-learning-in-pamela/).
+Check out the [ClojureTV](https://youtu.be/i84i1X9k8_g) video
+and the [slides](doc/slides/ClojureConjPamelaLearns.pdf).
+
+See also our talk **Model based programming in PAMELA** from
 [Clojure/west](http://clojurewest.org/speakers#tmarble).
 Check out the [ClojureTV](https://youtu.be/WLovW6hlYHM) video
 and the [slides](doc/slides/ClojureWestHelloPamela.pdf).

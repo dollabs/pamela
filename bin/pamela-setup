@@ -134,7 +134,7 @@ for repo in $repos; do
             boot local
             ;;
         (planviz)
-            vlog "building jar for $repo..."
+            vlog "building PLANVIZ jar for $repo..."
             boot build-jar
             ;;
         (pamela)
