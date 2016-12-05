@@ -20,14 +20,11 @@
 
 program=$(basename $0)
 
-echo "$program under construction"
-exit 1
-
 dir=$(dirname $0)
 export PAMELA_CWD="$(pwd -P)"
 cd "$dir/.."
 dir="$(pwd -P)"
-insta="$dir/resources/data/pamela.ebnf"
+insta="$dir/resources/public/pamela.ebnf"
 
 log() {
   echo >&2 "$*"
