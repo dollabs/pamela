@@ -1,16 +1,14 @@
-# Generating TPN's
+# Generating HTN's
 
-PAMELA has support for generating TPN's.
+PAMELA has support for generating HTN's (and the corresponding TPN's).
 
 The following assumes that the `bin` directory has been added to your `PATH`.
 
-Given a PAMELA source file with a TPN such as [choice-tpn.pamela](../test/pamela/choice-tpn.pamela) you can generate the TPN as JSON with this command:
+Given a PAMELA source file with a HTN such as [biased-coin.pamela](../test/pamela/biased-coin.pamela) you can generate the HTN (and TPN) as JSON with the following command. _NOTE_: it is essential to specify the root task `(main.flip-3)` of the HTN:
 
 ````
-pamela -i test/pamela/plant.pamela -i test/pamela/choice-tpn.pamela -f json -o choice-tpn.tpn.json tpn
+pamela -i test/pamela/biased-coin.pamela -t '(main.flip-3)' -f json -o biased-coin htn
 ````
-
-For a more complete example see [tpn-demo.pamela](../test/pamela/tpn-demo.pamela)
 
 
 ### Acknowledgement and Disclaimer:

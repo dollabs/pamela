@@ -259,7 +259,8 @@
        [:pclass-name [:symbol "bulb"]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
-       [:pclass-ctor-option [:id [:string "Bulb1"]]]]]]
+       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
+       [:pclass-ctor-option [:plant-part [:string "Bulb1"]]]]]]
     [:field
      [:keyword "switchedpower"]
      [:field-type
@@ -267,5 +268,6 @@
        [:pclass-name [:symbol "psw"]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "source"]]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword "drain"]]]
-       [:pclass-ctor-option [:id [:string "PSW1"]]]
+       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
+       [:pclass-ctor-option [:plant-part [:string "PSW1"]]]
        [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]]]

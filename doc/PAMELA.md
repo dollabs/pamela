@@ -3,9 +3,9 @@
 This document is the reference manual for the PAMELA language.
 
 For background information on PAMELA please see the primary
-[README](../../README.md)
+[README](../README.md)
 
-For the PAMELA EBNF grammar please see the [PAMELA grammar README](../README.md)
+For the PAMELA EBNF grammar please see the [PAMELA grammar](grammar.md)
 
 
 ## PAMELA Introduction
