@@ -5,10 +5,9 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* Updated documentation
-* Fixed jenkins.sh
+* _TBD_
 
-### [0.5.0] - 2016-12-01
+### [0.5.0] - 2016-12-08
 
 Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
@@ -20,6 +19,8 @@ Changes
 * Fixed parser bug with floating point numbers
 * Added :plant-part to pclass-ctor (Closes #45)
 * Fixed TPN generation with delay statements
+* Updated documentation
+* Fixed jenkins.sh
 
 ### [0.4.3] - 2016-11-18
 
