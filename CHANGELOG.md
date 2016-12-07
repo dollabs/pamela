@@ -5,7 +5,8 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* _TBD_
+* Updated documentation
+* Fixed jenkins.sh
 
 ### [0.5.0] - 2016-12-01
 
