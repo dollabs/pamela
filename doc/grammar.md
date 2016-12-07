@@ -5,7 +5,7 @@ This repository comprises the PAMELA grammar in EBNF format
 as well as tooling based on [instaparse](https://github.com/Engelberg/instaparse)
 
 Please see
-* The [PAMELA Language Manual](doc/PAMELA.md)
+* The [PAMELA Language Manual](PAMELA.md)
 
 ## Syntactic analysis
 
