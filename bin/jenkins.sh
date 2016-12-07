@@ -20,10 +20,6 @@ set -e
 
 program=$(basename $0)
 
-echo "$program under construction"
-exit 1
-
-
 code=$(dirname $0)
 cd "$code/.."
 code="$(pwd -P)"
@@ -32,23 +28,10 @@ top="$(pwd -P)"
 echo "Startup Dir: $top"
 export PATH=${PATH}:/bin:$code/bin
 
-# NOTE we will be testing the client here so we need to have
-# firefox available to run in a real X session, a Mac "X" session,
-# VNC (or similar) or Xvfb
-
 if [ "$USER" = "jenkins" ] && [ "$(hostname)" = "LispMachine" ]; then
     echo "Running on LispMachine"
     # do NOT encourage ANSI colorization
     export TERM=dumb
-    # jenkins@LispMachine has VNC running on :1
-    if [ -z "$DISPLAY" ]; then
-        export DISPLAY=:1
-    fi
-fi
-
-if [ -z "$DISPLAY" ]; then
-    echo "ERROR: please start X, VNC, or Xvfb and set DISPLAY"
-    exit 1
 fi
 
 cd "$code"
@@ -63,48 +46,20 @@ env | sort
 echo " "
 echo "-- pamela dependencies --"
 
-lein deps :tree
+boot show --deps
 
 echo " "
 echo "-- clean -- "
 
-lein clean
+rm -rf target
+
+# echo " "
+# echo "-- update documentation -- "
+
+# TBD
+# boot codox
 
 echo " "
-echo "-- update documentation -- "
+echo "-- run clojure and command line tests -- "
 
-lein codox
-
-echo " "
-echo "-- run clojure tests -- "
-
-lein test
-
-echo " "
-echo "-- verify lein prod -- "
-export PAMELA_MODE=prod
-verify-lein-prod.sh
-
-echo " "
-echo "-- run cli tests with pamelad -- "
-
-# ensure standalone DB
-unset ES_SERVER
-# ensure not repl? mode
-unset PAGER
-export SERVER_HOST=localhost
-export SERVER_PORT=9100
-export PAMELAD="${SERVER_HOST}:${SERVER_PORT}"
-export PAMELA_VERBOSE=0
-
-pamelad -v start
-
-if cli-test; then
-    pamelad -v stop
-else
-    echo "stopping pamelad, exiting with failure"
-    pamelad -v stop
-    exit 1
-fi
-
-unset PAMELAD
+boot all-tests

@@ -107,9 +107,9 @@ at some point soon)!
 
 ## Further Documentation
 
-* Detailed notes on generating [TPNs](TPN.md)
-* See the PAMELA [API docs](http://dollabs.github.io/pamela/doc/)
-* Command line **pamela** (see pamela in `src/main/clj/pamela/cli.clj`)
+* Notes on generating [TPNs](doc/TPN.md)
+* Notes on generating [HTNs](doc/HTN.md)
+* PAMELA [grammar](doc/grammar.md)
 
 ## Copyright and license
 

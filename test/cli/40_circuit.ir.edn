@@ -114,7 +114,8 @@
     {:type :pclass-ctor,
      :pclass bulb,
      :args [:source :drain],
-     :id "Bulb1"}},
+     :id "switchedcircuit",
+     :plant-part "Bulb1"}},
    :switchedpower
    {:access :private,
     :observable false,
@@ -122,7 +123,8 @@
     {:type :pclass-ctor,
      :pclass psw,
      :args [:source :drain],
-     :id "PSW1",
+     :id "switchedcircuit",
+     :plant-part "PSW1",
      :interface "RMQ"}}}},
  lightvals
  {:type :pclass,
