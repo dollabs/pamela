@@ -125,12 +125,12 @@ interface = <INTERFACE> string
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
-symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
+symbol = !boolean #'[A-Za-z][A-Za-z0-9-_]*'
 literal = ( boolean | string | keyword | number )
 argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
-keyword = <':'> #'[A-Za-z0-9:*-.]+'
+keyword = <':'> #'[A-Za-z0-9:*-_.]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )

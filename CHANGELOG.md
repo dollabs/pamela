@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* _TBD_
+* Grammar changes: allow underscores in symbols
+* Parsing changes: allow plant-function symbols to refer to fields
+  (if not present in method or pclass args)
 
 ### [0.5.0] - 2016-12-08
 
