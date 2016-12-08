@@ -34,6 +34,7 @@
                     [instaparse                "1.4.3"]
                     [avenir                    "0.2.1"]
                     [me.raynes/fs              "1.4.6"]
+                    [camel-snake-kebab         "0.4.0"]
                     ;; testing
                     [adzerk/boot-test          "1.1.2" :scope "test"]])
 

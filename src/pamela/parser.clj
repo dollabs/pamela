@@ -20,6 +20,7 @@
             [environ.core :refer [env]]
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
+            [camel-snake-kebab.core :as translate]
             [pamela.utils :refer [output-file]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
@@ -707,10 +708,32 @@
     (if (or (:error vmbody) (not b))
       vmbody
       (let [{:keys [type name method condition body]} b
-            error (if (and (= type :plant-fn-symbol) (= name 'this)
-                        (nil? (get methods method)))
-                    (str "method " method " used in method " in-method
-                      " is not defined in the pclass " pclass))
+            [b error] (cond
+                        (and (= type :plant-fn-symbol) (= name 'this))
+                        (if (nil? (get methods method))
+                          [nil (str "method " method " used in method " in-method
+                                 " is not defined in the pclass " pclass)]
+                          [b nil])
+                        (and (= type :plant-fn-symbol)
+                          (or
+                            (some #(= name %)
+                              (get-in methods [in-method :args]))
+                            (some #(= name %)
+                              (get-in ir [pclass :args]))))
+                        [b nil]
+                        (and (= type :plant-fn-symbol)
+                          (some #(= (keyword name) %)
+                            (keys fields)))
+                        ;; interpret name as a field reference
+                        [(assoc (dissoc b :name)
+                           :type :plant-fn-field
+                           :field (keyword name))
+                         nil]
+                        (= type :plant-fn-symbol)
+                        [nil (str "plant " name " used in method " in-method
+                               " is not defined in the pclass " pclass)]
+                        :else
+                        [b nil])
             condition (if (and (not error) condition)
                         (validate-condition ir state-vars pclass fields modes
                           [:method method :body] condition))

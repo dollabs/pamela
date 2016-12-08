@@ -108,3 +108,13 @@
   {:pamela :utils :added "0.2.0"}
   [s]
   (Thread/sleep (* 1000 s)))
+
+(defn user-tmpdir [program]
+  (let [tmp (:java-io-tmpdir env)
+        user (:user env)
+        tmpdir (str tmp "/" user "/" program)]
+    (if (fs/exists? tmpdir)
+      tmpdir
+      (do
+        (fs/mkdirs tmpdir)
+        tmpdir))))
