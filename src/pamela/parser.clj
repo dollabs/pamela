@@ -451,7 +451,7 @@
                 :initial identity
                 :integer ir-integer
                 :interface ir-interface
-                :keyword keyword
+                :keyword #(keyword (subs % 1))
                 :label (partial ir-map-kv :label)
                 ;; :leave handled by ir-choice
                 :literal identity
@@ -931,7 +931,7 @@
                :bounds-literal ir-bounds-literal
                :float ir-float
                :integer ir-integer
-               :keyword keyword
+               :keyword #(keyword (subs % 1))
                :literal identity
                :lvar-ctor ir-lvar-ctor
                :lvar-init identity

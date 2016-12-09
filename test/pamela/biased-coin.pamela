@@ -21,7 +21,8 @@
 (defpclass coin []
   :modes [:biased :unbiased]
 
-  :fields {:observed-face (coin-faces :observable true :initial :head)}
+  :fields {:observed-face {:initial (mode-of coin-faces :head)
+                           :observable true}}
 
   :transitions {:biased:unbiased   {:pre         :biased :post :unbiased
                                     :probability (lvar "tBU" 0.1)}
