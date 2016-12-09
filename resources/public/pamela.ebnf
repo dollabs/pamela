@@ -32,7 +32,7 @@ mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( literal | symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor | mode-expr )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type

@@ -8,6 +8,9 @@ Changes
 * Grammar changes: allow underscores in symbols
 * Parsing changes: allow plant-function symbols to refer to fields
   (if not present in method or pclass args)
+* Validate pclass-ctor args
+  - keywords must be one of #{:id :interface :plant-part} or a field
+  - symbols must be a formal pclass arg or a field (when converted to kw)
 
 ### [0.5.0] - 2016-12-08
 
