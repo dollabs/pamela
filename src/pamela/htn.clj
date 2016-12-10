@@ -766,7 +766,7 @@
                    :boolean parser/ir-boolean
                    :float parser/ir-float
                    :integer parser/ir-integer
-                   :keyword keyword
+                   :keyword #(keyword (subs % 1))
                    :natural parser/ir-integer
                    :number identity
                    :root-task ir-root-task

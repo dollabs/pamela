@@ -451,7 +451,7 @@
                 :initial identity
                 :integer ir-integer
                 :interface ir-interface
-                :keyword keyword
+                :keyword #(keyword (subs % 1))
                 :label (partial ir-map-kv :label)
                 ;; :leave handled by ir-choice
                 :literal identity
@@ -754,6 +754,53 @@
                      (conj vmbody vb))]
         (recur vmbody (first more) (rest more))))))
 
+;; return Validated args or {:error "message"}
+(defn validate-pclass-ctor-args [ir scope-pclass fields pclass args]
+  (loop [vargs [] a (first args) more (rest args)]
+    (if (or (not a) (:error vargs))
+      vargs
+      (let [a (if (keyword? a)
+                (if (or (#{:id :interface :plant-part} a)
+                      (get fields a)) ;; this is a field
+                  a
+                  {:error (str "Keyword argument to pclass constructor "
+                            a " is not a field in the pclass " scope-pclass)})
+                (if (symbol? a)
+                  ;; is it a formal arg to scope-pclass?
+                  (if (or (some #(= a %) (get-in ir [scope-pclass :args]))
+                        (get fields (keyword a))) ;; this is a field
+                    a
+                    {:error (str "Symbol argument to pclass constructor "
+                              a " is neither a formal argument to, "
+                              "nor a field of the pclass " scope-pclass)})
+                  a))
+            vargs (if (and (map? a) (:error a))
+                    a
+                    (conj vargs a))]
+        (recur vargs (first more) (rest more))))))
+
+  ;; return Validated fields or {:error "message"}
+(defn validate-fields [ir state-vars pclass fields]
+  (let [field-vals (seq fields)]
+    (loop [vfields {} field-val (first field-vals) more (rest field-vals)]
+      (if (or (:error vfields) (not field-val))
+        vfields
+        (let [[field val] field-val
+              {:keys [access observable initial]} val
+              scope-pclass pclass
+              {:keys [type pclass args]} initial
+              args (if (and (= type :pclass-ctor) args)
+                     (validate-pclass-ctor-args ir scope-pclass fields
+                       pclass args)
+                     args)
+              val (if (and (map? args) (:error args))
+                    args
+                    val)
+              vfields (if (and (map? val) (:error val))
+                       val
+                       (assoc vfields field val))]
+          (recur vfields (first more) (rest more)))))))
+
 ;; return Validated modes or {:error "message"}
 (defn validate-modes [ir state-vars pclass fields modes]
   (let [mode-conds (seq modes)]
@@ -840,16 +887,22 @@
         state-vars (atom {})]
     (loop [vir {} sym-val (first sym-vals) more (rest sym-vals)]
       (if (or (:error vir) (not sym-val))
-        (merge vir @state-vars)
+        (if (:error vir)
+          vir
+          (merge vir @state-vars))
         (let [[sym val] sym-val
               {:keys [type args fields modes transitions methods]} val
               pclass? (= type :pclass)
-              modes (if (and pclass? modes)
+              fields (if (and pclass? fields)
+                      (validate-fields ir state-vars sym fields))
+              modes (if (and pclass? (not (:error fields)) modes)
                       (validate-modes ir state-vars sym fields modes))
-              transitions (if (and pclass? transitions (not (:error modes)))
+              transitions (if (and pclass? transitions
+                                (not (:error fields)) (not (:error modes)))
                             (validate-transitions ir state-vars
                               sym fields modes transitions))
               methods (if (and pclass? methods
+                            (not (:error fields))
                             (not (:error modes))
                             (not (:error transitions)))
                             (validate-methods ir state-vars
@@ -859,6 +912,8 @@
                     :transitions transitions
                     :methods methods)
               vir (cond
+                    (:error fields)
+                    fields
                     (:error modes)
                     modes
                     (:error transitions)
@@ -876,7 +931,7 @@
                :bounds-literal ir-bounds-literal
                :float ir-float
                :integer ir-integer
-               :keyword keyword
+               :keyword #(keyword (subs % 1))
                :literal identity
                :lvar-ctor ir-lvar-ctor
                :lvar-init identity

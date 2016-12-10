@@ -32,7 +32,7 @@ mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( literal | symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor | mode-expr )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type
@@ -130,7 +130,7 @@ literal = ( boolean | string | keyword | number )
 argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
-keyword = <':'> #'[A-Za-z0-9:*-_.]+'
+keyword = #'^:[A-Za-z0-9\:\*\-\_\.]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
