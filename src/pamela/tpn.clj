@@ -196,14 +196,18 @@
   [{:keys [prefix uid constraints order end-node
            label sequence-label probability cost reward guard
            task name controllable htn-node
-           plant plantid command args argsmap]
+           plant plantid plant-part interface
+           command display-name args argsmap]
     :as options}]
   (update-tpn-plan-map!
     (assoc-if (tpn-delay-activity (assoc options :prefix (or prefix "act-")))
       :tpn-type :activity
       :plant plant
       :plantid plantid
+      :plant-part plant-part
+      :interface interface
       :command command
+      :display-name display-name
       :args args
       :argsmap argsmap)))
 
@@ -569,7 +573,7 @@
 
 (defn optimize-tpn-map []
   (remove-superfluous-null-activities)
-  (remove-invalid-tpn-attributes)
+  ;; (remove-invalid-tpn-attributes)
   (update-incidence-set))
 
 (defn get-tc-from-body [body end-node]

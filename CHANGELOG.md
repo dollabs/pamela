@@ -11,6 +11,28 @@ Changes
 * Validate pclass-ctor args
   - keywords must be one of #{:id :interface :plant-part} or a field
   - symbols must be a formal pclass arg or a field (when converted to kw)
+- Complex (nested) root-task elaboration
+  First symbol is HTN pclass, ultimate symbol is the method, and
+  intermediate symbols (if any) are fields from the previous pclass.
+  Arguments may be literals or fields qualified by pclass (and zero
+  or more intermediate fields).
+- HTN progagation proceeds normally when HTN and TPN are not hand-coded.
+- HTN now has all the attributes required to generate the TPN
+  :name
+  :display-name ;; preformatted in camelCase without args
+  :command (duplicate of :name)
+  :args
+  :argsmap
+  :plantid
+  :plant-part
+  :interface
+- TPN activities now have all plant instance details
+  (:id :plant-part :interface)
+- Delays are represented as type :delay-activity
+- Temporal constraints for activities on attached to the activity
+  (rather than the begin node).
+- Fixed jenkins.sh
+- Updated documents in doc/
 
 ### [0.5.0] - 2016-12-08
 

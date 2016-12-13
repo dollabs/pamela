@@ -60,12 +60,12 @@
                       (emit-tail))))))])
 
 (defpclass main []
-  :fields {:coin (coin)}
+  :fields {:acoin (coin :id "penny" :plant-part "coin-fsm" :interface "RMQ")}
   :methods [(defpmethod flip-3
                         {:doc "Series of 3 coin flips"}
                         []
-                        (dotimes 3 (coin.flip)))
+                        (dotimes 3 (acoin.flip)))
             (defpmethod flip-1000
                         {:doc "Series of 1000 coin flips"}
                         []
-                        (dotimes 1000 (coin.flip)))])
+                        (dotimes 10 (acoin.flip)))])
