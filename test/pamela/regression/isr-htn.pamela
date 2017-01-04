@@ -12,6 +12,8 @@
               [location])
             (defpmethod capture
               [location])
+            (defpmethod evidence
+              [location])
             (defpmethod interpret1
               {:doc "Interpret (Method 1)"
                }
@@ -37,35 +39,29 @@
                (get-data-and-interpret b c)
                (get-data-and-interpret c d)
                (evidence-and-interpret d)))
-            (defpmethod get-data-at [location]
+            (defpmethod get-data-at [loc]
               (sequence
-               (:sensor-f.go-to location)
-               (:sensor-f.capture :bounds [5 10] location)))
+               (:sensor-f.go-to loc)
+               (:sensor-f.capture :bounds [5 10] loc)))
             (defpmethod get-data-and-interpret [location1 location2]
               (parallel
                (evidence-and-interpret location1)
                (get-data-at location2)))
-            (defpmethod evidence-and-interpret [location]
+            (defpmethod evidence-and-interpret [from]
               (sequence
-               (evidence location)
-               (interpret location)))
-            (defpmethod evidence [location]
-              (:sensor-f.evidence :bounds [15 25] location))
-            (defpmethod interpret [location]
+               (evidence from)
+               (interpret from)))
+            (defpmethod evidence [at]
+              (:sensor-f.evidence :bounds [15 25] at))
+            (defpmethod interpret [place]
               (choose
-               (choice (:sensor-f.interpret1 :bounds [15 25] location))
-               (choice (:sensor-f.interpret2 :bounds [15 25] location))
-               (choice (:sensor-f.interpret3 :bounds [15 25] location))))
+               (choice (:sensor-f.interpret1 :bounds [15 25] place))
+               (choice (:sensor-f.interpret2 :bounds [15 25] place))
+               (choice (:sensor-f.interpret3 :bounds [15 25] place))))
             ]
   )
 
-
-
-
 (defpclass isr-htn-demo []
   :meta {:doc "ISR HTN Demo"}
-  :fields {:sensor (sensor)
-           :htn (isr-htn sensor)}
-  ;;How do we specify the root activity of the HTN?
-  ;;By default, we could use "main" (of which pclass?).  However, that won't work for activities with arguments.
-  )
+  :fields {:plant (sensor :id "sensor1" :plant-part "isr1" :interface "RMQ")
+           :htn (isr-htn plant)})

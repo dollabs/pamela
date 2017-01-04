@@ -19,6 +19,7 @@
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
+            [camel-snake-kebab.core :as translate]
             [instaparse.core :as insta]
             [pamela.utils :refer [stdout? output-file]]
             [pamela.parser :as parser]
@@ -43,7 +44,8 @@
 
 (defn add-htn-method [method]
   (let [{:keys [pclass name]} method]
-    (if (and pclass name)
+    (when (and pclass name)
+      ;; (println "ADDING HTN-METHOD" pclass name) ;; DEBUG
       (swap! *htn-methods* assoc-in [pclass name] method))))
 
 (defn find-htn-method [pclass name & [error-if-not-found?]]
@@ -161,10 +163,16 @@
 
 (defmethod name-with-args :htn-task
   [object & [max-line-length]]
-  (let [{:keys [name arguments]} object]
-    (add-newlines-if-needed
-      (str name (if name-with-args-include-args? (or (seq arguments) '())))
-      (or max-line-length name-with-args-max-line-length))))
+  (let [{:keys [pclass name arguments]} object]
+    (str pclass)
+    ;; (add-newlines-if-needed
+    ;;   (apply str "NWA-" ;; DEBUG
+    ;;     pclass ;; use pclass for top HTN node instead of name
+    ;;     (if name-with-args-include-args?
+    ;;       (map #(if (map? %) (:param %) %)
+    ;;         (or (seq arguments) '()))))
+    ;;   (or max-line-length name-with-args-max-line-length))
+    ))
 
 (defmethod name-with-args :htn-method
   [object & [max-line-length]]
@@ -172,6 +180,7 @@
         method-name (str name)
         {:keys [name arguments]} nonprimitive-task]
     (str
+      ;; "NWAM-" ;; DEBUG
       (add-newlines-if-needed
         method-name
         (or max-line-length name-with-args-max-line-length))
@@ -186,9 +195,17 @@
         {:keys [name nonprimitive-task]} expansion-method
         method-name (str name)
         {:keys [name arguments]} nonprimitive-task
-        argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
+        get-dyn-arg (fn [arg]
+                      (let [dyn-arg (get argument-mappings arg)]
+                        (if (map? dyn-arg)
+                          (:param dyn-arg)
+                          dyn-arg)))
+        argvals (apply str (interpose " " (map get-dyn-arg arguments)))]
     (add-newlines-if-needed
-      (str method-name
+      ;; DEBUG
+      (str
+        ;; "NWAH- " ;; DEBUG
+        method-name
         (if name-with-args-include-args? "(")
         (if name-with-args-include-args? argvals)
         (if name-with-args-include-args? ")"))
@@ -218,10 +235,83 @@
                         arg))
         arguments (map resolve-arg arguments)
         unresolved (count (filter variable? arguments))
+        get-dyn-arg (fn [dyn-arg]
+                      (if (map? dyn-arg)
+                        (:param dyn-arg)
+                        dyn-arg))
         argvals (if (pos? unresolved)
                   (resolve-arguments arguments (nthrest ancestry-path 2))
-                  arguments)]
+                  (mapv get-dyn-arg arguments))]
     argvals))
+
+(defn resolve-plant-class [ir hem-pclass pargs plant-class method
+                           task-type irks henpt ancestry-path]
+  (let [hem (get-htn-object (first ancestry-path))
+        ;; DEBUG
+        ;; _ (println "  RPC0" plant-class "METHOD" method
+        ;;    "RPCHEM" (dissoc hem :subtasks :ancestry-path
+        ;;               :expansion-method :subtask-constraints))
+        ;; _ (if-not (htn-isa? task-type :htn-nonprimitive-task)
+        ;;     (println "  RPC HENPT" (dissoc henpt :subtasks :ancestry-path
+        ;;                              :expansion-method :subtask-constraints
+        ;;                              :task-expansions)))
+        plant-class (if hem ;; avoid pathological case
+                      (cond
+                        (= plant-class ::unknown) ;; matching method in pargs?
+                        ;; (first
+                        ;;   (filter #(get-in ir [(:pclass %) :methods method])
+                        ;;     pargs))
+                        (let [plant-fn (get-in ir irks)
+                              param (:name plant-fn)
+                              pc (first (filter #(= (:param %) param) pargs))
+                              plant (:pclass pc)
+                              plant-method (get-in ir [plant :methods method])]
+                          ;; (println "UNKNOWN PARAM" param ;; DEBUG
+                          ;;   "PLANT" plant
+                          ;;   "PLANT-METHOD" plant-method
+                          ;;   "PC" pc)
+                          (if (and plant-method pc)
+                            pc ;; plant parameter
+                            param)) ;; must be a method parameter
+                        (keyword? plant-class) ;; field
+                        (let [initial (get-in ir
+                                        [hem-pclass :fields
+                                         plant-class :initial])
+                              {:keys[type name pclass
+                                     id plant-part interface]} initial]
+                          (cond
+                            (= type :arg-reference) ;; look in pargs
+                            (first (filter #(= (:param %) name) pargs))
+                            (= type :pclass-ctor)
+                            pclass
+                            :else
+                            plant-class))
+                        (and (not (htn-isa? task-type :htn-nonprimitive-task))
+                          henpt (:pclass henpt))
+                        (:pclass henpt)
+                        :else
+                        plant-class))
+        ;; _ (println "  RPC1" plant-class) ;; DEBUG
+        {:keys [argument-mappings]} hem
+        resolve-pc (fn [arg]
+                     (if (and (variable? arg) (not (empty? argument-mappings)))
+                       (get argument-mappings arg)
+                       arg))
+        p (resolve-pc plant-class)
+        ;; _ (println "  RPC2" p) ;; DEBUG
+        p (if (variable? p)
+            (resolve-plant-class ir hem-pclass pargs p method task-type
+              irks nil (nthrest ancestry-path 2))
+            p)
+        ;; _ (println "  RPC3" p) ;; DEBUG
+        ;; if method is not primitive in p then return nil to
+        ;; indicate this is NOT actually a primitive method
+        p (if (and (map? p)
+                (= (:type p) :pclass-ctor)
+                (get-in ir [(:pclass p) :methods method :primitive]))
+            p)]
+    ;; (println "RPC" plant-class "=>" p) ;; DEBUG
+    p))
 
 (defmethod name-with-argvals :htn-task
   [object]
@@ -314,16 +404,83 @@
 
 ;; helpers for plan-htn-task --------------------------------------
 
+    ;; IF all-methods empty
+    ;; AND this is found to be a non-primitive method in another (plant) pclass
+    ;; THEN consider for a match
+
+(defn pprint-htn-methods []
+  (let [htn-methods @*htn-methods*
+        pcs (sort (keys htn-methods))]
+    (println "PPRINT-HTN-METHODS")
+    (loop [pc (first pcs) more (rest pcs)]
+      (when pc
+        (println "PCLASS" pc "METHODS" (sort (keys (get htn-methods pc))))
+        (recur (first more) (rest more))))))
+
+;; returns a sequence of [k v] pairs containing
+;; methods which match name in pclass
+;; or, if empty, matches in all other pclasses
+(defn find-candidate-methods [ir pclass name]
+  (let [htn-methods @*htn-methods*
+        pcs (keys htn-methods)
+        all (set (keys ir))
+        other-pcs (set/difference all (set pcs))]
+    ;; DEBUG
+    ;; (println "FCM PCLASS" pclass "NAME" name "PCS" pcs "OTHER-PCS" other-pcs)
+    (loop [in-pclass [] ;; methods inside pclass
+           out-pclass [] ;; methods outside of pclass
+           pc (first pcs)
+           more (rest pcs)]
+      (if-not pc
+        (sort-by first ;; return the methods sorted by method name
+          (if-not (empty? in-pclass)
+            in-pclass
+            (if-not (empty? out-pclass)
+              out-pclass
+              (do
+                ;; (println "NO CANDIDATES!") ;; DEBUG
+                []
+                )
+              )))
+        (let [pc-methods (get htn-methods pc)
+              ms (keys pc-methods)
+              ;; _ (println "  FCM PC" pc) ;; DEBUG
+              matches
+              (loop [matches [] m (first ms) moar (rest ms)]
+                ;; (println "    FCM METHOD" m) ;; DEBUG
+                (if-not m
+                  matches
+                  (let [method (get pc-methods m)
+                        npt-name (get-in method [:nonprimitive-task :name])
+                        match (if (= npt-name name)
+                                [m method])
+                        matches (if match
+                                  (conj matches match)
+                                  matches)]
+                    (recur matches (first moar) (rest moar)))))
+              in-pclass (if (= pc pclass)
+                          (concatv in-pclass matches)
+                          in-pclass)
+              out-pclass (if (= pc pclass)
+                           out-pclass
+                           (concatv out-pclass matches))]
+          (recur in-pclass out-pclass (first more) (rest more)))))))
+
 ;; return methods vector
-(defn find-methods-that-expand-task [task]
+(defn find-methods-that-expand-task [ir task]
   (let [{:keys [type pclass name arguments]} task
-        all-methods (seq (get @*htn-methods* pclass))]
-    ;; DAN.. CLOSism: was (when (= type :htn-nonprimitive-task)
-    ;; (println "FMTET" task)
-    (when (#{:htn-nonprimitive-task :htn-expanded-nonprimitive-task} type)
+        ;; all-methods (seq (get @*htn-methods* pclass))]
+        all-methods (if (htn-isa? type :htn-nonprimitive-task)
+                      (find-candidate-methods ir pclass name))]
+    ;; (println "FMTET" name "TYPE" type ;; DEBUG
+    ;;   "PCLASS" pclass "ALL" (map first all-methods))
+    (when-not (empty? all-methods)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
         (if-not mname
-          methods
+          (do
+            ;; (println "  FMTETMETHODS" (map :name methods)) ;; DEBUG
+            methods
+            )
           (let [{:keys [nonprimitive-task]} method
                 compatible? (fn [[task-arg method-arg]]
                               (or (variable? task-arg)
@@ -333,6 +490,10 @@
                          (= (count arguments) (count (:arguments nonprimitive-task)))
                          (every? compatible?
                            (map vector arguments (:arguments nonprimitive-task))))
+                ;; DEBUG
+                ;; _ (println "  FM NAME" name "NPT-NAME" (:name nonprimitive-task)
+                ;;     "ARGS" arguments "NTARGS" (:arguments nonprimitive-task)
+                ;;     "match?" match?)
                 methods (if match? (conj methods method) methods)]
             (recur methods (first more) (rest more))))))))
 
@@ -340,6 +501,7 @@
 (defn arg-mappings-for-task-and-method [task method]
   (let [static-task-args (get-in method [:nonprimitive-task :arguments])
         dynamic-task-args (:arguments task)]
+    ;; (println "DYNAMIC-TASK-ARGS" dynamic-task-args) ;; DEBUG
     (if (or (not (vector? static-task-args))
           (not (vector? dynamic-task-args))
           (not= (count static-task-args) (count dynamic-task-args)))
@@ -358,7 +520,7 @@
 (defn make-expanded-task
   "Make an expanded task"
   [old-task & [argument-mapping]]
-  ;; (println "MET" old-task argument-mapping)
+  ;; (println "MET" old-task argument-mapping) ;; DEBUG
   (let [task-type (:type old-task)
         old-task (dissoc old-task :uid :label)
         task (if (= task-type :htn-primitive-task)
@@ -368,7 +530,7 @@
         new-arguments (if argument-mapping
                         (mapv #(get argument-mapping %) arguments)
                         arguments)]
-    ;; (println "  MET TASK" task)
+    ;; (println "  MET TASK" task) ;; DEBUG
     (update-htn-object!
       (assoc-if task
         :arguments arguments
@@ -377,29 +539,36 @@
 
 ;; plan-htn-task multi-methods --------------------------------------
 
+(defn ir-object-dispatch [ir object]
+  (:type object))
+
 (defmulti plan-htn-task
   "Dispatch based on object type"
-  #'object-dispatch
+  #'ir-object-dispatch
   :default :htn-object
   :hierarchy #'htn-hierarchy)
 
 (defmethod plan-htn-task :htn-object
-  [object]
+  [ir object]
   (throw
     (AssertionError.
       (str "cannot plan-htn-task for object type: " (:type object)))))
 
 ;; "Nothing to do for primitive tasks"
 (defmethod plan-htn-task :htn-primitive-task
-  [object])
+  [ir object])
 
 ;;   "Expand"
 (defmethod plan-htn-task :htn-expanded-nonprimitive-task
-  [object]
+  [ir object]
   (let [task object
-        methods (find-methods-that-expand-task task)]
+        methods (find-methods-that-expand-task ir task)]
+    ;; (println "PHT-TASK" (with-out-str (pprint task)))
+    ;; (println "PHT-TASK" (:uid task) (:type task)) ;; DEBUG
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
       (doseq [method methods]
+        ;; (println "PHT METHOD" (:name method)
+        ;;   "ANCESTRY" (mapv :uid *htn-plan-ancestry*)) ;; DEBUG
         (let [{:keys [pclass name subtasks irks]} method
               arg-mappings (arg-mappings-for-task-and-method task method)
               expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
@@ -414,7 +583,8 @@
               task-expansions (conj (:task-expansions (get-htn-object task))
                                 expanded-method)
               task (assoc task :task-expansions task-expansions)]
-          ;; (println "PHT method" method "SUBTASKS" subtasks)
+          ;; (println "PHT PCLASS" pclass "NAME" name ;; DEBUG
+          ;;   "METHOD" (dissoc method :subtasks))
           (update-htn-object! task)))
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
         (let [{:keys [subtasks]} expanded-method]
@@ -445,7 +615,8 @@
               (let [{:keys [ancestry-path]} subtask
                     subtask (assoc subtask
                               :ancestry-path *htn-plan-ancestry*)]
-                (plan-htn-task (update-htn-object! subtask))))))))))
+                ;; (println "about to PHT" (:name subtask)) ;; DEBUG
+                (plan-htn-task ir (update-htn-object! subtask))))))))))
 
 ;; pprint-htn-object multi-methods --------------------------------------
 
@@ -558,7 +729,7 @@
 
 (defn htn-task
   "All HTN tasks inherit from HTN-task"
-  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges]
@@ -572,6 +743,7 @@
       (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
         :type :htn-task
         :pclass pclass
+        :pargs pargs
         :name name
         :arguments arguments
         :cost cost
@@ -590,7 +762,7 @@
 
 (defn htn-primitive-task
   "Primitive tasks can't be decomposed any further"
-  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges irks]
@@ -602,7 +774,7 @@
 
 (defn htn-nonprimitive-task
   "NonPrimitive tasks can be decomposed into other tasks, by user HTN methods"
-  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
            label incidence-set edges irks]
@@ -614,7 +786,7 @@
 
 (defn htn-expanded-nonprimitive-task
   "Expanded NonPrimitive tasks have already been decomposed into other tasks, by using HTN methods"
-  [{:keys [prefix uid ancestry-path pclass name arguments cost task-type probability temporal-constraints
+  [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight task-expansions
            label incidence-set edges irks]
@@ -761,6 +933,11 @@
 (defn ir-root-task [& args]
   args)
 
+(defn ir-symbols [a b]
+  (if (symbol? b)
+    [a b]
+    (vec (cons a b))))
+
 (def root-task-ir {
                    :argval identity
                    :boolean parser/ir-boolean
@@ -773,15 +950,115 @@
                    :safe-keyword identity
                    :string identity
                    :symbol symbol
+                   :symbols ir-symbols
                    })
 
-;; return [pclass method args]
+;; given a vector of syms, where
+;;   the first sym is the pclass to start with
+;;   (if any) intermediate syms are fields in the previous pclass
+;;   the last sym is method
+;; return [pclass pargs method]
+;;   pclass may be an error string (instead of a pclass symbol)
+;;   pargs are the args required to instanciate the pclass
+(defn root-task-pclass-method [ir syms]
+  (let [pclass (first syms)
+        pclass-def (get ir pclass)
+        valid-fields (set (keys (:fields pclass-def)))
+        fields (butlast (rest syms))
+        method (last syms)]
+    (if-not pclass-def
+      [(str "invalid root-task: pclass " pclass " does not exist") method]
+      (loop [err nil p pclass pa [] f (first fields) more (rest fields)]
+        ;; (println "LOOP ERR" err "P" p "F" f) ;; DEBUG
+        (if (or err (not f))
+          (if err
+            [err [] method]
+            [p pa method])
+          (let [f-initial (get-in ir [p :fields (keyword f) :initial])
+                ;; _ (println "F-INITIAL" f-initial) ;; DEBUG
+                f-type (:type f-initial)
+                p (:pclass f-initial)
+                p-args (get-in ir [p :args])
+                ;; _ (println "P-ARGS" p-args) ;; DEBUG
+                f-args (:args f-initial)
+                ;; _ (println "F-ARGS" f-args) ;; DEBUG
+                deref-field-arg (fn [arg p-arg]
+                                  ;; (println "  DFA" arg "VF" valid-fields)
+                                  (if (and
+                                        (or (keyword? arg)
+                                          (symbol? arg))
+                                        (valid-fields (keyword arg)))
+                                    ;; deref
+                                    (assoc
+                                      (get-in ir
+                                        [pclass :fields (keyword arg) :initial])
+                                      :param p-arg) ;; remember formal param
+                                    ;; normal arg
+                                    arg))
+                pa (if (vector? f-args)
+                     ;; expand reference to other fields to field-init
+                     (mapv deref-field-arg f-args p-args)
+                     pa)
+                err (if (not= f-type :pclass-ctor)
+                      (str "Invalid root task: intermediate field "
+                        f " is not a pclass constructor"))]
+            (recur err p pa (first more) (rest more))))))))
+
+;; given arg which is a vector of syms (first is pclass, subsequent fields)
+;; return the value of the utimate field
+;;   or {:error msg}
+(defn root-task-arg [ir arg]
+  ;; (println "RTA in" arg) ;; DEBUG
+  (let [pclass (first arg)
+        pclass-def (get ir pclass)
+        fields (rest arg)]
+    (if-not pclass-def
+      {:error
+       (str "invalid root-task argument pclass " pclass " does not exist")}
+      (loop [err nil arg nil p pclass f (first fields) more (rest fields)]
+        (if (or err (not f))
+          (if err
+            {:error err}
+            arg)
+          (let [f-initial (get-in ir [p :fields (keyword f) :initial])
+                f-type (:type f-initial)
+                p (:pclass f-initial)
+                err (if (not= f-type :pclass-ctor)
+                      (str "Invalid root task: intermediate field "
+                        f " is not a pclass constructor"))
+                f (first more)
+                the-rest (rest more)
+                arg (if (and (not err) (nil? f))
+                      f-initial)]
+            (recur err arg p f the-rest)))))))
+
+;; given args
+;;   which may include a vector of syms (first is pclass, subsequent fields)
+;;   replace the sym vector the the value of the referenced field
+;; return args as a vector
+;;   (args may be an error string)
+(defn root-task-args [ir args]
+  (loop [rtargs [] arg (first args) more (rest args)]
+    (if (or (string? rtargs) (not arg))
+      rtargs
+      (let [rtarg (if (vector? arg)
+                    (root-task-arg ir arg)
+                    arg)
+            ;; _ (println "RTA out" rtarg) ;; DEBUG
+            rtargs (if (and (map? rtarg) (:error rtarg))
+                     (:error rtarg)
+                     (conj rtargs rtarg))]
+        (recur rtargs (first more) (rest more))))))
+
+;; return [pclass pargs method args]
+;; where pargs are needed to instanciate pclass
+;; and args are passed to method
 (defn identify-root-task [ir root-task]
   (log/trace "root-task" root-task)
   (let [parser (parser/build-parser "root-task.ebnf")
         tree (if root-task
                (insta/parses parser root-task))
-        [pclass method & args]
+        rir
         (cond
           (nil? tree)
           nil ;; FIND main in ir w/ no args
@@ -789,42 +1066,61 @@
           (let [msg (str "parse: invalid root-task: " root-task)]
             (log/error msg)
             (log/error (with-out-str (pprint (insta/get-failure tree))))
-            [:error msg nil])
+            [:error msg])
           (not= 1 (count tree))
           (let [msg (str "parse: grammar is ambiguous for root-task: " root-task)]
             (log/error msg)
             (log/error (with-out-str (pprint tree)))
-            [:error msg nil])
+            [:error msg])
           :else
           (insta/transform root-task-ir (first tree)))
-        args (vec args)
         ir-syms (keys ir)]
-    (if (= pclass :error)
-      (throw (AssertionError. method))
-      (if (and pclass method) ;; verify
-        (let [pclass-def (get ir pclass)
+    ;; (println "IR" (with-out-str (pprint ir))) ;; DEBUG
+    (if (and rir (= (first rir) :error))
+      (throw (AssertionError. (second rir)))
+      (if rir ;; verify
+        (let [;; _ (println "RIR" (with-out-str (pprint rir)))
+              [pclass pargs method] (root-task-pclass-method ir (first rir))
+              ;; _ (println "PCLASS" pclass "PARGS" pargs "METHOD" method)
+              args (root-task-args ir (rest rir))
+              ;; _ (println "ARGS" args)
+              pclass-def (get ir pclass)
               method-def (if pclass-def (get-in pclass-def [:methods method]))
-              method-args (if method-def (get method-def :args))]
+              method-args (if method-def (get method-def :args))
+              ;; _ (println "MARGS" method-args)
+              add-param (fn [arg param]
+                          (if (map? arg)
+                            (assoc arg :param param)
+                            arg))
+              args (if (and method-args (= (count args) (count method-args)))
+                     (mapv add-param args method-args))
+              ;; _ (println "ARGS" args)
+              ]
           (if-not pclass-def
             (let [msg (str "root-task pclass not found: " pclass)]
               (log/error msg)
               (throw (AssertionError. msg)))
-            (if-not method-def
-              (let [msg (str "root-task pclass " pclass " does not have a method " method)]
-                (log/error msg)
-                (throw (AssertionError. msg)))
-              (if (or (not method-args) (not= (count args) (count method-args)))
-                (let [msg (str "root-task args \"" args "\" does not match arity of " pclass "." method " " method-args)]
+            (if (string? args)
+              (do
+                (log/error args)
+                (throw (AssertionError. args)))
+              (if-not method-def
+                (let [msg (str "root-task pclass " pclass
+                            " does not have a method " method)]
                   (log/error msg)
                   (throw (AssertionError. msg)))
-                [pclass method args]))))
+                (if (or (not method-args) (not= (count args) (count method-args)))
+                  (let [msg (str "root-task args \"" args "\" does not match arity of " pclass "." method " " method-args)]
+                    (log/error msg)
+                    (throw (AssertionError. msg)))
+                  [pclass pargs method args])))))
         (loop [pclass nil method nil k (first ir-syms) more (rest ir-syms)] ;; find main
           (if (or (and pclass method) (not k))
             (if-not (and pclass method)
               (let [msg "root-task pclass with a zero arg main not found"]
                 (log/error msg)
                 (throw (AssertionError. msg)))
-              [pclass method []])
+              [pclass [] method []])
             (let [k-def (get ir k)
                   {:keys [type methods]} k-def
                   main (if (and (= type :pclass) methods)
@@ -918,14 +1214,49 @@
                          (find-plant-fn-bounds ir pclass ctor-arg-i method))]
             bounds))))))
 
+;; returns map with keys
+;;   name display-name plantid plant-part interface args argvals
+(defn plant-details [ir pargs subtask plant-class primitive?]
+  (let [{:keys [type name arguments ancestry-path]} subtask
+        name-str (str name)
+        display-name (translate/->camelCase name-str)
+        details {:name name-str
+                 :label (str "TEMP-" name-str) ;; TEMPORARY
+                 :display-name display-name}]
+    (if (or (not primitive?) (= name 'delay))
+      details
+      (let [{:keys [pclass id plant-part interface]} plant-class
+            plantid id
+            arguments (or arguments [])
+            unresolved (count (filter variable? arguments))
+            args (if (pos? unresolved)
+                      (resolve-arguments arguments ancestry-path)
+                      arguments)
+            formal-args (mapv str (get-in ir [pclass :methods name :args]))
+            ;; _ (println "PD ARGS" args "FORMAL-ARGS" formal-args) :: DEBUG
+            argsmap (zipmap formal-args args)]
+        (assoc-if details
+          :args args
+          :argsmap argsmap
+          :plantid plantid
+          :plant-part plant-part
+          :interface interface)))))
+
 ;; root? is true to create the "synthetic" htn-network at the very
 ;; top of the HTN
 ;; begin is the state node of the parent task
-(defn construct-hem-plan-map [ir hem henpt root? parent-begin-uid]
+(defn construct-hem-plan-map [ir pargs hem henpt root? parent-begin-uid]
   (let [{:keys [uid label subtasks subtask-constraints edges
                 ancestry-path argument-mappings irks]} hem
+        ;; DEBUG
+        ;; _ (println "CHPM PARGS" pargs)
+        ;; _ (println "CHPM HEM" (dissoc hem :subtasks :ancestry-path
+        ;;                         :expansion-method :subtask-constraints))
+        ;; _ (println "CHPM HENPT" (dissoc henpt :subtasks :ancestry-path
+        ;;                           :expansion-method :subtask-constraints))
         hem-irks irks
         [pclass kw-methods method kw-body int-zero more-irks] hem-irks
+        hem-pclass pclass
         top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
                    [pclass kw-methods method])
         top-bounds (irks->bounds ir top-irks)
@@ -983,32 +1314,75 @@
             edge (if (and sequential? (pos? i))
                    (htn-edge {:end-node subtask-uid}))
             subtask (get-htn-object subtask-uid)
-            {:keys [type task-expansions arguments irks]} subtask
+            {:keys [type pclass name task-expansions arguments irks]} subtask
             bounds (if (and irks (not= irks hem-irks))
                      (irks->bounds ir irks))
             m-task-expansions (count task-expansions)
-            primitive? (= type :htn-primitive-task)
+            ;; DEBUG
+            ;; _ (println "ST#" i "of" n-subtasks "IRKS" irks)
+            ;; resolve pclass if (= type :htn-nonprimitive-task)
+            ;; to determine if this was really an unresolved primitive task
+            ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
+            plant-class (resolve-plant-class ir hem-pclass pargs
+                          pclass name type irks
+                          henpt
+                          (:ancestry-path subtask))
+            primitive? (or (= type :htn-primitive-task)
+                         plant-class)
+                         ;; (and (map? plant-class)
+                         ;;   (= (:type plant-class) :pclass-ctor)))
             parallel? (not sequential?)
             choice? (and (not parallel?) (> m-task-expansions 1))
-            label (name-with-argvals subtask)
-            subtask-map (assoc
-                          (dissoc subtask :pclass :arguments :task-expansions
-                            :name :task-type :ancestry-path :temporal-constraints
-                            :irks)
-                          :label label
-                          :incidence-set (if edge #{(:uid edge)} #{})
-                          :edges #{})
+            ;; DEBUG
+            ;; _ (println "SUBTASK primitive?" primitive?
+            ;;     "type" type
+            ;;     "plant-class" plant-class
+            ;;     "parallel?" parallel?
+            ;;     "choice?" choice?
+            ;;     "ST" (dissoc subtask :ancestry-path :task-expansions))
+            ;; add in details for the plant for primitive tasks...
+            details (plant-details ir pargs subtask plant-class primitive?)
+            ;; OLD: label (name-with-argvals subtask)
+            subtask-map (merge
+                          (assoc
+                            (dissoc subtask :pclass :pargs :arguments
+                              :task-expansions
+                              :task-type :ancestry-path :temporal-constraints
+                              :irks)
+                            :incidence-set (if edge #{(:uid edge)} #{})
+                            :edges #{})
+                          details)
             ;; TPN ------------------
             se (tpn/tpn-state {})
-            activity (if primitive?
-                       (tpn/tpn-activity ;; :task subtask
-                         {:name label
-                          :htn-node (:uid hem-map)
-                          :end-node (:uid se)}))
             tc (if bounds (tpn/tpn-temporal-constraint
                             {:value bounds :end-node (:uid se)}))
+            activity (if primitive?
+                       ((if (= name 'delay)
+                          tpn/tpn-delay-activity
+                          tpn/tpn-activity)
+                         {:name (str (:name details)
+                                  (if (:plantid details) ":")
+                                  (:plantid details)
+                                  (if (:plant-part details) "%")
+                                  (:plant-part details)
+                                  (if (:interface details) "@")
+                                  (:interface details)
+                                  "(" (:argsmap details) ")")
+                          :command (:name details)
+                          :display-name (:display-name details) ;; to be removed
+                          :label (:label details) ;; to be removed
+                          :args (:args details)
+                          :argsmap (:argsmap details)
+                          :plantid (:plantid details)
+                          :plant-part (:plant-part details)
+                          :interface (:interface details)
+                          ;; add constraints on the activity
+                          :constraints (if tc #{(:uid tc)})
+                          :htn-node (:uid hem-map)
+                          :end-node (:uid se)}))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
-                               :constraints (if tc #{(:uid tc)})
+                               ;; do NOT add constraints on the node
+                               ;; :constraints (if tc #{(:uid tc)})
                                :end-node (:uid se)
                                :htn-node (:uid hem-map)
                                })
@@ -1110,17 +1484,19 @@
               (tpn/update-tpn-plan-map!
                 (update-in se [:activities] conj
                   (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
-            (construct-hem-plan-map ir task-expansion subtask false
+            (construct-hem-plan-map ir pargs task-expansion subtask false
               (:uid sb))))
         ))
     ))
 
 (defn construct-htn-plan-map [ir expanded-root-task]
-  (let [{:keys [uid label]} expanded-root-task
+  (let [{:keys [uid label pargs]} expanded-root-task
+        ;; _ (println "ERT PARGS" pargs) ;; DEBUG
         net (htn-network {:label label :rootnodes #{uid}})
         {:keys [task-expansions irks]} expanded-root-task
         ert (assoc
-              (dissoc expanded-root-task :pclass :arguments :task-expansions :name
+              (dissoc expanded-root-task :pclass :pargs :arguments
+                :task-expansions :name
                 :task-type :ancestry-path :temporal-constraints
                 :irks)
               :incidence-set #{}
@@ -1137,7 +1513,7 @@
     ;; now walk the graph
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
-        (construct-hem-plan-map ir task-expansion ert true (:uid begin))))
+        (construct-hem-plan-map ir pargs task-expansion ert true (:uid begin))))
     (tpn/optimize-tpn-map)
     @*htn-plan-map*))
 
@@ -1159,21 +1535,49 @@
               irks-i (conj irks i)
               {:keys [type name field method args
                       primitive body temporal-constraints]} f
+              ;; DEBUG
               ;; _ (println "MAKE-HTN-METHODS" i "TYPE" type
               ;;     "NAME" name "METHOD" method
-              ;;     "MNAME" mname "symbol?" (symbol? mname)
-              ;;     "PRIMITIVE" primitive "BODY" body
+              ;;     "PCLASS" pclass "MNAME" mname
+              ;;     "PRIMITIVE" primitive
+              ;;     "\nMARGS" margs "ARGS" args
+              ;;     "BODY" body
               ;;     "TC" temporal-constraints)
               subtask
               (cond
-                ;; FIXME :plant-fn is WRONG.. is a user-fn
                 (= :plant-fn-symbol type)
-                (let [make-htn-method? (symbol? mname)
-                      plant-class (if (= name 'this) pclass name)
+                ;; NOTE if this is a qualified non-this.fname
+                ;; THEN we *must* trace the non-this ancestry back
+                ;; to find the actual plant class BEFORE looking
+                ;; it up in the IR! Challenge is at this point of
+                ;; walking the IR we *don't know* the actual call
+                ;; graph yet!
+                ;; BUG: looking up plant-fn-primitive? here will
+                ;; ONLY be trivially true if the symbol used HAPPENS
+                ;; to match the actual plant pclass symbol.
+                ;; THUS we have to be conservative and assume this is
+                ;; non-primitive here and double check when we have
+                ;; the actual call graph in the subtask portion
+                ;; of construct-hem-plan-map.
+                ;; --------
+                ;; if the value of plant-fn-primitive? is nil we know
+                ;; we have the wrong plant-class (because the IR always
+                ;; has true or false)
+                (let [plant-class (if (= name 'this) pclass name)
                       plant-fn-primitive?
                       (get-in ir [plant-class :methods method :primitive])
-                      non-primitive? (and (= name 'this)
-                                       (not plant-fn-primitive?))
+                      ;; non-primitive? (and (= name 'this)
+                      ;;                  (not plant-fn-primitive?))
+                      [plant-class non-primitive?]
+                      (if (nil? plant-fn-primitive?)
+                        [::unknown false]
+                        [plant-class (not plant-fn-primitive?)])
+                      ;; The following would help expand non local plant
+                      ;; functions, but the HEM logic does not support it.
+                      ;; make-htn-method? (or (symbol? mname)
+                      ;;                    (nil? plant-fn-primitive?))
+                      make-htn-method? (symbol? mname)
+                      ;; DEBUG
                       ;; _ (println "  make-htn-method?" make-htn-method?
                       ;;     "plant-class" plant-class
                       ;;     "plant-fn-primitive?" plant-fn-primitive?
@@ -1188,18 +1592,28 @@
                              :irks irks-i})
                       nt (if make-htn-method?
                            (htn-nonprimitive-task
-                             {:pclass pclass :name mname
-                              :arguments margs
+                             {:pclass pclass
+                              :name (if (nil? plant-fn-primitive?)
+                                      method
+                                      mname) ;; FIX
+                              :arguments (if (nil? plant-fn-primitive?)
+                                           args
+                                           margs) ;; FIX
                               :irks irks-i}))
                       st (if make-htn-method? [task])]
                   ;; (println "  PLANT-FN-SYMBOL TASK" task)
                   ;; (println "  PLANT-FN-SYMBOL SUBTASKS" st)
                   (when make-htn-method? ;; make htn-method
-                    (htn-method {:pclass pclass
-                                 :name mname
-                                 :nonprimitive-task nt
-                                 :subtasks st
-                                 :irks irks-i}))
+                    (let [hm (htn-method {:pclass pclass
+                                          :name (if (nil? plant-fn-primitive?)
+                                                  method
+                                                  mname) ;; FIX
+                                          :nonprimitive-task nt
+                                          :subtasks st
+                                          :irks irks-i})]
+                      ;; (println "HTN-METHOD" (with-out-str (pprint hm)))
+                      ;; (pprint-htn-methods)
+                      hm))
                   task)
 
                 ;; if (symbol? mname) we need to make an htn-method
@@ -1238,13 +1652,16 @@
                                             [(task-sequential-constraint
                                                {:tasks subtasks})]
                                             [])]
-                  ;; (println " SEQ SUBTASKS" subtasks)
+                  ;; (println " MHM" type "SUBTASKS" subtasks)
                   ;; work here
                   (htn-method {:pclass pclass :name mname
                                :nonprimitive-task nonprimitive-task
                                :subtasks subtasks
                                :subtask-constraints subtask-constraints
                                :irks irks-i})
+                  ;; NOTE: we could return nonprimitive-task here, HOWEVER,
+                  ;; the current structure of HTN construction only provides
+                  ;; for ONE high level parallel or sequence per method.
                   nil)
 
                 (= type :choose)
@@ -1264,14 +1681,16 @@
                             irks-j (conj (conj irks-i :body) j)
                             {:keys [type body]} b
                             cname (symbol (str mname "-choice-" j))
+                            ;; _ (println "CHOICE CNAME" cname)
                             subtasks (make-htn-methods ir pclass
-                                       :choice nil body irks-j)]
-                        (if (not= type :choice)
-                          (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
-                        (htn-method {:pclass pclass :name cname
-                                     :nonprimitive-task nonprimitive-task
-                                     :subtasks subtasks
-                                     :irks irks-j})
+                                       :choice nil body irks-j)
+                            _ (if (not= type :choice)
+                                (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
+                            hem (htn-method {:pclass pclass :name cname
+                                             :nonprimitive-task nonprimitive-task
+                                             :subtasks subtasks
+                                             :irks irks-j})]
+                        ;; (println "CHOICE HEM" hem)
                         (recur (inc j))))))
 
                 (= type :delay)
@@ -1306,9 +1725,11 @@
   (reinitialize-htn-plan-map)
   (tpn/reinitialize-tpn-plan-map)
   (transform-htn ir)
-  (let [[pclass method args] (identify-root-task ir root-task)
+  (let [[pclass pargs method args] (identify-root-task ir root-task)
+        ;; _ (println "PAMA" pclass pargs method args)
         nonprimitive-root-task (htn-nonprimitive-task
                                  {:pclass pclass
+                                  :pargs pargs
                                   :name method
                                   :arguments args
                                   :irks [pclass :methods method]})
@@ -1317,7 +1738,8 @@
         output-prefix (if is-stdout? "STDOUT" output)
         htn-filename (if is-stdout? "-" (str output-prefix ".htn." file-format))
         tpn-filename (if is-stdout? "-" (str output-prefix ".tpn." file-format))
-        _ (plan-htn-task expanded-root-task)
+        ;; _ (pprint-htn-methods) ;; DEBUG
+        _ (plan-htn-task ir expanded-root-task)
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
         tpn @tpn/*tpn-plan-map*]
     (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)
