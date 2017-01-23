@@ -18,6 +18,17 @@
 
 set -e
 
+JAVA_VER=`java -version 2>&1 | grep 'version' | cut -d ' ' -f 3`
+
+echo "Java version $JAVA_VER"
+if [[ ^$JAVA_VER =~ "1.7" ]];
+then
+    echo "We have java 7"
+    # https://github.com/boot-clj/boot/wiki/JVM-Options
+    export BOOT_JVM_OPTIONS="-Xmx2g -client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:MaxPermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xverify:none"
+    echo "boot jvm options: $BOOT_JVM_OPTIONS"
+fi
+
 program=$(basename $0)
 
 code=$(dirname $0)
