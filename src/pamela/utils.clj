@@ -22,6 +22,7 @@
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [clojure.data.json :as json]
+            [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
@@ -119,3 +120,10 @@
       (do
         (fs/mkdirs tmpdir)
         tmpdir))))
+
+(defn display-name-string
+  "Generates a pretty-name for display to the user.  Currently, this is Title Case"
+  [raw-name]
+  (clojure.string/replace
+   (translate/->Camel_Snake_Case_String raw-name)
+   "_" " "))
