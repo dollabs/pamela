@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # jenkins.sh
 #
 # Copyright © 2016 Dynamic Object Language Labs Inc.
