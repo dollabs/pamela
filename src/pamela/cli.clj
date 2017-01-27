@@ -210,11 +210,9 @@
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
   (if (repl?)
-    #_(throw (Exception. (str "DEV MODE exit(" status ")")))
     (log/warn "exit" status "In DEV MODE. Not exiting")
     (do (shutdown-agents)
         (System/exit status)))
-
   true)
 
 (defn base-64-decode [b64]
@@ -284,6 +282,12 @@
           (catch Throwable e
             (exit 1 "ERROR caught exception:" (.getMessage e))))))
     (exit 0)))
+
+(defn reset-gensym-generator
+  "Resets gensym generators in htn and tpn.
+   Helps with repeatable testing"
+  []
+  (htn/reset-my-count) (tpn/reset-my-count))
 
 (defn -main
   "PAMELA main entry point (see pamela)"

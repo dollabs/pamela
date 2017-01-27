@@ -21,6 +21,15 @@
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
             [pamela.utils :refer [output-file]]))
 
+; local implementation of gensym so that we get predictable uids in generated plans.
+(defonce my-count (atom 0))
+
+(defn my-gensym [prefix]
+  (str prefix (swap! my-count inc)))
+
+(defn reset-my-count []
+  (reset! my-count 0))
+
 ;; helpers
 (defn default-bounds?
   "Return true of bounds are [0 :infinity]"
@@ -122,7 +131,7 @@
     :or {prefix "uid-"}}]
   (update-tpn-plan-map!
     {:tpn-type :tpn-object
-     :uid (or uid (keyword (gensym prefix)))}))
+     :uid (or uid (keyword (my-gensym prefix)))}))
 
 (defn tpn-network
   "A network"
