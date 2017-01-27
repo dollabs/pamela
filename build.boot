@@ -20,7 +20,8 @@
 (set-env!
   :source-paths #{"src" "test/clj"}
   :resource-paths #{"resources"}
-  :dependencies   '[[org.clojure/clojure       "1.8.0"]
+  :dependencies   '[[dollabs/plan-schema       "0.2.14"]
+                    [org.clojure/clojure       "1.8.0"]
                     [org.clojure/data.codec    "0.1.0"]
                     [org.clojure/tools.cli     "0.3.5"]
                     [org.clojure/data.json     "0.2.6"]
@@ -53,6 +54,7 @@
   test {:namespaces #{'testing.pamela.cli 'testing.pamela.utils
                       'testing.pamela.parser
                       'testing.pamela.tpn 'testing.pamela.htn
+                      'testing.pamela.plan-schema
                       }})
 
 (deftask run
