@@ -49,23 +49,34 @@
         tpn-end-clj (str tpn-edn ".clj")
         tpn-json-clj (str tpn-json ".clj")
         ]
+    (pcli/set-test-mode! true)
+    (scli/set-test-mode! true)
     (println "Creating artifacts for " pname "from" pamela-file)
+
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in EDN")
     (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "edn" "htn")
+    ;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "edn" :verbose 1})
+
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in JSON")
     (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "json" "htn")
+    ;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "json" :verbose 1})
+
     ;(println "schema files" htn-edn htn-json tpn-edn tpn-json)
 
     (println "Reading htn-edn, writing htn-edn")
     (scli/plan-schema "-i" htn-edn "-o" htn-edn-clj "htn")
+
     (println "Reading htn-json, writing htn-edn")
     (scli/plan-schema "-i" htn-json "-o" htn-json-clj "htn")
+
     (println "Reading tpn-edn, writing tpn-edn")
     (scli/plan-schema "-i" tpn-edn "-o" tpn-end-clj "tpn")
+
     (println "Reading tpn-json, writing tpn-edn")
     (scli/plan-schema "-i" tpn-json "-o" tpn-json-clj "tpn")
+
     [htn-edn-clj htn-json-clj tpn-end-clj tpn-json-clj]
     ))
 
@@ -87,6 +98,5 @@
 
         (when-not (compare-files tpn-edn-clj tpn-json-clj)
           (is (= tpn-edn-clj tpn-json-clj) (prn-str "files differ" tpn-edn-clj tpn-json-clj " Do diff for details")))
-
 
         ))))
