@@ -25,6 +25,14 @@
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]))
 
+; local implementation of gensym so that we get predictable uids in generated plans.
+(defonce my-count (atom 0))
+
+(defn my-gensym [prefix]
+  (str prefix (swap! my-count inc)))
+
+(defn reset-my-count []
+  (reset! my-count 0))
 
 ;; definitions -----------------------------------------------
 
@@ -689,7 +697,7 @@
   (update-htn-object!
     (assoc-if
       {:type :htn-object
-       :uid (or uid (keyword (gensym prefix)))}
+       :uid (or uid (keyword (my-gensym prefix)))}
       :ancestry-path ancestry-path)))
 
 (defn temporal-constraint
