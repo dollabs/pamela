@@ -29,6 +29,10 @@
             [environ.core :refer [env]])
   (:gen-class)) ;; required for uberjar
 
+(def test-mode false)
+(defn set-test-mode! [value]
+  (def test-mode value))
+
 ;; actions ----------------------------------------------
 
 (defn check-model
@@ -209,9 +213,10 @@
       (println (string/join \newline msgs))
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
-  (if (repl?)
-    (log/warn "exit" status "In DEV MODE. Not exiting")
-    (do (shutdown-agents)
+  (if (or (repl?) test-mode)
+    (log/warn "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
+    (do (log/info "exiting with status" status)
+      (shutdown-agents)
         (System/exit status)))
   true)
 
@@ -219,6 +224,11 @@
   ;; The following requires JDK 8
   ;; (String. (.decode (Base64/getDecoder) b64))
   (String. (base64/decode (.getBytes b64))))
+
+(defn exec-action
+  "Performs no checks whatsoever !!"
+  [action options]
+  ((get actions action) options))
 
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
