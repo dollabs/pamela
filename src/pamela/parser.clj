@@ -21,7 +21,7 @@
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
             [camel-snake-kebab.core :as translate]
-            [pamela.utils :refer [output-file]]
+            [pamela.utils :refer [output-file display-name-string]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
   (:import [java.io
@@ -212,10 +212,13 @@
             :temporal-constraints [default-bounds-type]
             :betweens []
             :primitive false
+            :display-name (display-name-string method)
             :body nil}
          args-seen? false
          a (first args)
          more (rest args)]
+    ;; (println "method" method)
+    ;; (println "args" args)
     (if-not a
       {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
       (let [[args-seen? m] (if (not args-seen?)
@@ -397,6 +400,9 @@
   {:type :sequence
    :body (vec (repeat times fn))})
 
+
+;; If you're doing some REPL-based development, and change any of the above helper functions:
+;;    !!! Don't forget to re-eval pamela-ir !!!
 (def pamela-ir {
                 ;; :access handled in ir-field
                 :and-expr (partial ir-cond-expr :and)
@@ -430,6 +436,7 @@
                 ;; :delay-opt handled in ir-fn and ir-fn-cond
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
+                :display-name (partial ir-map-kv :display-name)
                 :doc (partial ir-map-kv :doc)
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice

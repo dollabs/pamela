@@ -46,11 +46,13 @@ transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
-cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive )
+cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive | display-name )
 trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
 pre = <PRE> ( keyword | cond-expr )
 post = <POST> ( keyword | cond-expr )
+
+display-name = <DISPLAY_NAME> string
 
 fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes | plant-fn )
 
@@ -157,6 +159,7 @@ DEFPCLASS = <'defpclass'>
 DEFPMETHOD = <'defpmethod'>
 DELAY = <'delay'>
 DEPENDS = <':depends'>
+DISPLAY_NAME = <':display-name'>
 DOC = <':doc'>
 DOTIMES = <'dotimes'>
 ENTER = <':enter'>

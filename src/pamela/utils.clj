@@ -22,6 +22,7 @@
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [clojure.data.json :as json]
+            [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
@@ -46,27 +47,28 @@
 ;; file-format's supported: edn json string
 ;; if input is a map, sort it
 (defn output-file [filename file-format data]
-  (let [is-stdout? (stdout? filename)
-        filename (if (and (not is-stdout?) (string? filename))
-                   (fs/expand-home filename)
-                   filename)
-        output-filename (if (not is-stdout?)
-                          (if (fs/absolute? filename)
-                            (fs/file filename)
-                            (fs/file (get-cwd) filename)))
-        data (if (map? data)
-               (into (sorted-map) data)
-               data)
-        out (cond
-              (= file-format "edn")
-              (with-out-str (pprint data))
-              (= file-format "json")
-              (with-out-str (json/pprint data))
-              :else
-              data)]
-    (if is-stdout?
-      (println out)
-      (spit output-filename out))))
+  (binding [*print-length* nil] ;;Just in case someone has this set in their environment
+    (let [is-stdout? (stdout? filename)
+          filename (if (and (not is-stdout?) (string? filename))
+                     (fs/expand-home filename)
+                     filename)
+          output-filename (if (not is-stdout?)
+                            (if (fs/absolute? filename)
+                              (fs/file filename)
+                              (fs/file (get-cwd) filename)))
+          data (if (map? data)
+                 (into (sorted-map) data)
+                 data)
+          out (cond
+                (= file-format "edn")
+                (with-out-str (pprint data))
+                (= file-format "json")
+                (with-out-str (json/pprint data))
+                :else
+                data)]
+      (if is-stdout?
+        (println out)
+        (spit output-filename out)))))
 
 (defn input-file [filename]
   (let [is-stdin? (stdout? filename)
@@ -118,3 +120,10 @@
       (do
         (fs/mkdirs tmpdir)
         tmpdir))))
+
+(defn display-name-string
+  "Generates a pretty-name for display to the user.  Currently, this is Title Case"
+  [raw-name]
+  (clojure.string/replace
+   (translate/->Camel_Snake_Case_String raw-name)
+   "_" " "))
