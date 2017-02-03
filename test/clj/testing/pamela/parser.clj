@@ -36,6 +36,7 @@
                          :reward 0,
                          :controllable false,
                          :primitive true,
+                         :display-name "Bounded",
                          :betweens [],
                          :post {:type :literal, :value true},
                          :cost 0,
@@ -50,6 +51,7 @@
                          :controllable false,
                          :primitive true,
                          :betweens [],
+                         :display-name "Unbounded",
                          :post {:type :literal, :value true},
                          :cost 0,
                          :body nil,
@@ -68,6 +70,7 @@
                          :controllable false,
                          :primitive false,
                          :betweens [],
+                         :display-name "Simple Choice Tpn",
                          :post {:type :literal, :value true},
                          :cost 0,
                          :body
