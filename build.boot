@@ -20,8 +20,7 @@
 (set-env!
   :source-paths #{"src" "test/clj"}
   :resource-paths #{"resources"}
-  :dependencies   '[[dollabs/plan-schema       "0.2.14"]
-                    [org.clojure/clojure       "1.8.0"]
+  :dependencies   '[[org.clojure/clojure       "1.8.0"]
                     [org.clojure/data.codec    "0.1.0"]
                     [org.clojure/tools.cli     "0.3.5"]
                     [org.clojure/data.json     "0.2.6"]
@@ -92,3 +91,19 @@
   (comp
     (test)
     (cli-test)))
+
+;; For Emacs if you Customize your Cider Boot Parameters to 'cider-boot'
+;; then this task will be invoked upon M-x cider-jack-in-clojurescript
+;; which is on C-c M-J
+;; CIDER will then open two REPL buffers for you, one for CLJS
+;; and another for CLJ. FFI:
+;; https://cider.readthedocs.io/en/latest/up_and_running/#clojurescript-usage
+
+(deftask cider-boot
+  "Cider boot params task"
+  []
+  ;; (cider))
+  (comp
+    (cider)
+    (repl :server true)
+    (wait)))

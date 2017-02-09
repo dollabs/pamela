@@ -31,6 +31,20 @@
   (reset! my-count 0))
 
 ;; helpers
+(defn union-items
+  "Unions all items into a set (ignores nil)"
+  {:added "0.2.0"}
+  ([]
+   #{})
+  ([item]
+   (if item
+     (if (set? item) item #{item})
+     #{}))
+  ([item & more]
+   (set/union
+     (union-items item)
+     (apply union-items more))))
+
 (defn default-bounds?
   "Return true of bounds are [0 :infinity]"
   {:added "0.2.0"}
@@ -95,7 +109,10 @@
 
 (def tpn-hierarchy (-> (make-hierarchy)
                      (derive :network :tpn-object)
-                     (derive :temporal-constraint :tpn-object)
+                     (derive :constraint :tpn-object)
+                     (derive :temporal-constraint :constraint)
+                     (derive :cost<=-constraint :constraint)
+                     (derive :reward>=-constraint :constraint)
                      (derive :null-activity :tpn-object)
                      (derive :delay-activity :null-activity)
                      (derive :activity :delay-activity)
@@ -107,6 +124,9 @@
 
 (defn tpn-isa? [child parent]
   (isa? tpn-hierarchy child parent))
+
+(defn constraint? [object]
+  (isa? tpn-hierarchy (:tpn-type object) :constraint))
 
 ;; print-object multi-methods --------------------------------------
 
@@ -143,24 +163,60 @@
       :begin-node begin-node
       :end-node end-node)))
 
-;; where value is [lb ub], ub may be :infinity
-(defn tpn-temporal-constraint
-  "A temporal constraint"
+;; NOTE: a between is a vector of two keywords
+;;   :between [:from-end :to-begin]
+;;   :between-starts [:from-begin :to-begin]
+;;   :between-ends [:from-end :to-end]
+;;
+(defn tpn-constraint
+  "A constraint superclass"
   [{:keys [prefix uid value end-node
+           between between-ends between-starts
            ;; label probability cost reward guard
            ]
-    :or {prefix "tc-"}}]
+    :or {prefix "cnstr-"}}]
   (update-tpn-plan-map!
     (assoc-if (tpn-object {:prefix prefix :uid uid})
-      :tpn-type :temporal-constraint
+      :tpn-type :constraint
       :value value
       :end-node end-node
+      :between between
+      :between-ends between-ends
+      :between-starts between-starts
       ;; :label label
       ;; :probability probability
       ;; :cost cost
       ;; :reward reward
       ;; :guard guard
       )))
+
+;; where value is [lb ub], ub may be :infinity
+(defn tpn-temporal-constraint
+  "A temporal constraint"
+  [{:keys [prefix uid value end-node
+           between between-ends between-starts]
+    :as options}]
+  (update-tpn-plan-map!
+    (assoc (tpn-constraint (assoc options :prefix (or prefix "tc-")))
+      :tpn-type :temporal-constraint)))
+
+(defn tpn-cost<=-constraint
+  "A cost<= constraint"
+  [{:keys [prefix uid value end-node
+           between between-ends between-starts]
+    :as options}]
+  (update-tpn-plan-map!
+    (assoc (tpn-constraint (assoc options :prefix (or prefix "costle-")))
+      :tpn-type :cost<=-constraint)))
+
+(defn tpn-reward>=-constraint
+  "A reward>= constraint"
+  [{:keys [prefix uid value end-node
+           between between-ends between-starts]
+    :as options}]
+  (update-tpn-plan-map!
+    (assoc (tpn-constraint (assoc options :prefix (or prefix "rewardge-")))
+      :tpn-type :reward>=-constraint)))
 
 (defn tpn-null-activity
   "A null activity"
@@ -224,7 +280,9 @@
   "A state node"
   [{:keys [prefix uid constraints activities incidence-set
            task htn-node end-node begin
-           label sequence-label cost<= reward>=]
+           label sequence-label
+           ;; cost<= reward>=
+           ]
     :or {prefix "node-"}}]
   ;; :or {prefix "na-"}}]
   (update-tpn-plan-map!
@@ -239,15 +297,15 @@
       :begin begin
       :label label
       :sequence-label sequence-label
-      :cost<= cost<=
-      :reward>= reward>=
+      ;; :cost<= cost<=
+      ;; :reward>= reward>=
       )))
 
 (defn tpn-c-begin
   "A choice begin node"
   [{:keys [prefix uid constraints activities incidence-set
            task htn-node end-node begin
-           label sequence-label cost<= reward>=]
+           label sequence-label]
     :as options}]
   (update-tpn-plan-map!
     ;; (assoc-if (tpn-state (assoc options :prefix (or prefix "cb-")))
@@ -268,7 +326,7 @@
   "A parallel begin node"
   [{:keys [prefix uid constraints activities incidence-set
            task htn-node end-node begin
-           label sequence-label cost<= reward>=]
+           label sequence-label]
     :as options}]
   (update-tpn-plan-map!
     ;; (assoc-if (tpn-state (assoc options :prefix (or prefix "pb-")))
@@ -550,7 +608,7 @@
     (doseq [uid (keys @*tpn-plan-map*)]
       (let [object (get-tpn-plan-map uid)
             {:keys [tpn-type end-node]} object]
-        (if (= tpn-type :temporal-constraint)
+        (if (constraint? object)
           (swap! tpn-notes update-in [:tc-ends end-node]
             (fn [tc-uids]
               (if tc-uids (conj tc-uids uid) [uid]))))))
@@ -585,30 +643,31 @@
   ;; (remove-invalid-tpn-attributes)
   (update-incidence-set))
 
-(defn get-tc-from-body [body end-node]
-  (let [{:keys [temporal-constraints
-                ;; label probability cost reward guard
-                ]} body
-        bounds (if (and temporal-constraints
-                     (= 1 (count temporal-constraints)))
-                 (:value (first temporal-constraints)))
-        bounds (if (default-bounds? bounds) nil bounds)
-        tc (if bounds
-             (tpn-temporal-constraint
-               {:value bounds
-                :end-node end-node
-                ;; :label label
-                ;; :probability probability
-                ;; :cost cost
-                ;; :reward reward
-                ;; :guard guard
-                }))]
-    tc))
+;; (defn get-tc-from-body [body end-node]
+;;   (let [{:keys [temporal-constraints
+;;                 ;; label probability cost reward guard
+;;                 ]} body
+;;         bounds (if (and temporal-constraints
+;;                      (= 1 (count temporal-constraints)))
+;;                  (:value (first temporal-constraints)))
+;;         bounds (if (default-bounds? bounds) nil bounds)
+;;         tc (if bounds
+;;              (tpn-temporal-constraint
+;;                {:value bounds
+;;                 :end-node end-node
+;;                 ;; :label label
+;;                 ;; :probability probability
+;;                 ;; :cost cost
+;;                 ;; :reward reward
+;;                 ;; :guard guard
+;;                 }))]
+;;     tc))
 
 (defn build-tpn [ir labels plant plant-id plant-args pfn parent-begin-uid
                  & [parent-order]]
   (let [{:keys [type name method args temporal-constraints primitive body
-                label cost reward controllable]} pfn
+                label cost reward cost<= reward>= controllable]} pfn
+        ;; _ (println "BUILD-TPN1" type "cost<=" cost<= "reward>=" reward>=)
         sequence? (= :sequence type)
         [label sequence-label] (if sequence? [nil label] [label nil])
         choice? (= :choose type)
@@ -647,6 +706,7 @@
                  tpn-c-end
                  tpn-state))
              {:activities (if end-na #{(:uid end-na)})})
+        end-uid (:uid end)
         bounds (if (and temporal-constraints (= 1 (count temporal-constraints)))
                  (:value (first temporal-constraints)))
         bounds (if (default-bounds? bounds) nil bounds)
@@ -656,8 +716,13 @@
                             (default-bounds? method-bounds))
                         nil method-bounds)
         bounds (or bounds method-bounds) ;; default to method bounds
-        tc (if bounds (tpn-temporal-constraint
-                        {:value bounds :end-node (:uid end)}))
+        tc (if bounds
+             (tpn-temporal-constraint {:value bounds :end-node end-uid}))
+        cost-le (if cost<=
+                  (tpn-cost<=-constraint {:value cost<= :end-node end-uid}))
+        reward-ge (if reward>=
+                    (tpn-reward>=-constraint {:value reward>= :end-node end-uid}))
+        constraints (apply union-items (map :uid [tc cost-le reward-ge]))
         activity (if basic-fn?
                    (tpn-activity
                      {:plant (if plant-sym (str plant-sym))
@@ -671,7 +736,7 @@
                       :reward reward
                       :controllable controllable
                       ;; :order parent-order
-                      :end-node (:uid end)}))
+                      :end-node end-uid}))
         ;; _ (if activity (println "ACT" activity))
         begin ((if (= type :parallel)
                  tpn-p-begin
@@ -679,68 +744,99 @@
                    tpn-c-begin
                    tpn-state))
                {:activities (if activity #{(:uid activity)})
-                :constraints (if tc #{(:uid tc)})
-                :end-node (:uid end)
+                :constraints constraints
+                :end-node end-uid
                 :label (if-not basic-fn? label)
-                :sequence-label (if-not basic-fn? sequence-label)})
+                :sequence-label (if-not basic-fn? sequence-label)
+                })
+        begin-uid (:uid begin)
+        ;; _ (println "BUILD-TPN2 constraints from" begin-uid "\n"
+        ;;     (with-out-str (pprint [tc cost-le reward-ge])))
         prev-end (atom begin)
         order (atom 0)]
     ;; record label for activity
     (if (:label activity)
       (swap! labels assoc (:label activity)
-        [(:uid begin) (:end-node activity)]))
+        [begin-uid (:end-node activity)]))
     ;; record label(s) for begin
     (if (:label begin)
       (swap! labels assoc (:label begin)
-        [(:uid begin) (:end-node begin)]))
+        [begin-uid (:end-node begin)]))
     (if (:sequence-label begin)
       (swap! labels assoc (:sequence-label begin)
-        [(:uid begin) (:end-node begin)]))
+        [begin-uid (:end-node begin)]))
     ;; connect to parent-begin
     (let [na-begin (tpn-null-activity {:order parent-order
-                                       :end-node (:uid begin)})]
+                                       :end-node begin-uid})]
       (update-tpn-plan-map!
         (update-in parent-begin [:activities] conj
           (:uid na-begin))))
-    ;; (println "BUILD-TPN begin" (:uid begin) "end" (:uid end)
+    ;; (println "BUILD-TPN begin" begin-uid "end" end-uid
     ;; "BODY" (count body))
     (when (and (not primitive) (#{:parallel :choose :sequence} type))
         (doseq [b body]
           ;; NOTE: not cost reward, etc.
           (let [{:keys [type temporal-constraints
                         label sequence-label cost<= reward>=
-                        probability cost reward guard primitive body]} b
+                        probability cost reward guard primitive]} b
+                child-body (:body b)
+                child-choice? (= :choose type)
+                ;; _ (println "BUILD-TPN3" type
+                ;;     "choice?" choice?
+                ;;     "child-choice?" child-choice?
+                ;;     "body size" (count child-body)
+                ;;     "primitive" primitive
+                ;;     "cost<=" cost<= "reward>=" reward>=)
                 plant-fn? (= type :plant-fn-symbol)
                 ;; _ (println "--B" (dissoc b :body))
                 se (tpn-state {})
                 bounds (if (and temporal-constraints
+                             (not child-choice?)
                              (= 1 (count temporal-constraints)))
                          (:value (first temporal-constraints)))
                 bounds (if choice? ;; may be on choice and plant-fn
                          (if (default-bounds? bounds) nil bounds))
                 tc (if bounds
-                       (tpn-temporal-constraint
-                         {:value bounds
-                          :end-node (:uid se)}))
-                [choice-tc choice-opts tc b]
-                (if choice?
-                  [tc
-                   (assoc-if {}
-                     :probability probability
-                     :cost cost
-                     :reward reward
-                     :guard guard
-                     )
-                   nil ;; (get-tc-from-body (first body) (:uid se))
-                   (and (not primitive) (first body))]
-                  [nil
-                   {}
-                   tc
-                   b])
+                     (tpn-temporal-constraint
+                       {:value bounds :end-node (:uid se)}))
+                cost-le (if (and (not child-choice?) cost<=)
+                          (tpn-cost<=-constraint
+                            {:value cost<= :end-node (:uid se)}))
+                reward-ge (if (and (not child-choice?) reward>=)
+                            (tpn-reward>=-constraint
+                              {:value reward>= :end-node (:uid se)}))
+                constraints (apply union-items
+                              (map :uid [tc cost-le reward-ge]))
+                choice-opts (if choice?
+                              (assoc-if {}
+                                :probability probability
+                                :cost cost
+                                :reward reward
+                                :guard guard)
+                              {})
+                b (if choice?
+                    (if (not primitive) (first child-body))
+                    b)
+                ;; _ (println "BUILD-TPN3.5 b" b)
+                ;; [choice-constraints choice-opts constraints b]
+                ;; (if choice?
+                ;;   [constraints
+                ;;    (assoc-if {}
+                ;;      :probability probability
+                ;;      :cost cost
+                ;;      :reward reward
+                ;;      :guard guard
+                ;;      )
+                ;;    nil ;; (get-tc-from-body (first body) (:uid se))
+                ;;    (and (not primitive) (first body))]
+                ;;   [nil
+                ;;    {}
+                ;;    constraints
+                ;;    b])
                 ;; avoid duplicating TC in a plant-fn
-                choice-tc (if (and choice-tc
-                                (not= (:value choice-tc) (:value tc)))
-                            choice-tc)
+                ;; choice-tc (if (and choice-tc
+                ;;                 (not= (:value choice-tc) (:value tc)))
+                ;;             choice-tc)
                 ;; _ (println "TC[" @order"]" tc "CHOICE-TC" choice-tc)
                 first-b? (zero? @order)
                 [label sequence-label] (if choice?
@@ -749,13 +845,13 @@
                                            [nil label]
                                            ))
                 sb (tpn-state (assoc-if
-                                {:constraints (if tc
-                                                #{(:uid tc)}
-                                                (if choice-tc
-                                                  #{(:uid choice-tc)}))
+                                {:constraints constraints
+                                 ;; (or constraints choice-constraints)
                                  :end-node (:uid se)}
                                 :label label
                                 :sequence-label sequence-label))]
+            ;; (println "BUILD-TPN4 constraints from" (:uid sb) "\n"
+            ;;   (with-out-str (pprint (:constraints sb))))
             ;; record label(s) for sb
             (if (:label sb)
               (swap! labels assoc (:label sb)
@@ -772,7 +868,7 @@
                     (:uid na))))
               (reset! prev-end se))
             (when (not sequence?)
-              (let [se-na (tpn-null-activity {:end-node (:uid end)})]
+              (let [se-na (tpn-null-activity {:end-node end-uid})]
                 (update-tpn-plan-map!
                   (update-in se [:activities] conj
                     (:uid se-na))))
@@ -787,27 +883,33 @@
             (build-tpn ir labels plant plant-id plant-args b (:uid sb) @order)
             (swap! order inc)))
         (when sequence?
-          (let [na-end (tpn-null-activity {:end-node (:uid end)})]
+          (let [na-end (tpn-null-activity {:end-node end-uid})]
             (update-tpn-plan-map!
               (update-in @prev-end [:activities] conj
                 (:uid na-end))))))))
 
 (defn add-between-constraints [labels betweens]
   (doseq [between betweens]
-    (let [{:keys [type from to temporal-constraints]} between
+    (let [{:keys [type from to temporal-constraints cost<= reward>=]} between
           bounds (get-in temporal-constraints [0 :value])
           bounds (if (default-bounds? bounds) nil bounds)
           [from-begin from-end] (get @labels from)
           [to-begin to-end] (get @labels to)
+          begin-uid (if (= type :between-starts) from-begin from-end)
+          end-uid (if (= type :between-ends) to-end to-begin)
           tc (if bounds
                (tpn-temporal-constraint
-                 {:value bounds
-                  :end-node (if (= type :between-ends) to-end to-begin)}))
-          begin-uid (if (= type :between-starts) from-begin from-end)]
-      (when tc
-        (update-tpn-plan-map!
-          (update-in (get-tpn-plan-map begin-uid) [:constraints] conj
-            (:uid tc)))))))
+                 {:value bounds :end-node end-uid type [from to]}))
+          cost-le (if cost<=
+                    (tpn-cost<=-constraint
+                      {:value cost<= :end-node end-uid type [from to]}))
+          reward-ge (if reward>=
+                    (tpn-reward>=-constraint
+                      {:value reward>= :end-node end-uid type [from to]}))
+          constraints (apply union-items (map :uid [tc cost-le reward-ge]))]
+      (update-tpn-plan-map!
+        (update-in (get-tpn-plan-map begin-uid) [:constraints]
+          union-items constraints)))))
 
 ;; assumes args are to the tpn-pclass constructor!
 (defn create-tpn [ir plant-id tpn-ks tpn-args]
@@ -820,19 +922,21 @@
         {:keys [temporal-constraints body betweens]} tpn-method
         plant-args (zipmap args tpn-args) ;; maps symbol -> argval
         end (tpn-state {})
+        end-uid (:uid end)
         bounds (if (and temporal-constraints (= 1 (count temporal-constraints)))
                  (:value (first temporal-constraints)))
         bounds (if (default-bounds? bounds) nil bounds)
         tc (if bounds
              (tpn-temporal-constraint
-               {:value bounds :end-node (:uid end)}))
+               {:value bounds :end-node end-uid}))
         begin (tpn-state {:constraints (if tc #{(:uid tc)})
-                          :end-node (:uid end)})
+                          :end-node end-uid})
+        begin-uid (:uid begin)
         labels (atom {})]
     (swap! *tpn-plan-map* assoc
-      :network-id (:uid (tpn-network {:begin-node (:uid begin)
-                                      :end-node (:uid end)})))
-    (build-tpn ir labels plant plant-id plant-args (first body) (:uid begin))
+      :network-id (:uid (tpn-network {:begin-node begin-uid
+                                      :end-node end-uid})))
+    (build-tpn ir labels plant plant-id plant-args (first body) begin-uid)
     (add-between-constraints labels betweens)
     (optimize-tpn-map)
     @*tpn-plan-map*))
