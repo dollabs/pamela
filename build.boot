@@ -36,7 +36,8 @@
                     [me.raynes/fs              "1.4.6"]
                     [camel-snake-kebab         "0.4.0"]
                     ;; testing
-                    [adzerk/boot-test          "1.1.2" :scope "test"]])
+                    [adzerk/boot-test          "1.1.2" :scope "test"]
+                    [dollabs/plan-schema       "0.2.15" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])
