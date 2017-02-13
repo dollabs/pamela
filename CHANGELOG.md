@@ -33,6 +33,7 @@ Changes
   (rather than the begin node).
 - Fixed jenkins.sh
 - Updated documents in doc/
+- Update tests with new gensym to compare IR output
 
 ### [0.5.0] - 2016-12-08
 

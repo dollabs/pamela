@@ -32,7 +32,7 @@
                     ;; utilities
                     [environ                   "1.1.0"]
                     [instaparse                "1.4.3"]
-                    [avenir                    "0.2.1"]
+                    [avenir                    "0.2.2"]
                     [me.raynes/fs              "1.4.6"]
                     [camel-snake-kebab         "0.4.0"]
                     ;; testing
@@ -100,11 +100,14 @@
 ;; and another for CLJ. FFI:
 ;; https://cider.readthedocs.io/en/latest/up_and_running/#clojurescript-usage
 
-(deftask cider-boot
-  "Cider boot params task"
-  []
-  ;; (cider))
-  (comp
-    (cider)
-    (repl :server true)
-    (wait)))
+;; This task is commented out here for users that have not copied
+;; a profile.boot file to ~/.boot/ which defines the cider task:
+;;
+;; (deftask cider-boot
+;;   "Cider boot params task"
+;;   []
+;;   ;; (cider))
+;;   (comp
+;;     (cider)
+;;     (repl :server true)
+;;     (wait)))
