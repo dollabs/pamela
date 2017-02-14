@@ -15,7 +15,9 @@
             [clojure.pprint :refer :all])
   (:import [java.io.File]))
 
-(def pamela-files [["test/pamela/cannon.pamela" "(game.main)"]])
+(def pamela-files [["test/pamela/cannon.pamela" "(game.main)"]
+                   ["test/pamela/ir-test.pamela" "(game.main)"]
+                   ["test/pamela/tpn-between.pamela" "(tpn.elephant)"]])
 (def outdir "test/gen-files/")
 (def htn-edn-suffix ".htn.edn")
 (def htn-json-suffix ".htn.json")
