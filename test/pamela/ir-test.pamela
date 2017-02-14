@@ -131,4 +131,8 @@
                   (:cannon-f.reset)))
                 (between :my :pickme :bounds [50 :infinity])
                 (between-starts :doit :aaa :cost<= 51)
-                (between-ends :chance :bbb :reward>= 17))])
+                (between-ends :chance :bbb :reward>= 17))
+
+            (defpmethod main-test {:doc "Unit test method entry point"} []
+                        (main true))
+            ])

@@ -16,7 +16,7 @@
   (:import [java.io.File]))
 
 (def pamela-files [["test/pamela/cannon.pamela" "(game.main)"]
-                   ["test/pamela/ir-test.pamela" "(game.main)"]
+                   ["test/pamela/ir-test.pamela" "(game.main-test)"]
                    ["test/pamela/tpn-between.pamela" "(tpn.elephant)"]])
 (def outdir "test/gen-files/")
 (def htn-edn-suffix ".htn.edn")
