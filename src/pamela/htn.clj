@@ -1600,7 +1600,7 @@
               ;;     "TC" temporal-constraints)
               subtask
               (cond
-                (= :plant-fn-symbol type)
+                (#{:plant-fn-symbol :plant-fn-field} type)
                 ;; NOTE if this is a qualified non-this.fname
                 ;; THEN we *must* trace the non-this ancestry back
                 ;; to find the actual plant class BEFORE looking
@@ -1618,13 +1618,13 @@
                 ;; if the value of plant-fn-primitive? is nil we know
                 ;; we have the wrong plant-class (because the IR always
                 ;; has true or false)
-                (let [plant-class (if (= name 'this) pclass name)
+                (let [plant-class (if (= :plant-fn-symbol type)
+                                    (if (= name 'this) pclass name)
+                                    (get-in ir [pclass :fields :field :initial :pclass]))
                       plant-fn-primitive?
                       (get-in ir [plant-class :methods method :primitive])
-                      ;; non-primitive? (and (= name 'this)
-                      ;;                  (not plant-fn-primitive?))
                       [plant-class non-primitive?]
-                      (if (nil? plant-fn-primitive?)
+                      (if (nil? plant-fn-primitive?)  ;;TODO - Should error here
                         [::unknown false]
                         [plant-class (not plant-fn-primitive?)])
                       ;; The following would help expand non local plant
@@ -1648,51 +1648,22 @@
                       nt (if make-htn-method?
                            (htn-nonprimitive-task
                              {:pclass pclass
-                              :name (if (nil? plant-fn-primitive?)
-                                      method
-                                      mname) ;; FIX
-                              :arguments (if (nil? plant-fn-primitive?)
-                                           args
-                                           margs) ;; FIX
+                              :name mname
+                              :arguments margs
                               :irks irks-i}))
                       st (if make-htn-method? [task])]
                   ;; (println "  PLANT-FN-SYMBOL TASK" task)
                   ;; (println "  PLANT-FN-SYMBOL SUBTASKS" st)
                   (when make-htn-method? ;; make htn-method
                     (let [hm (htn-method {:pclass pclass
-                                          :name (if (nil? plant-fn-primitive?)
-                                                  method
-                                                  mname) ;; FIX
+                                          :name mname
+                                          :display-name display-name
                                           :nonprimitive-task nt
                                           :subtasks st
                                           :irks irks-i})]
                       ;; (println "HTN-METHOD" (with-out-str (pprint hm)))
                       ;; (pprint-htn-methods)
                       hm))
-                  task)
-
-                ;; if (symbol? mname) we need to make an htn-method
-                (= :plant-fn-field type)
-                (let [make-htn-method? (symbol? mname)
-                      task (htn-primitive-task
-                             {:pclass field
-                              :name method
-                              :arguments args
-                              :temporal-constraints temporal-constraints
-                              :irks irks-i})
-                      nt (if make-htn-method?
-                           (htn-nonprimitive-task
-                             {:pclass pclass :name mname
-                              :arguments margs
-                              :irks irks-i}))
-                      st (if make-htn-method? [task])]
-                  (when make-htn-method?
-                    (htn-method {:pclass pclass
-                                 :name mname
-                                 :display-name display-name
-                                 :nonprimitive-task nt
-                                 :subtasks st
-                                 :irks irks-i}))
                   task)
 
                 (#{:sequence :parallel} type)
