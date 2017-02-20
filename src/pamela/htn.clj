@@ -1208,7 +1208,7 @@
         (doseq [[mname method] (seq methods)]
           (if mname ;; else (println "no more methods")
             (let [{:keys [temporal-constraints args primitive display-name body]} method]
-              ;; (println "  METHOD" mname "PRIMITIVE" primitive)
+              (println "  METHOD" mname "PRIMITIVE" primitive)
               (if (and (not primitive) body)
                 (make-htn-methods ir pclass-name mname display-name args body))
               )))))))
@@ -1372,7 +1372,8 @@
                      (irks->bounds ir irks))
             m-task-expansions (count task-expansions)
             ;; DEBUG
-            _ (println "ST#" i "of" n-subtasks "IRKS" irks)
+            _ (println "ST#" i "of" n-subtasks "IRKS" irks
+                       "type" type "pclass" pclass "name" name)
             ;; resolve pclass if (= type :htn-nonprimitive-task)
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
@@ -1591,13 +1592,13 @@
               {:keys [type name field method args
                       primitive body temporal-constraints]} f
               ;; DEBUG
-              ;; _ (println "MAKE-HTN-METHODS" i "TYPE" type
-              ;;     "NAME" name "METHOD" method
-              ;;     "PCLASS" pclass "MNAME" mname
-              ;;     "PRIMITIVE" primitive
-              ;;     "\nMARGS" margs "ARGS" args
-              ;;     "BODY" body
-              ;;     "TC" temporal-constraints)
+              _ (println "MAKE-HTN-METHODS" i "TYPE" type
+                  "NAME" name "FIELD" field "METHOD" method
+                  "\nPCLASS" pclass "MNAME" mname
+                  "PRIMITIVE" primitive
+                  "\nMARGS" margs "ARGS" args
+                  "BODY" body
+                  "TC" temporal-constraints)
               subtask
               (cond
                 (#{:plant-fn-symbol :plant-fn-field} type)
@@ -1620,9 +1621,10 @@
                 ;; has true or false)
                 (let [plant-class (if (= :plant-fn-symbol type)
                                     (if (= name 'this) pclass name)
-                                    (get-in ir [pclass :fields :field :initial :pclass]))
+                                    (get-in ir [pclass :fields field :initial :pclass]))
                       plant-fn-primitive?
                       (get-in ir [plant-class :methods method :primitive])
+                      _ (println "plant-class" plant-class "plant-fn-primitive?" plant-fn-primitive?)
                       [plant-class non-primitive?]
                       (if (nil? plant-fn-primitive?)  ;;TODO - Should error here
                         [::unknown false]
@@ -1631,7 +1633,8 @@
                       ;; functions, but the HEM logic does not support it.
                       ;; make-htn-method? (or (symbol? mname)
                       ;;                    (nil? plant-fn-primitive?))
-                      make-htn-method? (symbol? mname)
+                      ;; NOTE: We will make an htn-method, if (not plant-fn-primitive?)
+                      ;;make-htn-method? (symbol? mname)
                       ;; DEBUG
                       ;; _ (println "  make-htn-method?" make-htn-method?
                       ;;     "plant-class" plant-class
@@ -1645,23 +1648,30 @@
                              :arguments args
                              :temporal-constraints temporal-constraints
                              :irks irks-i})
-                      nt (if make-htn-method?
+                      nt (if (not plant-fn-primitive?)
                            (htn-nonprimitive-task
                              {:pclass pclass
                               :name mname
                               :arguments margs
                               :irks irks-i}))
-                      st (if make-htn-method? [task])]
+                      st (if (not plant-fn-primitive?) [task])
+                      ;; st (if (not plant-fn-primitive?)
+                      ;;      (make-htn-methods ir plant-class method
+                      ;;                        (str method) ;;(str type) ;;TODO: Not sure this will be necessary
+                      ;;                        args (get-in ir [plant-class :methods method :body])))
+                      ]
                   ;; (println "  PLANT-FN-SYMBOL TASK" task)
-                  ;; (println "  PLANT-FN-SYMBOL SUBTASKS" st)
-                  (when make-htn-method? ;; make htn-method
-                    (let [hm (htn-method {:pclass pclass
+                  (println "  PLANT-FN-XXX SUBTASKS" st)
+                  (when (not plant-fn-primitive?) ;; make htn-method
+                    (let [hm (htn-method {:pclass plant-class
                                           :name mname
                                           :display-name display-name
                                           :nonprimitive-task nt
                                           :subtasks st
-                                          :irks irks-i})]
-                      ;; (println "HTN-METHOD" (with-out-str (pprint hm)))
+                                          :irks (if (= plant-class pclass)
+                                                  irks-i
+                                                  [plant-class :methods method :body])})]
+                      (println "HTN-METHOD" (with-out-str (pprint hm)))
                       ;; (pprint-htn-methods)
                       hm))
                   task)
