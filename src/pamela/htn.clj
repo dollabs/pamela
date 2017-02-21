@@ -260,8 +260,8 @@
   (let [hem (get-htn-object (first ancestry-path))
         ;; DEBUG
         _ (println "  RPC0" plant-class "METHOD" method
-           "\nRPCHEM" (dissoc hem :subtasks :ancestry-path
-                              :expansion-method :subtask-constraints)
+           "\nRPCHEM" (pr-str (dissoc hem :subtasks :ancestry-path
+                                      :expansion-method :subtask-constraints))
            "\nhem-pclass" hem-pclass
            "pargs" pargs
            "plant-class" plant-class
@@ -310,24 +310,27 @@
                         :else
                         plant-class))
         {:keys [argument-mappings]} hem
-         _ (println "  RPC1" plant-class "argument-mappings" argument-mappings) ;; DEBUG
-        resolve-pc (fn [arg]
-                     (if (and (variable? arg) (not (empty? argument-mappings)))
-                       (get argument-mappings arg)
-                       arg))
-        p (resolve-pc plant-class)
-        _ (println "  RPC2" p) ;; DEBUG
-        p (if (variable? p)
-            (resolve-plant-class ir hem-pclass pargs p method task-type
-              irks nil (nthrest ancestry-path 2))
-            p)
-        _ (println "  RPC3" p) ;; DEBUG
-        ;; if method is not primitive in p then return nil to
-        ;; indicate this is NOT actually a primitive method
-        p (if (and (map? p)
-                (= (:type p) :pclass-ctor)
-                (get-in ir [(:pclass p) :methods method :primitive]))
-            p)]
+        ;;  _ (println "  RPC1" plant-class "argument-mappings" argument-mappings) ;; DEBUG
+        ;; resolve-pc (fn [arg]
+        ;;              (if (and (variable? arg) (not (empty? argument-mappings)))
+        ;;                (get argument-mappings arg)
+        ;;                arg))
+        ;; p (resolve-pc plant-class)
+        ;; _ (println "  RPC2" p) ;; DEBUG
+        ;; p (if (variable? p)
+        ;;     (resolve-plant-class ir hem-pclass pargs p method task-type
+        ;;       irks nil (nthrest ancestry-path 2))
+        ;;     p)
+        ;; _ (println "  RPC3" p) ;; DEBUG
+        ;; ;; if method is not primitive in p then return nil to
+        ;; ;; indicate this is NOT actually a primitive method
+        ;; p (if (and (map? p)
+        ;;         (= (:type p) :pclass-ctor)
+        ;;         (get-in ir [(:pclass p) :methods method :primitive]))
+        ;;     p)
+        ;; FIX recursive argument resolution later
+        p plant-class
+        ]
     (println "RPC" plant-class "=>" p) ;; DEBUG
     p))
 
@@ -1283,8 +1286,8 @@
             args (if (pos? unresolved)
                       (resolve-arguments arguments ancestry-path)
                       arguments)
-            _ (println "plant-class" plant-class)
-            _ (println "get-in" pclass name)
+            _ (println "PD plant-class" plant-class)
+            _ (println "PD get-in" pclass name)
             formal-args (mapv str (get-in ir [pclass :methods name :args]))
             _ (println "PD ARGS" args "FORMAL-ARGS" formal-args) ;;:: DEBUG
             argsmap (zipmap formal-args args)]
@@ -1388,12 +1391,12 @@
             parallel? (not sequential?)
             choice? (and (not parallel?) (> m-task-expansions 1))
             ;; DEBUG
-            ;; _ (println "SUBTASK primitive?" primitive?
-            ;;     "type" type
-            ;;     "plant-class" plant-class
-            ;;     "parallel?" parallel?
-            ;;     "choice?" choice?
-            ;;     "ST" (dissoc subtask :ancestry-path :task-expansions))
+            _ (println "SUBTASK primitive?" primitive?
+                "type" type
+                "plant-class" plant-class
+                "parallel?" parallel?
+                "choice?" choice?
+                "ST" (dissoc subtask :ancestry-path :task-expansions))
             ;; add in details for the plant for primitive tasks...
             ;;_ (println "plant-details" pargs subtask plant-class primitive?) ;;DEBUG
             details (plant-details ir pargs subtask plant-class primitive?)
