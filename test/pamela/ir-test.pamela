@@ -33,7 +33,7 @@
   :modes [:open :close]
   :transitions {:open:close {:pre :open :post :close :doc "lid closes"}
                 :close:open {:pre :close
-                             :post (and (= :pwr :high)
+                             :post (and (= :pwr (mode-of pwrvals :high))
                                      (= (:fred this) 123.456)
                                      (mode-of this :wacky))
                              :doc "lid opens"
@@ -72,13 +72,13 @@
 
 ;; Pamela main / class or entry point for a control program
 (defpclass game [power]
-  :fields {:cannon-f (cannon true "fred" 123 bob :id "first-cannon" :interface "ZMQ")
+  :fields {:cannon-f (cannon :id "first-cannon" :interface "ZMQ")
            :box-f    (box)}
 
   :modes {:wacky true
           :bizarre (= :cannon-f.:ammunitions 5)
-          :weird (and (= :box-f.:pwr :high)
-                   (= power :high)
+          :weird (and (= :box-f.:pwr (mode-of pwrvals :high))
+                   (= power (mode-of pwrvals :high))
                    (= global-state true))
           }
   :methods [(defpmethod main
@@ -90,13 +90,10 @@
                   (unless (= :cannon-f.:ammunitions 0)
                     (try :bounds [2 20]
                          (sequence
-                           (assert (= :box-f :open))
-                           (maintain (= :box-f :open)
+                           (assert (= :box-f (mode-of box :open)))
+                           (maintain (= :box-f (mode-of box :open))
                              (sequence :label :my :bounds [98 101]
                                :cost<= 11 :reward>= 90
-                               (magic.doit :label :doit :bounds [99 100]
-                                 :cost 9 :reward 99 :controllable true
-                                 :a 1 "two" 2.3)
                                (:cannon-f.fire :bounds [1 7] 123.45  "456")
                                (ask (= all-clear true) :bounds [200 300]
                                  ) ;; wait / rendezvous
@@ -108,7 +105,7 @@
                                :cost 9 :reward 99 :probability 0.67
                                (delay :label :aaa)
                                )
-                             (choice :bounds [7 8] :guard (= :box-f :open)
+                             (choice :bounds [7 8] :guard (= :box-f (mode-of box :open))
                                (delay :label :bbb)
                                )
                              ))
@@ -134,4 +131,8 @@
                   (:cannon-f.reset)))
                 (between :my :pickme :bounds [50 :infinity])
                 (between-starts :doit :aaa :cost<= 51)
-                (between-ends :chance :bbb :reward>= 17))])
+                (between-ends :chance :bbb :reward>= 17))
+
+            (defpmethod main-test {:doc "Unit test method entry point"} []
+                        (main true))
+            ])

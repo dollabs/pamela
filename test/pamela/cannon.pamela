@@ -53,8 +53,8 @@
                   (unless (= :cannon-f.:ammunitions 0)
                     (try :bounds [2 20]
                       (sequence
-                        (assert (= :box-f :open))
-                        (maintain (= :box-f :open)
+                        (assert (= :box-f (mode-of box :open)))
+                        (maintain (= :box-f (mode-of box :open))
                           (sequence
                             (:cannon-f.fire :bounds [1 7] 123 "456")
                             (ask (= all-clear true)
