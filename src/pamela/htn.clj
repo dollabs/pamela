@@ -278,10 +278,10 @@
             (println "  RPC HENPT" (dissoc henpt :subtasks :ancestry-path
                                      :expansion-method :subtask-constraints
                                      :task-expansions)))
-        plant-fn (get-in ir irks)
-        _ (println "plant-fn" plant-fn "argument-mappings"
+        plant-fn_ (get-in ir irks)
+        _ (println "plant-fn_" plant-fn_ "argument-mappings"
             (pr-str argument-mappings))
-        {:keys [type name field method args]} plant-fn
+        {:keys [type name field method args]} plant-fn_
         pclass-ctor_ (cond
                        (= type :plant-fn-field)
                        (get-in ir [hem-pclass :fields field :initial])
@@ -295,7 +295,7 @@
                          nil))
         ;; pclass-ctor_ (cond
         ;;                (= pclass ::unknown) ;; matching method in pargs?
-        ;;                ;; (let [plant-fn (get-in ir irks)
+        ;;                ;; (let [plant-fn_ (get-in ir irks)
         ;;                ;;       param (:name plant-fn)
         ;;                ;;       pc (first (filter #(= (:param %) param) pargs))
         ;;                ;;       plant (:pclass pc)
@@ -1696,8 +1696,8 @@
                       nt (if (not plant-fn-primitive?)
                            (htn-nonprimitive-task
                              {:pclass pclass
-                              :name mname
-                              :arguments margs
+                              :name method
+                              :arguments args
                               :irks irks-i}))
                       ;; st (if (not plant-fn-primitive?) [task])
                       st (if (not plant-fn-primitive?)
@@ -1709,8 +1709,8 @@
                   (println "  PLANT-FN-XXX SUBTASKS" st)
                   (when (not plant-fn-primitive?) ;; make htn-method
                     (let [hm (htn-method {:pclass plant-class
-                                          :name mname
-                                          :display-name display-name
+                                          :name method
+                                          :display-name (-> method str display-name-string)
                                           :nonprimitive-task nt
                                           :subtasks st
                                           :irks (if (= plant-class pclass)
