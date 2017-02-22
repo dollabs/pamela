@@ -88,11 +88,11 @@ usage() {
     exit 1
 }
 
-args="run"
+cmd="boot run"
 while [ $# -gt 0 ]; do
-    args="$args -A $1"
+    cmd="$cmd -A \"$(echo $1 | sed 's/"/\\"/g')\""
     shift
 done
 
-vvlog boot $args
-boot $args
+vvlog "$cmd"
+eval $cmd

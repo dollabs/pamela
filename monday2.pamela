@@ -1,0 +1,24 @@
+
+(defpclass qc []
+  :methods [(defpmethod goto
+              [loc])
+            (defpmethod waypoint
+              [wp]
+              (goto wp))])
+
+(defpclass mission [thing]
+  :fields {:qc1 (qc :id "qc1" :interface "RMQ" :plant-part "part-001")
+           :qc2 (qc :id "qc2" :interface "ZMQ" :plant-part "part-002")
+           :qc3 (qc :id "qc3" :plant-part "part-003")}
+  :methods [(defpmethod position [a b c]
+              (sequence
+                (fake-waypoint a)
+                (fake-waypoint b)
+                (fake-waypoint c)))
+            (defpmethod fake-waypoint
+              [wp] ;; CURRENTLY no HEM is created for this non-primitive
+              (:qc1.goto wp))])
+
+(defpclass demo []
+  :fields {:thing1 (thing :id "thing1" :interface "ZMQ" :plant-part "part-000")
+           :htn (mission :thing1)})
