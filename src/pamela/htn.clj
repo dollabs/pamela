@@ -1241,12 +1241,12 @@
   (doseq [[pclass-name v] (seq ir)]
     (assert pclass-name "Found a nil pclass in the IR")
     (let [{:keys [type methods]} v]
-      ;; (println "TRANSFORM-HTN" pclass-name)
+      (println "TRANSFORM-HTN" pclass-name)
       (when (= type :pclass) ;;Could it be anything else?
         (doseq [[mname method] (seq methods)]
           (if mname ;; else (println "no more methods")
             (let [{:keys [temporal-constraints args primitive display-name body]} method]
-              (println "  METHOD" mname "PRIMITIVE" primitive)
+              (println "  METHOD" mname "PRIMITIVE" primitive "ARGS" args)
               (if (and (not primitive) body)
                 (make-htn-methods ir pclass-name mname display-name args body))
               )))))))
@@ -1316,6 +1316,7 @@
       details
       (let [{:keys [pclass id plant-part interface]} pclass-ctor_
             plantid id
+            _ (println "PD ARGS" arguments)
             arguments (or arguments [])
             unresolved (count (filter variable? arguments))
             args (if (pos? unresolved)
@@ -1685,25 +1686,28 @@
                       ;;     "plant-class" plant-class
                       ;;     "plant-fn-primitive?" plant-fn-primitive?
                       ;;     "non-primitive?" non-primitive?)
+                      task-args (if plant-fn-primitive?
+                                  margs
+                                  (or args margs))
                       task ((if non-primitive?
                               htn-nonprimitive-task
                               htn-primitive-task)
                             {:pclass plant-class
                              :name method
-                             :arguments args
+                             :arguments task-args
                              :temporal-constraints temporal-constraints
                              :irks irks-i})
                       nt (if (not plant-fn-primitive?)
                            (htn-nonprimitive-task
                              {:pclass pclass
                               :name method
-                              :arguments args
+                              :arguments task-args
                               :irks irks-i}))
                       ;; st (if (not plant-fn-primitive?) [task])
                       st (if (not plant-fn-primitive?)
                            (make-htn-methods ir plant-class method
                              (-> method str display-name-string)
-                             args (get-in ir [plant-class :methods method :body])))
+                             task-args (get-in ir [plant-class :methods method :body])))
                       ]
                   ;; (println "  PLANT-FN-SYMBOL TASK" task)
                   (println "  PLANT-FN-XXX SUBTASKS" st)
@@ -1732,7 +1736,7 @@
                                            :irks irks-i})
                       subtasks (make-htn-methods ir pclass type
                                                  (str type) ;;TODO: Not sure this will be necessary
-                                                 nil body irks-i)
+                                                 margs body irks-i)
                       subtask-constraints (if (= type :sequence)
                                             [(task-sequential-constraint
                                                {:tasks subtasks})]
@@ -1772,7 +1776,7 @@
                             subtasks (make-htn-methods ir pclass
                                                        :choice
                                                        "Choice" ;;TODO: Not sure this is necessary
-                                                       nil body irks-j)
+                                                       margs body irks-j)
                             _ (if (not= type :choice)
                                 (log/error "HEY, I EXPECTED a :choice")) ;; FIXME
                             hem (htn-method {:pclass pclass :name cname
