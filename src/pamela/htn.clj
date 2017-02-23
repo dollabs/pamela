@@ -264,10 +264,10 @@
         hem (get-htn-object (first ancestry-path))
         {:keys [argument-mappings]} hem
         ;; DEBUG
-        _ (println "  RPC0" pclass "METHOD" name
-            "\nRPCHEM" (pr-str (dissoc hem :subtasks :ancestry-path
+        _ (println "  RPC0" pclass "METHOD" name "IRKS" irks
+            "\n    RPCHEM" (pr-str (dissoc hem :subtasks :ancestry-path
                                  :expansion-method :subtask-constraints))
-            "\nhem-pclass" hem-pclass
+            "\n    hem-pclass" hem-pclass
             "pargs" pargs
             "pclass" pclass
             "task-type" task-type
@@ -507,6 +507,10 @@
                   matches
                   (let [method (get pc-methods m)
                         npt-name (get-in method [:nonprimitive-task :name])
+                        ;; npt-args (get-in method [:nonprimitive-task :arguments])
+                        ;; _ (println "FCM ARGUMENTS" arguments
+                        ;;     "NPT-ARGS" npt-args
+                        ;;     "MATCH?" (= arguments npt-args))
                         match (if (= npt-name name)
                                 [m method])
                         matches (if match
@@ -556,7 +560,9 @@
 (defn arg-mappings-for-task-and-method [task method]
   (let [static-task-args (get-in method [:nonprimitive-task :arguments])
         dynamic-task-args (:arguments task)]
-    ;; (println "DYNAMIC-TASK-ARGS" dynamic-task-args) ;; DEBUG
+    (println "AMFTAM" (:uid method) "name" (:name method))
+    (println "STATIC-TASK-ARGS" (pr-str static-task-args)) ;; DEBUG
+    (println "DYNAMIC-TASK-ARGS" (pr-str dynamic-task-args)) ;; DEBUG
     (if (or (not (vector? static-task-args))
           (not (vector? dynamic-task-args))
           (not= (count static-task-args) (count dynamic-task-args)))
@@ -1343,8 +1349,9 @@
                 ancestry-path argument-mappings irks]} hem
         ;; DEBUG
         _ (println "CHPM PARGS" pargs)
-        _ (println "CHPM HEM" (dissoc hem :subtasks :ancestry-path
-                                :expansion-method :subtask-constraints))
+        _ (println "CHPM HEM" (pr-str
+                                (dissoc hem :subtasks :ancestry-path
+                                  :expansion-method :subtask-constraints)))
         ;; _ (println "CHPM HENPT" (dissoc henpt :subtasks :ancestry-path
         ;;                           :expansion-method :subtask-constraints))
         hem-irks irks
@@ -1628,6 +1635,7 @@
 ;; will return subtasks, if any (and create htn-methods as a side effect)
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
 (defn make-htn-methods [ir pclass mname display-name margs body & [irks]]
+  (println "MHM irks" irks "body" body)
   (let [irks (conj (or irks [pclass :methods mname]) :body)
         n (count body)]
     (loop [subtasks [] i 0]
@@ -1686,9 +1694,11 @@
                       ;;     "plant-class" plant-class
                       ;;     "plant-fn-primitive?" plant-fn-primitive?
                       ;;     "non-primitive?" non-primitive?)
-                      task-args (if plant-fn-primitive?
-                                  margs
-                                  (or args margs))
+                      ;; task-args (if plant-fn-primitive?
+                      ;;             margs
+                      ;;             (or args margs))
+                      task-args (or args margs)
+                      _ (println "TASK-ARGS" task-args)
                       task ((if non-primitive?
                               htn-nonprimitive-task
                               htn-primitive-task)
@@ -1704,10 +1714,15 @@
                               :arguments task-args
                               :irks irks-i}))
                       ;; st (if (not plant-fn-primitive?) [task])
+                      irks-st [plant-class :methods method]
+                      ;; NO! irks-st [plant-class :methods method]
                       st (if (not plant-fn-primitive?)
                            (make-htn-methods ir plant-class method
                              (-> method str display-name-string)
-                             task-args (get-in ir [plant-class :methods method :body])))
+                             task-args
+                             (get-in ir (conj irks-st :body))
+                             irks-st
+                             ))
                       ]
                   ;; (println "  PLANT-FN-SYMBOL TASK" task)
                   (println "  PLANT-FN-XXX SUBTASKS" st)
@@ -1719,7 +1734,10 @@
                                           :subtasks st
                                           :irks (if (= plant-class pclass)
                                                   irks-i
-                                                  [plant-class :methods method :body])})]
+                                                  ;; (conj irks-st 0)
+                                                  (concatv irks-st [:body 0])
+                                                  )
+                                          })]
                       (println "HTN-METHOD" (with-out-str (pprint hm)))
                       ;; (pprint-htn-methods)
                       hm))
