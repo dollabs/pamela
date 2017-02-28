@@ -1,80 +1,80 @@
-{:hedge-1059 {:type :edge, :uid :hedge-1059, :end-node :hem-1047},
- :hedge-1061
- {:type :edge, :uid :hedge-1061, :label "1", :end-node :hem-1051},
- :hedge-1063 {:type :edge, :uid :hedge-1063, :end-node :henpt-1045},
- :hedge-1064
- {:type :edge, :uid :hedge-1064, :label "2", :end-node :hem-1054},
- :hedge-1066 {:type :edge, :uid :hedge-1066, :end-node :henpt-1046},
- :hedge-1067
- {:type :edge, :uid :hedge-1067, :label "3", :end-node :hem-1057},
- :hem-1047
- {:uid :hem-1047,
+{:hedge-321 {:type :edge, :uid :hedge-321, :end-node :hem-309},
+ :hedge-323
+ {:type :edge, :uid :hedge-323, :label "1", :end-node :hem-313},
+ :hedge-325 {:type :edge, :uid :hedge-325, :end-node :henpt-307},
+ :hedge-326
+ {:type :edge, :uid :hedge-326, :label "2", :end-node :hem-316},
+ :hedge-328 {:type :edge, :uid :hedge-328, :end-node :henpt-308},
+ :hedge-329
+ {:type :edge, :uid :hedge-329, :label "3", :end-node :hem-319},
+ :hem-309
+ {:uid :hem-309,
   :type :htn-expanded-method,
   :label "position(A B C)",
   :display-name "Position",
-  :network :net-1060,
-  :incidence-set #{:hedge-1059},
-  :edges [:hedge-1061 :hedge-1064 :hedge-1067]},
- :hem-1051
- {:uid :hem-1051,
+  :network :net-322,
+  :incidence-set #{:hedge-321},
+  :edges [:hedge-323 :hedge-326 :hedge-329]},
+ :hem-313
+ {:uid :hem-313,
   :type :htn-expanded-method,
   :label "fake-waypoint(A)",
   :display-name "Fake Waypoint",
-  :network :net-1062,
+  :network :net-324,
   :incidence-set #{},
   :edges []},
- :hem-1054
- {:uid :hem-1054,
+ :hem-316
+ {:uid :hem-316,
   :type :htn-expanded-method,
   :label "fake-waypoint(B)",
   :display-name "Fake Waypoint",
-  :network :net-1065,
+  :network :net-327,
   :incidence-set #{},
   :edges []},
- :hem-1057
- {:uid :hem-1057,
+ :hem-319
+ {:uid :hem-319,
   :type :htn-expanded-method,
   :label "fake-waypoint(C)",
   :display-name "Fake Waypoint",
-  :network :net-1068,
+  :network :net-330,
   :incidence-set #{},
   :edges []},
- :henpt-1043
- {:uid :henpt-1043,
+ :henpt-305
+ {:uid :henpt-305,
   :type :htn-expanded-nonprimitive-task,
   :label "mission",
   :display-name "mission",
   :incidence-set #{},
-  :edges #{:hedge-1059}},
- :henpt-1044
- {:uid :henpt-1044,
+  :edges #{:hedge-321}},
+ :henpt-306
+ {:uid :henpt-306,
   :name "fake-waypoint",
   :type :htn-expanded-nonprimitive-task,
   :label "TEMP-fake-waypoint",
   :display-name "Fake Waypoint",
   :incidence-set #{},
-  :edges #{:hedge-1063}},
- :henpt-1045
- {:uid :henpt-1045,
+  :edges #{:hedge-325}},
+ :henpt-307
+ {:uid :henpt-307,
   :name "fake-waypoint",
   :type :htn-expanded-nonprimitive-task,
   :label "TEMP-fake-waypoint",
   :display-name "Fake Waypoint",
-  :incidence-set #{:hedge-1063},
-  :edges #{:hedge-1066}},
- :henpt-1046
- {:uid :henpt-1046,
+  :incidence-set #{:hedge-325},
+  :edges #{:hedge-328}},
+ :henpt-308
+ {:uid :henpt-308,
   :name "fake-waypoint",
   :type :htn-expanded-nonprimitive-task,
   :label "TEMP-fake-waypoint",
   :display-name "Fake Waypoint",
-  :incidence-set #{:hedge-1066},
+  :incidence-set #{:hedge-328},
   :edges #{}},
- :hpt-1049
+ :hpt-311
  {:args ["A"],
   :interface "RMQ",
   :plantid "qc1",
-  :uid :hpt-1049,
+  :uid :hpt-311,
   :name "goto",
   :argsmap {"loc" "A"},
   :type :htn-primitive-task,
@@ -83,11 +83,11 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-001"},
- :hpt-1050
+ :hpt-312
  {:args ["A"],
   :interface "ZMQ",
   :plantid "qc2",
-  :uid :hpt-1050,
+  :uid :hpt-312,
   :name "goto",
   :argsmap {"loc" "A"},
   :type :htn-primitive-task,
@@ -96,11 +96,11 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-002"},
- :hpt-1052
+ :hpt-314
  {:args ["B"],
   :interface "RMQ",
   :plantid "qc1",
-  :uid :hpt-1052,
+  :uid :hpt-314,
   :name "goto",
   :argsmap {"loc" "B"},
   :type :htn-primitive-task,
@@ -109,11 +109,11 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-001"},
- :hpt-1053
+ :hpt-315
  {:args ["B"],
   :interface "ZMQ",
   :plantid "qc2",
-  :uid :hpt-1053,
+  :uid :hpt-315,
   :name "goto",
   :argsmap {"loc" "B"},
   :type :htn-primitive-task,
@@ -122,11 +122,11 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-002"},
- :hpt-1055
+ :hpt-317
  {:args ["C"],
   :interface "RMQ",
   :plantid "qc1",
-  :uid :hpt-1055,
+  :uid :hpt-317,
   :name "goto",
   :argsmap {"loc" "C"},
   :type :htn-primitive-task,
@@ -135,11 +135,11 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-001"},
- :hpt-1056
+ :hpt-318
  {:args ["C"],
   :interface "ZMQ",
   :plantid "qc2",
-  :uid :hpt-1056,
+  :uid :hpt-318,
   :name "goto",
   :argsmap {"loc" "C"},
   :type :htn-primitive-task,
@@ -148,34 +148,34 @@
   :incidence-set #{},
   :edges #{},
   :plant-part "part-002"},
- :net-1058
+ :net-320
  {:type :htn-network,
-  :uid :net-1058,
+  :uid :net-320,
   :display-name "mission",
   :label "mission",
-  :rootnodes #{:henpt-1043}},
- :net-1060
+  :rootnodes #{:henpt-305}},
+ :net-322
  {:type :htn-network,
-  :uid :net-1060,
+  :uid :net-322,
   :display-name "position(A B C)",
   :label "position(A B C)",
-  :rootnodes #{:henpt-1044}},
- :net-1062
+  :rootnodes #{:henpt-306}},
+ :net-324
  {:type :htn-network,
-  :uid :net-1062,
+  :uid :net-324,
   :display-name "fake-waypoint(A)",
   :label "fake-waypoint(A)",
-  :rootnodes #{:hpt-1049 :hpt-1050}},
- :net-1065
+  :rootnodes #{:hpt-312 :hpt-311}},
+ :net-327
  {:type :htn-network,
-  :uid :net-1065,
+  :uid :net-327,
   :display-name "fake-waypoint(B)",
   :label "fake-waypoint(B)",
-  :rootnodes #{:hpt-1052 :hpt-1053}},
- :net-1068
+  :rootnodes #{:hpt-315 :hpt-314}},
+ :net-330
  {:type :htn-network,
-  :uid :net-1068,
+  :uid :net-330,
   :display-name "fake-waypoint(C)",
   :label "fake-waypoint(C)",
-  :rootnodes #{:hpt-1055 :hpt-1056}},
- :network :net-1058}
+  :rootnodes #{:hpt-317 :hpt-318}},
+ :network :net-320}

@@ -1,21 +1,35 @@
-{demo
+{qc
  {:type :pclass,
   :args [],
-  :fields
-  {:thing1
-   {:access :private,
-    :observable false,
-    :initial
-    {:type :pclass-ctor,
-     :pclass thing,
-     :args [],
-     :id "thing1",
-     :interface "ZMQ",
-     :plant-part "part-000"}},
-   :htn
-   {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass mission, :args [:thing1]}}}},
+  :methods
+  {goto
+   {:args [loc],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Goto",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil},
+   waypoint
+   {:args [wp],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Waypoint",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :plant-fn-symbol,
+      :name this,
+      :method goto,
+      :args [wp]}]}}},
  mission
  {:type :pclass,
   :args [thing],
@@ -50,7 +64,20 @@
      :id "qc3",
      :plant-part "part-003"}}},
   :methods
-  {position
+  {fake-waypoint
+   {:args [wp],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Fake Waypoint",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :plant-fn-field, :field :qc1, :method goto, :args [wp]}]},
+   position
    {:args [a b c],
     :pre {:type :literal, :value true},
     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -75,49 +102,22 @@
        {:type :plant-fn-symbol,
         :name this,
         :method fake-waypoint,
-        :args [c]}]}]},
-   fake-waypoint
-   {:args [wp],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Fake Waypoint",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :plant-fn-field,
-      :field :qc1,
-      :method goto,
-      :args [wp]}]}}},
- qc
+        :args [c]}]}]}}},
+ demo
  {:type :pclass,
   :args [],
-  :methods
-  {goto
-   {:args [loc],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Goto",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body nil},
-   waypoint
-   {:args [wp],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Waypoint",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :plant-fn-symbol, :name this, :method goto, :args [wp]}]}}}}
+  :fields
+  {:thing1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass thing,
+     :args [],
+     :id "thing1",
+     :interface "ZMQ",
+     :plant-part "part-000"}},
+   :htn
+   {:access :private,
+    :observable false,
+    :initial {:type :pclass-ctor, :pclass mission, :args [:thing1]}}}}}
