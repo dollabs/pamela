@@ -127,3 +127,37 @@
   (clojure.string/replace
    (translate/->Camel_Snake_Case_String raw-name)
    "_" " "))
+
+;;Supported modes are:
+;; :log - use the logging utility (e.g., log/warn)
+;; :println - Just use println if level
+(def ^{:doc
+       "Specifies which mode of debugging output will be used, either :log or :println"}
+  dbg-println-mode :println)
+
+(def ^{:doc
+       "The highest level, where higher = lower severity, at which println will be called
+ when in :println mode"
+       :dynamic true}
+  *dbg-println-level*
+  6)
+
+;;For internal use only.  The order matters.
+(def dbg-println-levels [:fatal :error :warn :info :debug :trace])
+
+(defmacro dbg-println "Configurable alternative to using println for debugging."
+    [level & more]
+  (case dbg-println-mode
+    :log (let [f (case level
+                   (1 :fatal) 'log/fatal
+                   (2 :error) 'log/error
+                   (3 :warn) 'log/warn
+                   (4 :info) 'log/info
+                   (5 :debug) 'log/debug
+                   (6 :trace) 'log/trace)]
+           `(~f ~@more))
+    :println (let [level (if (integer? level)
+                           level
+                           (inc (.indexOf dbg-println-levels level)))]
+               `(if (<= ~level *dbg-println-level*)
+                  (println ~@more)))))
