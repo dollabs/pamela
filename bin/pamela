@@ -67,10 +67,17 @@ err() {
 
 # main program -----------------------------------------------
 
+usage() {
+    err "invalid command line (type 'pamela -h' for usage)"
+    exit 1
+}
+
 if [ "$PAMELA_MODE" != "dev" ] && [ -e "$jar" ]; then
-    vvlog java $PAMELA_OPTS -jar $jar $*
-    exec java $PAMELA_OPTS -jar $jar $*
+    cmd="java $PAMELA_OPTS -jar $jar"
+    sep=""
 else
+    cmd="boot run"
+    sep=" -A"
     if [ "$PAMELA_MODE" = "prod" ]; then
         err "jar not present in PAMELA_MODE=prod : $jar"
         err "to run in development mode, export PAMELA_MODE=dev"
@@ -83,16 +90,10 @@ else
 fi
 
 
-usage() {
-    err "invalid command line (type 'pamela -h' for usage)"
-    exit 1
-}
-
-args="run"
 while [ $# -gt 0 ]; do
-    args="$args -A $1"
+    cmd="$cmd $sep \"$(echo $1 | sed 's/"/\\"/g')\""
     shift
 done
 
-vvlog boot $args
-boot $args
+vvlog "$cmd"
+eval $cmd
