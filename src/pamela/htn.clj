@@ -297,6 +297,9 @@
                            {:type :arg-reference :name name}
                            ))
 
+                       (= type :delay)
+                       {}
+
                        :else
                        (do
                          (dbg-println :error "ERROR, not currently supported plant-fn type=" type)
