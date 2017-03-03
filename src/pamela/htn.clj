@@ -222,38 +222,35 @@
         (if name-with-args-include-args? ")"))
       (or max-line-length name-with-args-max-line-length))))
 
-;; name-with-argvals multi-methods --------------------------------------
 
-(defn name-with-argvals-dispatch [object]
-  (:type object))
 
-(defmulti name-with-argvals
-  "Dispatch based on object type"
-  #'name-with-argvals-dispatch
-  :default :htn-object
-  :hierarchy #'htn-hierarchy)
-
-(defmethod name-with-argvals :htn-object
-  [object]
-  (str (:uid object)))
-
-(defn resolve-arguments [arguments ancestry-path]
+(defn resolve-arguments [arguments ancestry-path pargs]
   (let [hem (get-htn-object (first ancestry-path))
         {:keys [argument-mappings]} hem
         resolve-arg (fn [arg]
                       (if (variable? arg)
                         (get argument-mappings arg)
                         arg))
+        _ (dbg-println :trace "RA (before)" arguments)
         arguments (map resolve-arg arguments)
+        _ (dbg-println :trace "RA (after)" arguments)
         unresolved (count (filter variable? arguments))
         get-dyn-arg (fn [dyn-arg]
                       (if (map? dyn-arg)
                         (:param dyn-arg)
                         dyn-arg))
         argvals (if (pos? unresolved)
-                  (resolve-arguments arguments (nthrest ancestry-path 2))
+                  (resolve-arguments arguments (nthrest ancestry-path 2) pargs)
                   (mapv get-dyn-arg arguments))]
+    (dbg-println :trace "RA UNRESOLVED" unresolved "ARGVALS" argvals)
     argvals))
+
+;; The younger cousin to resolve-arguments
+(defn resolve-argument [argument argument-mapping]
+  (if (variable? argument)
+    (get argument-mapping argument :unresolved-argument)
+    argument))
+
 
 ;; returns pclass_ctor_ map
 ;; (defn resolve-plant-class [ir hem-pclass pargs pclass method
@@ -384,33 +381,51 @@
         ]
     pclass-ctor_))
 
-(defmethod name-with-argvals :htn-task
-  [object]
-  (let [{:keys [name arguments ancestry-path]} object
-        arguments (or arguments [])
-        unresolved (count (filter variable? arguments))
-        argvals (if (pos? unresolved)
-                  (resolve-arguments arguments ancestry-path)
-                  arguments)]
-    (apply str name (conj (vec (conj (interpose ", " argvals) "(")) ")"))))
+;; name-with-argvals multi-methods --------------------------------------
 
-(defmethod name-with-argvals :htn-method
-  [object]
-  (let [{:keys [name nonprimitive-task]} object
-        method-name (str name)
-        {:keys [name arguments]} nonprimitive-task]
-    (str
-      method-name
-      (str name (or (seq arguments) '())))))
+;; (defn name-with-argvals-dispatch [object]
+;;   (:type object))
 
-(defmethod name-with-argvals :htn-expanded-method
-  [object]
-  (let [{:keys [expansion-method argument-mappings]} object
-        {:keys [name nonprimitive-task]} expansion-method
-        method-name (str name)
-        {:keys [name arguments]} nonprimitive-task
-        argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
-    (str method-name "(" argvals ")")))
+;; (defmulti name-with-argvals
+;;   "Dispatch based on object type"
+;;   #'name-with-argvals-dispatch
+;;   :default :htn-object
+;;   :hierarchy #'htn-hierarchy)
+
+;; (defmethod name-with-argvals :htn-object
+;;   [object]
+;;   (str (:uid object)))
+
+
+;; ;;Commented out since we've change the signature for resolve-arguments
+;; ;; (defmethod name-with-argvals :htn-task
+;; ;;   [object]
+;; ;;   (let [{:keys [name arguments ancestry-path]} object
+;; ;;         arguments (or arguments [])
+;; ;;         unresolved (count (filter variable? arguments))
+;; ;;         argvals (if (pos? unresolved)
+;; ;;                   (resolve-arguments arguments ancestry-path)
+;; ;;                   arguments)]
+;; ;;     (apply str name (conj (vec (conj (interpose ", " argvals) "(")) ")"))))
+
+;; (defmethod name-with-argvals :htn-method
+;;   [object]
+;;   (let [{:keys [name nonprimitive-task]} object
+;;         method-name (str name)
+;;         {:keys [name arguments]} nonprimitive-task]
+;;     (str
+;;       method-name
+;;       (str name (or (seq arguments) '())))))
+
+;; (defmethod name-with-argvals :htn-expanded-method
+;;   [object]
+;;   (let [{:keys [expansion-method argument-mappings]} object
+;;         {:keys [name nonprimitive-task]} expansion-method
+;;         method-name (str name)
+;;         {:keys [name arguments]} nonprimitive-task
+;;         argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
+;;     (str method-name "(" argvals ")")))
+
 
 ;; print-object multi-methods --------------------------------------
 
@@ -605,9 +620,10 @@
                (htn-expanded-nonprimitive-task skeleton-task))
         {:keys [temporal-constraints arguments]} task
         new-arguments (if argument-mapping
-                        (mapv #(get argument-mapping %) arguments)
+                        ;;(mapv #(get argument-mapping %) arguments)
+                        (mapv #(resolve-argument % argument-mapping) arguments)
                         arguments)]
-    (dbg-println :debug "  MET TASK" task) ;; DEBUG
+    (dbg-println :debug "  MET TASK" task "NEW-ARGUMENTS" new-arguments) ;; DEBUG
     (update-htn-object!
      (assoc-if task
                :arguments new-arguments
@@ -846,6 +862,8 @@
            flow-characteristics mission-task-weight
            label display-name incidence-set edges irks]
     :as options}]
+  ;;We should never see nil arguments
+  (assert (not (some #(nil? %) arguments)) "htn-primitive-task: Found nil arguments")
   (update-htn-object!
    (assoc-if (htn-task (assoc options :prefix (or prefix "hpt-")))
              :type :htn-primitive-task
@@ -1320,8 +1338,9 @@
             _ (dbg-println :debug "PD ARGS" arguments)
             arguments (or arguments [])
             unresolved (count (filter variable? arguments))
+            _ (dbg-println :trace "PD UNRESOLVED" unresolved "ARGUMENTS" arguments)
             args (if (pos? unresolved)
-                   (resolve-arguments arguments ancestry-path)
+                   (resolve-arguments arguments ancestry-path pargs)
                    arguments)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
             _ (dbg-println :debug "PD get-in" pclass name)
@@ -1661,7 +1680,18 @@
                 ;; we have the wrong plant-class (because the IR always
                 ;; has true or false)
                 (let [plant-class (if (= :plant-fn-symbol type)
-                                    (if (= name 'this) mpclass name)
+                                    (if (= name 'this)
+                                      mpclass
+                                      ;;name might (coincidentally) be a pclass, but probably not
+                                      ;;Let's see if there in one (and only one) method amongst all pclasses
+                                      (let [pclasses-with-method
+                                            (filter #(get-in ir [% :methods method]) (keys ir))]
+                                        (if (= (count pclasses-with-method) 1)
+                                          (first pclasses-with-method)
+                                          ;;If more than one, the method is ambigious!
+                                          (do (dbg-println :warn "GHMS Can't resolve name" name "to a pclass")
+                                              name))))
+                                    ;;else :plant-fn-field
                                     (get-in ir [mpclass :fields field :initial :pclass]))
                       plant-fn-primitive?
                       (get-in ir [plant-class :methods method :primitive])
@@ -1689,7 +1719,8 @@
                       ;;             (or args margs))
                       _ (assert args "ARGS is nil")
                       task-args (or args margs)
-                      _ (dbg-println :debug "TASK-ARGS" task-args)
+                      _ (dbg-println :debug "TASK-ARGS" task-args
+                                     "PLANT-FN-PRIMITIVE?" plant-fn-primitive?)
                       ;;This is the subtask that will be returned (and added to the method)
                       task ((if non-primitive?
                               htn-nonprimitive-task
@@ -1722,8 +1753,9 @@
 (defn make-htn-methods "Construct the HTN Method(s) for mname"
   [ir pargs top-level? mpclass mname display-name margs mbody & [irks]]
   (dbg-println :debug "MHM " "TOP-LEVEL?" top-level? "MPCLASS" mpclass "MNAME" mname
-           "DISPLAY-NAME" display-name
-           "IRKS" irks "MBODY" mbody)
+               "DISPLAY-NAME" display-name
+               "MARGS" margs
+               "IRKS" irks "\nMBODY" mbody)
   (let [irks (conj (or irks [mpclass :methods mname]) :body)
         number-of-subtasks (count mbody)
         first-task-type (:type (get mbody 0))]
@@ -1802,18 +1834,18 @@
             (do
               (log/error "TBD: :else")
               []))]
-      (dbg-println :debug "HTN-METHODS " (with-out-str (pprint methods)))
+      (dbg-println :trace "HTN-METHODS " (with-out-str (pprint methods)))
       methods)))
 
 
 
-;; RETURNS htn data structure in Clojure (optionally converted to JSON in cli.clj)
+;; Creates an htn data structure in Clojure (optionally converted to JSON in cli.clj)
 ;; NOTE: root-task is a string (or nil)!!!
 ;; Examples
 ;;   "(isr-htn.main \"A\" \"B\" \"C\" \"D\")"
 ;;   "(isr-htn.get-data-and-interpret \"A\" \"B\")"
 (defn plan-htn
-  "Weaves a 'plan' from the root task, using the HTN methods.  Minimally hard-coded."
+  "Weaves a 'plan' from the root task, using the HTN methods."
   [ir root-task file-format output]
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
