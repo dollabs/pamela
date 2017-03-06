@@ -284,18 +284,20 @@
                        (get-in ir [hem-pclass :fields field :initial])
 
                        (= type :plant-fn-symbol)
-                       (let [henpt-irks (:irks henpt)
+                       (let [method-arg (get argument-mappings name)
+                             pclass-arg (if-not method-arg
+                                          (first (filter #(= (:param %) name) pargs)))
+                             henpt-irks (:irks henpt)
                              caller_ (get-in ir henpt-irks)
                              caller-pclass (first henpt-irks)]
-
-                         ;;(dbg-println :error "ERROR, not currently supported plant-fn type=" type)
-                         (if (or (= (:type caller_) :plant-fn-field)
+                         (dbg-println :trace "RPC name" name "method-arg"
+                                      method-arg "pclass-arg" pclass-arg)
+                         (or method-arg pclass-arg
+                             (if (or (= (:type caller_) :plant-fn-field)
                                  (and (= (:type caller_) :plant-fn-symbol)
                                       (= (:name caller_) 'this)))
-                           (get-in ir [caller-pclass :fields (:field caller_) :initial])
-                           ;;(dbg-println :error "ERROR, Resolve plant-fn-symbol w/in scope of caller-pclass")
-                           {:type :arg-reference :name name}
-                           ))
+                               (get-in ir [caller-pclass :fields (:field caller_) :initial]))
+                             {:error :unresolved-pclass-ctor}))
 
                        (= type :delay)
                        {}
@@ -304,10 +306,7 @@
                        (do
                          (dbg-println :error "ERROR, not currently supported plant-fn type=" type)
                          nil))
-        pclass-ctor_ (if (= (:type pclass-ctor_) :arg-reference)
-                       (let [param (:name pclass-ctor_)]
-                         (first (filter #(= (:param %) param) pargs)))
-                       pclass-ctor_)
+        _ (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
         ;; pclass-ctor_ (cond
         ;;                (= pclass ::unknown) ;; matching method in pargs?
         ;;                ;; (let [plant-fn_ (get-in ir irks)
@@ -562,8 +561,12 @@
 (defn find-methods-that-expand-task [ir task]
   (let [{:keys [type pclass name arguments]} task
         ;; all-methods (seq (get @*htn-methods* pclass))]
-        all-methods (if (htn-isa? type :htn-nonprimitive-task)
-                      (find-candidate-methods ir pclass name))]
+        ;; all-methods (if (htn-isa? type :htn-nonprimitive-task)
+        ;;               (find-candidate-methods ir pclass name))
+        all-methods (if (nil? pclass)
+                      (do (dbg-println :error "FMTET pclass is nil!!!") [])
+                      (if (htn-isa? type :htn-nonprimitive-task)
+                        (find-candidate-methods ir pclass name)))]
     (dbg-println :debug "FMTET" name "TYPE" type ;; DEBUG
              "PCLASS" pclass "ALL" (map first all-methods))
     (when-not (empty? all-methods)
@@ -836,6 +839,8 @@
   (let [network-flows (if (network-flow-types name)
                         (make-network-flows name flow-characteristics arguments)
                         network-flows)]
+    (if-not pclass
+      (throw (Exception. (str "htn-task constructed w/o pclass: name" name))))
     (update-htn-object!
      (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                :type :htn-task
@@ -1650,6 +1655,44 @@
 ;;         :args args}]
 ;; (assoc ir 'root-task rt)))
 
+(defn get-pclass-for-field [ir mpclass field]
+  ;;If the :initial map is an :arg-reference, then there is
+  ;;no :pclass available and plant-class will be nil.  However, at
+  ;;this point, we don't yet have a root task, so we can't expand
+  ;;the :arg-reference
+  (let [initial_ (get-in ir [mpclass :fields field :initial])]
+    (case (:type initial_)
+      :pclass-ctor (:pclass initial_)
+
+      :arg-reference
+      (let [arg (:name initial_)
+            arg-position (vec-index-of (get-in ir [mpclass :args]) arg)
+            all-pclasses (keys ir)]
+        (loop [pclasses [] pc (first all-pclasses) more (rest all-pclasses)]
+          (if-not pc
+            (if (= (count pclasses) 1)
+              (first pclasses)
+              :unknown-pclass)
+            (let [pclass (if (not= pc mpclass) pc)
+                  fields (if pclass (keys (get-in ir [pclass :fields])))
+                  pcs (vec (remove nil? (mapv
+                                         #(let [initial (get-in ir [pclass :fields % :initial])
+                                                ctor-arg (if (and (= (:type initial) :pclass-ctor)
+                                                                  (= (:pclass initial) mpclass))
+                                                           (get (:args initial) arg-position))]
+                                            (if ctor-arg
+                                              (get-in ir [pclass :fields (keyword ctor-arg) :initial :pclass])))
+                                         fields)))
+                  pclasses (if (not (empty? pcs))
+                             (concatv pclasses pcs)
+                             pclasses)
+                  pc (first more)
+                  more (rest more)]
+              (recur pclasses pc more)))))
+      :unknown-pclass)))
+
+
+
 ;; will return subtasks, if any
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
 (defn get-htn-method-subtasks [ir pargs top-level-type mpclass mname display-name margs sub-body irks]
@@ -1695,7 +1738,9 @@
                                           (do (dbg-println :warn "GHMS Can't resolve name" name "to a pclass")
                                               name))))
                                     ;;else :plant-fn-field
-                                    (get-in ir [mpclass :fields field :initial :pclass]))
+                                    ;;(get-in ir [mpclass :fields field :initial :pclass])
+                                    (get-pclass-for-field ir mpclass field)
+                                    )
                       plant-fn-primitive?
                       (get-in ir [plant-class :methods method :primitive])
                       _ (dbg-println :debug "plant-class" plant-class "plant-fn-primitive?" plant-fn-primitive?)
