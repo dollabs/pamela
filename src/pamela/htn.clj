@@ -316,7 +316,6 @@
                                  (dbg-println :debug "RPC Recursing on ancestry-path"
                                               (mapv #(list (:uid %) (or (:label %) (:name %)))
                                                     ancestry-path))
-                                 ;; Tom: Note that parent-hem-pclass is nil
                                  (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
                                  ;; {:error :unresolved-pclass-ctor-need-ancestry-path}
                                  (resolve-plant-class
