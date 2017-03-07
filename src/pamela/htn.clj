@@ -298,10 +298,34 @@
                          (dbg-println :trace "RPC name" name "method-arg"
                                       method-arg "pclass-arg" pclass-arg)
                          (or method-arg pclass-arg
-                             (if (or (= (:type caller_) :plant-fn-field)
-                                 (and (= (:type caller_) :plant-fn-symbol)
-                                      (= (:name caller_) 'this)))
+                             (if (= (:type caller_) :plant-fn-field)
                                (get-in ir [caller-pclass :fields (:field caller_) :initial]))
+                             (if (= name 'this)
+                               ;;Use the ancestry-path to resolve the pclass of the caller
+                               (let [parent-hem (nth ancestry-path 2)
+                                     parent-henpt (nth ancestry-path 3)
+                                     parent-hem-pclass (get-in parent-hem [:irks 0])
+                                     st 0
+                                     parent-subtask_ (get-in parent-hem [:subtasks st])]
+                                 ;; (dbg-println :debug "RPC this"
+                                 ;;              (with-out-str (pprint ancestry-path)))
+                                 ;; (dbg-println :debug "RPC parent-hem"
+                                 ;;              (with-out-str (pprint parent-hem))
+                                 ;;              "\nparent-henpt"
+                                 ;;              (with-out-str (pprint parent-henpt)))
+                                 (dbg-println :debug "RPC Recursing on ancestry-path"
+                                              (mapv #(list (:uid %) (or (:label %) (:name %)))
+                                                    ancestry-path))
+                                 ;; Tom: Note that parent-hem-pclass is nil
+                                 (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
+                                 ;; {:error :unresolved-pclass-ctor-need-ancestry-path}
+                                 (resolve-plant-class
+                                  ir parent-hem-pclass pargs parent-henpt parent-subtask_)
+                                 ))
+                             ;;In the case of this.methodname, we need to find the pclass-ctor
+                             ;; (if (and (= (:type caller_) :plant-fn-symbol)
+                             ;;          (= (:name caller_) 'this))
+                             ;;   )
                              {:error :unresolved-pclass-ctor}))
 
                        (= type :delay)
@@ -844,8 +868,8 @@
   (let [network-flows (if (network-flow-types name)
                         (make-network-flows name flow-characteristics arguments)
                         network-flows)]
-    (if-not pclass
-      (throw (Exception. (str "htn-task constructed w/o pclass: name" name))))
+    (if (and (not pclass) (not= name 'delay))
+      (throw (Exception. (str "htn-task constructed w/o pclass: name " name))))
     (update-htn-object!
      (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                :type :htn-task
