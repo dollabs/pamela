@@ -302,24 +302,35 @@
                                (get-in ir [caller-pclass :fields (:field caller_) :initial]))
                              (if (= name 'this)
                                ;;Use the ancestry-path to resolve the pclass of the caller
-                               (let [parent-hem (nth ancestry-path 2)
-                                     parent-henpt (nth ancestry-path 3)
+                               (let [[this-hem
+                                      parent-subtask_
+                                      parent-hem
+                                      parent-henpt] ancestry-path
+                                     ;; parent-subtask_ (nth ancestry-path 1)
+                                     ;; parent-hem (nth ancestry-path 2)
+                                     ;; parent-henpt (nth ancestry-path 3)
                                      parent-hem-pclass (get-in parent-hem [:irks 0])
-                                     st 0
-                                     parent-subtask_ (get-in parent-hem [:subtasks st])]
+                                     ;; st 0
+                                     ;; parent-subtask_ (get-in parent-hem [:subtasks st])
+
+                                     _ (dbg-println :debug "RPC Recursing on ancestry-path"
+                                         (mapv #(list (:uid %) (or (:label %) (:name %)))
+                                           ancestry-path))
+                                     _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
+                                     ;; {:error :unresolved-pclass-ctor-need-ancestry-path}
+                                     pc_ (resolve-plant-class
+                                           ir parent-hem-pclass pargs parent-henpt parent-subtask_)
+
+                                     ]
+
                                  ;; (dbg-println :debug "RPC this"
                                  ;;              (with-out-str (pprint ancestry-path)))
                                  ;; (dbg-println :debug "RPC parent-hem"
                                  ;;              (with-out-str (pprint parent-hem))
                                  ;;              "\nparent-henpt"
                                  ;;              (with-out-str (pprint parent-henpt)))
-                                 (dbg-println :debug "RPC Recursing on ancestry-path"
-                                              (mapv #(list (:uid %) (or (:label %) (:name %)))
-                                                    ancestry-path))
-                                 (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
-                                 ;; {:error :unresolved-pclass-ctor-need-ancestry-path}
-                                 (resolve-plant-class
-                                  ir parent-hem-pclass pargs parent-henpt parent-subtask_)
+                                 _ (dbg-println :debug "RPC Recursion result" pc_)
+                                 pc_
                                  ))
                              ;;In the case of this.methodname, we need to find the pclass-ctor
                              ;; (if (and (= (:type caller_) :plant-fn-symbol)
@@ -1478,26 +1489,22 @@
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
             primitive? (= type :htn-primitive-task)
-            ;; pclass-ctor_ (resolve-plant-class ir hem-pclass pargs
-            ;;                pclass name type irks
-            ;;                henpt ancestry-path)
-            pclass-ctor_ (if primitive?
-                           (resolve-plant-class ir hem-pclass pargs
-                                                henpt subtask_))
-            ;; primitive? (or (= type :htn-primitive-task)
-            ;;              (not (nil? pclass-ctor_)))
             parallel? (not sequential?)
             choice? (and (not parallel?) (> m-task-expansions 1))
             ;; DEBUG
             _ (dbg-println :debug "SUBTASK primitive?" primitive?
                        "type" type
-                       "pclass-ctor_" pclass-ctor_
                        "parallel?" parallel?
                        "choice?" choice?
                        "\nsubtask_" (with-out-str
                                       (pprint
                                        (dissoc subtask_
                                                :ancestry-path :task-expansions))))
+            pclass-ctor_ (if primitive?
+                           (resolve-plant-class ir hem-pclass pargs
+                                                henpt subtask_))
+            ;; DEBUG
+            _ (dbg-println :debug "pclass-ctor_" pclass-ctor_)
             ;; add in details for the plant for primitive tasks...
             ;;_ (dbg-println :debug "plant-details" pargs subtask pclass-ctor_ primitive?) ;;DEBUG
             details_ (plant-details ir pargs subtask_ pclass-ctor_ primitive?)
