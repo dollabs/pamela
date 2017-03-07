@@ -281,7 +281,12 @@
         {:keys [type name field method args]} plant-fn_
         pclass-ctor_ (cond
                        (= type :plant-fn-field)
-                       (get-in ir [hem-pclass :fields field :initial])
+                       (let [initial_ (get-in ir [hem-pclass :fields field :initial])
+                             {:keys [type name]} initial_]
+                         (case type
+                           :pclass-ctor initial_
+                           :arg-reference (first (filter #(= (:param %) name) pargs))
+                           {:error :unresolved-field}))
 
                        (= type :plant-fn-symbol)
                        (let [method-arg (get argument-mappings name)
