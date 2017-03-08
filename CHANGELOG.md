@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
+* _TBD_
+
+### [0.6.0] - 2017-03-08
+
+Changes
 * Grammar changes: allow underscores in symbols
 * Parsing changes: allow plant-function symbols to refer to fields
   (if not present in method or pclass args)
@@ -34,6 +39,19 @@ Changes
 - Fixed jenkins.sh
 - Updated documents in doc/
 - Update tests with new gensym to compare IR output
+- Update pamela launch script to better escape root-tasks
+- Updated dependencies
+- Add dbg-println, a configurable alternative to using println for debugging.
+   - Behavior is controlled by dbg-println-mode and *dbg-println-level* (and the current logging
+     level if dbg-println-mode=:log)
+- Resolution of argument resolution bug
+- Determine pclass of unabiguous (but unspecified) pmethods
+- Handle 5 canonical HTN source examples, including finding the appropriate plant initializer, such
+  that the argument values and other plant info is propagated appropriately
+- Resolved a number of problems with argument resolution (handling multiple use cases)
+- Handle top-level HTN method consisting of a choice
+- Updated TPN object hierarchy to include :cost<=-constraint and :reward>=-constraint
+- Move constraints from Nodes to Activities when appropriate
 
 ### [0.5.0] - 2016-12-08
 
@@ -149,4 +167,5 @@ Added
 [0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
 [0.4.3]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.3
 [0.5.0]: https://github.com/dollabs/pamela/compare/0.4.3...0.5.0
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.5.0...HEAD
+[0.6.0]: https://github.com/dollabs/pamela/compare/0.5.0...0.6.0
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.0...HEAD

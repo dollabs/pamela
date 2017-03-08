@@ -140,7 +140,7 @@
  when in :println mode"
        :dynamic true}
   *dbg-println-level*
-  6)
+  3)
 
 ;;For internal use only.  The order matters.
 (def dbg-println-levels [:fatal :error :warn :info :debug :trace])
