@@ -269,7 +269,6 @@
             "pclass" pclass
             "task-type" task-type
             "(:pclass henpt)" (:pclass henpt)
-            ;;"ancestry-path" ancestry-path
             )
         _ (if-not (htn-isa? task-type :htn-nonprimitive-task)
             (dbg-println :debug "  RPC HENPT" (dissoc henpt :subtasks :ancestry-path
@@ -302,27 +301,16 @@
                                (get-in ir [caller-pclass :fields (:field caller_) :initial]))
                              (if (= name 'this)
                                ;;Use the ancestry-path to resolve the pclass of the caller
-                               (let [[this-hem
-                                      parent-subtask_
-                                      parent-hem
-                                      parent-henpt] ancestry-path
-                                     ;; parent-subtask_ (nth ancestry-path 1)
-                                     ;; parent-hem (nth ancestry-path 2)
-                                     ;; parent-henpt (nth ancestry-path 3)
+                               (let [[_ parent-subtask_ parent-hem parent-henpt] ancestry-path
                                      parent-hem-pclass (get-in parent-hem [:irks 0])
-                                     ;; st 0
-                                     ;; parent-subtask_ (get-in parent-hem [:subtasks st])
-
                                      _ (dbg-println :debug "RPC Recursing on ancestry-path"
                                          (mapv #(list (:uid %) (or (:label %) (:name %)))
                                            ancestry-path))
                                      _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
-                                     ;; {:error :unresolved-pclass-ctor-need-ancestry-path}
                                      pc_ (resolve-plant-class
                                            ir parent-hem-pclass pargs parent-henpt parent-subtask_)
 
                                      ]
-
                                  ;; (dbg-println :debug "RPC this"
                                  ;;              (with-out-str (pprint ancestry-path)))
                                  ;; (dbg-println :debug "RPC parent-hem"
@@ -332,10 +320,6 @@
                                  _ (dbg-println :debug "RPC Recursion result" pc_)
                                  pc_
                                  ))
-                             ;;In the case of this.methodname, we need to find the pclass-ctor
-                             ;; (if (and (= (:type caller_) :plant-fn-symbol)
-                             ;;          (= (:name caller_) 'this))
-                             ;;   )
                              {:error :unresolved-pclass-ctor}))
 
                        (= type :delay)
@@ -345,81 +329,8 @@
                        (do
                          (dbg-println :error "ERROR, not currently supported plant-fn type=" type)
                          nil))
-        _ (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
-        ;; pclass-ctor_ (cond
-        ;;                (= pclass ::unknown) ;; matching method in pargs?
-        ;;                ;; (let [plant-fn_ (get-in ir irks)
-        ;;                ;;       param (:name plant-fn)
-        ;;                ;;       pc (first (filter #(= (:param %) param) pargs))
-        ;;                ;;       plant (:pclass pc)
-        ;;                ;;       plant-method (get-in ir [plant :methods name])]
-        ;;                ;;   (println "UNKNOWN PARAM" param ;; DEBUG
-        ;;                ;;     "PLANT" plant
-        ;;                ;;     "PLANT-METHOD" plant-method
-        ;;                ;;     "PC" pc)
-        ;;                ;;   (if (and plant-method pc)
-        ;;                ;;     pc ;; plant parameter
-        ;;                ;;     param)) ;; must be a method parameter
-        ;;                (do
-        ;;                  (println "ERROR, not currently supported" pclass)
-        ;;                  nil)
-        ;;                (keyword? pclass) ;; field
-        ;;                (let [initial (get-in ir
-        ;;                                [hem-pclass :fields
-        ;;                                 pclass :initial])
-        ;;                      {:keys[type name id plant-part interface]} initial
-        ;;                      initial-pclass (:pclass initial)]
-        ;;                  (cond
-        ;;                    (= type :arg-reference) ;; look in pargs
-        ;;                    ;; (first (filter #(= (:param %) name) pargs))
-        ;;                    (do
-        ;;                      (println "ERROR, not currently supported :arg-reference")
-        ;;                      nil)
-        ;;                    (= type :pclass-ctor)
-        ;;                    ;; initial-pclass
-        ;;                    initial
-        ;;                    :else
-        ;;                    ;; pclass
-        ;;                    (do
-        ;;                      (println "ERROR, not currently supported keyword pclass without ctor" pclass)
-        ;;                      nil)
-
-        ;;                    ))
-        ;;                (and (not (htn-isa? task-type :htn-nonprimitive-task))
-        ;;                  henpt (:pclass henpt))
-        ;;                ;; (:pclass henpt)
-        ;;                (do
-        ;;                  (println "ERROR, not currently supported henpt" pclass)
-        ;;                  nil)
-        ;;                :else
-        ;;                ;; pclass
-        ;;                (do
-        ;;                  (println "ERROR, not currently supported raw pclass" pclass)
-        ;;                  nil))
-        ;;  {:keys [argument-mappings]} hem
-        ;; _ (println "  RPC1" pclass "argument-mappings" argument-mappings)
-        ;; resolve-pclass (fn [arg]
-        ;;                  (if (and (variable? arg)
-        ;;                        (not (empty? argument-mappings)))
-        ;;                    (get argument-mappings arg arg)
-        ;;                    arg))
-        ;; pclass (resolve-pclass pclass)
-        ;; _ (println "  RPC2" pclass) ;; DEBUG
-        ;; pclass (if (variable? pclass)
-        ;;          (resolve-pclass ir hem-pclass pargs p name task-type
-        ;;            irks nil (nthrest ancestry-path 2))
-        ;;          pclass)
-        ;; primitive? (if pclass (get-in ir [pclass :names name :primitive]))
-        ;; _ (println "  RPC3" pclass "primitive?" primititive?) ;; DEBUG
-        ;; REVIEW BELOW...
-        ;; ;; if name is not primitive in p then return nil to
-        ;; ;; indicate this is NOT actually a primitive method
-        ;; p (if (and (map? p)
-        ;;         (= (:type p) :pclass-ctor)
-        ;;         (get-in ir [(:pclass p) :methods name :primitive]))
-        ;;     p)
-        ;; FIX recursive argument resolution later
         ]
+    (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
     pclass-ctor_))
 
 ;; name-with-argvals multi-methods --------------------------------------
@@ -1503,12 +1414,7 @@
             pclass-ctor_ (if primitive?
                            (resolve-plant-class ir hem-pclass pargs
                                                 henpt subtask_))
-            ;; DEBUG
-            _ (dbg-println :debug "pclass-ctor_" pclass-ctor_)
-            ;; add in details for the plant for primitive tasks...
-            ;;_ (dbg-println :debug "plant-details" pargs subtask pclass-ctor_ primitive?) ;;DEBUG
             details_ (plant-details ir pargs subtask_ pclass-ctor_ primitive?)
-            ;; OLD: label (name-with-argvals subtask)
             subtask-map (merge
                          (assoc
                           (dissoc subtask_ :pclass :pargs :arguments
