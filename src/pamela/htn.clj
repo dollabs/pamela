@@ -294,32 +294,42 @@
                              henpt-irks (:irks henpt)
                              caller_ (get-in ir henpt-irks)
                              caller-pclass (first henpt-irks)]
-                         (dbg-println :trace "RPC name" name "method-arg"
-                                      method-arg "pclass-arg" pclass-arg)
+                         (dbg-println :trace "RPC name" name
+                           "method-arg" method-arg
+                           "pclass-arg" pclass-arg
+                           ;; "caller_" caller_
+                           "henpt-irks" henpt-irks
+                           "IR pclass :args" (get-in ir [pclass :args]))
                          (or method-arg pclass-arg
                              (if (= (:type caller_) :plant-fn-field)
                                (get-in ir [caller-pclass :fields (:field caller_) :initial]))
                              (if (= name 'this)
-                               ;;Use the ancestry-path to resolve the pclass of the caller
-                               (let [[_ parent-subtask_ parent-hem parent-henpt] ancestry-path
-                                     parent-hem-pclass (get-in parent-hem [:irks 0])
-                                     _ (dbg-println :debug "RPC Recursing on ancestry-path"
-                                         (mapv #(list (:uid %) (or (:label %) (:name %)))
-                                           ancestry-path))
-                                     _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
-                                     pc_ (resolve-plant-class
-                                           ir parent-hem-pclass pargs parent-henpt parent-subtask_)
-
-                                     ]
-                                 ;; (dbg-println :debug "RPC this"
-                                 ;;              (with-out-str (pprint ancestry-path)))
-                                 ;; (dbg-println :debug "RPC parent-hem"
-                                 ;;              (with-out-str (pprint parent-hem))
-                                 ;;              "\nparent-henpt"
-                                 ;;              (with-out-str (pprint parent-henpt)))
-                                 _ (dbg-println :debug "RPC Recursion result" pc_)
-                                 pc_
-                                 ))
+                               (if (and (not henpt-irks)
+                                     (empty? (get-in ir [pclass :args])))
+                                 ;; here we assume we need to initialize this
+                                 ;; zero argument plant
+                                 {:type :pclass-ctor,
+                                  :pclass pclass,
+                                  :args []}
+                                 ;; else use the ancestry-path to
+                                 ;; resolve the pclass of the caller
+                                 (let [[_ parent-subtask_ parent-hem parent-henpt] ancestry-path
+                                       parent-hem-pclass (get-in parent-hem [:irks 0])
+                                       _ (dbg-println :debug "RPC Recursing on ancestry-path"
+                                           (mapv #(list (:uid %) (or (:label %) (:name %)))
+                                             ancestry-path))
+                                       _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
+                                       pc_ (resolve-plant-class
+                                             ir parent-hem-pclass pargs parent-henpt parent-subtask_)]
+                                   ;; (dbg-println :debug "RPC this"
+                                   ;;              (with-out-str (pprint ancestry-path)))
+                                   ;; (dbg-println :debug "RPC parent-hem"
+                                   ;;              (with-out-str (pprint parent-hem))
+                                   ;;              "\nparent-henpt"
+                                   ;;              (with-out-str (pprint parent-henpt)))
+                                   _ (dbg-println :debug "RPC Recursion result" pc_)
+                                   pc_
+                                   )))
                              {:error :unresolved-pclass-ctor}))
 
                        (= type :delay)
@@ -1224,7 +1234,10 @@
           (if mname ;; else (dbg-println :debug "no more methods")
             (let [{:keys [temporal-constraints args primitive display-name body]} method]
               (dbg-println :info "  METHOD" mname "PRIMITIVE" primitive "ARGS" args)
-              (if (and (not primitive) body)
+              (when (and (not primitive) body)
+                (if (and (= 1 (count body)) (= :choose (get-in body [0 :type])))
+                  (dbg-println :info "  TOP LEVEL CHOOSE!")
+                  )
                 (make-htn-methods ir pargs true pclass-name mname display-name args body))
               )))))))
 
@@ -1574,8 +1587,21 @@
                      :irks)
              :incidence-set #{}
              :edges #{})
-        end (tpn/tpn-state {})
-        begin (tpn/tpn-state {:end-node (:uid end)})]
+        _ (dbg-println :debug "ERT" ert
+            "\nTASK-EXPANSIONS (" (count task-expansions)
+            ") = "
+            ;; (with-out-str (pprint task-expansions)
+            (mapv :label task-expansions)
+            )
+        top-level-choose? (> (count task-expansions) 1)
+        end ((if top-level-choose?
+               tpn/tpn-c-end
+               tpn/tpn-state)
+             {})
+        begin ((if top-level-choose?
+                 tpn/tpn-c-begin
+                 tpn/tpn-state)
+               {:end-node (:uid end)})]
     (update-htn-plan-map! ert)
     (update-htn-plan-map! net)
     (swap! *htn-plan-map* assoc :network (:uid net)) ;; ENTRY POINT
@@ -1816,7 +1842,8 @@
                                             :nonprimitive-task nonprimitive-task
                                             :subtasks subtasks
                                             :subtask-constraints subtask-constraints
-                                            :irks irks-choice})]
+                                            :irks irks-choice
+                                            :order i})]
                     (recur (conj methods method) (inc i))))))
 
             :else
