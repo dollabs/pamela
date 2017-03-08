@@ -49,10 +49,10 @@
                 (plant.scp :bounds [0 99]
                   "bigfile" "me@192.168.11.100:~me/copyofbigfile")
                 (plant.cp :bounds [0 99] "bigfile" "copyofbigfile")
-                (plant.shell :bounds [0 99] "ls" "-lart" "> foo")
-                (plant.python :bounds [0 99] "myscript.py" "")
+                (plant.shell :bounds [0 99] "ls" "-lart" ">" "foo")
+                (plant.python :bounds [0 99] "myscript.py" "2" "3" "4" "5")
                 (delay :bounds [3 3])
-                (plant.stop)))])
+                (plant.stop "McDonalds")))])
 
 (defpclass simple-plant-demo []
   :fields {:sp1 (simpleplant :id "myplant" :plant-part "mypart" :interface "RMQ")

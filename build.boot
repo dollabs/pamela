@@ -12,7 +12,7 @@
 ;; views of the Army Contracting Command and DARPA.
 
 (def project 'dollabs/pamela)
-(def version "0.5.0")
+(def version "0.6.0")
 (def description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)")
 (def project-url "https://github.com/dollabs/pamela")
 (def main 'pamela.cli)

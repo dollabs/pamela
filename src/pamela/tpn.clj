@@ -441,7 +441,9 @@
         ;;     "\n  done" (count a-done) "=" a-done
         ;;     "\n  a0-type" a0-type "s-uid" s-uid  "SN" sn "tpn-type" tpn-type
         ;;     "\n  htn-node" htn-node
+        ;;     "\n  a-constraints" a-constraints
         ;;     "\n  constraints" constraints "move-tc-to-b?" move-tc-to-b?
+        ;;     "\n  b-constraints" b-constraints
         ;;     "\n  s0-type" s0-type "b-type" b-type "b-uid" b-uid)
         next-uid
         (cond
@@ -505,7 +507,7 @@
             a-uid)
           ;; s/ A a S na B / A a B /
           (and (= tpn-type :state) (= s0-type :null-activity) (= 1 sn)
-            (not move-constraints?)
+            ;; OK, we move them below... (not move-constraints?)
             b (not (#{:c-begin :p-begin :c-end :p-end} b-type)))
           (do
             (doseq [act a-activities] ;; move end-node to b-uid
@@ -524,6 +526,13 @@
                   :reward s0-reward
                   :probability s0-probability
                   :htn-node s0-htn-node)))
+            (when move-constraints? ;; move constraints to b
+              (update-tpn-plan-map!
+                (assoc-if b
+                  :constraints (set/union b-constraints constraints)
+                  :label label
+                  :sequence-label sequence-label
+                  :htn-node htn-node)))
             (move-constraints tpn-notes s-uid b-uid) ;; for other constraints
             (remove-tpn-plan-map! s0-uid)
             (remove-tpn-plan-map! s-uid)
@@ -586,6 +595,24 @@
             s-uid)
           :else
           (do
+            ;; consider moving a-constraints that end on B to the one activity
+            ;; ONLY handle exactly one constraint now
+            ;; (when (and (= 1 an) (pos? (count a-constraints)))
+            (if (and (= 1 an) (= 1 (count a-constraints)))
+              (let [ac (get-tpn-plan-map (first a-constraints))
+                    a0 (get-tpn-plan-map (first a-activities))]
+                (when (= (:end-node ac) s-uid)
+                  ;; (println "  MOVING constraint from node" a-uid
+                  ;;   "to activity" (:uid a0))
+                  (update-tpn-plan-map!
+                    (assoc a0
+                      :constraints (set/union (:constraints a0) a-constraints)))
+                  (update-tpn-plan-map!
+                    (assoc a
+                      :constraints #{}))))
+              ;; (println "  NOTMOVING constraint from node" a-uid
+              ;;   "an" an "acn" (count a-constraints))
+              )
             ;; (println "  DONE for" a0-uid)
             (update-todo tpn-notes a-uid a0-uid nil)
             a-uid))]
