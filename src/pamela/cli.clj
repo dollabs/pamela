@@ -153,8 +153,8 @@
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
    ["-c" "--construct-tpn CFM " "Construct TPN using class C field F method M (as C:F:M)"]
-   ["-f" "--file-format FORMAT" "Output file format [edn]"
-    :default "edn"
+   ["-f" "--file-format FORMAT" "Output file format [json]"
+    :default "json"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]

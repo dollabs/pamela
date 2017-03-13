@@ -89,15 +89,8 @@ else
     fi
 fi
 
-
-usage() {
-    err "invalid command line (type 'pamela -h' for usage)"
-    exit 1
-}
-
-cmd="boot run"
 while [ $# -gt 0 ]; do
-    cmd="$cmd -A \"$(echo $1 | sed 's/"/\\"/g')\""
+    cmd="$cmd $sep \"$(echo $1 | sed 's/\"/\\\"/g')\""
     shift
 done
 
