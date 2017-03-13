@@ -11,8 +11,7 @@
             [plan-schema.core :as psc]
             [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.pprint :refer :all]
-            [avenir.utils :refer [keywordize]])
+            [clojure.pprint :refer :all])
   (:import [java.io.File]))
 
 ;; NOTE ["test/pamela/cannon.pamela" "(game.main)"]
@@ -93,7 +92,7 @@
 (defn read-clj [filename]
   (read-string (slurp filename)))
 
-(defn json->edn
+#_(defn json->edn
   "Perform basic HTN/TPN data conversion"
   {:added "0.6.0"}
   ([m]
@@ -120,11 +119,23 @@
        ;;   (println "k:" k "v:" v " -> " v2))
        v2))))
 
-;; NOTE that the full edn map must be keywordized so that the
-;; keys in edn argsmaps will match those in the json map
-;; (which passes through keywordize).
+; The output produced by plan-schema (edn and json) is being compared to find coercion issues.
+; Note: plan-schema reads edn and json (produced by pamela) and spits out the version of the same after coercion.
+; If the coercion is working correctly, output produced by plan-schema should be identical for both.
+; If there coercion issues, the output will be different and that's exactly what we are looking for.
+
+; Ex:
+; This is output produced by plan-schema after coercion for edn file.
+;<  {:uid :hem-100,
+;<   :type :htn-expanded-method,
+;---
+; This is output produced by plan-schema after coercion for json file.
+;>  {:uid "hem-100",
+;    >   :type "htn-expanded-method",
 (defn compare-files [edn json]
-  (let [edn-sorted (into (sorted-map) (keywordize (read-clj edn)))
+  (= (read-clj edn) (read-clj json))
+  ; This is a bad test because it is actually performing the same coercion that plan-schema should be doing.
+  #_(let [edn-sorted (into (sorted-map) (keywordize (read-clj edn)))
         json-sorted (into (sorted-map) (json->edn (read-clj json)))
         equal? (= edn-sorted json-sorted)]
     ;; DEBUGGING
