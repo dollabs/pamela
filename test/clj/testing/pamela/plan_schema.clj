@@ -9,16 +9,24 @@
             [pamela.cli :as pcli]
             [plan-schema.cli :as scli]
             [plan-schema.core :as psc]
-
             [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.pprint :refer :all])
+            [clojure.pprint :refer :all]
+            [avenir.utils :refer [keywordize]])
   (:import [java.io.File]))
 
-(def pamela-files [["test/pamela/cannon.pamela" "(game.main)"]
-                   ["test/pamela/ir-test.pamela" "(game.main-test)"]
-                   ["test/pamela/tpn-between.pamela" "(tpn.elephant)"]])
-(def outdir "test/gen-files/")
+;; NOTE ["test/pamela/cannon.pamela" "(game.main)"]
+;; is NOT valid for generation via the "htn" method b/c
+;; it contains more than one high level construct (parallel, sequence, etc.)
+;; in a method (and it has the unsupported 'whenever' function)
+;; NOTE: ["test/pamela/ir-test.pamela" "(game.main-test)"]
+;; excluded as above
+;; NOTE: ["test/pamela/tpn-between.pamela" "(tpn.elephant)"]
+;; excluded  as above
+(def pamela-files [["test/pamela/regression/isr-htn.pamela"
+                    "(isr-htn-demo.htn.main \"A\" \"B\" \"C\" \"D\")"]])
+
+(def outdir "target/gen-files/")
 (def htn-edn-suffix ".htn.edn")
 (def htn-json-suffix ".htn.json")
 (def tpn-edn-suffix ".tpn.edn")
@@ -58,14 +66,14 @@
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in EDN")
     (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "edn" "htn")
-    ;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "edn" :verbose 1})
+    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "edn" :verbose 1})
 
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in JSON")
     (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "json" "htn")
-    ;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "json" :verbose 1})
+    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "json" :verbose 1})
 
-    ;(println "schema files" htn-edn htn-json tpn-edn tpn-json)
+    ;;(println "schema files" htn-edn htn-json tpn-edn tpn-json)
 
     (println "Reading htn-edn, writing htn-edn")
     (scli/plan-schema "-i" htn-edn "-o" htn-edn-clj "htn")
@@ -85,17 +93,54 @@
 (defn read-clj [filename]
   (read-string (slurp filename)))
 
+(defn json->edn
+  "Perform basic HTN/TPN data conversion"
+  {:added "0.6.0"}
+  ([m]
+   (cond
+     (map? m) (reduce-kv json->edn {} m)
+     :else m))
+  ([m k v]
+   (assoc m k
+     (let [v2
+           (cond ;; type coercion of v based on k
+             (map? v) (reduce-kv json->edn {} v)
+             ;; k that wants v to be a keyword
+             (#{:type :tpn-type :network :network-id :uid :htn-node :end-node} k)
+             (keyword v)
+             ;; k that wants v to be a set of keywords
+             (#{:incidence-set :rootnodes :constraints :activities} k)
+             (set (map keyword v))
+             ;; k that wants v to be a vector of keywords
+             (#{:edges} k)
+             (mapv keyword v)
+             :else v)]
+       ;; DEBUGGING
+       ;; (if (not= v2 v)
+       ;;   (println "k:" k "v:" v " -> " v2))
+       v2))))
+
+;; NOTE that the full edn map must be keywordized so that the
+;; keys in edn argsmaps will match those in the json map
+;; (which passes through keywordize).
 (defn compare-files [edn json]
-  (= (read-clj edn) (read-clj json)))
+  (let [edn-sorted (into (sorted-map) (keywordize (read-clj edn)))
+        json-sorted (into (sorted-map) (json->edn (read-clj json)))
+        equal? (= edn-sorted json-sorted)]
+    ;; DEBUGGING
+    ;; (when-not equal?
+    ;;   (spit (str edn ".sorted.edn") (with-out-str (pprint edn-sorted)))
+    ;;   (spit (str json ".sorted.edn") (with-out-str (pprint json-sorted))))
+    equal?))
 
 (deftest testing-check-coercion
   (testing "HTN and TPN Json coercion"
     (doseq [file pamela-files]
-      (let [[htn-edn-clj htn-json-clj tpn-edn-clj tpn-json-clj] (create-artifacts file)]
-
+      (let [[htn-edn-clj htn-json-clj tpn-edn-clj tpn-json-clj]
+            (create-artifacts file)]
 
         (when-not (compare-files htn-edn-clj htn-json-clj)
-          ; fake comparison to trigger unit test error
+          ;; fake comparison to trigger unit test error
           (is (= htn-edn-clj htn-json-clj) (prn-str "files differ" htn-edn-clj htn-json-clj " Do diff for details")))
 
         (when-not (compare-files tpn-edn-clj tpn-json-clj)

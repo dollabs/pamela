@@ -1435,7 +1435,7 @@
                                   :task-type :ancestry-path :temporal-constraints
                                   :irks)
                           :incidence-set (if edge #{(:uid edge)} #{})
-                          :edges #{})
+                          :edges [])
                          details_)
             ;; TPN ------------------
             se (tpn/tpn-state {})
@@ -1586,7 +1586,7 @@
                      :task-type :ancestry-path :temporal-constraints
                      :irks)
              :incidence-set #{}
-             :edges #{})
+             :edges [])
         _ (dbg-println :debug "ERT" ert
             "\nTASK-EXPANSIONS (" (count task-expansions)
             ") = "

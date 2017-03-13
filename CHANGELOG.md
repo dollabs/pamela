@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* _TBD_
+* Fixed pamela launch script (Closes #72)
+* Changed default output to json (Closes #74)
+* Ensure that jenkins.sh will pass
+* Fixed test to put temporary/generated files under target/
+* Updated plan-schema dependency to 0.2.16
 
 ### [0.6.0] - 2017-03-08
 

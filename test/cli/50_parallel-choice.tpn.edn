@@ -1,6 +1,6 @@
 {:act-22
  {:args [],
-  :constraints #{},
+  :constraints #{:tc-21},
   :uid :act-22,
   :tpn-type :activity,
   :argsmap {},
@@ -24,7 +24,7 @@
   :cost 0},
  :act-48
  {:args [],
-  :constraints #{},
+  :constraints #{:tc-47},
   :uid :act-48,
   :tpn-type :activity,
   :argsmap {},
@@ -124,7 +124,7 @@
  :node-23
  {:tpn-type :state,
   :uid :node-23,
-  :constraints #{:tc-21},
+  :constraints #{},
   :activities #{:act-22},
   :incidence-set #{:na-24},
   :end-node :node-20},
@@ -163,7 +163,7 @@
  :node-49
  {:tpn-type :state,
   :uid :node-49,
-  :constraints #{:tc-47},
+  :constraints #{},
   :activities #{:act-48},
   :incidence-set #{:na-50},
   :end-node :node-46},
