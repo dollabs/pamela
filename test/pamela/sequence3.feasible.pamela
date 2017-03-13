@@ -1,0 +1,25 @@
+;; A feasible sequence of few activities
+
+(defpclass plant []
+  :meta {:doc "The Plant API"}
+  :methods [(defpmethod do-a {:bounds [2 4]} [])
+            (defpmethod do-b {:bounds [3 6]} [])
+            (defpmethod do-c {:bounds [4 8]} [])
+            (defpmethod do-d {:bounds [1 2]} [])
+            (defpmethod do-e {:bounds [5 10]} [])])
+
+(defpclass sequence-feasible [plnt]
+  :meta {:doc "An example of infeasible sequence of activties"}
+  :methods [(defpmethod main
+              {:doc "Simple TPN with constraints"}
+              []
+              (sequence :bounds [10 30]
+                (plnt.do-a)
+                (plnt.do-b)
+                (plnt.do-c)
+                (plnt.do-d)
+                (plnt.do-e)))])
+
+(defpclass demo []
+  :fields {:plnt (plant)
+           :tpn (sequence-feasible :plnt)})

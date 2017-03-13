@@ -1,0 +1,18 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+;; A TPN with constraints
+
+(defpclass parallel-feasible []
+           :meta {:doc "A feasible choice to be chewed by contraint solver"}
+           :methods [(defpmethod main
+                                 {:doc "Entry point"}
+                                 []
+                                 (parallel :bounds [50 100]
+                                           (option :bounds [55 65])
+                                           (option :bounds [65 75])
+                                           (option :bounds [75 85])))
+                     (defpmethod option [])
+                     ])

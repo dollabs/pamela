@@ -22,6 +22,7 @@
             [clojure.pprint :as pp]
             [environ.core :refer [env]]
             [clojure.data.json :as json]
+            [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log])
   (:import [java.net
@@ -46,27 +47,28 @@
 ;; file-format's supported: edn json string
 ;; if input is a map, sort it
 (defn output-file [filename file-format data]
-  (let [is-stdout? (stdout? filename)
-        filename (if (and (not is-stdout?) (string? filename))
-                   (fs/expand-home filename)
-                   filename)
-        output-filename (if (not is-stdout?)
-                          (if (fs/absolute? filename)
-                            (fs/file filename)
-                            (fs/file (get-cwd) filename)))
-        data (if (map? data)
-               (into (sorted-map) data)
-               data)
-        out (cond
-              (= file-format "edn")
-              (with-out-str (pprint data))
-              (= file-format "json")
-              (with-out-str (json/pprint data))
-              :else
-              data)]
-    (if is-stdout?
-      (println out)
-      (spit output-filename out))))
+  (binding [*print-length* nil] ;;Just in case someone has this set in their environment
+    (let [is-stdout? (stdout? filename)
+          filename (if (and (not is-stdout?) (string? filename))
+                     (fs/expand-home filename)
+                     filename)
+          output-filename (if (not is-stdout?)
+                            (if (fs/absolute? filename)
+                              (fs/file filename)
+                              (fs/file (get-cwd) filename)))
+          data (if (map? data)
+                 (into (sorted-map) data)
+                 data)
+          out (cond
+                (= file-format "edn")
+                (with-out-str (pprint data))
+                (= file-format "json")
+                (with-out-str (json/pprint data))
+                :else
+                data)]
+      (if is-stdout?
+        (println out)
+        (spit output-filename out)))))
 
 (defn input-file [filename]
   (let [is-stdin? (stdout? filename)
@@ -108,3 +110,54 @@
   {:pamela :utils :added "0.2.0"}
   [s]
   (Thread/sleep (* 1000 s)))
+
+(defn user-tmpdir [program]
+  (let [tmp (:java-io-tmpdir env)
+        user (:user env)
+        tmpdir (str tmp "/" user "/" program)]
+    (if (fs/exists? tmpdir)
+      tmpdir
+      (do
+        (fs/mkdirs tmpdir)
+        tmpdir))))
+
+(defn display-name-string
+  "Generates a pretty-name for display to the user.  Currently, this is Title Case"
+  [raw-name]
+  (clojure.string/replace
+   (translate/->Camel_Snake_Case_String raw-name)
+   "_" " "))
+
+;;Supported modes are:
+;; :log - use the logging utility (e.g., log/warn)
+;; :println - Just use println if level
+(def ^{:doc
+       "Specifies which mode of debugging output will be used, either :log or :println"}
+  dbg-println-mode :println)
+
+(def ^{:doc
+       "The highest level, where higher = lower severity, at which println will be called
+ when in :println mode"
+       :dynamic true}
+  *dbg-println-level*
+  3)
+
+;;For internal use only.  The order matters.
+(def dbg-println-levels [:fatal :error :warn :info :debug :trace])
+
+(defmacro dbg-println "Configurable alternative to using println for debugging."
+    [level & more]
+  (case dbg-println-mode
+    :log (let [f (case level
+                   (1 :fatal) 'log/fatal
+                   (2 :error) 'log/error
+                   (3 :warn) 'log/warn
+                   (4 :info) 'log/info
+                   (5 :debug) 'log/debug
+                   (6 :trace) 'log/trace)]
+           `(~f ~@more))
+    :println (let [level (if (integer? level)
+                           level
+                           (inc (.indexOf dbg-println-levels level)))]
+               `(if (<= ~level *dbg-println-level*)
+                  (println ~@more)))))

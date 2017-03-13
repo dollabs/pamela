@@ -12,7 +12,7 @@
 ;; views of the Army Contracting Command and DARPA.
 
 (def project 'dollabs/pamela)
-(def version "0.5.0")
+(def version "0.6.1-SNAPSHOT")
 (def description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)")
 (def project-url "https://github.com/dollabs/pamela")
 (def main 'pamela.cli)
@@ -32,10 +32,12 @@
                     ;; utilities
                     [environ                   "1.1.0"]
                     [instaparse                "1.4.3"]
-                    [avenir                    "0.2.1"]
+                    [avenir                    "0.2.2"]
                     [me.raynes/fs              "1.4.6"]
+                    [camel-snake-kebab         "0.4.0"]
                     ;; testing
-                    [adzerk/boot-test          "1.1.2" :scope "test"]])
+                    [adzerk/boot-test          "1.1.2" :scope "test"]
+                    [dollabs/plan-schema       "0.2.16" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])
@@ -52,6 +54,7 @@
   test {:namespaces #{'testing.pamela.cli 'testing.pamela.utils
                       'testing.pamela.parser
                       'testing.pamela.tpn 'testing.pamela.htn
+                      'testing.pamela.plan-schema
                       }})
 
 (deftask run
@@ -89,3 +92,22 @@
   (comp
     (test)
     (cli-test)))
+
+;; For Emacs if you Customize your Cider Boot Parameters to 'cider-boot'
+;; then this task will be invoked upon M-x cider-jack-in-clojurescript
+;; which is on C-c M-J
+;; CIDER will then open two REPL buffers for you, one for CLJS
+;; and another for CLJ. FFI:
+;; https://cider.readthedocs.io/en/latest/up_and_running/#clojurescript-usage
+
+;; This task is commented out here for users that have not copied
+;; a profile.boot file to ~/.boot/ which defines the cider task:
+;;
+;; (deftask cider-boot
+;;   "Cider boot params task"
+;;   []
+;;   ;; (cider))
+;;   (comp
+;;     (cider)
+;;     (repl :server true)
+;;     (wait)))

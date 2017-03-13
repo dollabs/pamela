@@ -20,7 +20,8 @@
             [environ.core :refer [env]]
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
-            [pamela.utils :refer [output-file]]
+            [camel-snake-kebab.core :as translate]
+            [pamela.utils :refer [output-file display-name-string]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta])
   (:import [java.io
@@ -211,10 +212,13 @@
             :temporal-constraints [default-bounds-type]
             :betweens []
             :primitive false
+            :display-name (display-name-string method)
             :body nil}
          args-seen? false
          a (first args)
          more (rest args)]
+    ;; (println "method" method)
+    ;; (println "args" args)
     (if-not a
       {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
       (let [[args-seen? m] (if (not args-seen?)
@@ -396,6 +400,9 @@
   {:type :sequence
    :body (vec (repeat times fn))})
 
+
+;; If you're doing some REPL-based development, and change any of the above helper functions:
+;;    !!! Don't forget to re-eval pamela-ir !!!
 (def pamela-ir {
                 ;; :access handled in ir-field
                 :and-expr (partial ir-cond-expr :and)
@@ -429,6 +436,7 @@
                 ;; :delay-opt handled in ir-fn and ir-fn-cond
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
+                :display-name (partial ir-map-kv :display-name)
                 :doc (partial ir-map-kv :doc)
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
@@ -450,7 +458,7 @@
                 :initial identity
                 :integer ir-integer
                 :interface ir-interface
-                :keyword keyword
+                :keyword #(keyword (subs % 1))
                 :label (partial ir-map-kv :label)
                 ;; :leave handled by ir-choice
                 :literal identity
@@ -707,10 +715,32 @@
     (if (or (:error vmbody) (not b))
       vmbody
       (let [{:keys [type name method condition body]} b
-            error (if (and (= type :plant-fn-symbol) (= name 'this)
-                        (nil? (get methods method)))
-                    (str "method " method " used in method " in-method
-                      " is not defined in the pclass " pclass))
+            [b error] (cond
+                        (and (= type :plant-fn-symbol) (= name 'this))
+                        (if (nil? (get methods method))
+                          [nil (str "method " method " used in method " in-method
+                                 " is not defined in the pclass " pclass)]
+                          [b nil])
+                        (and (= type :plant-fn-symbol)
+                          (or
+                            (some #(= name %)
+                              (get-in methods [in-method :args]))
+                            (some #(= name %)
+                              (get-in ir [pclass :args]))))
+                        [b nil]
+                        (and (= type :plant-fn-symbol)
+                          (some #(= (keyword name) %)
+                            (keys fields)))
+                        ;; interpret name as a field reference
+                        [(assoc (dissoc b :name)
+                           :type :plant-fn-field
+                           :field (keyword name))
+                         nil]
+                        (= type :plant-fn-symbol)
+                        [nil (str "plant " name " used in method " in-method
+                               " is not defined in the pclass " pclass)]
+                        :else
+                        [b nil])
             condition (if (and (not error) condition)
                         (validate-condition ir state-vars pclass fields modes
                           [:method method :body] condition))
@@ -730,6 +760,53 @@
                      :else
                      (conj vmbody vb))]
         (recur vmbody (first more) (rest more))))))
+
+;; return Validated args or {:error "message"}
+(defn validate-pclass-ctor-args [ir scope-pclass fields pclass args]
+  (loop [vargs [] a (first args) more (rest args)]
+    (if (or (not a) (:error vargs))
+      vargs
+      (let [a (if (keyword? a)
+                (if (or (#{:id :interface :plant-part} a)
+                      (get fields a)) ;; this is a field
+                  a
+                  {:error (str "Keyword argument to pclass constructor "
+                            a " is not a field in the pclass " scope-pclass)})
+                (if (symbol? a)
+                  ;; is it a formal arg to scope-pclass?
+                  (if (or (some #(= a %) (get-in ir [scope-pclass :args]))
+                        (get fields (keyword a))) ;; this is a field
+                    a
+                    {:error (str "Symbol argument to pclass constructor "
+                              a " is neither a formal argument to, "
+                              "nor a field of the pclass " scope-pclass)})
+                  a))
+            vargs (if (and (map? a) (:error a))
+                    a
+                    (conj vargs a))]
+        (recur vargs (first more) (rest more))))))
+
+  ;; return Validated fields or {:error "message"}
+(defn validate-fields [ir state-vars pclass fields]
+  (let [field-vals (seq fields)]
+    (loop [vfields {} field-val (first field-vals) more (rest field-vals)]
+      (if (or (:error vfields) (not field-val))
+        vfields
+        (let [[field val] field-val
+              {:keys [access observable initial]} val
+              scope-pclass pclass
+              {:keys [type pclass args]} initial
+              args (if (and (= type :pclass-ctor) args)
+                     (validate-pclass-ctor-args ir scope-pclass fields
+                       pclass args)
+                     args)
+              val (if (and (map? args) (:error args))
+                    args
+                    val)
+              vfields (if (and (map? val) (:error val))
+                       val
+                       (assoc vfields field val))]
+          (recur vfields (first more) (rest more)))))))
 
 ;; return Validated modes or {:error "message"}
 (defn validate-modes [ir state-vars pclass fields modes]
@@ -817,16 +894,22 @@
         state-vars (atom {})]
     (loop [vir {} sym-val (first sym-vals) more (rest sym-vals)]
       (if (or (:error vir) (not sym-val))
-        (merge vir @state-vars)
+        (if (:error vir)
+          vir
+          (merge vir @state-vars))
         (let [[sym val] sym-val
               {:keys [type args fields modes transitions methods]} val
               pclass? (= type :pclass)
-              modes (if (and pclass? modes)
+              fields (if (and pclass? fields)
+                      (validate-fields ir state-vars sym fields))
+              modes (if (and pclass? (not (:error fields)) modes)
                       (validate-modes ir state-vars sym fields modes))
-              transitions (if (and pclass? transitions (not (:error modes)))
+              transitions (if (and pclass? transitions
+                                (not (:error fields)) (not (:error modes)))
                             (validate-transitions ir state-vars
                               sym fields modes transitions))
               methods (if (and pclass? methods
+                            (not (:error fields))
                             (not (:error modes))
                             (not (:error transitions)))
                             (validate-methods ir state-vars
@@ -836,6 +919,8 @@
                     :transitions transitions
                     :methods methods)
               vir (cond
+                    (:error fields)
+                    fields
                     (:error modes)
                     modes
                     (:error transitions)
@@ -853,7 +938,7 @@
                :bounds-literal ir-bounds-literal
                :float ir-float
                :integer ir-integer
-               :keyword keyword
+               :keyword #(keyword (subs % 1))
                :literal identity
                :lvar-ctor ir-lvar-ctor
                :lvar-init identity

@@ -1,9 +1,10 @@
 (* root-task EBNF grammar *)
 
-root-task = <LP> symbol <'.'> symbol argval* <RP>
+root-task = <LP> symbols argval* <RP>
+symbols = symbol <'.'> ( symbol | symbols )
 symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
 boolean = ( TRUE | FALSE )
-argval = ( boolean | string | number | safe-keyword )
+argval = ( boolean | string | number | safe-keyword | symbols )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
 float = #'[-]?[0-9]+\.[0-9]+'
@@ -11,7 +12,7 @@ integer = #'[-]?[0-9]+'
 natural = #'[0-9]+'
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
-keyword = <':'> #'[A-Za-z0-9:*-.]+'
+keyword = #'^:[A-Za-z0-9\:\*\-\_\.]+'
 
 BOUNDS = <':bounds'>
 CONTROLLABLE = <':controllable'>

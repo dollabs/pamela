@@ -13,7 +13,12 @@
 
 (ns testing.pamela.parser
   (:require [clojure.test :refer :all]
-            [pamela.parser :refer :all]))
+            [clojure.string :as string]
+            [environ.core :refer [env]]
+            [me.raynes.fs :as fs]
+            [avenir.utils :refer [and-fn]]
+            [pamela.parser :refer :all]
+            [pamela.utils :refer [output-file]]))
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
@@ -31,6 +36,7 @@
                          :reward 0,
                          :controllable false,
                          :primitive true,
+                         :display-name "Bounded",
                          :betweens [],
                          :post {:type :literal, :value true},
                          :cost 0,
@@ -45,6 +51,7 @@
                          :controllable false,
                          :primitive true,
                          :betweens [],
+                         :display-name "Unbounded",
                          :post {:type :literal, :value true},
                          :cost 0,
                          :body nil,
@@ -63,6 +70,7 @@
                          :controllable false,
                          :primitive false,
                          :betweens [],
+                         :display-name "Simple Choice Tpn",
                          :post {:type :literal, :value true},
                          :cost 0,
                          :body
@@ -83,4 +91,24 @@
                          :doc "Simple Choice TPN"}}}}]
       (is (= choice-ir
             (parse {:input [choice-pamela] :output "-"}))))
-    ))
+    (let [top (:user-dir env)
+          regression (fs/file top "test" "pamela" "regression")
+          examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
+                     (fs/list-dir regression))
+          tmpdir (fs/file top "target" "regression")]
+      (if-not (fs/exists? tmpdir)
+        (fs/mkdirs tmpdir))
+      (doseq [example examples]
+        (let [example-name (fs-file-name example)
+              output (str tmpdir "/"
+                       (string/replace example-name
+                         #"\.pamela$" ".ir.edn"))
+              options {:input [example]}
+              ir (parse options)
+              success? (nil? (:error ir))]
+          (output-file output
+            (if success? "edn" "string")
+            (if success? ir (:error ir)))
+          (if-not success?
+            (println "ERROR in" output))
+          (is success?))))))

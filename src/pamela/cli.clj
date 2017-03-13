@@ -29,6 +29,10 @@
             [environ.core :refer [env]])
   (:gen-class)) ;; required for uberjar
 
+(def test-mode false)
+(defn set-test-mode! [value]
+  (def test-mode value))
+
 ;; actions ----------------------------------------------
 
 (defn check-model
@@ -149,8 +153,8 @@
     :default 0
     :assoc-fn (fn [m k _] (update-in m [k] inc))]
    ["-c" "--construct-tpn CFM " "Construct TPN using class C field F method M (as C:F:M)"]
-   ["-f" "--file-format FORMAT" "Output file format [edn]"
-    :default "edn"
+   ["-f" "--file-format FORMAT" "Output file format [json]"
+    :default "json"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
@@ -209,10 +213,11 @@
       (println (string/join \newline msgs))
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
-  (when (repl?)
-    (throw (Exception. (str "DEV MODE exit(" status ")"))))
-  (shutdown-agents)
-  (System/exit status)
+  (if (or (repl?) test-mode)
+    (log/warn "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
+    (do (log/info "exiting with status" status)
+      (shutdown-agents)
+        (System/exit status)))
   true)
 
 (defn base-64-decode [b64]
@@ -220,10 +225,15 @@
   ;; (String. (.decode (Base64/getDecoder) b64))
   (String. (base64/decode (.getBytes b64))))
 
+(defn exec-action
+  "Performs no checks whatsoever !!"
+  [action options]
+  ((get actions action) options))
+
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.4.2"}
+   :version "0.5.0"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))
@@ -282,6 +292,12 @@
           (catch Throwable e
             (exit 1 "ERROR caught exception:" (.getMessage e))))))
     (exit 0)))
+
+(defn reset-gensym-generator
+  "Resets gensym generators in htn and tpn.
+   Helps with repeatable testing"
+  []
+  (htn/reset-my-count) (tpn/reset-my-count))
 
 (defn -main
   "PAMELA main entry point (see pamela)"

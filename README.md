@@ -65,7 +65,7 @@ This network rendering was created with PLANVIZ as follows:
 3. Click into the command box and type `/show tpn-demo.tpn` and press return.
 4. When you see the TPN graph, type the command `/export` and you will be prompted to save **tpn-demo.tpn.svg** as a file (which you can view in your browser or any SVG capable tool).
 
-![tpn-demo.tpn.svg](http://dollabs.github.io/pamela/doc/tpn-demo.tpn.svg)
+<img alt="[tpn-demo.tpn.svg]" src="http://dollabs.github.io/pamela/doc/tpn-demo.tpn.svg" width="100%" height="auto/>
 
 ## Installing PAMELA tools with pamela-setup
 
@@ -107,9 +107,9 @@ at some point soon)!
 
 ## Further Documentation
 
-* Detailed notes on generating [TPNs](TPN.md)
-* See the PAMELA [API docs](http://dollabs.github.io/pamela/doc/)
-* Command line **pamela** (see pamela in `src/main/clj/pamela/cli.clj`)
+* Notes on generating [TPNs](doc/TPN.md)
+* Notes on generating [HTNs](doc/HTN.md)
+* PAMELA [grammar](doc/grammar.md)
 
 ## Copyright and license
 

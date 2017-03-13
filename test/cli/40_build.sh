@@ -19,6 +19,7 @@ set -e
 # Demonstrate building the IR
 
 pamela -i "$CODE/test/pamela/circuit.pamela" \
+       -f edn \
        -o "$RESULTS/${NUMBER}_circuit.ir.edn" \
        build
 

@@ -5,9 +5,59 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* _TBD_
+* Fixed pamela launch script (Closes #72)
+* Changed default output to json (Closes #74)
+* Ensure that jenkins.sh will pass
+* Fixed test to put temporary/generated files under target/
+* Updated plan-schema dependency to 0.2.16
 
-### [0.5.0] - 2016-12-01
+### [0.6.0] - 2017-03-08
+
+Changes
+* Grammar changes: allow underscores in symbols
+* Parsing changes: allow plant-function symbols to refer to fields
+  (if not present in method or pclass args)
+* Validate pclass-ctor args
+  - keywords must be one of #{:id :interface :plant-part} or a field
+  - symbols must be a formal pclass arg or a field (when converted to kw)
+- Complex (nested) root-task elaboration
+  First symbol is HTN pclass, ultimate symbol is the method, and
+  intermediate symbols (if any) are fields from the previous pclass.
+  Arguments may be literals or fields qualified by pclass (and zero
+  or more intermediate fields).
+- HTN progagation proceeds normally when HTN and TPN are not hand-coded.
+- HTN now has all the attributes required to generate the TPN
+  :name
+  :display-name ;; preformatted in camelCase without args
+  :command (duplicate of :name)
+  :args
+  :argsmap
+  :plantid
+  :plant-part
+  :interface
+- TPN activities now have all plant instance details
+  (:id :plant-part :interface)
+- Delays are represented as type :delay-activity
+- Temporal constraints for activities on attached to the activity
+  (rather than the begin node).
+- Fixed jenkins.sh
+- Updated documents in doc/
+- Update tests with new gensym to compare IR output
+- Update pamela launch script to better escape root-tasks
+- Updated dependencies
+- Add dbg-println, a configurable alternative to using println for debugging.
+   - Behavior is controlled by dbg-println-mode and *dbg-println-level* (and the current logging
+     level if dbg-println-mode=:log)
+- Resolution of argument resolution bug
+- Determine pclass of unabiguous (but unspecified) pmethods
+- Handle 5 canonical HTN source examples, including finding the appropriate plant initializer, such
+  that the argument values and other plant info is propagated appropriately
+- Resolved a number of problems with argument resolution (handling multiple use cases)
+- Handle top-level HTN method consisting of a choice
+- Updated TPN object hierarchy to include :cost<=-constraint and :reward>=-constraint
+- Move constraints from Nodes to Activities when appropriate
+
+### [0.5.0] - 2016-12-08
 
 Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
@@ -19,6 +69,8 @@ Changes
 * Fixed parser bug with floating point numbers
 * Added :plant-part to pclass-ctor (Closes #45)
 * Fixed TPN generation with delay statements
+* Updated documentation
+* Fixed jenkins.sh
 
 ### [0.4.3] - 2016-11-18
 
@@ -119,4 +171,5 @@ Added
 [0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
 [0.4.3]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.3
 [0.5.0]: https://github.com/dollabs/pamela/compare/0.4.3...0.5.0
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.5.0...HEAD
+[0.6.0]: https://github.com/dollabs/pamela/compare/0.5.0...0.6.0
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.0...HEAD

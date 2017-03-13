@@ -32,7 +32,7 @@ mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( literal | symbol | lvar-ctor| !lvar-ctor pclass-ctor | mode-expr )
+field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor | mode-expr )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type
@@ -46,11 +46,13 @@ transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
-cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive )
+cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive | display-name )
 trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
 pre = <PRE> ( keyword | cond-expr )
 post = <POST> ( keyword | cond-expr )
+
+display-name = <DISPLAY_NAME> string
 
 fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes | plant-fn )
 
@@ -125,12 +127,12 @@ interface = <INTERFACE> string
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
-symbol = !boolean #'[A-Za-z][A-Za-z0-9-]*'
+symbol = !boolean #'[A-Za-z][A-Za-z0-9-_]*'
 literal = ( boolean | string | keyword | number )
 argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
-keyword = <':'> #'[A-Za-z0-9:*-.]+'
+keyword = #'^:[A-Za-z0-9\:\*\-\_\.]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
@@ -157,6 +159,7 @@ DEFPCLASS = <'defpclass'>
 DEFPMETHOD = <'defpmethod'>
 DELAY = <'delay'>
 DEPENDS = <':depends'>
+DISPLAY_NAME = <':display-name'>
 DOC = <':doc'>
 DOTIMES = <'dotimes'>
 ENTER = <':enter'>
