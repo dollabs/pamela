@@ -76,3 +76,6 @@ classes
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# idea files
+.idea/
