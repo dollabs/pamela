@@ -11,7 +11,8 @@
             [plan-schema.core :as psc]
             [clojure.java.io :as io]
             [clojure.string :as str]
-            [clojure.pprint :refer :all])
+            [clojure.pprint :refer :all]
+            [clojure.java.shell :as sh])
   (:import [java.io.File]))
 
 ;; NOTE ["test/pamela/cannon.pamela" "(game.main)"]
@@ -93,31 +94,31 @@
   (read-string (slurp filename)))
 
 #_(defn json->edn
-  "Perform basic HTN/TPN data conversion"
-  {:added "0.6.0"}
-  ([m]
-   (cond
-     (map? m) (reduce-kv json->edn {} m)
-     :else m))
-  ([m k v]
-   (assoc m k
-     (let [v2
-           (cond ;; type coercion of v based on k
-             (map? v) (reduce-kv json->edn {} v)
-             ;; k that wants v to be a keyword
-             (#{:type :tpn-type :network :network-id :uid :htn-node :end-node} k)
-             (keyword v)
-             ;; k that wants v to be a set of keywords
-             (#{:incidence-set :rootnodes :constraints :activities} k)
-             (set (map keyword v))
-             ;; k that wants v to be a vector of keywords
-             (#{:edges} k)
-             (mapv keyword v)
-             :else v)]
-       ;; DEBUGGING
-       ;; (if (not= v2 v)
-       ;;   (println "k:" k "v:" v " -> " v2))
-       v2))))
+    "Perform basic HTN/TPN data conversion"
+    {:added "0.6.0"}
+    ([m]
+     (cond
+       (map? m) (reduce-kv json->edn {} m)
+       :else m))
+    ([m k v]
+     (assoc m k
+              (let [v2
+                    (cond                                   ;; type coercion of v based on k
+                      (map? v) (reduce-kv json->edn {} v)
+                      ;; k that wants v to be a keyword
+                      (#{:type :tpn-type :network :network-id :uid :htn-node :end-node} k)
+                      (keyword v)
+                      ;; k that wants v to be a set of keywords
+                      (#{:incidence-set :rootnodes :constraints :activities} k)
+                      (set (map keyword v))
+                      ;; k that wants v to be a vector of keywords
+                      (#{:edges} k)
+                      (mapv keyword v)
+                      :else v)]
+                ;; DEBUGGING
+                ;; (if (not= v2 v)
+                ;;   (println "k:" k "v:" v " -> " v2))
+                v2))))
 
 ; The output produced by plan-schema (edn and json) is being compared to find coercion issues.
 ; Note: plan-schema reads edn and json (produced by pamela) and spits out the version of the same after coercion.
@@ -136,13 +137,13 @@
   (= (read-clj edn) (read-clj json))
   ; This is a bad test because it is actually performing the same coercion that plan-schema should be doing.
   #_(let [edn-sorted (into (sorted-map) (keywordize (read-clj edn)))
-        json-sorted (into (sorted-map) (json->edn (read-clj json)))
-        equal? (= edn-sorted json-sorted)]
-    ;; DEBUGGING
-    ;; (when-not equal?
-    ;;   (spit (str edn ".sorted.edn") (with-out-str (pprint edn-sorted)))
-    ;;   (spit (str json ".sorted.edn") (with-out-str (pprint json-sorted))))
-    equal?))
+          json-sorted (into (sorted-map) (json->edn (read-clj json)))
+          equal? (= edn-sorted json-sorted)]
+      ;; DEBUGGING
+      ;; (when-not equal?
+      ;;   (spit (str edn ".sorted.edn") (with-out-str (pprint edn-sorted)))
+      ;;   (spit (str json ".sorted.edn") (with-out-str (pprint json-sorted))))
+      equal?))
 
 (deftest testing-check-coercion
   (testing "HTN and TPN Json coercion"
@@ -152,9 +153,14 @@
 
         (when-not (compare-files htn-edn-clj htn-json-clj)
           ;; fake comparison to trigger unit test error
-          (is (= htn-edn-clj htn-json-clj) (prn-str "files differ" htn-edn-clj htn-json-clj " Do diff for details")))
+          (is (= htn-edn-clj htn-json-clj) (prn-str "files differ" htn-edn-clj htn-json-clj " See diff for details"))
+          (println (:out (sh/sh "diff" "-u" htn-edn-clj htn-json-clj))))
 
         (when-not (compare-files tpn-edn-clj tpn-json-clj)
-          (is (= tpn-edn-clj tpn-json-clj) (prn-str "files differ" tpn-edn-clj tpn-json-clj " Do diff for details")))
+          (is (= tpn-edn-clj tpn-json-clj) (prn-str "files differ" tpn-edn-clj tpn-json-clj " See diff for details"))
+          (println (:out (sh/sh "diff" "-u" tpn-edn-clj tpn-json-clj))))
 
         ))))
+
+(defn check-shell []
+  (sh/sh "ls"))
