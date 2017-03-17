@@ -90,8 +90,10 @@
   "Run the Clojure and command line tests."
   []
   (comp
+    (cli-test)                                              ;Call build-jar, which recreates target, which deletes target/gen-files.
+    ; we need to preserve target/gen-files
     (test)
-    (cli-test)))
+    ))
 
 ;; For Emacs if you Customize your Cider Boot Parameters to 'cider-boot'
 ;; then this task will be invoked upon M-x cider-jack-in-clojurescript
