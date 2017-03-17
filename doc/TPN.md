@@ -12,6 +12,63 @@ pamela -i test/pamela/plant.pamela -i test/pamela/choice-tpn.pamela -f json -o c
 
 For a more complete example see [tpn-demo.pamela](../test/pamela/tpn-demo.pamela)
 
+# TPN Structure
+The generated EDN file representation of a TPN includes the following structure:
+
+````
+;;; In the map snippet below, the values are 
+;;; ACTIVITY - which is displayed as an arc in PlanViz
+{:act-12                   ;;UID of the activity
+ {
+  :uid          :act-12,   ;;UID of the activity
+  :tpn-type     :activity, ;;Either :activity, :null-activity, or :delay-activity
+  :end-node     :node-1,   ;;The node this activity ends in
+  :constraints  #{:tc-11}, ;;A set of applicable constraints for this activity
+                           ;; If not specified:
+                           ;; temporal bounds are assumed to be [0 :infinity], 
+                           ;; cost and reward 0
+
+  :htn-node     :hem-15,   ;;Link back to HTN Expanded Method that 
+                           ;; generated this activity
+  :controllable false,     ;;Needed by planner (true | false)
+
+  :command      "option",  ;;Needed for plant. Deprecated; Use :name instead.      
+                           ;;Assume :name value will be same as :command value
+  :name         "option",  ;;Represents method name in pamela without args.
+  :display-name "Option"   ;;This is the primary string that is displayed by
+                           ;; Planviz for this activity (displayed as an arc)
+  :args         ["west" 30], ;;Ordered vector of the arguments to the activity
+  :argsmap      {"direction" "west", "altitude" 30}, 
+                           ;; :argsmap is **OBSOLETE**
+  :args-mapping [["direction" "west"] ["altitude" 30]},
+                ;; :args-mapping is an ordered vector of pairs
+                ;; The first element of each pair is the formal argument name
+                ;; The second element of each pair is the argument value
+  :plant-id     "p1"       ;;Unique ID for this plant instance
+  :plant-part   "part1"    ;;Unique part name for a distinguishable sub-component 
+                           ;; of the :plant-id   
+  :interface    "RMQ"      ;;The interface used to communicate with the plant instances         
+  :label        "TEMP-label", ;;This will be used for Pamela labels
+  }
+  
+;;; NODE - which is displayed as circle in PlanViz 
+ :node-7
+ {:tpn-type      :state,    ;;Either :state, :c-start, :c-end, :p-start, :p-end
+  :uid           :node-7,   ;;UID of the node
+  :constraints   #{},       ;;A set of applicable constraints for this
+  :activities    #{:act-6}, ;For :state, 1 outgoing activity only
+  :incidence-set #{:na-8},
+  :htn-node      :hem-12,   ;;Link back to HTN Expanded Method that 
+                            ;; generated this activity
+  :end-node :node-4},       ;;For :state nodes:
+                            ;;Only the 1st node of a sequence points to last
+                            ;; node of sequence
+                            ;;Other :state nodes won't have an :end-node
+                            ;;For :c|p-start nodes: UID of :c|p-end node
+ }
+  
+}
+````
 
 ### Acknowledgement and Disclaimer:
 This material is based upon work supported by the Army Contracting
