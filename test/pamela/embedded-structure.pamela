@@ -1,0 +1,115 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; A variety of tests to verify (lack of) support for multiple levels of ( parallel | sequence |
+;; choose ) in a defpmethod used for HTN generation (Closes #57)
+
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
+(defpclass plant []
+  :meta {:doc "The Plant API"}
+
+  :methods [(defpmethod bounded
+              {:doc    "Bounded"
+               :bounds [1 5]} [])
+            (defpmethod unbounded
+              {:doc "Unbounded"}
+              [])
+            ])
+
+;; This one is caught by the parser
+;; (defpclass double-task-htn [plant]
+;;   :methods [(defpmethod main
+;;               []
+;;                (plant.bounded)
+;;                (plant.unbounded))]
+;;   )
+
+(defpclass single-parallel-htn [plant]
+  :methods [(defpmethod main
+              []
+              (parallel
+               (plant.bounded)
+               (plant.unbounded)))]
+  )
+
+(defpclass sequence-parallel1-htn [plant]
+  :methods [(defpmethod main
+              []
+              (sequence
+               (plant.bounded)
+               (parallel
+                (plant.bounded)
+                (plant.unbounded))))]
+  )
+
+(defpclass double-parallel-htn [plant]
+  :methods [(defpmethod main
+              []
+              (parallel
+               (parallel
+                (plant.bounded)
+                (plant.unbounded))
+               (parallel
+                (plant.bounded)
+                (plant.unbounded))))]
+  )
+
+(defpclass sequence-parallel2-htn [plant]
+  :methods [(defpmethod main
+              []
+              (sequence
+               (parallel
+                (plant.bounded)
+                (plant.unbounded))
+               (parallel
+                (plant.bounded)
+                (plant.unbounded))))]
+  )
+
+(defpclass parallel-sequence2-htn [plant]
+  :methods [(defpmethod main
+              []
+              (parallel
+               (sequence
+                (plant.bounded)
+                (plant.unbounded))
+               (sequence
+                (plant.bounded)
+                (plant.unbounded))))]
+  )
+
+(defpclass sequence-choose-htn [plant]
+  :methods [(defpmethod main
+              []
+              (sequence
+               (choose
+                (choice (plant.bounded))
+                (choice (plant.unbounded)))
+               (choose
+                (choice (plant.bounded))
+                (choice (plant.unbounded)))
+               ))]
+  )
+
+(defpclass choose-sequence-htn [plant]
+  :methods [(defpmethod main
+              []
+              (choose
+               (choice (sequence
+                        (plant.bounded)
+                        (plant.unbounded)))
+               (choice (sequence
+                        (plant.bounded)
+                        (plant.unbounded)))
+               )
+              )]
+  )
