@@ -1755,7 +1755,8 @@
                   :temporal-constraints temporal-constraints
                   :irks irks-i})
 
-                ;;Might need to handle :choice here
+                (#{:parallel :sequence :choose} type)
+                (log/error (str mpclass "." mname ":") "\nEmbedding a" type "is not supported within a defpmethod when used for HTN generation")
 
                 :else
                 (log/error "Unexpected type:" type))]

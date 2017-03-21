@@ -10,6 +10,8 @@ Changes
 * Ensure that jenkins.sh will pass
 * Fixed test to put temporary/generated files under target/
 * Updated plan-schema dependency to 0.2.16
+* Make it explicit that there can't be multiple levels of ( parallel | sequence | choose ) in a
+  defpmethod used for HTN generation (Closes #57)
 
 ### [0.6.0] - 2017-03-08
 
