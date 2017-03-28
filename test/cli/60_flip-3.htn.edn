@@ -4,7 +4,7 @@
  :hem-25
  {:uid :hem-25,
   :type :htn-expanded-method,
-  :label "flip-3()",
+  :label "Flip 3()",
   :display-name "Flip 3",
   :network :net-29,
   :incidence-set #{:hedge-28},
@@ -64,7 +64,7 @@
  :net-29
  {:type :htn-network,
   :uid :net-29,
-  :display-name "flip-3()",
-  :label "flip-3()",
+  :display-name "Flip 3()",
+  :label "Flip 3()",
   :rootnodes #{:hpt-22}},
  :network :net-27}
