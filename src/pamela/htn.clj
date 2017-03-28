@@ -159,6 +159,14 @@
   "Whether to include argument lists when displaying names of Tasks and Methods"
   true)
 
+(def activity-name-content
+  "Since the :name of a TPN activity has evolved over time, this specifies how the :name is used"
+  ;;options are:
+  ;; :verbose - includes the plant info along with the args
+  ;; :plant-command - just the command name that is sent to the plant [THIS IS THE LONG TERM BEHAVIOR]
+  ;; :display-name - use the :display-name along with the args
+  :verbose)
+
 (defn name-with-args-dispatch [object & [max-line-length]]
   (:type object))
 
@@ -203,15 +211,15 @@
 (defmethod name-with-args :htn-expanded-method
   [object & [max-line-length]]
   (let [{:keys [expansion-method argument-mappings]} object
-        {:keys [name nonprimitive-task]} expansion-method
-        method-name (str name)
+        {:keys [name nonprimitive-task display-name]} expansion-method
+        method-name (if-not (empty? display-name) display-name (str name))
         {:keys [name arguments]} nonprimitive-task
         get-dyn-arg (fn [arg]
                       (let [dyn-arg (get argument-mappings arg)]
                         (if (map? dyn-arg)
                           (:param dyn-arg)
                           dyn-arg)))
-        argvals (apply str (interpose " " (map get-dyn-arg arguments)))]
+        argvals (apply str (interpose "," (map get-dyn-arg arguments)))]
     (add-newlines-if-needed
       ;; DEBUG
       (str
@@ -1445,14 +1453,18 @@
                        ((if (= name 'delay)
                           tpn/tpn-delay-activity
                           tpn/tpn-activity)
-                        {:name (str (:name details_)
-                                    (if (:plantid details_) ":")
-                                    (:plantid details_)
-                                    (if (:plant-part details_) "%")
-                                    (:plant-part details_)
-                                    (if (:interface details_) "@")
-                                    (:interface details_)
-                                    "(" (:argsmap details_) ")")
+                        {:name (case activity-name-content
+                                 :plant-command (:name details_)
+                                 :verbose (str (:name details_)
+                                               (if (:plantid details_) "@")
+                                               (:plantid details_)
+                                               (if (:plant-part details_) "%")
+                                               (:plant-part details_)
+                                               (if (:interface details_) "@")
+                                               (:interface details_)
+                                               (seq (:args details_)))
+                                 :display-name (str (:display-name details_)
+                                               (seq (:args details_))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
                          :label (:label details_) ;; to be removed
