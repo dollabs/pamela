@@ -1455,16 +1455,17 @@
                           tpn/tpn-activity)
                         {:name (case activity-name-content
                                  :plant-command (:name details_)
-                                 :verbose (str (:name details_)
-                                               (if (:plantid details_) "@")
-                                               (:plantid details_)
-                                               (if (:plant-part details_) "%")
-                                               (:plant-part details_)
-                                               (if (:interface details_) "@")
-                                               (:interface details_)
-                                               (seq (:args details_)))
+                                 :verbose (let [plant-part (:plant-part details_)
+                                                plant-id (or (:plantid details_) "plant")
+                                                interface (or (:interface details_) "RMQ")]
+                                            (str (:name details_)
+                                                 (seq (:args details_))
+                                                 "@"
+                                                 (if plant-part (str plant-part "."))
+                                                 (if plant-id (str plant-id "."))
+                                                 interface))
                                  :display-name (str (:display-name details_)
-                                               (seq (:args details_))))
+                                                    (seq (:args details_))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
                          :label (:label details_) ;; to be removed
