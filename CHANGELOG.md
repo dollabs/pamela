@@ -12,6 +12,7 @@ Changes
 * Updated plan-schema dependency to 0.2.16
 * Make it explicit that there can't be multiple levels of ( parallel | sequence | choose ) in a
   defpmethod used for HTN generation (Closes #57)
+* HTN and TPN schema updates (one of many steps on Issue #43)
 
 ### [0.6.0] - 2017-03-08
 
