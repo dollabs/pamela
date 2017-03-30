@@ -165,7 +165,7 @@
   ;; :verbose - includes the plant info along with the args
   ;; :plant-command - just the command name that is sent to the plant [THIS IS THE LONG TERM BEHAVIOR]
   ;; :display-name - use the :display-name along with the args
-  :verbose)
+  :display-name)
 
 (defn name-with-args-dispatch [object & [max-line-length]]
   (:type object))
@@ -1454,7 +1454,8 @@
                           tpn/tpn-delay-activity
                           tpn/tpn-activity)
                         {:name (case activity-name-content
-                                 :plant-command (:name details_)
+                                 :plant-command (str (:name details_)
+                                                     (seq (:args details_)))
                                  :verbose (let [plant-part (:plant-part details_)
                                                 plant-id (or (:plantid details_) "plant")
                                                 interface (or (:interface details_) "RMQ")]
