@@ -1,0 +1,336 @@
+{coverage-demo
+ {:type :pclass,
+  :args [],
+  :fields
+  {:sp1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass simpleplant,
+     :args [],
+     :id "sp1",
+     :plant-part "mypart",
+     :interface "RMQ"}},
+   :run
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor, :pclass coverage-test, :args [sp1]}}}},
+ coverage-test
+ {:type :pclass,
+  :args [plant],
+  :modes
+  {:local {:type :literal, :value true},
+   :networked {:type :literal, :value true}},
+  :meta {:doc "Coverage Test"},
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens
+    [{:type :between,
+      :from :xfer,
+      :to :work,
+      :temporal-constraints [{:type :bounds, :value [13 17]}],
+      :cost<= 7,
+      :reward>= 1}],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :delay,
+            :temporal-constraints [{:type :bounds, :value [0 0]}],
+            :body nil}]}
+         {:type :choice,
+          :body
+          [{:type :delay,
+            :body nil,
+            :temporal-constraints [{:type :bounds, :value [3 3]}],
+            :label :initial-delay,
+            :controllable false,
+            :cost<= 2,
+            :reward>= 1}]}]}
+       {:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :delay,
+            :temporal-constraints [{:type :bounds, :value [0 0]}],
+            :body nil}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name this,
+            :method transfer,
+            :args [],
+            :temporal-constraints [{:type :bounds, :value [0 30]}],
+            :label :xfer}]}]}
+       {:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :delay,
+            :temporal-constraints [{:type :bounds, :value [0 0]}],
+            :body nil}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name this,
+            :method work,
+            :args [],
+            :temporal-constraints [{:type :bounds, :value [10 40]}],
+            :label :work}]}]}
+       {:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :delay,
+            :temporal-constraints [{:type :bounds, :value [0 0]}],
+            :body nil}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name this,
+            :method copy,
+            :args [],
+            :temporal-constraints [{:type :bounds, :value [20 50]}],
+            :label :copy}]}]}],
+      :label :everything,
+      :cost<= 4,
+      :reward>= 2}],
+    :doc "The HTN"},
+   transfer
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable true,
+    :primitive false,
+    :betweens [],
+    :display-name "Transfer",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :choose,
+      :body
+      [{:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method scp,
+          :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+          :temporal-constraints [{:type :bounds, :value [0 9]}]}],
+        :cost 2.0,
+        :reward 4}
+       {:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method cp,
+          :args ["bigfile" "copyofbigfile"],
+          :temporal-constraints [{:type :bounds, :value [10 19]}]}],
+        :cost 1.0,
+        :reward 1}
+       {:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method shell,
+          :args ["ls" "-lart" ">" "foo"],
+          :temporal-constraints [{:type :bounds, :value [20 29]}]}],
+        :cost 3.0,
+        :reward 10}],
+      :cost<= 100,
+      :reward>= 5,
+      :min 1,
+      :max 3}]},
+   work
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens
+    [{:type :between-starts,
+      :from :hardwork,
+      :to :python,
+      :temporal-constraints [{:type :bounds, :value [50 :infinity]}]}
+     {:type :between-ends,
+      :from :hardwork,
+      :to :python,
+      :temporal-constraints [{:type :bounds, :value [0 5]}]}],
+    :display-name "Work",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :parallel,
+      :body
+      [{:type :sequence,
+        :body
+        [{:type :delay,
+          :temporal-constraints
+          [{:type :bounds, :value [0 :infinity]}],
+          :body nil}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method hardwork,
+          :args [10],
+          :temporal-constraints [{:type :bounds, :value [10 20]}],
+          :label :hardwork}
+         {:type :delay,
+          :temporal-constraints
+          [{:type :bounds, :value [0 :infinity]}],
+          :body nil}]}
+       {:type :sequence,
+        :body
+        [{:type :delay,
+          :temporal-constraints
+          [{:type :bounds, :value [0 :infinity]}],
+          :body nil}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method python,
+          :args ["myscript.py" "2" "3" "4" "5"],
+          :temporal-constraints [{:type :bounds, :value [0 99]}],
+          :label :python}
+         {:type :delay,
+          :temporal-constraints
+          [{:type :bounds, :value [0 :infinity]}],
+          :body nil}]}],
+      :cost<= 11,
+      :reward>= 6}]},
+   copy
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Copy",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :choose,
+      :body
+      [{:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method scp,
+          :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"]}],
+        :probability 0.66,
+        :condition
+        {:type :equal,
+         :args
+         [{:type :mode-reference, :pclass this, :mode :networked}
+          {:type :literal, :value true}]}}
+       {:type :choice,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method cp,
+          :args ["bigfile" "copyofbigfile"],
+          :cost 5,
+          :reward 1}],
+        :probability 0.33,
+        :condition
+        {:type :equal,
+         :args
+         [{:type :mode-reference, :pclass this, :mode :local}
+          {:type :literal, :value true}]}}]}]}}},
+ simpleplant
+ {:type :pclass,
+  :args [],
+  :meta {:doc "The Simple Plant Example"},
+  :methods
+  {hardwork
+   {:args [time],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [1 20]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Hardwork",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Simulated work with a simulated failure"},
+   scp
+   {:args [fromfile tofile],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [10 20]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Scp",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Secure network file copy"},
+   cp
+   {:args [fromfile tofile],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Copy",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "local file copy"},
+   shell
+   {:args [cmd arg1 arg2 arg3],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 3]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Shell",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Runs a command-line program"},
+   python
+   {:args [script options arg1 arg2 arg3],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Python",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Runs a python script"},
+   stop
+   {:args [area],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 1]}],
+    :reward 0,
+    :controllable true,
+    :primitive true,
+    :betweens [],
+    :display-name "Stop",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Stops the plant"}}}}

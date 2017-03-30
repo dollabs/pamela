@@ -1,0 +1,35 @@
+{qc-demo
+ {:type :pclass,
+  :args [],
+  :meta
+  {:version "0.2.1",
+   :depends {qc "0.2.1", qc-waypoints "0.2.1"},
+   :doc "Quadcopter test waypoints"},
+  :fields
+  {:qc1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass qc,
+     :args [],
+     :id "qc1",
+     :interface "RMQ"}},
+   :qc2
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass qc,
+     :args [],
+     :id "qc2",
+     :interface "ZMQ"}},
+   :qc3
+   {:access :private,
+    :observable false,
+    :initial {:type :pclass-ctor, :pclass qc, :args [], :id "qc3"}},
+   :qc-waypoints
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor, :pclass qc-waypoints, :args [qc1 qc2 qc3]}}}}}

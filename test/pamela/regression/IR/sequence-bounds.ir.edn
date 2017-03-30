@@ -1,0 +1,25 @@
+{sequence-bounds
+ {:type :pclass,
+  :args [],
+  :meta {:version "0.2.0", :doc "sequence example with time bounds"},
+  :methods
+  {example
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Example",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :delay, :body nil}
+       {:type :delay, :body nil}
+       {:type :delay, :body nil}
+       {:type :delay, :body nil}],
+      :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+    :doc "sequence example"}}}}

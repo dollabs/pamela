@@ -1,0 +1,90 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; HTN to test more complex root-task specification
+
+(defpclass simpleplant []
+  :meta {:doc "The Simple Plant Example"}
+  :methods [(defpmethod hardwork
+              {:doc "Simulated work with a simulated failure"
+               :bounds [1 20]}
+              [time])
+            (defpmethod scp
+              {:doc "Secure network file copy"
+               :bounds [10 20]}
+              [fromfile tofile])
+            (defpmethod cp
+              {:doc "local file copy"
+               :display-name "Copy"}
+              [fromfile tofile])
+            (defpmethod shell
+              {:doc "Runs a command-line program"
+               :bounds [0 3]}
+              [cmd arg1 arg2 arg3])
+            (defpmethod python
+              {:doc "Runs a python script"}
+              [script options arg1 arg2 arg3])
+            (defpmethod stop
+              {:doc    "Stops the plant"
+               :bounds [0 1]
+               :controllable true}
+              [area])
+            ])
+
+(defpclass coverage-test [plant]
+  :modes [:local :networked]
+  :meta {:doc "Coverage Test"}
+  :methods [(defpmethod main
+              {:doc "The HTN"}
+              []
+              (soft-sequence :label :everything  :cost<= 4 :reward>= 2
+                ;; check constraints
+                (delay :bounds [3 3] :label :initial-delay :controllable false
+                  :cost<= 2 :reward>= 1)
+                (transfer :bounds [0 30] :label :xfer)
+                (work :bounds [10 40] :label :work)
+                (copy :bounds [20 50] :label :copy))
+              (between :xfer :work :bounds [13 17] :cost<= 7 :reward>= 1))
+            (defpmethod transfer
+              {:controllable true}
+              []
+              ;; NOTE: not used :exactly 2
+              (choose :cost<= 100 :reward>= 5 :min 1 :max 3
+                (choice :cost 2.0 :reward 4
+                  (plant.scp :bounds [0 9]
+                    "bigfile" "me@192.168.11.100:~me/copyofbigfile"))
+                (choice :cost 1.0 :reward 1
+                  (plant.cp :bounds [10 19]
+                    "bigfile" "copyofbigfile"))
+                (choice :cost 3.0 :reward 10
+                  (plant.shell :bounds [20 29]
+                    "ls" "-lart" ">" "foo"))))
+            (defpmethod work []
+              (slack-parallel :cost<= 11 :reward>= 6
+                (plant.hardwork :bounds [10 20]  :label :hardwork 10)
+                (plant.python :bounds [0 99] :label :python "myscript.py" "2" "3" "4" "5"))
+              (between-starts :hardwork :python :bounds [50 :infinity])
+              (between-ends :hardwork :python :bounds [0 5]))
+            (defpmethod copy []
+              (choose
+                (choice :probability 0.66 :guard (= :networked true)
+                  (plant.scp
+                    "bigfile" "me@192.168.11.100:~me/copyofbigfile"))
+                (choice :probability 0.33 :guard (= :local true)
+                  (plant.cp :cost 5 :reward 1
+                    "bigfile" "copyofbigfile"))))
+            ])
+
+(defpclass coverage-demo []
+  :fields {:sp1 (simpleplant :id "sp1" :plant-part "mypart" :interface "RMQ")
+           :run (coverage-test sp1)})

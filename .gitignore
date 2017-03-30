@@ -7,6 +7,7 @@
 /resources/public/downloads
 /test/pamela/*.txt
 /test/pamela/*.png
+/*.diff
 
 # auto generated documentation
 /doc/clj

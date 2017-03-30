@@ -65,10 +65,6 @@
               {:doc "Picture Distribution"
                :bounds [0 5]}
               [])
-            (defpmethod pre-picture-distribution
-              {:doc "Pre Picture Distribution"
-               :bounds [0 5]}
-              [])
             ])
 
 (defpclass tpn [plant]
@@ -93,7 +89,6 @@
                          (sequence
                            (plant.take-medium-res-images :bounds [0 3])
                            (plant.move-medium-res-images :bounds [0 4]))))
-                     (plant.pre-picture-distribution)
                      (parallel
                        (plant.picture-analysis-type-1 :bounds [0 6])
                        (choose
