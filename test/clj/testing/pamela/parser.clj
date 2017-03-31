@@ -18,6 +18,7 @@
             [me.raynes.fs :as fs]
             [avenir.utils :refer [and-fn]]
             [pamela.parser :refer :all]
+            [pamela.cli :refer [reset-gensym-generator]]
             [pamela.utils :refer [output-file]]))
 
 (defn fs-get-path [file & [prefix]]
@@ -28,9 +29,10 @@
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
+    (reset-gensym-generator)
     (is (= [0 0] zero-bounds))
     (let [top (fs/file (:user-dir env))
-          top-path (str (.getPath top) "/")
+          top-path (str (fs-get-path top) "/")
           pamela (fs/file top "test" "pamela")
           regression (fs/file pamela "regression")
           examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
@@ -66,6 +68,6 @@
                             (read-string (slurp specimen-ir-path))
                             {:error (str "Specimen does not exist: "
                                       specimen-ir-path)})]
-          ;; (println "BUILD" example-name "IR" example-ir-path
-          ;;   "SPECIMEN" specimen-ir-path)
+          ;; (println "BUILD" example-name "\n  RUBRIQUE" example-ir-path
+          ;;   "\n  SPECIMEN" specimen-ir-path)
           (is (= example-ir specimen-ir)))))))
