@@ -25,7 +25,6 @@
 
 (deftest testing-pamela-htn
   (testing "testing-pamela-htn"
-    (reset-gensym-generator)
     (is (= true (htn-isa? :htn-primitive-task :htn-task)))
     (let [top (fs/file (:user-dir env))
           top-path (str (fs-get-path top) "/")
@@ -42,24 +41,36 @@
       (if-not (fs/exists? regression-htn)
         (fs/mkdirs regression-htn))
       (doseq [example examples]
+        (reset-gensym-generator)
         (let [example-name (fs-file-name example)
               example-path (fs-get-path example top-path)
               regression? (string/includes? example-path "/regression/")
               root-task (slurp example-path)
-              base-name (string/replace example-name #"\.root-task$" "")
+              ;; OLD
+              ;; base-name (string/replace example-name #"\.root-task$" "")
+              [_ base-name tag] (re-find
+                                  (re-matcher
+                                    #"(.*)\.([^.]+)\.root-task"
+                                    example-name))
+              _ (println "HTN" example-name
+                  ;; "BASE-NAME" base-name
+                  "TAG" tag
+                  "regression?" regression?)
+              _ (is (not (empty? base-name)))
+              _ (is (not (empty? tag)))
               pamela-src-name (str base-name ".pamela")
               pamela-src-file (fs/file (fs/parent (fs/parent example))
                                 pamela-src-name)
               pamela-src-path (fs-get-path pamela-src-file top-path)
               file-format "edn"
-              example-htn-name (str base-name ".htn." file-format)
+              example-htn-name (str base-name "." tag ".htn." file-format)
               example-htn-file (fs/file (fs/parent example) example-htn-name)
               example-htn-path (fs-get-path example-htn-file top-path)
               example-htn (if (fs/exists? example-htn-file)
                            (read-string (slurp example-htn-path))
                            {:error (str "Rubrique does not exist: "
                                      example-htn-path)})
-              example-tpn-name (str base-name ".tpn." file-format)
+              example-tpn-name (str base-name "." tag ".tpn." file-format)
               example-tpn-file (fs/file (fs/parent example) example-tpn-name)
               example-tpn-path (fs-get-path example-tpn-file top-path)
               example-tpn (if (fs/exists? example-tpn-file)
@@ -75,14 +86,12 @@
                                  example-tpn-name)
               specimen-tpn-path (fs-get-path specimen-tpn-file top-path)
               output (fs-get-path
-                       (fs/file (fs/parent specimen-htn-file) base-name)
+                       (fs/file (fs/parent specimen-htn-file)
+                         (str base-name "." tag))
                        top-path)
               options {:input [pamela-src-path] :output output
                        :file-format file-format :root-task root-task}
-              ;; _ (println "HTN" example-name
-              ;;     ;; "regression?" regression?
-              ;;     "\n  OPTIONS" (pr-str options)
-              ;;     )
+              ;; _ (println "  OPTIONS" (pr-str options))
               exit-code (htn options)
               specimen-htn (if (fs/exists? specimen-htn-file)
                             (read-string (slurp specimen-htn-path))
@@ -92,15 +101,16 @@
                             (read-string (slurp specimen-tpn-path))
                             {:error (str "Specimen TPN does not exist: "
                                       specimen-tpn-path)})
-              [example-htn-only specimen-htn-only htn-both]
-              (diff example-htn specimen-htn)
-              [example-tpn-only specimen-tpn-only tpn-both]
-              (diff example-tpn specimen-tpn)]
+              ;; [example-htn-only specimen-htn-only htn-both]
+              ;; (diff example-htn specimen-htn)
+              ;; [example-tpn-only specimen-tpn-only tpn-both]
+              ;; (diff example-tpn specimen-tpn)
+              ]
           (is (= 0 exit-code))
-          ;; (is (= example-htn specimen-htn))
-          ;; (is (= example-tpn specimen-tpn))
-          (is (= nil example-htn-only))
-          (is (= nil specimen-htn-only))
-          (is (= nil example-tpn-only))
-          (is (= nil specimen-tpn-only))
+          (is (= example-htn specimen-htn))
+          (is (= example-tpn specimen-tpn))
+          ;; (is (= nil example-htn-only))
+          ;; (is (= nil specimen-htn-only))
+          ;; (is (= nil example-tpn-only))
+          ;; (is (= nil specimen-tpn-only))
           )))))

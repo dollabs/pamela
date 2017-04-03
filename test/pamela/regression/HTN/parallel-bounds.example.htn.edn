@@ -1,61 +1,61 @@
-{:hedge-546 {:type :edge, :uid :hedge-546, :end-node :hem-544},
- :hem-544
- {:uid :hem-544,
+{:hedge-15 {:type :edge, :uid :hedge-15, :end-node :hem-13},
+ :hem-13
+ {:uid :hem-13,
   :type :htn-expanded-method,
   :label "Example()",
   :display-name "Example",
-  :network :net-547,
-  :incidence-set #{:hedge-546},
+  :network :net-16,
+  :incidence-set #{:hedge-15},
   :edges []},
- :henpt-539
- {:uid :henpt-539,
+ :henpt-8
+ {:uid :henpt-8,
   :type :htn-expanded-nonprimitive-task,
   :label "parallel-bounds",
   :display-name "parallel-bounds",
   :incidence-set #{},
-  :edges [:hedge-546]},
- :hpt-540
+  :edges [:hedge-15]},
+ :hpt-10
  {:type :htn-primitive-task,
-  :uid :hpt-540,
+  :uid :hpt-10,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :hpt-541
+ :hpt-11
  {:type :htn-primitive-task,
-  :uid :hpt-541,
+  :uid :hpt-11,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :hpt-542
+ :hpt-12
  {:type :htn-primitive-task,
-  :uid :hpt-542,
+  :uid :hpt-12,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :hpt-543
+ :hpt-9
  {:type :htn-primitive-task,
-  :uid :hpt-543,
+  :uid :hpt-9,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :net-545
+ :net-14
  {:type :htn-network,
-  :uid :net-545,
+  :uid :net-14,
   :display-name "parallel-bounds",
   :label "parallel-bounds",
-  :rootnodes #{:henpt-539}},
- :net-547
+  :rootnodes #{:henpt-8}},
+ :net-16
  {:type :htn-network,
-  :uid :net-547,
+  :uid :net-16,
   :display-name "Example()",
   :label "Example()",
-  :rootnodes #{:hpt-542 :hpt-541 :hpt-540 :hpt-543}},
- :network :net-545}
+  :rootnodes #{:hpt-9 :hpt-10 :hpt-12 :hpt-11}},
+ :network :net-14}

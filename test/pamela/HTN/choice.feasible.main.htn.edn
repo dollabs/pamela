@@ -1,40 +1,40 @@
-{:hedge-51 {:type :edge, :uid :hedge-51, :end-node :hem-43},
- :hedge-53 {:type :edge, :uid :hedge-53, :end-node :hem-46},
- :hedge-55 {:type :edge, :uid :hedge-55, :end-node :hem-49},
- :hem-43
- {:uid :hem-43,
+{:hedge-20 {:type :edge, :uid :hedge-20, :end-node :hem-12},
+ :hedge-22 {:type :edge, :uid :hedge-22, :end-node :hem-15},
+ :hedge-24 {:type :edge, :uid :hedge-24, :end-node :hem-18},
+ :hem-12
+ {:uid :hem-12,
   :type :htn-expanded-method,
   :label "Main-0()",
   :display-name "Main-0",
-  :network :net-52,
-  :incidence-set #{:hedge-51},
+  :network :net-21,
+  :incidence-set #{:hedge-20},
   :edges []},
- :hem-46
- {:uid :hem-46,
+ :hem-15
+ {:uid :hem-15,
   :type :htn-expanded-method,
   :label "Main-1()",
   :display-name "Main-1",
-  :network :net-54,
-  :incidence-set #{:hedge-53},
+  :network :net-23,
+  :incidence-set #{:hedge-22},
   :edges []},
- :hem-49
- {:uid :hem-49,
+ :hem-18
+ {:uid :hem-18,
   :type :htn-expanded-method,
   :label "Main-2()",
   :display-name "Main-2",
-  :network :net-56,
-  :incidence-set #{:hedge-55},
+  :network :net-25,
+  :incidence-set #{:hedge-24},
   :edges []},
- :henpt-40
- {:uid :henpt-40,
+ :henpt-9
+ {:uid :henpt-9,
   :type :htn-expanded-nonprimitive-task,
   :label "choice-feasible",
   :display-name "choice-feasible",
   :incidence-set #{},
-  :edges [:hedge-51 :hedge-53 :hedge-55]},
- :hpt-41
+  :edges [:hedge-20 :hedge-22 :hedge-24]},
+ :hpt-10
  {:type :htn-primitive-task,
-  :uid :hpt-41,
+  :uid :hpt-10,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -42,9 +42,9 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :hpt-44
+ :hpt-13
  {:type :htn-primitive-task,
-  :uid :hpt-44,
+  :uid :hpt-13,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -52,9 +52,9 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :hpt-47
+ :hpt-16
  {:type :htn-primitive-task,
-  :uid :hpt-47,
+  :uid :hpt-16,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -62,28 +62,28 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :net-50
+ :net-19
  {:type :htn-network,
-  :uid :net-50,
+  :uid :net-19,
   :display-name "choice-feasible",
   :label "choice-feasible",
-  :rootnodes #{:henpt-40}},
- :net-52
+  :rootnodes #{:henpt-9}},
+ :net-21
  {:type :htn-network,
-  :uid :net-52,
+  :uid :net-21,
   :display-name "Main-0()",
   :label "Main-0()",
-  :rootnodes #{:hpt-41}},
- :net-54
+  :rootnodes #{:hpt-10}},
+ :net-23
  {:type :htn-network,
-  :uid :net-54,
+  :uid :net-23,
   :display-name "Main-1()",
   :label "Main-1()",
-  :rootnodes #{:hpt-44}},
- :net-56
+  :rootnodes #{:hpt-13}},
+ :net-25
  {:type :htn-network,
-  :uid :net-56,
+  :uid :net-25,
   :display-name "Main-2()",
   :label "Main-2()",
-  :rootnodes #{:hpt-47}},
- :network :net-50}
+  :rootnodes #{:hpt-16}},
+ :network :net-19}

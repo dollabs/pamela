@@ -1,83 +1,83 @@
-{:hedge-307 {:type :edge, :uid :hedge-307, :end-node :hem-301},
- :hedge-309 {:type :edge, :uid :hedge-309, :end-node :hem-303},
- :hedge-311 {:type :edge, :uid :hedge-311, :end-node :hem-305},
- :hem-301
- {:uid :hem-301,
+{:hedge-17 {:type :edge, :uid :hedge-17, :end-node :hem-11},
+ :hedge-19 {:type :edge, :uid :hedge-19, :end-node :hem-13},
+ :hedge-21 {:type :edge, :uid :hedge-21, :end-node :hem-15},
+ :hem-11
+ {:uid :hem-11,
   :type :htn-expanded-method,
   :label "Example-0()",
   :display-name "Example-0",
-  :network :net-308,
-  :incidence-set #{:hedge-307},
+  :network :net-18,
+  :incidence-set #{:hedge-17},
   :edges []},
- :hem-303
- {:uid :hem-303,
+ :hem-13
+ {:uid :hem-13,
   :type :htn-expanded-method,
   :label "Example-1()",
   :display-name "Example-1",
-  :network :net-310,
-  :incidence-set #{:hedge-309},
+  :network :net-20,
+  :incidence-set #{:hedge-19},
   :edges []},
- :hem-305
- {:uid :hem-305,
+ :hem-15
+ {:uid :hem-15,
   :type :htn-expanded-method,
   :label "Example-2()",
   :display-name "Example-2",
-  :network :net-312,
-  :incidence-set #{:hedge-311},
+  :network :net-22,
+  :incidence-set #{:hedge-21},
   :edges []},
- :henpt-299
- {:uid :henpt-299,
+ :henpt-9
+ {:uid :henpt-9,
   :type :htn-expanded-nonprimitive-task,
-  :label "choose-time",
-  :display-name "choose-time",
+  :label "choose-probability",
+  :display-name "choose-probability",
   :incidence-set #{},
-  :edges [:hedge-307 :hedge-309 :hedge-311]},
- :hpt-300
+  :edges [:hedge-17 :hedge-19 :hedge-21]},
+ :hpt-10
  {:type :htn-primitive-task,
-  :uid :hpt-300,
+  :uid :hpt-10,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :hpt-302
+ :hpt-12
  {:type :htn-primitive-task,
-  :uid :hpt-302,
+  :uid :hpt-12,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :hpt-304
+ :hpt-14
  {:type :htn-primitive-task,
-  :uid :hpt-304,
+  :uid :hpt-14,
   :name "delay",
   :display-name "Delay",
   :incidence-set #{},
   :edges [],
   :label "TEMP-delay"},
- :net-306
+ :net-16
  {:type :htn-network,
-  :uid :net-306,
-  :display-name "choose-time",
-  :label "choose-time",
-  :rootnodes #{:henpt-299}},
- :net-308
+  :uid :net-16,
+  :display-name "choose-probability",
+  :label "choose-probability",
+  :rootnodes #{:henpt-9}},
+ :net-18
  {:type :htn-network,
-  :uid :net-308,
+  :uid :net-18,
   :display-name "Example-0()",
   :label "Example-0()",
-  :rootnodes #{:hpt-300}},
- :net-310
+  :rootnodes #{:hpt-10}},
+ :net-20
  {:type :htn-network,
-  :uid :net-310,
+  :uid :net-20,
   :display-name "Example-1()",
   :label "Example-1()",
-  :rootnodes #{:hpt-302}},
- :net-312
+  :rootnodes #{:hpt-12}},
+ :net-22
  {:type :htn-network,
-  :uid :net-312,
+  :uid :net-22,
   :display-name "Example-2()",
   :label "Example-2()",
-  :rootnodes #{:hpt-304}},
- :network :net-306}
+  :rootnodes #{:hpt-14}},
+ :network :net-16}

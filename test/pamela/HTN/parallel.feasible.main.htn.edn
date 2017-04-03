@@ -1,22 +1,22 @@
-{:hedge-111 {:type :edge, :uid :hedge-111, :end-node :hem-109},
- :hem-109
- {:uid :hem-109,
+{:hedge-16 {:type :edge, :uid :hedge-16, :end-node :hem-14},
+ :hem-14
+ {:uid :hem-14,
   :type :htn-expanded-method,
   :label "Main()",
   :display-name "Main",
-  :network :net-112,
-  :incidence-set #{:hedge-111},
+  :network :net-17,
+  :incidence-set #{:hedge-16},
   :edges []},
- :henpt-102
- {:uid :henpt-102,
+ :henpt-7
+ {:uid :henpt-7,
   :type :htn-expanded-nonprimitive-task,
   :label "parallel-feasible",
   :display-name "parallel-feasible",
   :incidence-set #{},
-  :edges [:hedge-111]},
- :hpt-103
+  :edges [:hedge-16]},
+ :hpt-10
  {:type :htn-primitive-task,
-  :uid :hpt-103,
+  :uid :hpt-10,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -24,9 +24,9 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :hpt-105
+ :hpt-12
  {:type :htn-primitive-task,
-  :uid :hpt-105,
+  :uid :hpt-12,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -34,9 +34,9 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :hpt-107
+ :hpt-8
  {:type :htn-primitive-task,
-  :uid :hpt-107,
+  :uid :hpt-8,
   :name "option",
   :incidence-set #{},
   :edges [],
@@ -44,16 +44,16 @@
   :display-name "Option",
   :args [],
   :argsmap {}},
- :net-110
+ :net-15
  {:type :htn-network,
-  :uid :net-110,
+  :uid :net-15,
   :display-name "parallel-feasible",
   :label "parallel-feasible",
-  :rootnodes #{:henpt-102}},
- :net-112
+  :rootnodes #{:henpt-7}},
+ :net-17
  {:type :htn-network,
-  :uid :net-112,
+  :uid :net-17,
   :display-name "Main()",
   :label "Main()",
-  :rootnodes #{:hpt-105 :hpt-103 :hpt-107}},
- :network :net-110}
+  :rootnodes #{:hpt-10 :hpt-8 :hpt-12}},
+ :network :net-15}

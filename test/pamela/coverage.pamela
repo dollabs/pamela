@@ -47,7 +47,7 @@
   :methods [(defpmethod main
               {:doc "The HTN"}
               []
-              (soft-sequence :label :everything  :cost<= 4 :reward>= 2
+              (sequence :label :everything  :cost<= 4 :reward>= 2
                 ;; check constraints
                 (delay :bounds [3 3] :label :initial-delay :controllable false
                   :cost<= 2 :reward>= 1)
@@ -70,7 +70,7 @@
                   (plant.shell :bounds [20 29]
                     "ls" "-lart" ">" "foo"))))
             (defpmethod work []
-              (slack-parallel :cost<= 11 :reward>= 6
+              (parallel :cost<= 11 :reward>= 6
                 (plant.hardwork :bounds [10 20]  :label :hardwork 10)
                 (plant.python :bounds [0 99] :label :python "myscript.py" "2" "3" "4" "5"))
               (between-starts :hardwork :python :bounds [50 :infinity])
