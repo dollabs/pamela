@@ -17,11 +17,11 @@ augmented through machine learning.
 ## PAMELA source
 
 PAMELA source code is saved in files with the extension `.pamela`
-(by convention). The "flavour" of the syntax corresponds to that
+(by convention). The "flavor" of the syntax corresponds to that
 of Clojure - a modern LISP.
 
 PAMELA classes may be read from a file, from standard input, from
-a string, retrieved from the model database or enterted in
+a string, retrieved from the model database or entered in
 the Clojure REPL.
 
 ## PAMELA language
@@ -81,7 +81,7 @@ with the following entries:
 * **:version** version string. Typically PAMELA models are versioned using the [semantic versioning](http://semver.org/) scheme.
 * **:icon** pathname to file for an icon representing this *pclass*
 * **:depends** The *pclasses* that this *pclass* depends upon. This is a vector of vectors expressing each dependency.
-** **[dependent-pclass "dependent-version"]** a dependency is expressed as a vector with the symbol for the dependent-pclass and the string corresponding the the dependent-version of that *pclass*. If a dependent *pclass* has not been declared prior to evaluting this **defpclass** an exception will be thrown.
+** **[dependent-pclass "dependent-version"]** a dependency is expressed as a vector with the symbol for the dependent-pclass and the string corresponding the the dependent-version of that *pclass*. If a dependent *pclass* has not been declared prior to evaluating this **defpclass** an exception will be thrown.
 
 
 #### :inherit
@@ -121,11 +121,11 @@ Options to a *pclass* constructor may include:
 
 Each *pclass* instance is always in one of a set of enumerated modes.
 
-An *enumeration-pclass* is one which define's its possible modes
+An *enumeration-pclass* is one which defines its possible modes
 simply with a vector of keywords.
 
 Most *pclasses* define modes as a map with a keyword entry
-for each mode and a value represending the *mode condition*.
+for each mode and a value representing the *mode condition*.
 
 A *mode-condition* is a conditional expression when is evaluated
 to true means that the given mode is possible for this *pclass*
@@ -165,6 +165,7 @@ to be defined.
 
 Then there is an optional conditions map which may contain any
 of the following keys:
+
 * **:doc** The documentation string for this method
 * **:pre** The precondition for running this method (see [conditional expressions](#conditional-expressions))
 * **:post** The postcondition for running this method (see [conditional expressions](#conditional-expressions))
@@ -172,19 +173,24 @@ of the following keys:
 * **:cost** The cost of this function (number)
 * **:reward** The reward of this function (number)
 * **:controllable** By default methods are not controllable (except for the built-in **delay**). This field may be set to true to indicate the method is controllable by the planner (boolean).
+* **:primitive** By default, methods without a body are assumed to be primitive (where the implementation is defined by the plant), and methods with a body are non-primitive.  This provides an override: when `true`, the body is assumed to be documentation for the method behavior, that may be used for higher-level reasoning.
+* **:display-name** This specifies the name of this method that is displayed to the user (e.g., in PlanViz).  If not specified, the `:display-name` is assumed to be a Title Case version of the method name symbol, with the hyphens converted to spaces (e.g., `"Turn On"`).
 
-Then there is a vector formal arguments to the method (which may be empty).
+Then, there is a vector of zero or more formal arguments to the method.
 
 The next form is the function which comprises the body of the method.
 If the body is empty then this is considered a *primitive method* which
-is implmented by the plant.
+is implemented by the plant.
 
-Following the function form there may be zero or more between statements.
-* *TBD*
+Lastly, following the function form of the method, there may be zero or more `between` statements.
+
+<!--* *TBD*
 * all not controllable by default, except delay
 
-
+-->
 #### :transitions
+
+This (optional) section, provides the specifications of the mode transitions for the modes defined within this `defpclass`.
 
 
 ### bounds
@@ -197,6 +203,7 @@ may be the keyword **:infinity** to indicate there is no upper bound.
 The special case of bounds `[0 :infinity]` is considered to be the
 *default bounds* as there is no lower bound nor upper bound.
 
+<!--
 ### conditions
 
 mode conditions
@@ -205,12 +212,12 @@ defpmethod pre, post conditions
 conditional expressions inside defpmethod's
 
 ### functions
-
+-->
 ## NOTES...
 
 * pclass
- * A pclass may, optionally, be given an :id to identify this instance
-   (the :id is unset if not explicitly given)
+ * A pclass may, optionally, be given an `:id` to identify this instance
+   (the `:id` is assumed to be "plant" if not explicitly given)
 
 * modes
  * Modes may be a simple enum
@@ -221,7 +228,7 @@ conditional expressions inside defpmethod's
 * choice
   * guard conditions may be specified to indicate a choice is to be considered
   * probability may be given to indicate the non-deterministic preference
-    for a choice. If some choice conditions have guards that are not satisified
+    for a choice. If some choice conditions have guards that are not satisfied
     the probabilities are renormalized among the enabled choices prior to making
     a non-deterministic decision.
 
