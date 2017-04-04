@@ -213,24 +213,23 @@
             :betweens []
             :primitive false
             :display-name (display-name-string method)
-            :body nil}
-         args-seen? false
-         a (first args)
-         more (rest args)]
-    ;; (println "method" method)
-    ;; (println "args" args)
-    (if-not a
-      {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
-      (let [[args-seen? m] (if (not args-seen?)
-                             (if (map? a)
-                               [false (merge m a)] ;; merge in cond-map
-                               [0 (assoc m :args a)]) ;; merge in :args
-                             (if (zero? args-seen?) ;; fn
-                               [1 (assoc m :body
-                                    (if (vector? a) a [a]))]
-                               [(inc args-seen?) (update-in m [:betweens]
-                                                   conj a)]))]
-        (recur m args-seen? (first more) (rest more))))))
+            :body nil}]
+    ;; (println "defpmethod" method)
+    (loop [m m args-seen? false a (first args) more (rest args)]
+      (if-not a
+        {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
+        (let [[args-seen? m] (if (not args-seen?)
+                               (if (map? a)
+                                 [false (merge m a)] ;; merge in cond-map
+                                 [0 (assoc m :args a)]) ;; merge in :args
+                               (if (zero? args-seen?) ;; fn
+                                 [1 (assoc m :body
+                                      (if (vector? a) a [a]))]
+                                 [(inc args-seen?) (update-in m [:betweens]
+                                                     conj a)]))]
+          ;; (println "  args-seen?" args-seen? "M"
+          ;;   (with-out-str (pprint (dissoc m :body))))
+          (recur m args-seen? (first more) (rest more)))))))
 
 (defn ir-bounds-literal [lb ub]
   [lb (if (= ub [:INFINITY]) :infinity ub)])

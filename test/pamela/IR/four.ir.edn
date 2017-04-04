@@ -1,0 +1,9 @@
+{four
+ {:type :pclass,
+  :args [],
+  :meta
+  {:version "0.2.0",
+   :doc "Forth",
+   :depends {one "0.2.0", three "0.2.0"}},
+  :modes
+  {:g {:type :literal, :value true}, :i {:type :literal, :value true}}}}

@@ -18,97 +18,56 @@
             [me.raynes.fs :as fs]
             [avenir.utils :refer [and-fn]]
             [pamela.parser :refer :all]
+            [pamela.cli :refer [reset-gensym-generator]]
             [pamela.utils :refer [output-file]]))
+
+(defn fs-get-path [file & [prefix]]
+  (let [path (.getPath file)]
+    (if prefix
+      (string/replace path prefix "")
+      path)))
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
     (is (= [0 0] zero-bounds))
-    (let [choice-pamela "test/pamela/choice.pamela"
-          choice-ir '{plant
-                      {:type :pclass,
-                       :args [],
-                       :meta {:doc "The Plant API"},
-                       :methods
-                       {bounded
-                        {:args [],
-                         :pre {:type :literal, :value true},
-                         :temporal-constraints [{:type :bounds, :value [1 5]}],
-                         :reward 0,
-                         :controllable false,
-                         :primitive true,
-                         :display-name "Bounded",
-                         :betweens [],
-                         :post {:type :literal, :value true},
-                         :cost 0,
-                         :body nil,
-                         :doc "Bounded"},
-                        unbounded
-                        {:args [],
-                         :pre {:type :literal, :value true},
-                         :temporal-constraints
-                         [{:type :bounds, :value [0 :infinity]}],
-                         :reward 0,
-                         :controllable false,
-                         :primitive true,
-                         :betweens [],
-                         :display-name "Unbounded",
-                         :post {:type :literal, :value true},
-                         :cost 0,
-                         :body nil,
-                         :doc "Unbounded"}}},
-                      choice-tpn
-                      {:type :pclass,
-                       :args [plant],
-                       :meta {:doc "Simple Choice with 2 Activities"},
-                       :methods
-                       {simple-choice-tpn
-                        {:args [],
-                         :pre {:type :literal, :value true},
-                         :temporal-constraints
-                         [{:type :bounds, :value [0 :infinity]}],
-                         :reward 0,
-                         :controllable false,
-                         :primitive false,
-                         :betweens [],
-                         :display-name "Simple Choice Tpn",
-                         :post {:type :literal, :value true},
-                         :cost 0,
-                         :body
-                         [{:type :choose,
-                           :body
-                           [{:type :choice,
-                             :body
-                             [{:type :plant-fn-symbol,
-                               :name plant,
-                               :method bounded,
-                               :args []}]}
-                            {:type :choice,
-                             :body
-                             [{:type :plant-fn-symbol,
-                               :name plant,
-                               :method unbounded,
-                               :args []}]}]}],
-                         :doc "Simple Choice TPN"}}}}]
-      (is (= choice-ir
-            (parse {:input [choice-pamela] :output "-"}))))
-    (let [top (:user-dir env)
-          regression (fs/file top "test" "pamela" "regression")
+    (let [top (fs/file (:user-dir env))
+          top-path (str (fs-get-path top) "/")
+          pamela (fs/file top "test" "pamela")
+          regression (fs/file pamela "regression")
           examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
-                     (fs/list-dir regression))
-          tmpdir (fs/file top "target" "regression")]
-      (if-not (fs/exists? tmpdir)
-        (fs/mkdirs tmpdir))
+                     (concat
+                       (sort-by fs/base-name (fs/list-dir pamela))
+                       (sort-by fs/base-name (fs/list-dir regression))))
+          pamela-ir (fs/file top "target" "parser" "IR")
+          regression-ir (fs/file top "target" "parser" "regression" "IR")]
+      (if-not (fs/exists? pamela-ir)
+        (fs/mkdirs pamela-ir))
+      (if-not (fs/exists? regression-ir)
+        (fs/mkdirs regression-ir))
       (doseq [example examples]
+        (reset-gensym-generator)
         (let [example-name (fs-file-name example)
-              output (str tmpdir "/"
-                       (string/replace example-name
-                         #"\.pamela$" ".ir.edn"))
-              options {:input [example]}
-              ir (parse options)
-              success? (nil? (:error ir))]
-          (output-file output
-            (if success? "edn" "string")
-            (if success? ir (:error ir)))
-          (if-not success?
-            (println "ERROR in" output))
-          (is success?))))))
+              example-path (fs-get-path example)
+              regression? (string/includes? example-path "/regression/")
+              example-ir-name (string/replace example-name
+                                #"\.pamela$" ".ir.edn")
+              example-ir-file (fs/file (fs/parent example) "IR" example-ir-name)
+              example-ir-path (fs-get-path example-ir-file top-path)
+              example-ir (if (fs/exists? example-ir-file)
+                           (read-string (slurp example-ir-path))
+                           {:error (str "Rubrique does not exist: "
+                                     example-ir-path)})
+              specimen-ir-file (fs/file
+                                 (if regression? regression-ir pamela-ir)
+                                 example-ir-name)
+              specimen-ir-path (fs-get-path specimen-ir-file top-path)
+              options {:input [example-path]}
+              specimen-ir (parse options)
+              _ (output-file specimen-ir-path "edn" specimen-ir) ;; will sort
+              specimen-ir (if (fs/exists? specimen-ir-file)
+                            (read-string (slurp specimen-ir-path))
+                            {:error (str "Specimen does not exist: "
+                                      specimen-ir-path)})]
+          ;; (println "BUILD" example-name "\n  RUBRIQUE" example-ir-path
+          ;;   "\n  SPECIMEN" specimen-ir-path)
+          (is (= example-ir specimen-ir)))))))

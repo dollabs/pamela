@@ -1,0 +1,30 @@
+{unless-always
+ {:type :pclass,
+  :args [],
+  :meta {:version "0.2.0", :doc "unless example with no time bounds"},
+  :fields
+  {:a
+   {:access :private,
+    :observable false,
+    :initial {:type :lvar, :name :gensym}}},
+  :methods
+  {always-on
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Always On",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :unless,
+      :body [{:type :delay, :body nil}],
+      :condition
+      {:type :equal,
+       :args
+       [{:type :field-reference, :pclass this, :field :a}
+        {:type :literal, :value 1.0}]}}],
+    :doc "ensure field :a is always 1.0"}}}}

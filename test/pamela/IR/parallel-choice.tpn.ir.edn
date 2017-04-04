@@ -1,0 +1,47 @@
+{parallel-choice-tpn
+ {:type :pclass,
+  :args [plant],
+  :meta
+  {:version "0.2.0",
+   :depends {plant "0.2.0"},
+   :doc "Parallel and Choice, each with 2 Activities"},
+  :methods
+  {simple-parallel-tpn
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Simple Parallel Tpn",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}
+       {:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method bounded,
+            :args []}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method unbounded,
+            :args []}]}]}]}],
+    :doc "Simple Parallel TPN"}}}}

@@ -1,0 +1,285 @@
+{choose-sequence-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :choose,
+      :body
+      [{:type :choice,
+        :body
+        [{:type :sequence,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method bounded,
+            :args []}
+           {:type :plant-fn-symbol,
+            :name plant,
+            :method unbounded,
+            :args []}]}]}
+       {:type :choice,
+        :body
+        [{:type :sequence,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method bounded,
+            :args []}
+           {:type :plant-fn-symbol,
+            :name plant,
+            :method unbounded,
+            :args []}]}]}]}]}}},
+ double-parallel-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :parallel,
+      :body
+      [{:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}
+       {:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}]}]}}},
+ parallel-sequence2-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :parallel,
+      :body
+      [{:type :sequence,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}
+       {:type :sequence,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}]}]}}},
+ plant
+ {:type :pclass,
+  :args [],
+  :meta {:doc "The Plant API"},
+  :methods
+  {bounded
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [1 5]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Bounded",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Bounded"},
+   unbounded
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Unbounded",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil,
+    :doc "Unbounded"}}},
+ sequence-choose-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method bounded,
+            :args []}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method unbounded,
+            :args []}]}]}
+       {:type :choose,
+        :body
+        [{:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method bounded,
+            :args []}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-symbol,
+            :name plant,
+            :method unbounded,
+            :args []}]}]}]}]}}},
+ sequence-parallel1-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :plant-fn-symbol, :name plant, :method bounded, :args []}
+       {:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}]}]}}},
+ sequence-parallel2-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}
+       {:type :parallel,
+        :body
+        [{:type :plant-fn-symbol,
+          :name plant,
+          :method bounded,
+          :args []}
+         {:type :plant-fn-symbol,
+          :name plant,
+          :method unbounded,
+          :args []}]}]}]}}},
+ single-parallel-htn
+ {:type :pclass,
+  :args [plant],
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :parallel,
+      :body
+      [{:type :plant-fn-symbol, :name plant, :method bounded, :args []}
+       {:type :plant-fn-symbol,
+        :name plant,
+        :method unbounded,
+        :args []}]}]}}}}

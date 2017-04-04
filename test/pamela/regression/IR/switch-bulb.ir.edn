@@ -1,0 +1,130 @@
+{main
+ {:type :pclass,
+  :args [],
+  :meta {:doc "An example circuit: power switch and light bulb"},
+  :fields
+  {:switchedpower
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass psw,
+     :args [],
+     :id "switchedcircuit",
+     :plant-part "psw1"}}},
+  :methods
+  {turn-on-switch
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Turn On Switch",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :plant-fn-field,
+      :field :switchedpower,
+      :method turn_on,
+      :args []}]},
+   turn-off-switch
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Turn Off Switch",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :plant-fn-field,
+      :method turn_off,
+      :args [],
+      :field :switchedpower}]},
+   toggle-switch
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Toggle Switch",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :plant-fn-symbol,
+        :name this,
+        :method turn-on-switch,
+        :args []}
+       {:type :delay,
+        :body nil,
+        :temporal-constraints [{:type :bounds, :value [10 10]}]}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method turn-off-switch,
+        :args []}
+       {:type :delay,
+        :body nil,
+        :temporal-constraints [{:type :bounds, :value [10 10]}]}]}]},
+   demo
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Demo",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :sequence,
+      :body
+      [{:type :plant-fn-symbol,
+        :name this,
+        :method toggle-switch,
+        :args []}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method toggle-switch,
+        :args []}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method toggle-switch,
+        :args []}]}]}}},
+ psw
+ {:type :pclass,
+  :args [],
+  :meta {:doc "A power switch"},
+  :methods
+  {turn_on
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Turn On",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil},
+   turn_off
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Turn Off",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil}}}}

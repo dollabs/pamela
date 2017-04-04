@@ -1,0 +1,48 @@
+{parallel-feasible
+ {:type :pclass,
+  :args [],
+  :meta {:doc "A feasible choice to be chewed by contraint solver"},
+  :methods
+  {main
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive false,
+    :betweens [],
+    :display-name "Main",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body
+    [{:type :parallel,
+      :body
+      [{:type :plant-fn-symbol,
+        :name this,
+        :method option,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [55 65]}]}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method option,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [65 75]}]}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method option,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [75 85]}]}],
+      :temporal-constraints [{:type :bounds, :value [50 100]}]}],
+    :doc "Entry point"},
+   option
+   {:args [],
+    :pre {:type :literal, :value true},
+    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+    :reward 0,
+    :controllable false,
+    :primitive true,
+    :betweens [],
+    :display-name "Option",
+    :post {:type :literal, :value true},
+    :cost 0,
+    :body nil}}}}
