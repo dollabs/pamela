@@ -45,67 +45,31 @@
     :body
     [{:type :sequence,
       :body
-      [{:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :delay,
-            :body nil,
-            :temporal-constraints [{:type :bounds, :value [3 3]}],
-            :label :initial-delay,
-            :controllable false,
-            :cost<= 2,
-            :reward>= 1}]}]}
-       {:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :plant-fn-symbol,
-            :name this,
-            :method transfer,
-            :args [],
-            :temporal-constraints [{:type :bounds, :value [0 30]}],
-            :label :xfer}]}]}
-       {:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :plant-fn-symbol,
-            :name this,
-            :method work,
-            :args [],
-            :temporal-constraints [{:type :bounds, :value [10 40]}],
-            :label :work}]}]}
-       {:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :plant-fn-symbol,
-            :name this,
-            :method copy,
-            :args [],
-            :temporal-constraints [{:type :bounds, :value [20 50]}],
-            :label :copy}]}]}],
+      [{:type :delay,
+        :body nil,
+        :temporal-constraints [{:type :bounds, :value [3 3]}],
+        :label :initial-delay,
+        :controllable false,
+        :cost<= 2,
+        :reward>= 1}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method transfer,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [0 30]}],
+        :label :xfer}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method work,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [10 40]}],
+        :label :work}
+       {:type :plant-fn-symbol,
+        :name this,
+        :method copy,
+        :args [],
+        :temporal-constraints [{:type :bounds, :value [20 50]}],
+        :label :copy}],
       :label :everything,
       :cost<= 4,
       :reward>= 2}],
@@ -177,38 +141,18 @@
     :body
     [{:type :parallel,
       :body
-      [{:type :sequence,
-        :body
-        [{:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method hardwork,
-          :args [10],
-          :temporal-constraints [{:type :bounds, :value [10 20]}],
-          :label :hardwork}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}]}
-       {:type :sequence,
-        :body
-        [{:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method python,
-          :args ["myscript.py" "2" "3" "4" "5"],
-          :temporal-constraints [{:type :bounds, :value [0 99]}],
-          :label :python}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}]}],
+      [{:type :plant-fn-symbol,
+        :name plant,
+        :method hardwork,
+        :args [10],
+        :temporal-constraints [{:type :bounds, :value [10 20]}],
+        :label :hardwork}
+       {:type :plant-fn-symbol,
+        :name plant,
+        :method python,
+        :args ["myscript.py" "2" "3" "4" "5"],
+        :temporal-constraints [{:type :bounds, :value [0 99]}],
+        :label :python}],
       :cost<= 11,
       :reward>= 6}]},
    copy

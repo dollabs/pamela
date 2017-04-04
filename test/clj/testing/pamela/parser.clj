@@ -29,7 +29,6 @@
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
-    (reset-gensym-generator)
     (is (= [0 0] zero-bounds))
     (let [top (fs/file (:user-dir env))
           top-path (str (fs-get-path top) "/")
@@ -46,6 +45,7 @@
       (if-not (fs/exists? regression-ir)
         (fs/mkdirs regression-ir))
       (doseq [example examples]
+        (reset-gensym-generator)
         (let [example-name (fs-file-name example)
               example-path (fs-get-path example)
               regression? (string/includes? example-path "/regression/")
