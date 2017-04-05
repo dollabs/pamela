@@ -713,28 +713,48 @@
          more (if (vector? mbody) (rest mbody))]
     (if (or (:error vmbody) (not b))
       vmbody
-      (let [{:keys [type name method condition body]} b
+      (let [{:keys [type name method args condition body]} b
             [b error] (cond
                         (and (= type :plant-fn-symbol) (= name 'this))
-                        (if (nil? (get methods method))
-                          [nil (str "method " method " used in method " in-method
-                                 " is not defined in the pclass " pclass)]
-                          [b nil])
+                        (let [m (get methods method)
+                              margs (:args m)]
+                          (if (nil? m)
+                            [nil (str "method " method " used in method " in-method
+                                   " is not defined in the pclass " pclass)]
+                            (if (not= (count args) (count margs))
+                              [nil (str "arity mismatch: method " method " takes "
+                                     (count margs) " args: " margs
+                                     ", but is called in method " in-method
+                                     " with " (count args) " args: " args)]
+                              [b nil])))
                         (and (= type :plant-fn-symbol)
                           (or
                             (some #(= name %)
                               (get-in methods [in-method :args]))
                             (some #(= name %)
                               (get-in ir [pclass :args]))))
+                        ;; NOTE: at this point of building the IR we do not yet
+                        ;; have a root-task and cannot check for arity match
                         [b nil]
                         (and (= type :plant-fn-symbol)
                           (some #(= (keyword name) %)
                             (keys fields)))
                         ;; interpret name as a field reference
-                        [(assoc (dissoc b :name)
-                           :type :plant-fn-field
-                           :field (keyword name))
-                         nil]
+                        (let [field (keyword name)
+                              pclass-ctor_ (get-in fields [field :initial])
+                              {:keys [type pclass]} pclass-ctor_
+                              m (if (= type :pclass-ctor)
+                                  (get-in ir [pclass :methods method]))
+                              margs (:args m)]
+                          (if (not= (count args) (count margs))
+                            [nil (str "arity mismatch: method " method " takes "
+                                   (count margs) " args: " margs
+                                   ", but is called in method " in-method
+                                   " with " (count args) " args: " args)]
+                            [(assoc (dissoc b :name)
+                               :type :plant-fn-field
+                               :field field)
+                             nil]))
                         (= type :plant-fn-symbol)
                         [nil (str "plant " name " used in method " in-method
                                " is not defined in the pclass " pclass)]

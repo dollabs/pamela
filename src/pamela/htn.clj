@@ -301,7 +301,10 @@
                                           (first (filter #(= (:param %) name) pargs)))
                              henpt-irks (:irks henpt)
                              caller_ (get-in ir henpt-irks)
-                             caller-pclass (first henpt-irks)]
+                             caller-pclass (first henpt-irks)
+                             ;; following used for this.method dereferencing
+                             [_ parent-subtask_ parent-hem parent-henpt] ancestry-path
+                             parent-hem-pclass (get-in parent-hem [:irks 0])]
                          (dbg-println :trace "RPC name" name
                            "method-arg" method-arg
                            "pclass-arg" pclass-arg
@@ -312,8 +315,9 @@
                              (if (= (:type caller_) :plant-fn-field)
                                (get-in ir [caller-pclass :fields (:field caller_) :initial]))
                              (if (= name 'this)
-                               (if (and (not henpt-irks)
-                                     (empty? (get-in ir [pclass :args])))
+                               (if (and (empty? (get-in ir [pclass :args]))
+                                     (or (nil? parent-hem-pclass)
+                                       (not henpt-irks)))
                                  ;; here we assume we need to initialize this
                                  ;; zero argument plant
                                  {:type :pclass-ctor,
@@ -321,9 +325,7 @@
                                   :args []}
                                  ;; else use the ancestry-path to
                                  ;; resolve the pclass of the caller
-                                 (let [[_ parent-subtask_ parent-hem parent-henpt] ancestry-path
-                                       parent-hem-pclass (get-in parent-hem [:irks 0])
-                                       _ (dbg-println :debug "RPC Recursing on ancestry-path"
+                                 (let [_ (dbg-println :debug "RPC Recursing on ancestry-path"
                                            (mapv #(list (:uid %) (or (:label %) (:name %)))
                                              ancestry-path))
                                        _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
