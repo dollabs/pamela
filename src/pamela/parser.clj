@@ -781,7 +781,7 @@
         (recur vmbody (first more) (rest more))))))
 
 ;; return Validated args or {:error "message"}
-(defn validate-pclass-ctor-args [ir scope-pclass fields pclass args]
+(defn validate-pclass-ctor-args [ir scope-pclass field fields pclass args]
   (loop [vargs [] a (first args) more (rest args)]
     (if (or (not a) (:error vargs))
       vargs
@@ -794,11 +794,12 @@
                 (if (symbol? a)
                   ;; is it a formal arg to scope-pclass?
                   (if (or (some #(= a %) (get-in ir [scope-pclass :args]))
-                        (get fields (keyword a))) ;; this is a field
+                        (and (get fields (keyword a))
+                          (not= (keyword a) field))) ;; this is another field
                     a
                     {:error (str "Symbol argument to pclass constructor "
                               a " is neither a formal argument to, "
-                              "nor a field of the pclass " scope-pclass)})
+                              "nor another field of the pclass " scope-pclass)})
                   a))
             vargs (if (and (map? a) (:error a))
                     a
@@ -814,14 +815,22 @@
         (let [[field val] field-val
               {:keys [access observable initial]} val
               scope-pclass pclass
-              {:keys [type pclass args]} initial
+              {:keys [type pclass args name]} initial
               args (if (and (= type :pclass-ctor) args)
-                     (validate-pclass-ctor-args ir scope-pclass fields
-                       pclass args)
+                     (validate-pclass-ctor-args ir scope-pclass field
+                       fields pclass args)
                      args)
               val (if (and (map? args) (:error args))
                     args
-                    val)
+                    (if (and (= type :arg-reference) (symbol? name))
+                      (if (or (some #(= name %) (get-in ir [scope-pclass :args]))
+                            (and (get fields (keyword name))
+                              (not= (keyword name) field))) ;; another field
+                        val
+                        {:error (str "Symbol argument to " field " field initializer "
+                              name " is neither a formal argument to, "
+                              "nor another field of the pclass " scope-pclass)})
+                      val))
               vfields (if (and (map? val) (:error val))
                        val
                        (assoc vfields field val))]
