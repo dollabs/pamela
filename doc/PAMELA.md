@@ -133,18 +133,25 @@ instance. Certain modes (e.g. failure modes or enumerations)
 may have the trivial condition expression true which means that
 being in the given mode is always possible.
 
-##### conditional expressions
+##### <a name="conditional-expressions"></a>conditional expressions
 
 A conditional expression may be comprised, recursively, of the following:
+
 * `(and a b c...)`
 * `(or a b c...)`
 * `(implies a b c...)`
 * `(not a)`
-* `(= d e)`. Each operand is disambiguated based on type as follows:
-  * operand is a keyword: first it is checked to see if the keyword is a field name. If so the field reference is made explicit with `(:fieldname this)`.
-  * If the operand is a keyword, but not a field name and is a mode name then the mode reference is made explicit with `(mode-of this :mode-name)`.
+* `(= d e)` 
+
+Each operand is disambiguated based on type as follows:
+
+  * *Operand is a keyword*: First, it is checked to see if the keyword is a field name. If so the field reference is made explicit with `(:fieldname this)`.
+  * *Operand is a keyword (but not a field name)*: If it is a mode name, then the mode reference is made explicit with `(mode-of this :mode-name)`.
   * The operand may be an explicit field reference `(:fieldname pclass)` where **pclass** may be `this` or one of the formal arguments to *defpclass*. When a field is a *pclass* the field reference is understood to return the mode of that *pclass instance*.
+	  * **TODO**: *Can `pclass` refer to a literal pclass name (in addition to a pclass formal argument)?* 
   * The operand may be an explicit mode reference `(mode-of pclass :mode-name)` where **pclass** may be `this` or the symbol for a previously defined *pclass* and **:mode-name** is one of the modes of that *pclass*.
+     * **TODO**: *The use of `pclass` here is different than for `:fieldname` just above.  Can `pclass` refer to a pclass formal argument (in addition to a literal pclass name)?* 
+
 
 
 #### :methods and defpmethod
@@ -193,7 +200,7 @@ Lastly, following the function form of the method, there may be zero or more `be
 This (optional) section, provides the specifications of the mode transitions for the modes defined within this `defpclass`.
 
 
-### bounds
+### <a name="bounds"></a>bounds
 
 Bounds values are a vector which contain a lower bound and an upper bound.
 Each of the bounds are a number (integer or floating point) which represent
