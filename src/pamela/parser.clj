@@ -717,6 +717,7 @@
             [b error] (cond
                         (and (= type :plant-fn-symbol) (= name 'this))
                         (let [m (get methods method)
+                              _ (log/warn "DEBUG method" method "=" m)
                               margs (:args m)]
                           (if (nil? m)
                             [nil (str "method " method " used in method " in-method
@@ -745,6 +746,7 @@
                               {:keys [type pclass]} pclass-ctor_
                               m (if (= type :pclass-ctor)
                                   (get-in ir [pclass :methods method]))
+                              _ (log/warn "DEBUG method2" method "=" m)
                               margs (:args m)]
                           (if (not= (count args) (count margs))
                             [nil (str "arity mismatch: method " method " takes "
