@@ -16,6 +16,7 @@ Changes
 * Avoid recursive resolve-plant-class call at the end of the ancestry-path (Closes #82)
 * Check method call arity in IR generation (if possible) (Closes #83)
 * Improved field arg validation (Closes #87)
+* Updated plan-schema to 0.3.0
 
 ### [0.6.0] - 2017-03-08
 
