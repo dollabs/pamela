@@ -36,10 +36,7 @@
   :inherit [a b]
 
   ;; inherited fields
-  ;; :fields {:on true
-  ;;          :off true
-  ;;          :fail true
-  ;;          :brand "DOLL"}
+  ;; :fields {:brand "DOLL"}
 
   ;; inherited modes
   ;; :modes [:on :off :fail]
