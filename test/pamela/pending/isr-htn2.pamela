@@ -1,0 +1,67 @@
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Pamela sensor plant class
+(defpclass sensor []
+  :meta {:doc "The ISR Sensor Plant API"}
+  :methods [(defpmethod go-to
+              {:bounds [20 30]}
+              [location])
+            (defpmethod capture
+              [location])
+            (defpmethod evidence
+              [location])
+            (defpmethod interpret1
+              {:doc "Interpret (Method 1)"
+               }
+              [location])
+            (defpmethod interpret2
+              {:doc "Interpret (Method 2)"
+               }
+              [location])
+            (defpmethod interpret3
+              {:doc "Interpret (Method 3)"
+               }
+              [location])
+            ])
+
+
+(defpclass isr-htn [sensor]
+  :meta {:doc "This defines all of the HTN methods for this ISR domain"}
+  :fields {sensor-f sensor}
+  :methods [(defpmethod main [a b c d]
+              (sequence
+               (get-data-at a)
+               (get-data-and-interpret a b)
+               (get-data-and-interpret b c)
+               (get-data-and-interpret c d)
+               (evidence-and-interpret d)))
+            (defpmethod get-data-at [loc]
+              (sequence
+               (sensor-f.go-to loc)
+               (sensor-f.capture :bounds [5 10] loc)))
+            (defpmethod get-data-and-interpret [location1 location2]
+              (parallel
+               (evidence-and-interpret location1)
+               (get-data-at location2)))
+            (defpmethod evidence-and-interpret [from]
+              (sequence
+               (evidence from)
+               (interpret from)))
+            (defpmethod evidence [at]
+              (sensor-f.evidence :bounds [15 25] at))
+            (defpmethod interpret [place]
+              (choose
+               (choice (sensor-f.interpret1 :bounds [15 25] place))
+               (choice (sensor-f.interpret2 :bounds [15 25] place))
+               (choice (sensor-f.interpret3 :bounds [15 25] place))))
+            ]
+  )
+
+(defpclass isr-htn-demo []
+  :meta {:doc "ISR HTN Demo"}
+  :fields {plant (sensor :id "sensor1" :plant-part "isr1" :interface "RMQ")
+           htn (isr-htn plant)})
