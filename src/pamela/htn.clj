@@ -34,6 +34,13 @@
 (defn reset-my-count []
   (reset! my-count 0))
 
+(defn fatal-error
+  "Log messages and throw an exception"
+  [& msgs]
+  (let [msg (apply str (interpose " " msgs))]
+    (log/error msg)
+    (throw (AssertionError. msg))))
+
 ;; definitions -----------------------------------------------
 
 ;; The following is intended (only) for the support of the EdgeCT program.
@@ -481,7 +488,8 @@
   (let [htn-methods @*htn-methods*
         pclasses (keys htn-methods)
         all-pclasses (set (keys ir))
-        other-pclasses (set/difference all-pclasses (set pclasses))]
+        other-pclasses (set/difference all-pclasses
+                         (conj (set pclasses) 'pamela/lvars))]
     ;; DEBUG
     (dbg-println :debug "FCM PCLASS" pclass "NAME" name "PCLASSES" pclasses "OTHER-PCLASSES" other-pclasses)
     (loop [in-pclass [] ;; methods inside pclass
@@ -658,7 +666,8 @@
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
         (let [{:keys [subtasks]} expanded-method]
           (doseq [subtask subtasks]
-            (let [{:keys [cost task-type probability mission-effectiveness priority]} subtask
+            (let [{:keys [cost task-type probability mission-effectiveness
+                          priority]} subtask
                   cost (if (= 1 (count subtasks))
                          (or cost (:cost task))
                          cost)
@@ -1042,14 +1051,40 @@
                    :symbols ir-symbols
                    })
 
+;; expects the caller-artity to match the method which should
+;;   be one of the method definitions (mdefs) provided
+;; returns [mi mdef] if found
+(defn match-method-arity [caller-arity method-mdefs]
+  (loop [mi 0 mdef (first method-mdefs) more (rest method-mdefs)]
+    (if (or (not mdef) (= caller-arity (count (:args mdef))))
+      (if mdef
+        [mi mdef]
+        [])
+      (recur (inc mi) (first more) (rest more)))))
+
+;; returns vector of pclasses which contain the given method
+;;   at the caller-arity
+(defn match-pclasses-method-arity [ir method caller-arity]
+  (let [ks (keys ir)]
+    (loop [pclasses [] k (first ks) more (rest ks)]
+      (if-not k
+        pclasses
+        (let [kdef (get ir k)
+              method-mdefs (if (= (:type kdef) :pclass)
+                             (get-in kdef [:methods method]))
+              [mi mdef] (if method-mdefs
+                          (match-method-arity caller-arity method-mdefs))]
+          (recur (if mdef (conj pclasses k) pclasses)
+            (first more) (rest more)))))))
+
 ;; given a vector of syms, where
 ;;   the first sym is the pclass to start with
 ;;   (if any) intermediate syms are fields in the previous pclass
 ;;   the last sym is method
-;; return [pclass pargs method]
+;; return [pclass pargs method mi]
 ;;   pclass may be an error string (instead of a pclass symbol)
 ;;   pargs are the args required to instanciate the pclass
-(defn root-task-pclass-method [ir syms]
+(defn root-task-pclass-method [ir syms rt-args]
   (let [pclass (first syms)
         pclass-def (get ir pclass)
         valid-fields (set (keys (:fields pclass-def)))
@@ -1057,12 +1092,12 @@
         method (last syms)]
     (if-not pclass-def
       [(str "invalid root-task: pclass " pclass " does not exist") method]
-      (loop [err nil p pclass pa [] f (first fields) more (rest fields)]
-        ;; (dbg-println :debug "LOOP ERR" err "P" p "F" f) ;; DEBUG
-        (if (or err (not f))
-          (if err
-            [err [] method]
-            [p pa method])
+      (loop [p pclass pa [] f (first fields) more (rest fields)]
+        ;; (dbg-println :debug "LOOP P" p "F" f) ;; DEBUG
+        (if-not f
+          (let [[mi mdef] (match-method-arity (count rt-args)
+                            (get-in ir [p :methods method]))]
+            [p pa method mi])
           (let [f-initial (get-in ir [p :fields (keyword f) :initial])
                 ;; _ (dbg-println :debug "F-INITIAL" f-initial) ;; DEBUG
                 f-type (:type f-initial)
@@ -1087,11 +1122,11 @@
                 pa (if (vector? f-args)
                      ;; expand reference to other fields to field-init
                      (mapv deref-field-arg f-args p-args)
-                     pa)
-                err (if (not= f-type :pclass-ctor)
-                      (str "Invalid root task: intermediate field "
-                           f " is not a pclass constructor"))]
-            (recur err p pa (first more) (rest more))))))))
+                     pa)]
+            (if (not= f-type :pclass-ctor)
+              (fatal-error "Invalid root task: intermediate field "
+                f " is not a pclass constructor"))
+            (recur p pa (first more) (rest more))))))))
 
 ;; given arg which is a vector of syms (first is pclass, subsequent fields)
 ;; return the value of the utimate field
@@ -1139,8 +1174,9 @@
                      (conj rtargs rtarg))]
         (recur rtargs (first more) (rest more))))))
 
-;; return [pclass pargs method args]
+;; return [pclass pargs method mi args]
 ;; where pargs are needed to instanciate pclass
+;; method is the method name, mi is the method index
 ;; and args are passed to method
 (defn identify-root-task [ir root-task]
   (log/trace "root-task" root-task)
@@ -1169,46 +1205,38 @@
       (throw (AssertionError. (second rir)))
       (if rir ;; verify
         (let [_ (dbg-println :debug "RIR" (with-out-str (pprint rir)))
-              [pclass pargs method] (root-task-pclass-method ir (first rir))
-              _ (dbg-println :debug "PCLASS" pclass "PARGS" pargs "METHOD" method)
               args (root-task-args ir (rest rir))
               _ (dbg-println :debug "ARGS" args)
+              [pclass pargs method mi] (root-task-pclass-method ir (first rir) args)
+              _ (dbg-println :debug "PCLASS" pclass "PARGS" pargs
+                  "METHOD" method "MI" mi)
+              caller-arity (count args)
+              caller-arg-str (if (= 1 caller-arity) " arg" " args")
               pclass-def (get ir pclass)
-              method-def (if pclass-def (get-in pclass-def [:methods method]))
-              method-args (if method-def (get method-def :args))
-              ;; _ (dbg-println :debug "MARGS" method-args)
+              method-mdef (if pclass-def
+                            (get-in pclass-def [:methods method mi]))
+              method-args (:args method-mdef)
+              _ (dbg-println :debug "MARGS" method-args)
               add-param (fn [arg param]
                           (if (map? arg)
                             (assoc arg :param param)
                             arg))
               args (if (and method-args (= (count args) (count method-args)))
-                     (mapv add-param args method-args))
-              ;; _ (dbg-println :debug "ARGS" args)
-              ]
+                     (mapv add-param args method-args))]
           (if-not pclass-def
-            (let [msg (str "root-task pclass not found: " pclass)]
-              (log/error msg)
-              (throw (AssertionError. msg)))
+            (fatal-error "root-task pclass not found:" pclass)
             (if (string? args)
-              (do
-                (log/error args)
-                (throw (AssertionError. args)))
-              (if-not method-def
-                (let [msg (str "root-task pclass " pclass
-                               " does not have a method " method)]
-                  (log/error msg)
-                  (throw (AssertionError. msg)))
+              (fatal-error args)
+              (if-not method-mdef
+                (fatal-error "root-task pclass" pclass
+                  "does not have a method" method)
                 (if (or (not method-args) (not= (count args) (count method-args)))
-                  (let [msg (str "root-task args \"" args "\" does not match arity of " pclass "." method " " method-args)]
-                    (log/error msg)
-                    (throw (AssertionError. msg)))
-                  [pclass pargs method args])))))
+                  (fatal-error "root-task args \"" args "\" does not match arity of " pclass "." method " " method-args)
+                  [pclass pargs method mi args])))))
         (loop [pclass nil method nil k (first ir-syms) more (rest ir-syms)] ;; find main
           (if (or (and pclass method) (not k))
             (if-not (and pclass method)
-              (let [msg "root-task pclass with a zero arg main not found"]
-                (log/error msg)
-                (throw (AssertionError. msg)))
+              (fatal-error "root-task pclass with a zero arg main not found")
               [pclass [] method []])
             (let [k-def (get ir k)
                   {:keys [type methods]} k-def
@@ -1240,19 +1268,24 @@
     (let [{:keys [type methods]} v]
       (dbg-println :info "TRANSFORM-HTN" pclass-name)
       (when (= type :pclass) ;;Could it be anything else?
-        (doseq [[mname method] (seq methods)]
+        (doseq [[mname method-mdefs] (seq methods)]
           (if mname ;; else (dbg-println :debug "no more methods")
-            (let [{:keys [temporal-constraints args primitive display-name body]} method]
-              (dbg-println :info "  METHOD" mname "PRIMITIVE" primitive "ARGS" args)
-              (when (and (not primitive) body)
-                (if (and (= 1 (count body)) (= :choose (get-in body [0 :type])))
-                  (dbg-println :info "  TOP LEVEL CHOOSE!")
-                  )
-                (make-htn-methods ir pargs true pclass-name mname display-name args body))
-              )))))))
+            (loop [mi 0 mdef (first method-mdefs) more (rest method-mdefs)]
+              (when mdef
+                (let [{:keys [temporal-constraints args primitive display-name
+                              body]} mdef]
+                  (dbg-println :info "  METHOD" mname "MI" mi
+                    "PRIMITIVE" primitive "ARGS" args)
+                  (when (and (not primitive) body)
+                    (if (and (= 1 (count body))
+                          (= :choose (get-in body [0 :type])))
+                      (dbg-println :info "  TOP LEVEL CHOOSE!"))
+                    (make-htn-methods ir pargs true pclass-name mname mi
+                      display-name args body)))
+                (recur (inc mi) (first more) (rest more))))))))))
 
 ;; consider memoizing or caching result
-(defn find-plant-fn-bounds [ir plant-fn-pclass ctor-arg-i method]
+(defn find-plant-fn-bounds [ir plant-fn-pclass ctor-arg-i method margs]
   (let [ks (keys ir)]
     (loop [bounds nil k (first ks) more (rest ks)]
       (if (or bounds (not k))
@@ -1273,10 +1306,13 @@
                                      (keyword arg))
                             plant (if arg-kw
                                     (get-in ir [k :fields arg-kw :initial :pclass]))
+                            [mi mdef] (match-method-arity
+                                        (count margs)
+                                        (get-in ir [plant :methods method]))
                             temporal-constraints (if plant
                                                    (get-in ir
-                                                           [plant :methods method
-                                                            :temporal-constraints]))
+                                                     [plant :methods method mi
+                                                      :temporal-constraints]))
                             b (if temporal-constraints
                                 (get-in temporal-constraints [0 :value]))]
                         (recur b (first moar) (rest moar)))))]
@@ -1286,7 +1322,7 @@
 (defn irks->bounds [ir irks]
   (if irks
     (let [opts (get-in ir irks)
-          {:keys [type field method temporal-constraints]} opts
+          {:keys [type field method args temporal-constraints]} opts
           bounds (if temporal-constraints
                    (get-in temporal-constraints [0 :value]))]
       (or bounds
@@ -1296,11 +1332,12 @@
                   field-irks [pclass :fields field :initial]
                   field-init (get-in ir field-irks)
                   {:keys [type name]} field-init
-                  args (get-in ir [pclass :args])
+                  pargs (get-in ir [pclass :args])
                   ctor-arg-i (if (and (= type :arg-reference) name)
-                               (vec-index-of args name))
+                               (vec-index-of pargs name))
                   bounds (if ctor-arg-i
-                           (find-plant-fn-bounds ir pclass ctor-arg-i method))]
+                           (find-plant-fn-bounds ir pclass ctor-arg-i
+                             method args))]
               bounds))))))
 
 ;; returns plant details map with keys
@@ -1325,7 +1362,13 @@
                    arguments)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
             _ (dbg-println :debug "PD get-in" pclass name)
-            formal-args (mapv str (get-in ir [pclass :methods name :args]))
+            [mi mdef] (match-method-arity
+                        (count args)
+                        (get-in ir [pclass :methods name]))
+            formal-args (:args mdef)
+            _ (dbg-println :debug "before FORMAL-ARGS" (pr-str formal-args))
+            ;; convert formal arg symbols to strings
+            formal-args (mapv #(if (symbol? %) (str %) %) formal-args)
             _ (dbg-println :debug "PD ARGS" (pr-str args)
                        "FORMAL-ARGS" (pr-str formal-args)) ;;:: DEBUG
             argsmap (zipmap formal-args args)]
@@ -1350,11 +1393,11 @@
         ;; _ (dbg-println :debug "CHPM HENPT" (dissoc henpt :subtasks :ancestry-path
         ;;                           :expansion-method :subtask-constraints))
         hem-irks irks
-        [pclass kw-methods method kw-body int-zero more-irks] hem-irks
+        [pclass kw-methods method mi kw-body int-zero more-irks] hem-irks
         hem-pclass pclass
         _ (dbg-println :debug "CHPN 1" pclass method int-zero more-irks kw-methods)
         top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
-                   [pclass kw-methods method])
+                   [pclass kw-methods method mi])
         top-bounds (irks->bounds ir top-irks)
         bounds (irks->bounds ir hem-irks)
         hem-bounds (tpn/merge-bounds top-bounds bounds)
@@ -1678,10 +1721,11 @@
 
 ;; will return subtasks, if any
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
-(defn get-htn-method-subtasks [ir pargs top-level-type mpclass mname display-name margs sub-body irks]
+(defn get-htn-method-subtasks
+  [ir pargs top-level-type mpclass mname mi display-name margs sub-body irks]
   (dbg-println :debug "\nGET-HTN-METHOD-SUBTASKS"
-           "top-level-type" top-level-type "mpclass" mpclass "mname" mname
-           "display-name" display-name "margs" margs "sub-body" sub-body "irks" irks)
+    "top-level-type" top-level-type "mpclass" mpclass "mname" mname "mi" mi
+    "display-name" display-name "margs" margs "sub-body" sub-body "irks" irks)
   (let [number-of-subtasks (count sub-body)]
     (loop [subtasks []
            i 0]
@@ -1693,6 +1737,7 @@
               irks-i (conj irks i)
               {:keys [type name field method args
                       primitive body temporal-constraints]} subtask-definition
+              caller-arity (count args)
               ;; DEBUG
               _ (dbg-println :debug "GET-HTN-METHOD-SUBTASKS" i "TYPE" type
                          "NAME" name "FIELD" field "METHOD" method
@@ -1714,7 +1759,8 @@
                                       ;;name might (coincidentally) be a pclass, but probably not
                                       ;;Let's see if there in one (and only one) method amongst all pclasses
                                       (let [pclasses-with-method
-                                            (filter #(get-in ir [% :methods method]) (keys ir))]
+                                            (match-pclasses-method-arity
+                                              ir method caller-arity)]
                                         (if (= (count pclasses-with-method) 1)
                                           (first pclasses-with-method)
                                           ;;If more than one, the method is ambigious!
@@ -1724,14 +1770,24 @@
                                     ;;(get-in ir [mpclass :fields field :initial :pclass])
                                     (get-pclass-for-field ir mpclass field)
                                     )
+                      ;; here we have to pick the method index 'pi which matches
+                      ;; the arity of args
+                      [pi pmdef] (match-method-arity
+                                   (count args)
+                                   (get-in ir [plant-class :methods method]))
                       plant-fn-primitive?
-                      (get-in ir [plant-class :methods method :primitive])
+                      (get-in ir [plant-class :methods method pi :primitive])
                       _ (dbg-println :debug "plant-class" plant-class "plant-fn-primitive?" plant-fn-primitive?)
                       ;;Special handling for plant-fn-primitive? = nil
                       [plant-class non-primitive?]
                       (if (nil? plant-fn-primitive?)
-                        (let [plant-class (:pclass (first (filter #(= (:param %) name) pargs)))
-                              primitive? (get-in ir [plant-class :methods name :primitive])]
+                        (let [plant-class (:pclass
+                                           (first
+                                             (filter #(= (:param %) name) pargs)))
+                              [pi pmdef] (match-method-arity
+                                           (count args)
+                                           (get-in ir [plant-class :methods method]))
+                              primitive? (:primitive pmdef)]
                           [plant-class (not primitive?)])
                         [plant-class (not plant-fn-primitive?)])
                       ;; The following would help expand non local plant
@@ -1772,24 +1828,27 @@
                   :irks irks-i})
 
                 (#{:parallel :sequence :choose} type)
-                (log/error (str mpclass "." mname ":")
-                           "\nEmbedding a" type "is not supported within a defpmethod when used for HTN generation")
+                (fatal-error (str mpclass "." mname) ":"
+                  "\nEmbedding a" type
+                  "is not supported within a defpmethod when used for HTN generation")
 
                 :else
-                (log/error "Unexpected type:" type))]
+                (fatal-error "Unexpected type:" type))]
           (recur (if subtask (conj subtasks subtask) subtasks)
                  (inc i))
           ))
       )))
 
 ;; create htn-methods as a side effect)
-(defn make-htn-methods "Construct the HTN Method(s) for mname"
-  [ir pargs top-level? mpclass mname display-name margs mbody & [irks]]
-  (dbg-println :debug "MHM " "TOP-LEVEL?" top-level? "MPCLASS" mpclass "MNAME" mname
-               "DISPLAY-NAME" display-name
-               "MARGS" margs
-               "IRKS" irks "\nMBODY" mbody)
-  (let [irks (conj (or irks [mpclass :methods mname]) :body)
+(defn make-htn-methods
+  "Construct the HTN Method(s) for mname"
+  [ir pargs top-level? mpclass mname mi display-name margs mbody & [irks]]
+  (dbg-println :debug "MHM " "TOP-LEVEL?" top-level? "MPCLASS" mpclass
+    "MNAME" mname "MI" mi
+    "DISPLAY-NAME" display-name
+    "MARGS" margs
+    "IRKS" irks "\nMBODY" mbody)
+  (let [irks (conj (or irks [mpclass :methods mname mi]) :body)
         number-of-subtasks (count mbody)
         first-task-type (:type (get mbody 0))]
     (assert (or (not top-level?)
@@ -1809,7 +1868,8 @@
             (#{:plant-fn-symbol :plant-fn-field :delay} first-task-type)
             (let [[subtasks subtask-constraints]
                   (get-htn-method-subtasks ir pargs first-task-type
-                                           mpclass mname display-name margs mbody irks)
+                    mpclass mname mi
+                    display-name margs mbody irks)
                   method (htn-method {:pclass mpclass
                                       :name mname
                                       :display-name display-name
@@ -1823,9 +1883,10 @@
             (#{:sequence :parallel} first-task-type)
             (let [[subtasks subtask-constraints]
                  (get-htn-method-subtasks ir pargs first-task-type
-                                          mpclass mname display-name margs
-                                          (get-in mbody [0 :body])  ;;get the :body of the seq/par
-                                          (concatv irks [0 :body]))
+                   mpclass mname mi
+                   display-name margs
+                   (get-in mbody [0 :body])  ;;get the :body of the seq/par
+                   (concatv irks [0 :body]))
                   method (htn-method {:pclass mpclass
                                       :name mname
                                       :display-name display-name
@@ -1850,9 +1911,8 @@
 
                         [subtasks subtask-constraints]
                         (get-htn-method-subtasks ir pargs first-task-type
-                                          mpclass choice-name choice-display-name margs
-                                          choice-body
-                                          irks-choice)
+                          mpclass choice-name 0
+                          choice-display-name margs choice-body irks-choice)
 
                         method (htn-method {:pclass mpclass
                                             :name choice-name
@@ -1866,7 +1926,7 @@
 
             :else
             (do
-              (log/error "TBD: :else")
+              (fatal-error "TBD: :else")
               []))]
       (dbg-println :trace "HTN-METHODS " (with-out-str (pprint methods)))
       methods)))
@@ -1885,22 +1945,22 @@
   (reinitialize-htn-object-table)
   (reinitialize-htn-plan-map)
   (tpn/reinitialize-tpn-plan-map)
-  (let [[pclass pargs method args] (identify-root-task ir root-task)
+  (let [[pclass pargs method mi args] (identify-root-task ir root-task)
+        _ (dbg-println :info "PAMIA" pclass pargs method mi args)
         _ (transform-htn ir pargs)
-        _ (dbg-println :info "PAMA" pclass pargs method args)
         nonprimitive-root-task (htn-nonprimitive-task
                                  {:pclass pclass
                                   :pargs pargs
                                   :name method
                                   :arguments args
-                                  :irks [pclass :methods method]})
+                                  :irks [pclass :methods method mi]})
         expanded-root-task (make-expanded-task nonprimitive-root-task)
         is-stdout? (stdout? output)
         output-prefix (if is-stdout? "STDOUT" output)
         htn-filename (if is-stdout? "-" (str output-prefix ".htn." file-format))
         tpn-filename (if is-stdout? "-" (str output-prefix ".tpn." file-format))
-        ;; _ (pprint-htn-methods) ;; DEBUG
         _ (plan-htn-task ir expanded-root-task)
+        ;; _ (pprint-htn-methods) ;; DEBUG
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
         tpn @tpn/*tpn-plan-map*]
     (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)

@@ -53,42 +53,42 @@
     :probability 0.99}},
   :methods
   {open-lid
-   {:args [],
-    :pre {:type :mode-reference, :pclass this, :mode :close},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Open Lid",
-    :post {:type :mode-reference, :pclass this, :mode :open},
-    :cost 0,
-    :body nil},
+   [{:args [],
+     :pre {:type :mode-reference, :pclass this, :mode :close},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Open Lid",
+     :post {:type :mode-reference, :pclass this, :mode :open},
+     :cost 0,
+     :body nil}],
    close-lid
-   {:args [],
-    :pre {:type :mode-reference, :pclass this, :mode :open},
-    :temporal-constraints [{:type :bounds, :value [123 456]}],
-    :reward 1000,
-    :controllable true,
-    :primitive true,
-    :betweens [],
-    :display-name "Close Lid",
-    :post {:type :mode-reference, :pclass this, :mode :close},
-    :cost 100,
-    :body nil,
-    :doc "Close method"},
+   [{:args [],
+     :pre {:type :mode-reference, :pclass this, :mode :open},
+     :temporal-constraints [{:type :bounds, :value [123 456]}],
+     :reward 1000,
+     :controllable true,
+     :primitive true,
+     :betweens [],
+     :display-name "Close Lid",
+     :post {:type :mode-reference, :pclass this, :mode :close},
+     :cost 100,
+     :body nil,
+     :doc "Close method"}],
    reset
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Reset",
-    :post {:type :mode-reference, :pclass this, :mode :open},
-    :cost 0,
-    :body nil}}},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Reset",
+     :post {:type :mode-reference, :pclass this, :mode :open},
+     :cost 0,
+     :body nil}]}},
  cannon
  {:type :pclass,
   :args [],
@@ -103,29 +103,29 @@
     :initial {:type :literal, :value false}}},
   :methods
   {fire
-   {:args [arg1 arg2],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Fire",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body nil},
+   [{:args [arg1 arg2],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Fire",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}],
    reset
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [1 2]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Reset",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body nil}}},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [1 2]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Reset",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}]}},
  game
  {:type :pclass,
   :args [power],
@@ -173,290 +173,297 @@
        {:type :literal, :value true}]}]}},
   :methods
   {main
-   {:args [initial-state],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens
-    [{:type :between,
-      :from :my,
-      :to :pickme,
-      :temporal-constraints [{:type :bounds, :value [50 :infinity]}]}
-     {:type :between-starts, :from :doit, :to :aaa, :cost<= 51}
-     {:type :between-ends, :from :chance, :to :bbb, :reward>= 17}],
-    :display-name "Main",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :parallel,
-      :body
-      [{:type :whenever,
-        :body
-        [{:type :tell,
-          :condition
-          {:type :equal,
-           :args
-           [{:type :state-variable, :name all-clear}
-            {:type :state-variable, :name initial-state}]}}],
-        :condition
-        {:type :equal,
-         :args
-         [{:type :field-reference-field,
-           :pclass this,
-           :field :box-f,
-           :value :ball-in-motion}
-          {:type :literal, :value true}]}}
-       {:type :whenever,
-        :body
-        [{:type :unless,
-          :body
-          [{:type :try,
-            :body
-            [{:type :sequence,
-              :body
-              [{:type :assert,
-                :body nil,
-                :condition
-                {:type :equal,
-                 :args
-                 [{:type :field-reference, :pclass this, :field :box-f}
-                  {:type :mode-reference, :pclass box, :mode :open}]}}
-               {:type :maintain,
-                :body
-                [{:type :sequence,
-                  :body
-                  [{:type :plant-fn-field,
-                    :field :cannon-f,
-                    :method fire,
-                    :args [123.45 "456"],
-                    :temporal-constraints
-                    [{:type :bounds, :value [1 7]}]}
-                   {:type :ask,
-                    :body
-                    [{:temporal-constraints
-                      [{:type :bounds, :value [200 300]}]}],
-                    :condition
-                    {:type :equal,
-                     :args
-                     [{:type :state-variable, :name all-clear}
-                      {:type :literal, :value true}]}}],
-                  :label :my,
-                  :temporal-constraints
-                  [{:type :bounds, :value [98 101]}],
-                  :cost<= 11,
-                  :reward>= 90}],
-                :condition
-                {:type :equal,
-                 :args
-                 [{:type :field-reference, :pclass this, :field :box-f}
-                  {:type :mode-reference, :pclass box, :mode :open}]}}
-               {:type :plant-fn-field,
-                :field :box-f,
-                :method close,
-                :args []}
-               {:type :choose,
-                :body
-                [{:type :choice,
-                  :body [{:type :delay, :body nil, :label :aaa}],
-                  :label :chance,
-                  :cost 9,
-                  :reward 99,
-                  :probability 0.67}
-                 {:type :choice,
-                  :body [{:type :delay, :body nil, :label :bbb}],
-                  :temporal-constraints
-                  [{:type :bounds, :value [7 8]}],
-                  :condition
-                  {:type :equal,
-                   :args
-                   [{:type :field-reference,
-                     :pclass this,
-                     :field :box-f}
-                    {:type :mode-reference,
-                     :pclass box,
-                     :mode :open}]}}],
-                :label :pickme,
-                :temporal-constraints
-                [{:type :bounds, :value [36 37]}],
-                :cost<= 45,
-                :reward>= 46}]}],
-            :catch
-            [{:type :sequence,
-              :body
-              [{:type :parallel,
-                :body
-                [{:type :plant-fn-field,
-                  :field :box-f,
-                  :method reset,
-                  :args []}
-                 {:type :plant-fn-field,
-                  :field :cannon-f,
-                  :method reset,
-                  :args []}]}
-               {:type :delay,
-                :body nil,
-                :temporal-constraints
-                [{:type :bounds, :value [30 30]}]}]}],
-            :temporal-constraints [{:type :bounds, :value [2 20]}]}],
-          :condition
-          {:type :equal,
-           :args
-           [{:type :field-reference-field,
-             :pclass this,
-             :field :cannon-f,
-             :value :ammunitions}
-            {:type :literal, :value 0}]}}],
-        :condition
-        {:type :equal,
-         :args
-         [{:type :field-reference-field,
-           :pclass this,
-           :field :cannon-f,
-           :value :ready}
-          {:type :literal, :value true}]}}
-       {:type :sequence,
-        :body
-        [{:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-field,
-          :field :box-f,
-          :method reset,
-          :args []}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-field,
-          :field :cannon-f,
-          :method reset,
-          :args []}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}],
-        :label :slack-sequence}
-       {:type :parallel,
-        :body
-        [{:type :sequence,
-          :body
-          [{:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}
-           {:type :plant-fn-field,
+   [{:args [initial-state],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens
+     [{:type :between,
+       :from :my,
+       :to :pickme,
+       :temporal-constraints [{:type :bounds, :value [50 :infinity]}]}
+      {:type :between-starts, :from :doit, :to :aaa, :cost<= 51}
+      {:type :between-ends, :from :chance, :to :bbb, :reward>= 17}],
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :whenever,
+         :body
+         [{:type :tell,
+           :condition
+           {:type :equal,
+            :args
+            [{:type :state-variable, :name all-clear}
+             {:type :state-variable, :name initial-state}]}}],
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference-field,
+            :pclass this,
             :field :box-f,
-            :method reset,
-            :args []}
-           {:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}]}
-         {:type :sequence,
-          :body
-          [{:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}
-           {:type :plant-fn-field,
-            :field :cannon-f,
-            :method reset,
-            :args []}
-           {:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}]}],
-        :label :slack-parallel}
-       {:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :plant-fn-field,
-            :field :cannon-f,
-            :method reset,
-            :args []}]}],
-        :label :optional}
-       {:type :sequence,
-        :body
-        [{:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-field,
-              :field :box-f,
-              :method reset,
-              :args []}]}]}
-         {:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-field,
+            :value :ball-in-motion}
+           {:type :literal, :value true}]}}
+        {:type :whenever,
+         :body
+         [{:type :unless,
+           :body
+           [{:type :try,
+             :body
+             [{:type :sequence,
+               :body
+               [{:type :assert,
+                 :body nil,
+                 :condition
+                 {:type :equal,
+                  :args
+                  [{:type :field-reference,
+                    :pclass this,
+                    :field :box-f}
+                   {:type :mode-reference, :pclass box, :mode :open}]}}
+                {:type :maintain,
+                 :body
+                 [{:type :sequence,
+                   :body
+                   [{:type :plant-fn-field,
+                     :field :cannon-f,
+                     :method fire,
+                     :args [123.45 "456"],
+                     :temporal-constraints
+                     [{:type :bounds, :value [1 7]}]}
+                    {:type :ask,
+                     :body
+                     [{:temporal-constraints
+                       [{:type :bounds, :value [200 300]}]}],
+                     :condition
+                     {:type :equal,
+                      :args
+                      [{:type :state-variable, :name all-clear}
+                       {:type :literal, :value true}]}}],
+                   :label :my,
+                   :temporal-constraints
+                   [{:type :bounds, :value [98 101]}],
+                   :cost<= 11,
+                   :reward>= 90}],
+                 :condition
+                 {:type :equal,
+                  :args
+                  [{:type :field-reference,
+                    :pclass this,
+                    :field :box-f}
+                   {:type :mode-reference, :pclass box, :mode :open}]}}
+                {:type :plant-fn-field,
+                 :field :box-f,
+                 :method close,
+                 :args []}
+                {:type :choose,
+                 :body
+                 [{:type :choice,
+                   :body [{:type :delay, :body nil, :label :aaa}],
+                   :label :chance,
+                   :cost 9,
+                   :reward 99,
+                   :probability 0.67}
+                  {:type :choice,
+                   :body [{:type :delay, :body nil, :label :bbb}],
+                   :temporal-constraints
+                   [{:type :bounds, :value [7 8]}],
+                   :condition
+                   {:type :equal,
+                    :args
+                    [{:type :field-reference,
+                      :pclass this,
+                      :field :box-f}
+                     {:type :mode-reference,
+                      :pclass box,
+                      :mode :open}]}}],
+                 :label :pickme,
+                 :temporal-constraints
+                 [{:type :bounds, :value [36 37]}],
+                 :cost<= 45,
+                 :reward>= 46}]}],
+             :catch
+             [{:type :sequence,
+               :body
+               [{:type :parallel,
+                 :body
+                 [{:type :plant-fn-field,
+                   :field :box-f,
+                   :method reset,
+                   :args []}
+                  {:type :plant-fn-field,
+                   :field :cannon-f,
+                   :method reset,
+                   :args []}]}
+                {:type :delay,
+                 :body nil,
+                 :temporal-constraints
+                 [{:type :bounds, :value [30 30]}]}]}],
+             :temporal-constraints [{:type :bounds, :value [2 20]}]}],
+           :condition
+           {:type :equal,
+            :args
+            [{:type :field-reference-field,
+              :pclass this,
               :field :cannon-f,
-              :method reset,
-              :args []}]}]}],
-        :label :soft-sequence}
-       {:type :parallel,
-        :body
-        [{:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-field,
-              :field :box-f,
-              :method reset,
-              :args []}]}]}
-         {:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-field,
-              :field :cannon-f,
-              :method reset,
-              :args []}]}]}],
-        :label :soft-parallel}],
-      :temporal-constraints [{:type :bounds, :value [1 60]}]}]},
+              :value :ammunitions}
+             {:type :literal, :value 0}]}}],
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference-field,
+            :pclass this,
+            :field :cannon-f,
+            :value :ready}
+           {:type :literal, :value true}]}}
+        {:type :sequence,
+         :body
+         [{:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}
+          {:type :plant-fn-field,
+           :field :box-f,
+           :method reset,
+           :args []}
+          {:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}
+          {:type :plant-fn-field,
+           :field :cannon-f,
+           :method reset,
+           :args []}
+          {:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}],
+         :label :slack-sequence}
+        {:type :parallel,
+         :body
+         [{:type :sequence,
+           :body
+           [{:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}
+            {:type :plant-fn-field,
+             :field :box-f,
+             :method reset,
+             :args []}
+            {:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}]}
+          {:type :sequence,
+           :body
+           [{:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}
+            {:type :plant-fn-field,
+             :field :cannon-f,
+             :method reset,
+             :args []}
+            {:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}]}],
+         :label :slack-parallel}
+        {:type :choose,
+         :body
+         [{:type :choice,
+           :body
+           [{:type :delay,
+             :temporal-constraints [{:type :bounds, :value [0 0]}],
+             :body nil}]}
+          {:type :choice,
+           :body
+           [{:type :plant-fn-field,
+             :field :cannon-f,
+             :method reset,
+             :args []}]}],
+         :label :optional}
+        {:type :sequence,
+         :body
+         [{:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-field,
+               :field :box-f,
+               :method reset,
+               :args []}]}]}
+          {:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-field,
+               :field :cannon-f,
+               :method reset,
+               :args []}]}]}],
+         :label :soft-sequence}
+        {:type :parallel,
+         :body
+         [{:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-field,
+               :field :box-f,
+               :method reset,
+               :args []}]}]}
+          {:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-field,
+               :field :cannon-f,
+               :method reset,
+               :args []}]}]}],
+         :label :soft-parallel}],
+       :temporal-constraints [{:type :bounds, :value [1 60]}]}]}],
    main-test
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Main Test",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :plant-fn-symbol, :name this, :method main, :args [true]}],
-    :doc "Unit test method entry point"}}},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Main Test",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :plant-fn-symbol,
+       :name this,
+       :method main,
+       :args [true]}],
+     :doc "Unit test method entry point"}]}},
  global-state {:type :state-variable},
  initial-state {:type :state-variable},
  pwrvals

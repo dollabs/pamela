@@ -738,7 +738,8 @@
 ;; returns
 ;; {:error "msg"} if an arity match is NOT found
 ;; or {:mdef {}) method definition matching arity of caller-args
-(defn validate-arity [in-pclass in-method pclass methods method caller-args]
+(defn validate-arity [in-pclass in-method in-mi
+                      pclass methods method caller-args]
   ;; (log/warn "VALIDATE-ARITY" in-pclass in-method
   ;;   "TO" pclass method "WITH" caller-args)
   (let [caller-arity (count caller-args)
@@ -749,6 +750,8 @@
       {:mdef (first mdefs)}
       (let [msg (str "Call from " in-pclass "." in-method
                   " to " pclass "." method)]
+        ;; consider adding the args signature to the msg to
+        ;; take advantage of in-mi and clarify which method signature
         (if (empty? candidate-mdefs)
           {:error (str msg ": method not defined")}
           (if (= 1 (count candidate-mdefs))
@@ -764,7 +767,7 @@
 
 ;; return Validated body or {:error "message"}
 (defn validate-body [ir state-vars in-pclass
-                     fields modes methods in-method mbody]
+                     fields modes methods in-method in-mi mbody]
   (loop [vmbody []
          b (if (vector? mbody) (first mbody) mbody)
          more (if (vector? mbody) (rest mbody))]
@@ -774,7 +777,7 @@
             [b error] (cond
                         (and (= type :plant-fn-symbol) (= name 'this))
                         (let [{:keys [error mdef]}
-                              (validate-arity in-pclass in-method
+                              (validate-arity in-pclass in-method in-mi
                                 in-pclass methods method args)]
                           (if error
                             [nil error]
@@ -782,7 +785,7 @@
                         (and (= type :plant-fn-symbol)
                           (or
                             (some #(= name %)
-                              (get-in methods [in-method :args]))
+                              (get-in methods [in-method in-mi :args]))
                             (some #(= name %)
                               (get-in ir [in-pclass :args]))))
                         ;; NOTE: at this point of building the IR we do not yet
@@ -797,7 +800,7 @@
                               {:keys [type pclass]} pclass-ctor_
                               {:keys [error mdef]}
                               (if (= type :pclass-ctor)
-                                (validate-arity in-pclass in-method
+                                (validate-arity in-pclass in-method in-mi
                                   pclass (get-in ir [pclass :methods])
                                   method args)
                                 {:error "non :pclass-ctor check unsupported"})]
@@ -817,7 +820,7 @@
                           [:method method :body] condition))
             body (if (and (not error) (not (:error condition)) body)
                    (validate-body ir state-vars in-pclass fields modes methods
-                     in-method body))
+                     in-method in-mi body))
             vb (assoc-if b
                  :condition condition
                  :body body)
@@ -946,7 +949,7 @@
         (let [[method mdefs] method-mdefs
               vmdefs
               (loop [vmdefs []
-                     i 0
+                     mi 0
                      mdef (first mdefs)
                      moar (rest mdefs)]
                 (if (or (and (map? vmdefs) (:error vmdefs)) (not mdef))
@@ -954,13 +957,13 @@
                   (let [{:keys [pre post args body]} mdef
                         pre (if pre
                               (validate-condition ir state-vars pclass fields
-                                modes [:method method i :pre] pre))
+                                modes [:method method mi :pre] pre))
                         post (if post
                                (validate-condition ir state-vars pclass fields
-                                 modes [:method method i :post] post))
+                                 modes [:method method mi :post] post))
                         body (if-not (empty? body)
                                (validate-body ir state-vars pclass
-                                 fields modes methods method body))
+                                 fields modes methods method mi body))
                         mdef (assoc-if mdef
                                :pre pre
                                :post post
@@ -974,7 +977,7 @@
                                  body
                                  :else
                                  (conj vmdefs mdef))]
-                    (recur vmdefs (inc i) (first moar) (rest moar)))))
+                    (recur vmdefs (inc mi) (first moar) (rest moar)))))
               vmethods (if (and (map? vmdefs) (:error vmdefs))
                          vmdefs
                          (assoc vmethods method vmdefs))]

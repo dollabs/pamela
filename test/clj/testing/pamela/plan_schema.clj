@@ -56,7 +56,7 @@
 
         htn-edn-clj (str htn-edn ".clj")
         htn-json-clj (str htn-json ".clj")
-        tpn-end-clj (str tpn-edn ".clj")
+        tpn-edn-clj (str tpn-edn ".clj")
         tpn-json-clj (str tpn-json ".clj")
         ]
     (pcli/set-test-mode! true)
@@ -82,12 +82,12 @@
     (is (= 0 (scli/plan-schema "-i" htn-json "-o" htn-json-clj "htn")))
 
     (println "Reading tpn-edn, writing tpn-edn")
-    (is (= 0 (scli/plan-schema "-i" tpn-edn "-o" tpn-end-clj "tpn")))
+    (is (= 0 (scli/plan-schema "-i" tpn-edn "-o" tpn-edn-clj "tpn")))
 
     (println "Reading tpn-json, writing tpn-edn")
     (is (= 0 (scli/plan-schema "-i" tpn-json "-o" tpn-json-clj "tpn")))
 
-    [htn-edn-clj htn-json-clj tpn-end-clj tpn-json-clj]
+    [htn-edn-clj htn-json-clj tpn-edn-clj tpn-json-clj]
     ))
 
 (defn read-clj [filename]

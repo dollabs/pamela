@@ -9,32 +9,32 @@
     :initial {:type :lvar, :name :gensym}}},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :choose,
-      :body
-      [{:type :choice,
-        :body [{:type :delay, :body nil}],
-        :probability 0.5}
-       {:type :choice,
-        :body [{:type :delay, :body nil}],
-        :probability 0.25,
-        :condition
-        {:type :equal,
-         :args
-         [{:type :field-reference, :pclass this, :field :a}
-          {:type :literal, :value 1.0}]}}
-       {:type :choice,
-        :body [{:type :delay, :body nil}],
-        :probability {:type :lvar, :name "likelihood"}}]}],
-    :doc "choose based on probability"}}},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body [{:type :delay, :body nil}],
+         :probability 0.5}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :probability 0.25,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :a}
+           {:type :literal, :value 1.0}]}}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :probability {:type :lvar, :name "likelihood"}}]}],
+     :doc "choose based on probability"}]}},
  pamela/lvars {:type :lvars, :lvars {"likelihood" :unset}}}

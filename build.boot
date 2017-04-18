@@ -37,7 +37,7 @@
                     [camel-snake-kebab         "0.4.0"]
                     ;; testing
                     [adzerk/boot-test          "1.1.2" :scope "test"]
-                    [dollabs/plan-schema       "0.3.0" :scope "test"]])
+                    [dollabs/plan-schema       "0.3.1" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])
