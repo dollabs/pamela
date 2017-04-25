@@ -1262,7 +1262,6 @@
 
 ;; walk ir, look for pclasses that have non-empty methods
 (defn transform-htn [ir pargs]
-  (reset! *debug-ir* ir) ;;DEBUG
   (doseq [[pclass-name v] (seq ir)]
     (assert pclass-name "Found a nil pclass in the IR")
     (let [{:keys [type methods]} v]
@@ -1941,6 +1940,7 @@
 (defn plan-htn
   "Weaves a 'plan' from the root task, using the HTN methods."
   [ir root-task file-format output]
+  (reset! *debug-ir* ir) ;; DEBUG
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
   (reinitialize-htn-plan-map)

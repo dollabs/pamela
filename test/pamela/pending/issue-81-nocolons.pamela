@@ -16,8 +16,8 @@
 (defpclass simpleplant []
   :fields {data1 123
            data2 "fred"}
-  :modes {bykw (= data1 123)
-          bysym (= data2 "fred")}
+  :modes {:bykw (= data1 123)
+          :bysym (= data2 "fred")}
   :methods [(defpmethod hardwork
               {:doc "Simulated work with a simulated failure"
                :bounds [1 20]}
@@ -54,7 +54,7 @@
               {:doc "The HTN"}
               []
               (sequence
-                (p2.scp p2.data1 p2.data2)
+                (p2.scp p2.data1 p2.data2) ;; we NOW want to deref plant fields
                 ))
             ])
 
