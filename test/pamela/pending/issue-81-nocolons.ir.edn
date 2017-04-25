@@ -1,0 +1,28 @@
+;; WORK IN PROGRESS
+
+{coverage-test
+ {:type :pclass,
+  :args [],
+  :methods
+  {main
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol, :name this, :method foo,
+         :args [1]}
+        {:type :plant-fn-symbol, :name this, :method foo,
+         :args [1 2]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method foo,
+         :args [1 2 3]}]}]}],
