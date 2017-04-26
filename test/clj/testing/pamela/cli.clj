@@ -34,7 +34,7 @@
       ;; build PASS
       (is (= 0 (pamela "-i" "test/pamela/circuit.pamela" "build" )))
       ;; build FAIL
-      (is (= 1 (pamela "-i" "test/pamela/errors/issue-86b.pamela" "build")))
+      (is (= 1 (pamela "-i" "test/pamela/errors/IR/issue-86b.pamela" "build")))
       ;; tpn PASS
       (is (= 0 (pamela "-i" "test/pamela/plant.pamela"
                  "-i" "test/pamela/parallel-choice.tpn.pamela"
