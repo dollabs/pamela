@@ -16,6 +16,11 @@ Changes
 * Avoid recursive resolve-plant-class call at the end of the ancestry-path (Closes #82)
 * Check method call arity in IR generation (if possible) (Closes #83)
 * Improved field arg validation (Closes #87)
+* Updated plan-schema to 0.3.1
+* Support multiple arities for methods of the same name (Closes #86)
+* Ensure CLI returns same integer exit code whenever calling
+  pamela.cli/pamela.
+* Added cli.clj test coverage for the above.
 
 ### [0.6.0] - 2017-03-08
 

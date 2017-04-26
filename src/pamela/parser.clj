@@ -41,6 +41,35 @@
     :else
     (str path)))
 
+(defn merge-keys-one
+  "converts each map value v into a vector [v]"
+  {:added "0.6.1"}
+  ([m]
+   (cond
+     (map? m) (reduce-kv merge-keys-one {} m)
+     :else m))
+  ([m k v]
+   (assoc m k (if (vector? v) v [v]))))
+
+(defn merge-keys
+  "converts all key values v into vectors [v] and coalesces values for equal keys into the respective key value"
+  {:added "0.6.1"}
+  ([m]
+   (merge-keys-one m))
+  ([m0 m1]
+   (let [kvs (seq m1)]
+     (loop [mk (merge-keys-one m0) kv (first kvs) more (rest kvs)]
+       (if-not kv
+         mk
+         (let [[k v] kv
+               v0 (get mk k [])
+               v (conj v0 v)
+               mk (assoc mk k v)]
+           (recur mk (first more) (rest more)))))))
+  ([m0 m1 & more]
+   (apply merge-keys (merge-keys m0 m1) more)))
+
+
 ;; When a magic file is read in the lvar "name" is assigned a value
 ;;   in pamela-lvars
 ;; Then when the PAMELA is parsed each time an lvar is encountered
@@ -185,7 +214,7 @@
   {k (apply merge ms)})
 
 (defn ir-methods [& methods]
-  {:methods (apply merge methods)})
+  {:methods (apply merge-keys methods)})
 
 (defn ir-cond-expr [op & operands]
   {:type op
@@ -658,9 +687,9 @@
   ;;   "\ncondition:" condition)
   (let [{:keys [type args]} condition
         pclass-args (get-in ir [pclass :args])
-        [c0 c1 c2] context
+        [c0 c1 c2 c3] context
         method (if (= c0 :method) c1)
-        method-args (if method (get-in ir [pclass :methods method :args]))]
+        method-args (if method (get-in ir [pclass :methods method c2 :args]))]
     (cond
       (and (nil? type) (keyword? condition)) ;; bare keyword
       (validate-keyword ir state-vars pclass fields modes context condition)
@@ -706,8 +735,39 @@
                    (conj context type))
                  args)}))))
 
+;; returns
+;; {:error "msg"} if an arity match is NOT found
+;; or {:mdef {}) method definition matching arity of caller-args
+(defn validate-arity [in-pclass in-method in-mi
+                      pclass methods method caller-args]
+  ;; (log/warn "VALIDATE-ARITY" in-pclass in-method
+  ;;   "TO" pclass method "WITH" caller-args)
+  (let [caller-arity (count caller-args)
+        caller-arg-str (if (= 1 caller-arity) " arg" " args")
+        candidate-mdefs (get methods method)
+        mdefs (filter #(= (count (:args %)) caller-arity) candidate-mdefs)]
+    (if (= 1 (count mdefs))
+      {:mdef (first mdefs)}
+      (let [msg (str "Call from " in-pclass "." in-method
+                  " to " pclass "." method)]
+        ;; consider adding the args signature to the msg to
+        ;; take advantage of in-mi and clarify which method signature
+        (if (empty? candidate-mdefs)
+          {:error (str msg ": method not defined")}
+          (if (= 1 (count candidate-mdefs))
+            (let [arity (-> candidate-mdefs first :args count)]
+              {:error (str msg " has " caller-arity caller-arg-str
+                        ", but expects " arity " arg"
+                        (if (= 1 arity) "" "s"))})
+            {:error
+             (apply str msg " has " caller-arity caller-arg-str
+               ", which does not match any of the available arities: "
+               (interpose ", "
+                 (map #(count (:args %)) candidate-mdefs)))}))))))
+
 ;; return Validated body or {:error "message"}
-(defn validate-body [ir state-vars pclass fields modes methods in-method mbody]
+(defn validate-body [ir state-vars in-pclass
+                     fields modes methods in-method in-mi mbody]
   (loop [vmbody []
          b (if (vector? mbody) (first mbody) mbody)
          more (if (vector? mbody) (rest mbody))]
@@ -716,23 +776,18 @@
       (let [{:keys [type name method args condition body]} b
             [b error] (cond
                         (and (= type :plant-fn-symbol) (= name 'this))
-                        (let [m (get methods method)
-                              margs (:args m)]
-                          (if (nil? m)
-                            [nil (str "method " method " used in method " in-method
-                                   " is not defined in the pclass " pclass)]
-                            (if (not= (count args) (count margs))
-                              [nil (str "arity mismatch: method " method " takes "
-                                     (count margs) " args: " margs
-                                     ", but is called in method " in-method
-                                     " with " (count args) " args: " args)]
-                              [b nil])))
+                        (let [{:keys [error mdef]}
+                              (validate-arity in-pclass in-method in-mi
+                                in-pclass methods method args)]
+                          (if error
+                            [nil error]
+                            [b nil]))
                         (and (= type :plant-fn-symbol)
                           (or
                             (some #(= name %)
-                              (get-in methods [in-method :args]))
+                              (get-in methods [in-method in-mi :args]))
                             (some #(= name %)
-                              (get-in ir [pclass :args]))))
+                              (get-in ir [in-pclass :args]))))
                         ;; NOTE: at this point of building the IR we do not yet
                         ;; have a root-task and cannot check for arity match
                         [b nil]
@@ -743,29 +798,29 @@
                         (let [field (keyword name)
                               pclass-ctor_ (get-in fields [field :initial])
                               {:keys [type pclass]} pclass-ctor_
-                              m (if (= type :pclass-ctor)
-                                  (get-in ir [pclass :methods method]))
-                              margs (:args m)]
-                          (if (not= (count args) (count margs))
-                            [nil (str "arity mismatch: method " method " takes "
-                                   (count margs) " args: " margs
-                                   ", but is called in method " in-method
-                                   " with " (count args) " args: " args)]
+                              {:keys [error mdef]}
+                              (if (= type :pclass-ctor)
+                                (validate-arity in-pclass in-method in-mi
+                                  pclass (get-in ir [pclass :methods])
+                                  method args)
+                                {:error "non :pclass-ctor check unsupported"})]
+                          (if error
+                            [nil error]
                             [(assoc (dissoc b :name)
                                :type :plant-fn-field
                                :field field)
                              nil]))
                         (= type :plant-fn-symbol)
                         [nil (str "plant " name " used in method " in-method
-                               " is not defined in the pclass " pclass)]
+                               " is not defined in the pclass " in-pclass)]
                         :else
                         [b nil])
             condition (if (and (not error) condition)
-                        (validate-condition ir state-vars pclass fields modes
+                        (validate-condition ir state-vars in-pclass fields modes
                           [:method method :body] condition))
             body (if (and (not error) (not (:error condition)) body)
-                   (validate-body ir state-vars pclass fields modes methods
-                     in-method body))
+                   (validate-body ir state-vars in-pclass fields modes methods
+                     in-method in-mi body))
             vb (assoc-if b
                  :condition condition
                  :body body)
@@ -882,42 +937,57 @@
 
 ;; return Validated methods or {:error "message"}
 (defn validate-methods [ir state-vars pclass fields modes methods]
-  (let [method-mdefs (seq methods)]
+  ;; (log/warn "VALIDATE-METHODS" pclass
+  ;;   ;; "METHODS" methods
+  ;;   )
+  (let [method-mdefss (seq methods)]
     (loop [vmethods {}
-           method-mdef (first method-mdefs)
-           more (rest method-mdefs)]
-      (if (or (:error vmethods) (not method-mdef))
+           method-mdefs (first method-mdefss)
+           more (rest method-mdefss)]
+      (if (or (:error vmethods) (not method-mdefs))
         vmethods
-        (let [[method mdef] method-mdef
-              {:keys [pre post args body]} mdef
-              pre (if pre
-                    (validate-condition ir state-vars pclass fields modes
-                      [:method method :pre] pre))
-              post (if post
-                     (validate-condition ir state-vars pclass fields modes
-                       [:method method :post] post))
-              body (if-not (empty? body)
-                     (validate-body ir state-vars pclass fields modes methods
-                       method body))
-              mdef (assoc-if mdef
-                     :pre pre
-                     :post post
-                     :body body)
-              vmethods (cond
-                         (:error pre)
-                         pre
-                         (:error post)
-                         post
-                         (:error body)
-                         body
-                         :else
-                         (assoc vmethods method mdef))]
+        (let [[method mdefs] method-mdefs
+              vmdefs
+              (loop [vmdefs []
+                     mi 0
+                     mdef (first mdefs)
+                     moar (rest mdefs)]
+                (if (or (and (map? vmdefs) (:error vmdefs)) (not mdef))
+                  vmdefs
+                  (let [{:keys [pre post args body]} mdef
+                        pre (if pre
+                              (validate-condition ir state-vars pclass fields
+                                modes [:method method mi :pre] pre))
+                        post (if post
+                               (validate-condition ir state-vars pclass fields
+                                 modes [:method method mi :post] post))
+                        body (if-not (empty? body)
+                               (validate-body ir state-vars pclass
+                                 fields modes methods method mi body))
+                        mdef (assoc-if mdef
+                               :pre pre
+                               :post post
+                               :body body)
+                        vmdefs (cond
+                                 (:error pre)
+                                 pre
+                                 (:error post)
+                                 post
+                                 (:error body)
+                                 body
+                                 :else
+                                 (conj vmdefs mdef))]
+                    (recur vmdefs (inc mi) (first moar) (rest moar)))))
+              vmethods (if (and (map? vmdefs) (:error vmdefs))
+                         vmdefs
+                         (assoc vmethods method vmdefs))]
           (recur vmethods (first more) (rest more)))))))
 
 ;; PAMELA semantic checks
 ;; Hoist state variables, disambiguate conditional expression operands
 ;; return Validated PAMELA IR or {:error "message"}
 (defn validate-pamela [ir]
+  ;; (log/warn "VALIDATE-PAMELA")
   (let [sym-vals (seq ir)
         state-vars (atom {})]
     (loop [vir {} sym-val (first sym-vals) more (rest sym-vals)]
@@ -1006,6 +1076,7 @@
 ;;   unless check-only? in which case it will return the parse
 ;;   tree as txt
 (defn parse [options]
+  ;; (log/warn "PARSE" options)
   (let [{:keys [input magic output-magic check-only?]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
@@ -1055,6 +1126,7 @@
                      {:error msg})
                    :else
                    (let [tree0 (first tree)
+                         ;; _ (log/warn "PRE-VALIDATE")
                          pir (if check-only?
                                {:tree tree0}
                                (validate-pamela

@@ -706,7 +706,8 @@
         {:keys [pclass id interface]} initial
         plant-sym (or pclass name)
         plant-sym (if (= plant-sym 'this) plant plant-sym)
-        plant-method (if plant-fn? (get-in ir [plant-sym :methods method]))
+        ;; assume the first mdef is the correct one
+        plant-method (if plant-fn? (get-in ir [plant-sym :methods method 0]))
         id (if plant-fn? (or id plant-id))
         plantid (if id (str id (if interface "@") interface))
         method-args (if plant-fn? (map str (:args plant-method)))
@@ -978,7 +979,8 @@
         tpn-pclass (if (= :pclass (get-in ir [demo-pclass :type]))
                      (get-in ir [demo-pclass :fields tpn-field :initial :pclass]))
         {:keys [args id]} (get-in ir [demo-pclass :fields tpn-field :initial])
-        tpn-ks [tpn-pclass :methods tpn-method]
+        ;; assume the first method is the one with zero arity
+        tpn-ks [tpn-pclass :methods tpn-method 0]
         tpn-method-def (get-in ir tpn-ks)
         field-def (fn [field-sym]
                     (get-in ir [demo-pclass :fields (keyword field-sym)]))
@@ -988,7 +990,12 @@
         (log/errorf "parse: --construct-tpn argument invalid:"
           construct-tpn)
         [nil nil nil])
-      [id tpn-ks tpn-args])))
+      (if-not (= 0 (count (:args tpn-method-def)))
+        (do
+          (log/errorf "parse: --construct-tpn method with zero arity not found:"
+            construct-tpn)
+          [nil nil nil])
+        [id tpn-ks tpn-args]))))
 
 ;; NOTE there might not be a plant (there may be just one pclass)
 (defn find-tpn-method-default [ir]
@@ -1019,7 +1026,10 @@
                          (do
                            (log/error "unable to determine tpn demo class, more than one pclass takes one arg and has one method")
                            nil)
-                         [k :methods (first (keys (get-in ir [k :methods])))]))]
+                         [k :methods
+                          (first (keys (get-in ir [k :methods])))
+                          0 ;; assume the first mdef is correct
+                          ]))]
           (recur tpn-ks plant tpn-args (first more) (rest more))
           )))))
 

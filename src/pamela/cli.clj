@@ -218,7 +218,7 @@
     (do (log/info "exiting with status" status)
       (shutdown-agents)
         (System/exit status)))
-  true)
+  status)
 
 (defn base-64-decode [b64]
   ;; The following requires JDK 8
@@ -281,17 +281,17 @@
       (println "output-magic:" output-magic)
       (println "root-task:" root-task)
       (println "cmd:" cmd (if action "(valid)" "(invalid)")))
-    (if-not action
-      (if-not exit?
+    (if (or exit? (not action))
+      (if-not action
         (exit 1 (str "Unknown action: \"" cmd "\". Must be one of " (keys actions)))
-        (usage summary))
+        1 ;; just return exit code instead of repeating (usage summary)
+        )
       (if (> verbose 1) ;; throw full exception with stack trace when -v -v
         (exit (action options))
         (try
           (exit (action options))
           (catch Throwable e
-            (exit 1 "ERROR caught exception:" (.getMessage e))))))
-    (exit 0)))
+            (exit 1 "ERROR caught exception:" (.getMessage e))))))))
 
 (defn reset-gensym-generator
   "Resets gensym generators in htn and tpn.

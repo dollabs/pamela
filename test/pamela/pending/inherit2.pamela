@@ -1,0 +1,38 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; inheritance example: inheriting modes
+
+(defpclass a []
+  :fields {:breathing true}
+  :modes {:alive (= :breathing true)
+          :dead (= :breathing false)}
+
+(defpclass b []
+  :fields {:temperature 25}
+  :modes {:alive (> :temperature 0)
+          :dead (= :temperature 0)}
+
+(defpclass c []
+  :inherit [a b]
+
+  ;; inherited fields
+  ;; :fields {:breathing true
+  ;;          :temperature 25}
+
+  ;; inherited modes
+  ;; :modes {:alive (or (= :breathing true) (> :temperature 0))
+  ;;   NOTE: for :alive (and ...) may be better, but how could we tell
+  ;;   automatically?
+  ;;         :dead (or (= :breathing false) (= :temperature 0))}
+  )

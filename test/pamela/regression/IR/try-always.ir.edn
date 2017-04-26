@@ -4,18 +4,18 @@
   :meta {:version "0.2.0", :doc "try example with no time bounds"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :try,
-      :body [{:type :delay, :body nil}],
-      :catch [{:type :delay, :body nil}]}],
-    :doc "try example"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :try,
+       :body [{:type :delay, :body nil}],
+       :catch [{:type :delay, :body nil}]}],
+     :doc "try example"}]}}}
