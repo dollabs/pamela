@@ -1,0 +1,88 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+(defpclass qc []
+  :meta {:version "0.3.0"
+         :doc "The Plant API"}
+  :methods [(defpmethod location
+              {:doc    "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)"}
+              [lat lon alt yaw])
+            (defpmethod wp1
+              {:doc    "Waypoint 1"
+               :bounds [11 50]}
+              []
+              (location 42.445370 -71.227891 1.0 80))
+            (defpmethod wp2
+              {:doc    "Waypoint 2"
+               :bounds [12 50]}
+              []
+              (location 42.445435 -71.227842 2.0 170))
+            (defpmethod wp3
+              {:doc    "Waypoint 3"
+               :bounds [13 50]}
+              []
+              (location 42.445389 -71.227733 3.0 260))
+            (defpmethod wp4
+              {:doc    "Waypoint 4"
+               :bounds [14 50]}
+              []
+              (location 42.445327 -71.227784 4.0 350))
+            ])
+
+(defpclass qc-waypoints []
+  :meta {:version "0.3.0"
+         :doc "Quadcopter test waypoints"}
+  :methods [(defpmethod circuit-one
+              {:doc "First quadcopter circuit"}
+              [q]
+              (sequence
+                (q.location :bounds [5 20] 42.445370 -71.227895 1.0 80)
+                (q.location :bounds [5 20] 42.445435 -71.227846 2.0 170)
+                (q.location :bounds [5 20] 42.445389 -71.227737 3.0 260)
+                (q.location :bounds [5 20] 42.445327 -71.227788 4.0 350)
+                (q.location :bounds [5 20] 42.445370 -71.227899 1.0 80)))
+            (defpmethod circuit-two
+              {:doc "Second quadcopter circuit"}
+              [q]
+              (sequence
+                (q.wp2)
+                (q.wp3)
+                (q.wp4)
+                (q.wp1)
+                (q.wp2)))
+            (defpmethod circuit-three
+              {:doc "Third quadcopter circuit"}
+              [q]
+              (sequence
+                (q.wp3)
+                (q.wp4)
+                (q.wp1)
+                (q.wp2)
+                (q.wp3)))
+            (defpmethod waypoints
+              {:doc "Three quadcopter pattern of waypoints"}
+              [qc1 qc2 qc3]
+              (parallel
+                (circuit-one qc1)
+                (circuit-two qc2)
+                (circuit-three qc3)))
+            ])
+
+(defpclass qc-demo []
+  :meta {:version "0.3.0"
+         :depends [[qc "0.3.0"]
+                   [qc-waypoints "0.3.0"]]
+         :doc "Quadcopter test waypoints"}
+  :fields {qc1 (qc :id "qc1" :plant-part "pp1" :interface "RMQ")
+           qc2 (qc :id "qc2" :plant-part "pp2" :interface "ZMQ")
+           qc3 (qc :id "qc3" :plant-part "pp3")})

@@ -1,0 +1,35 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Test for #84
+
+(defpclass complex-args []
+  :methods [(defpmethod main
+              {:doc "run various arg tests"}
+              [label]
+              (sequence
+                (display label) ;; arg as symbol
+                (display true) ;; arg as boolean
+                (display "foo") ;; arg as string
+                (display 123.456) ;; arg as number
+                (display :fred) ;; arg as safe-keyword
+                (display [label false "bar" 789 :joe]) ;; arg as a vector
+                (display {:label label :tag "baz" :uid 1024}) ;; arg as a map
+                ;; arg as a recursive data structure
+                (display {:label label
+                          :tag "nested"
+                          :myvec [label true "pamela" 3.14 :off]})
+                ))
+            (defpmethod display
+              {:doc "display arg values"}
+              [arg])])

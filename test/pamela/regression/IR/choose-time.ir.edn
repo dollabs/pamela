@@ -4,26 +4,26 @@
   :meta {:version "0.2.0", :doc "choose example with time bounds"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :choose,
-      :body
-      [{:type :choice,
-        :body [{:type :delay, :body nil}],
-        :temporal-constraints [{:type :bounds, :value [1 100]}]}
-       {:type :choice,
-        :body [{:type :delay, :body nil}],
-        :temporal-constraints [{:type :bounds, :value [101 200]}]}
-       {:type :choice,
-        :body [{:type :delay, :body nil}],
-        :temporal-constraints [{:type :bounds, :value [201 300]}]}]}],
-    :doc "choose based on time"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [1 100]}]}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [101 200]}]}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [201 300]}]}]}],
+     :doc "choose based on time"}]}}}

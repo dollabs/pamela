@@ -42,7 +42,7 @@
   "Create edn and json versions of HTN and TPN models for pamela"
   [pamela-file]
   (io/make-parents (str outdir "nothing.txt"))
-  (let [[filename entrypoint] pamela-file
+  (let [[filename root-task] pamela-file
         fobj (io/as-file filename)
         pname-with-extension (.getName fobj)
         pname (get-pamela-name pname-with-extension)
@@ -56,7 +56,7 @@
 
         htn-edn-clj (str htn-edn ".clj")
         htn-json-clj (str htn-json ".clj")
-        tpn-end-clj (str tpn-edn ".clj")
+        tpn-edn-clj (str tpn-edn ".clj")
         tpn-json-clj (str tpn-json ".clj")
         ]
     (pcli/set-test-mode! true)
@@ -65,29 +65,29 @@
 
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in EDN")
-    (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "edn" "htn")
-    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "edn" :verbose 1})
+    (is (= 0 (pcli/pamela "-i" filename "-o" out-pname "-t" root-task "-f" "edn" "htn")))
+    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task root-task :file-format "edn" :verbose 1})
 
     (pcli/reset-gensym-generator)
     (println "Generating HTN and TPN in JSON")
-    (pcli/pamela "-i" filename "-o" out-pname "-t" entrypoint "-f" "json" "htn")
-    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task entrypoint :file-format "json" :verbose 1})
+    (is (= 0 (pcli/pamela "-i" filename "-o" out-pname "-t" root-task "-f" "json" "htn")))
+    ;;(pcli/exec-action "htn" {:input [fobj] :output out-pname :root-task root-task :file-format "json" :verbose 1})
 
     ;;(println "schema files" htn-edn htn-json tpn-edn tpn-json)
 
     (println "Reading htn-edn, writing htn-edn")
-    (scli/plan-schema "-i" htn-edn "-o" htn-edn-clj "htn")
+    (is (= 0 (scli/plan-schema "-i" htn-edn "-o" htn-edn-clj "htn")))
 
     (println "Reading htn-json, writing htn-edn")
-    (scli/plan-schema "-i" htn-json "-o" htn-json-clj "htn")
+    (is (= 0 (scli/plan-schema "-i" htn-json "-o" htn-json-clj "htn")))
 
     (println "Reading tpn-edn, writing tpn-edn")
-    (scli/plan-schema "-i" tpn-edn "-o" tpn-end-clj "tpn")
+    (is (= 0 (scli/plan-schema "-i" tpn-edn "-o" tpn-edn-clj "tpn")))
 
     (println "Reading tpn-json, writing tpn-edn")
-    (scli/plan-schema "-i" tpn-json "-o" tpn-json-clj "tpn")
+    (is (= 0 (scli/plan-schema "-i" tpn-json "-o" tpn-json-clj "tpn")))
 
-    [htn-edn-clj htn-json-clj tpn-end-clj tpn-json-clj]
+    [htn-edn-clj htn-json-clj tpn-edn-clj tpn-json-clj]
     ))
 
 (defn read-clj [filename]

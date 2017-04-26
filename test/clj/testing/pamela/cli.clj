@@ -13,6 +13,8 @@
 
 (ns testing.pamela.cli
   (:require [clojure.test :refer :all]
+            [me.raynes.fs :as fs]
+            [testing.pamela.parser :refer [fs-get-path]]
             [pamela.cli :refer :all]))
 
 (deftest testing-pamela-cli
@@ -21,4 +23,31 @@
     (is (= output-formats #{"edn" "json"}))
     (is (= (sort (keys actions)) '("build" "check" "htn" "tpn")))
     (is (= (base-64-decode "KGNvaW4uZmxpcC0zKQ==") "(coin.flip-3)"))
+
+    (set-test-mode! true) ;; no need to set repl-mode
+
+    (binding [*out* (new java.io.StringWriter)] ;; discard *out*
+      ;; check PASS
+      (is (= 0 (pamela "-i" "test/pamela/circuit.pamela" "check" )))
+      ;; check FAIL
+      (is (= 1 (pamela "-i" "bogus.pamela" "check")))
+      ;; build PASS
+      (is (= 0 (pamela "-i" "test/pamela/circuit.pamela" "build" )))
+      ;; build FAIL
+      (is (= 1 (pamela "-i" "test/pamela/errors/IR/issue-86b.pamela" "build")))
+      ;; tpn PASS
+      (is (= 0 (pamela "-i" "test/pamela/plant.pamela"
+                 "-i" "test/pamela/parallel-choice.tpn.pamela"
+                 "tpn" )))
+      ;; tpn FAIL
+      (is (= 1 (pamela "-i" "test/pamela/parallel-choice.tpn.pamela" "tpn")))
+      ;; htn PASS
+      (is (= 0 (pamela "-i" "test/pamela/lvar-examples.pamela"
+                 "-t" "(example.imager.main)"
+                 "htn")))
+      ;; htn FAIL
+      (is (= 1 (pamela "-i" "test/pamela/tpn-demo.pamela"
+                 "-t" "(tpn.elephant)"
+                 "htn")))
+      )
     ))
