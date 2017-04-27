@@ -49,6 +49,9 @@
 
 ;; vars -------------------------------------------------------
 
+;;
+(def ^:dynamic *belief-state-manager-plant-id* "bsm1")
+
 (def ^:dynamic *debug-ir* (atom {}))
 
 ;; HTN Methods
@@ -135,6 +138,39 @@
   "non-NIL if the argument is a variable, i.e., if it's a symbol."
   [argument]
   (symbol? argument))
+
+(defn reserved-conditional-method-name?
+  "non-NIL if the argument is a name of one of the Pamela reserved method names"
+  [method-name]
+  ('#{ask tell assert}
+   method-name))
+
+(defn clj19-boolean?
+  "Return true if x is a Boolean"
+  [x] (instance? Boolean x))
+
+;;; If fully fleshed out, this should be in its own file
+;;; For now, this is only used to create user-readable arg lists
+(defn to-pamela [ir-snippet]
+  (cond
+    (map? ir-snippet)
+    (let [{:keys [type args name value condition]} ir-snippet]
+      (case type
+        :ask (list 'ask (to-pamela condition))
+        :state-variable name
+        :arg-reference name
+        :literal value
+        :equal (conj (map to-pamela args) '=)))
+
+    (seq? ir-snippet)
+    (map to-pamela ir-snippet)
+
+    (vector? ir-snippet)
+    (mapv to-pamela ir-snippet)
+
+    (some #(% ir-snippet) (list keyword? symbol? number? string? clj19-boolean?))
+    ir-snippet))
+
 
 ;; HTN Object hierarchy ------------------------------------
 
@@ -351,6 +387,9 @@
 
                        (= type :delay)
                        {}
+
+                       (#{:ask :tell :assert} type)
+                       {} ;;TODO: Update this
 
                        :else
                        (do
@@ -1351,7 +1390,9 @@
     (if (or (not primitive?) (= name 'delay))
       details
       (let [{:keys [pclass id plant-part interface]} pclass-ctor_
-            plantid id
+            plantid (if (reserved-conditional-method-name? name)
+                      *belief-state-manager-plant-id*
+                      id)
             _ (dbg-println :debug "PD ARGS" arguments)
             arguments (or arguments [])
             unresolved (count (filter variable? arguments))
@@ -1361,9 +1402,12 @@
                    arguments)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
             _ (dbg-println :debug "PD get-in" pclass name)
-            [mi mdef] (match-method-arity
-                        (count args)
-                        (get-in ir [pclass :methods name]))
+            [mi mdef] (if (reserved-conditional-method-name? name)
+                        [0 {:args '[condition]}] ;;TODO: Generalize this
+                        (match-method-arity
+                         (count args)
+                         (get-in ir [pclass :methods name])))
+            _ (dbg-println :debug "MDEF" mdef)
             formal-args (:args mdef)
             _ (dbg-println :debug "before FORMAL-ARGS" (pr-str formal-args))
             ;; convert formal arg symbols to strings
@@ -1510,7 +1554,7 @@
                                                  (if plant-id (str plant-id "."))
                                                  interface))
                                  :display-name (str (:display-name details_)
-                                                    (seq (:args details_))))
+                                                    (seq (to-pamela (:args details_)))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
                          :label (:label details_) ;; to be removed
@@ -1734,7 +1778,7 @@
                     [])]
         (let [subtask-definition (get sub-body i)
               irks-i (conj irks i)
-              {:keys [type name field method args
+              {:keys [type name field method args condition
                       primitive body temporal-constraints]} subtask-definition
               caller-arity (count args)
               ;; DEBUG
@@ -1818,6 +1862,15 @@
                              :irks irks-i})
                       ]
                   task)
+
+                (#{:ask :tell :assert} type)
+                (htn-primitive-task
+                 {:name (symbol (clojure.core/name type))
+                  :pclass mpclass
+                  :display-name (display-name-string type)
+                  :arguments [condition] ;;Condition is a map, which will likely not work
+                  :temporal-constraints temporal-constraints
+                  :irks irks-i})
 
                 (= :delay type)
                 (htn-primitive-task
