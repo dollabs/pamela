@@ -803,7 +803,16 @@
                                 (validate-arity in-pclass in-method in-mi
                                   pclass (get-in ir [pclass :methods])
                                   method args)
-                                {:error "non :pclass-ctor check unsupported"})]
+                                ;; NOTE: in the past we just gave up on
+                                ;; checking arity here for fields that
+                                ;; are initialized from pclass args.
+                                ;; Now we will *assume* the arity is fine
+                                ;; and will catch it once we evaluate
+                                ;; an actual root-task
+                                ;; {:error "non :pclass-ctor check unsupported"}
+                                ;; NOTE below is simply an arbitrary value
+                                ;; to set mdef instead of error
+                                {:mdef "arity not checked at build time"})]
                           (if error
                             [nil error]
                             [(assoc (dissoc b :name)

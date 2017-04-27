@@ -2,7 +2,7 @@
  {:type :pclass,
   :args [],
   :fields
-  {sp1
+  {:sp1
    {:access :private,
     :observable false,
     :initial
@@ -12,7 +12,7 @@
      :id "sp1",
      :plant-part "mypart",
      :interface "RMQ"}},
-   sp2
+   :sp2
    {:access :private,
     :observable false,
     :initial
@@ -22,7 +22,7 @@
      :id "sp2",
      :plant-part "mypart2",
      :interface "RMQ"}},
-   run
+   :run
    {:access :private,
     :observable false,
     :initial
@@ -32,11 +32,11 @@
   :args [plant1 plant2],
   :meta {:doc "Coverage Test"},
   :fields
-  {p1
+  {:p1
    {:access :private,
     :observable false,
     :initial {:type :arg-reference, :name plant1}},
-   p2
+   :p2
    {:access :private,
     :observable false,
     :initial {:type :arg-reference, :name plant2}}},
@@ -57,23 +57,18 @@
        :body
        [{:type :plant-fn-field,
          :method scp,
-         :args [{:type :field-deref,
-                 :field p2,
-                 :deref data1}
-                {:type :field-deref,
-                 :field p2,
-                 :deref data2}],
-         :field p2}]}],
+         :args [:p2_data1 :p2_data2],
+         :field :p2}]}],
      :doc "The HTN"}]}},
  simpleplant
  {:type :pclass,
   :args [],
   :fields
-  {data1
+  {:data1
    {:access :private,
     :observable false,
     :initial {:type :literal, :value 123}},
-   data2
+   :data2
    {:access :private,
     :observable false,
     :initial {:type :literal, :value "fred"}}},
@@ -81,12 +76,12 @@
   {:bykw
    {:type :equal,
     :args
-    [{:type :field-reference, :pclass this, :field data1}
+    [{:type :field-reference, :pclass this, :field :data1}
      {:type :literal, :value 123}]},
    :bysym
    {:type :equal,
     :args
-    [{:type :field-reference, :pclass this, :field data2}
+    [{:type :field-reference, :pclass this, :field :data2}
      {:type :literal, :value "fred"}]}},
   :methods
   {hardwork
