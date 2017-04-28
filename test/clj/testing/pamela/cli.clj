@@ -39,7 +39,19 @@
          [rv# out-str# err-str#]
          (binding [*out* out#
                    *err* err#]
-           [~@body (str out#) (str err#)])
+           (let [exception# (atom nil)
+                 raw-rv# (try
+                           ~@body
+                           (catch Throwable e#
+                             (reset! exception# (.getMessage e#))
+                             nil))
+                 raw-out# (str out#)
+                 raw-err# (str err#)
+                 except-err# (if @exception#
+                               (str "EXCEPTION:\n" @exception#
+                                 "\nERROR:\n" raw-err#)
+                               raw-err#)]
+             [raw-rv# raw-out# except-err#]))
          out-pattern# (cond
                         (nil? ~out-expect)
                         nil
@@ -96,6 +108,7 @@
             (pamela "-i" "bogus.pamela" "check")
             )))
 
+    ;; NOTE: comprehensive build coverage tests have moved to parser.clj
     ;; build PASS
     (is (= [0 true true]
           (match-eval-out-err "\\{bulb \\{:type :pclass" nil
@@ -119,6 +132,7 @@
             (pamela "-i" "test/pamela/parallel-choice.tpn.pamela" "tpn")
             )))
 
+    ;; NOTE: comprehensive htn tests are in htn.clj
     ;; htn PASS
     (is (= [0 true true]
           (match-eval-out-err "type.*htn-expanded-method" nil

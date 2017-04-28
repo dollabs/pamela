@@ -1,4 +1,4 @@
-<;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
@@ -34,10 +34,14 @@
           top-path (str (fs-get-path top) "/")
           pamela (fs/file top "test" "pamela")
           regression (fs/file pamela "regression")
+          errors (fs/file pamela "errors")
+          errors-ir (fs/file errors "IR")
           examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
+          neg-examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
+                         (sort-by fs/base-name (fs/list-dir errors-ir)))
           pamela-ir (fs/file top "target" "parser" "IR")
           regression-ir (fs/file top "target" "parser" "regression" "IR")]
       (if-not (fs/exists? pamela-ir)
@@ -70,4 +74,14 @@
                                       specimen-ir-path)})]
           ;; (println "BUILD" example-name "\n  RUBRIQUE" example-ir-path
           ;;   "\n  SPECIMEN" specimen-ir-path)
-          (is (= example-ir specimen-ir)))))))
+          (is (= example-ir specimen-ir))))
+      ;; Negative examples that are *expected* to FAIL
+      (doseq [neg-example neg-examples]
+        (reset-gensym-generator)
+        (let [neg-example-name (fs-file-name neg-example)
+              neg-example-path (fs-get-path neg-example)
+              options {:input [neg-example-path]}
+              specimen-ir (parse options)]
+          ;; (println "BUILD" neg-example-name)
+          (is (not (nil? (:error specimen-ir))))))
+      )))
