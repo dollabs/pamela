@@ -1,0 +1,184 @@
+{:act-13
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name foo}
+     {:type :literal, :value :illuminated}]}],
+  :constraints #{},
+  :plantid "bsm1",
+  :uid :act-13,
+  :name "Assert((= foo :illuminated))",
+  :tpn-type :activity,
+  :argsmap
+  {"condition"
+   {:type :equal,
+    :args
+    [{:type :state-variable, :name foo}
+     {:type :literal, :value :illuminated}]}},
+  :command "assert",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-18,
+  :label "TEMP-assert",
+  :display-name "Assert"},
+ :act-17
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name bar}
+     {:type :literal, :value :dead}]}],
+  :constraints #{},
+  :plantid "bsm1",
+  :uid :act-17,
+  :name "Ask((= bar :dead))",
+  :tpn-type :activity,
+  :argsmap
+  {"condition"
+   {:type :equal,
+    :args
+    [{:type :state-variable, :name bar}
+     {:type :literal, :value :dead}]}},
+  :command "ask",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-22,
+  :label "TEMP-ask",
+  :display-name "Ask"},
+ :act-21
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :field-reference-field,
+      :pclass this,
+      :field :field1,
+      :value :simple2}
+     {:type :literal, :value "white"}]}],
+  :constraints #{},
+  :plantid "bsm1",
+  :uid :act-21,
+  :name "Ask((= :field1.:simple2 \"white\"))",
+  :tpn-type :activity,
+  :argsmap
+  {"condition"
+   {:type :equal,
+    :args
+    [{:type :field-reference-field,
+      :pclass this,
+      :field :field1,
+      :value :simple2}
+     {:type :literal, :value "white"}]}},
+  :command "ask",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-26,
+  :label "TEMP-ask",
+  :display-name "Ask"},
+ :act-25
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name door}
+     {:type :literal, :value :open}]}],
+  :constraints #{},
+  :plantid "bsm1",
+  :uid :act-25,
+  :name "Tell((= door :open))",
+  :tpn-type :activity,
+  :argsmap
+  {"condition"
+   {:type :equal,
+    :args
+    [{:type :state-variable, :name door}
+     {:type :literal, :value :open}]}},
+  :command "tell",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-30,
+  :label "TEMP-tell",
+  :display-name "Tell"},
+ :act-29
+ {:args [],
+  :constraints #{},
+  :uid :act-29,
+  :name "Initialize",
+  :tpn-type :activity,
+  :argsmap {},
+  :command "initialize",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-1,
+  :label "TEMP-initialize",
+  :display-name "Initialize"},
+ :act-9
+ {:args [:field1.:simple2],
+  :constraints #{},
+  :uid :act-9,
+  :name "One Arg Method(:field1.:simple2)",
+  :tpn-type :activity,
+  :argsmap {"x" :field1.:simple2},
+  :command "one-arg-method",
+  :htn-node :hem-23,
+  :controllable false,
+  :end-node :node-14,
+  :label "TEMP-one-arg-method",
+  :display-name "One Arg Method"},
+ :net-3
+ {:tpn-type :network,
+  :uid :net-3,
+  :begin-node :node-10,
+  :end-node :node-1},
+ :network-id :net-3,
+ :node-1
+ {:tpn-type :state,
+  :uid :node-1,
+  :constraints #{},
+  :activities #{},
+  :incidence-set #{:act-29}},
+ :node-10
+ {:tpn-type :state,
+  :uid :node-10,
+  :constraints #{},
+  :activities #{:act-9},
+  :incidence-set #{},
+  :htn-node :hem-16,
+  :end-node :node-8},
+ :node-14
+ {:tpn-type :state,
+  :uid :node-14,
+  :constraints #{},
+  :activities #{:act-13},
+  :incidence-set #{:act-9},
+  :htn-node :hem-23,
+  :end-node :node-12},
+ :node-18
+ {:tpn-type :state,
+  :uid :node-18,
+  :constraints #{},
+  :activities #{:act-17},
+  :incidence-set #{:act-13},
+  :htn-node :hem-23,
+  :end-node :node-16},
+ :node-22
+ {:tpn-type :state,
+  :uid :node-22,
+  :constraints #{},
+  :activities #{:act-21},
+  :incidence-set #{:act-17},
+  :htn-node :hem-23,
+  :end-node :node-20},
+ :node-26
+ {:tpn-type :state,
+  :uid :node-26,
+  :constraints #{},
+  :activities #{:act-25},
+  :incidence-set #{:act-21},
+  :htn-node :hem-23,
+  :end-node :node-24},
+ :node-30
+ {:tpn-type :state,
+  :uid :node-30,
+  :constraints #{},
+  :activities #{:act-29},
+  :incidence-set #{:act-25},
+  :htn-node :hem-23,
+  :end-node :node-28}}
