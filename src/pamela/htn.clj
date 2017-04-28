@@ -1573,7 +1573,9 @@
                                                  (if plant-id (str plant-id "."))
                                                  interface))
                                  :display-name (str (:display-name details_)
-                                                    (seq (to-pamela (:args details_)))))
+                                                    (if (= name 'delay)
+                                                      nil
+                                                      (seq (to-pamela (:args details_))))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
                          :label (:label details_) ;; to be removed
