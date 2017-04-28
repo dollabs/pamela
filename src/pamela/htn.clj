@@ -16,12 +16,13 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
-            [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
+            [avenir.utils :refer [concatv assoc-if keywordize vec-index-of as-keyword]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [camel-snake-kebab.core :as translate]
             [instaparse.core :as insta]
-            [pamela.utils :refer [stdout? output-file display-name-string dbg-println]]
+            [pamela.utils :refer [stdout? output-file display-name-string dbg-println
+                                  clj19-boolean?]]
             [pamela.parser :as parser]
             [pamela.tpn :as tpn]))
 
@@ -139,28 +140,41 @@
   [argument]
   (symbol? argument))
 
+(def reserved-conditional-method-names
+  "Pamela statements that include a condition but no body"
+  '#{ask tell assert})
+
 (defn reserved-conditional-method-name?
   "non-NIL if the argument is a name of one of the Pamela reserved method names"
   [method-name]
-  ('#{ask tell assert}
-   method-name))
+  (reserved-conditional-method-names method-name))
 
-(defn clj19-boolean?
-  "Return true if x is a Boolean"
-  [x] (instance? Boolean x))
+(defn reserved-conditional-method-type?
+  "non-NIL if the argument is a type of one of the Pamela reserved method types (keywords)"
+  [method-type]
+  (let [reserved-types (set (map as-keyword reserved-conditional-method-names))]
+    (reserved-types method-type)))
 
 ;;; If fully fleshed out, this should be in its own file
 ;;; For now, this is only used to create user-readable arg lists
 (defn to-pamela [ir-snippet]
   (cond
     (map? ir-snippet)
-    (let [{:keys [type args name value condition]} ir-snippet]
+    (let [{:keys [type args name value condition field]} ir-snippet]
       (case type
         :ask (list 'ask (to-pamela condition))
+        :tell (list 'tell (to-pamela condition))
+        :assert (list 'assert (to-pamela condition))
         :state-variable name
         :arg-reference name
+        :field-reference-field
+        (let [typefn (if (keyword? field) as-keyword symbol)]
+          (typefn (str (str field) "." (str value))))
         :literal value
-        :equal (conj (map to-pamela args) '=)))
+        :equal (conj (map to-pamela args) '=)
+        (do
+          (log/warn "to-pamela: type" type "not handled")
+          ir-snippet)))
 
     (seq? ir-snippet)
     (map to-pamela ir-snippet)
@@ -169,7 +183,12 @@
     (mapv to-pamela ir-snippet)
 
     (some #(% ir-snippet) (list keyword? symbol? number? string? clj19-boolean?))
-    ir-snippet))
+    ir-snippet
+
+    :else
+    (do
+      (log/warn "to-pamela: ir-snippet" ir-snippet "not handled")
+      ir-snippet)))
 
 
 ;; HTN Object hierarchy ------------------------------------
@@ -388,7 +407,7 @@
                        (= type :delay)
                        {}
 
-                       (#{:ask :tell :assert} type)
+                       (reserved-conditional-method-type? type)
                        {} ;;TODO: Update this
 
                        :else
@@ -1863,12 +1882,12 @@
                       ]
                   task)
 
-                (#{:ask :tell :assert} type)
+                (reserved-conditional-method-type? type)
                 (htn-primitive-task
                  {:name (symbol (clojure.core/name type))
                   :pclass mpclass
                   :display-name (display-name-string type)
-                  :arguments [condition] ;;Condition is a map, which will likely not work
+                  :arguments [condition] ;;Condition is a map
                   :temporal-constraints temporal-constraints
                   :irks irks-i})
 

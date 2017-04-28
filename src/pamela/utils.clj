@@ -161,3 +161,8 @@
                            (inc (.indexOf dbg-println-levels level)))]
                `(if (<= ~level *dbg-println-level*)
                   (println ~@more)))))
+
+;; Placeholder, until we move to Clojure 1.9
+(defn clj19-boolean?
+  "Return true if x is a Boolean"
+  [x] (instance? Boolean x))
