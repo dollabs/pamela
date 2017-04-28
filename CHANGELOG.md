@@ -21,6 +21,7 @@ Changes
 * Ensure CLI returns same integer exit code whenever calling
   pamela.cli/pamela.
 * Added cli.clj test coverage for the above.
+* Add HTN/TPN support for ask, tell, and assert Pamela statements (Closes #94)
 
 ### [0.6.0] - 2017-03-08
 
