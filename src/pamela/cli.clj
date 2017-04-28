@@ -214,7 +214,7 @@
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
   (if (or (repl?) test-mode)
-    (log/warn "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
+    (log/info "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
     (do (log/info "exiting with status" status)
       (shutdown-agents)
         (System/exit status)))
