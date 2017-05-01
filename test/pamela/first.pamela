@@ -1,0 +1,84 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+(defpclass plant []
+           :meta {:doc "The Plant API"}
+
+           :methods [(defpmethod do-a {:bounds [2 4]} [])
+                     (defpmethod do-b {:bounds [3 6]} [])
+                     (defpmethod do-c {:bounds [85 90]} [])
+                     (defpmethod do-d {:bounds [1 7]} [])
+                     (defpmethod do-e {:bounds [9 16]} [])
+                     (defpmethod do-f {:bounds [1 3]} [])
+                     (defpmethod do-g {:bounds [2 5]} [])
+                     ])
+
+; pamela -i first.pamela -o first.cfm.tpn.json -c main:tpn:start tpn
+(defpclass first-tpn [plnt]
+           :meta {:doc "A example with constraints. "}
+
+           :methods [(defpmethod start
+                                 {:doc "Simple TPN with constraints"}
+                                 []
+                                 ; TODO Add cost < C and reward > R when language supports it.
+                                 (parallel :bounds [1 100]
+                                           (sequence (plnt.do-a)
+                                                     (plnt.do-b :label :b)
+                                                     )
+                                           (sequence
+                                             (choose :label :choice ;:max-cost 10 :min-reward 5
+                                                     (choice
+                                                       (sequence
+                                                         (plnt.do-d :cost 1 :reward 2)
+                                                         (plnt.do-e :cost 2 :reward 1)))
+                                                     (choice
+                                                       (sequence
+                                                         (plnt.do-f :cost 3 :reward 1)
+                                                         (plnt.do-g :cost 4))))
+                                             (plnt.do-c)))
+                                 (between :choice :b :bounds [1 100]))])
+
+; pamela -i first.pamela -o first -t "(first-tpn-htn.start)" htn
+; Note: Uncomment `first-tpn` class before using htn task. Otherwise this file will not compile
+(defpclass first-tpn-htn [plnt]
+           :meta {:doc "A example with constraints. "}
+
+           :methods [(defpmethod start
+                                 {:doc "Simple TPN with constraints"}
+                                 []
+                                 ; TODO Add cost < C and reward > R when language supports it.
+                                 (parallel :bounds [1 100]
+                                           (do-a-and-b)
+                                           (do-choice-and-c))
+                                 (between :choice :b :bounds [1 100]))
+
+                     (defpmethod do-a-and-b []
+                                 (sequence (plnt.do-a)
+                                           (plnt.do-b :label :b)
+                                           ))
+                     (defpmethod do-choice-and-c []
+                                 (sequence
+                                   (do-choice)
+                                   (plnt.do-c)))
+
+                     (defpmethod do-choice []
+                                 (choose :label :choice ;:max-cost 10 :min-reward 5
+                                         (choice
+                                           (do-d-and-e))
+                                         (choice
+                                           (do-f-and-g))))
+                     (defpmethod do-d-and-e []
+                                 (sequence
+                                   (plnt.do-d :cost 1 :reward 2)
+                                   (plnt.do-e :cost 2 :reward 1)))
+                     (defpmethod do-f-and-g []
+                                 (sequence
+                                   (plnt.do-f :cost 3 :reward 1)
+                                   (plnt.do-g :cost 4)))
+                     ])
+(defpclass main []
+           :fields {:plnt (plant)
+                    :tpn (first-tpn :plnt)})
