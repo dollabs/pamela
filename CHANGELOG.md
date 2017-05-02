@@ -22,6 +22,7 @@ Changes
   pamela.cli/pamela.
 * Added cli.clj test coverage for the above.
 * Add HTN/TPN support for ask, tell, and assert Pamela statements (Closes #94)
+* Ensure state :end-node's are updated properly in remove-superflous (Closes #103)
 
 ### [0.6.0] - 2017-03-08
 

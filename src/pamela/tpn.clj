@@ -459,7 +459,9 @@
           (let [a-activities (disj a-activities a0-uid)
                 a-activities (if s0-uid (conj a-activities s0-uid) a-activities)
                 a (assoc-if a
-                    :activities a-activities)
+                    :activities a-activities
+                    :end-node (if (= (:end-node a) s-uid)
+                                b-uid))
                 b (assoc-if b
                     :htn-node htn-node)
                 [a b] (if move-constraints?
@@ -510,6 +512,8 @@
             ;; OK, we move them below... (not move-constraints?)
             b (not (#{:c-begin :p-begin :c-end :p-end} b-type)))
           (do
+            (when (= (:end-node a) s-uid)
+              (update-tpn-plan-map! (assoc a :end-node b-uid)))
             (doseq [act a-activities] ;; move end-node to b-uid
               (update-tpn-plan-map!
                 (assoc (get-tpn-plan-map act) :end-node b-uid)))
