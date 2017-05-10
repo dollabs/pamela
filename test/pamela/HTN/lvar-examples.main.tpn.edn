@@ -9,7 +9,6 @@
   :htn-node :hem-11,
   :controllable false,
   :end-node :node-9,
-  :label "TEMP-take-medium-res-images",
   :display-name "Take Medium Res Images"},
  :act-5
  {:args [],
@@ -22,7 +21,6 @@
   :htn-node :hem-9,
   :controllable false,
   :end-node :node-4,
-  :label "TEMP-take-high-res-images",
   :display-name "Take High Res Images"},
  :na-12
  {:tpn-type :null-activity,
@@ -62,8 +60,7 @@
   :constraints #{},
   :activities #{:act-10},
   :incidence-set #{:na-12},
-  :htn-node :hem-11,
-  :end-node :node-9},
+  :htn-node :hem-11},
  :node-2
  {:tpn-type :c-begin,
   :uid :node-2,
@@ -84,8 +81,7 @@
   :constraints #{},
   :activities #{:act-5},
   :incidence-set #{:na-7},
-  :htn-node :hem-9,
-  :end-node :node-4},
+  :htn-node :hem-9},
  :node-9
  {:tpn-type :state,
   :uid :node-9,

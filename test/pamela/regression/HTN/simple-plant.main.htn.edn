@@ -119,10 +119,5 @@
   :display-name "planttest",
   :label "planttest",
   :rootnodes #{:henpt-12}},
- :net-30
- {:type :htn-network,
-  :uid :net-30,
-  :display-name "Main()",
-  :label "Main()",
-  :rootnodes #{:hpt-13}},
+ :net-30 {:type :htn-network, :uid :net-30, :rootnodes #{:hpt-13}},
  :network :net-28}

@@ -68,22 +68,7 @@
   :display-name "choice-feasible",
   :label "choice-feasible",
   :rootnodes #{:henpt-9}},
- :net-21
- {:type :htn-network,
-  :uid :net-21,
-  :display-name "Main-0()",
-  :label "Main-0()",
-  :rootnodes #{:hpt-10}},
- :net-23
- {:type :htn-network,
-  :uid :net-23,
-  :display-name "Main-1()",
-  :label "Main-1()",
-  :rootnodes #{:hpt-13}},
- :net-25
- {:type :htn-network,
-  :uid :net-25,
-  :display-name "Main-2()",
-  :label "Main-2()",
-  :rootnodes #{:hpt-16}},
+ :net-21 {:type :htn-network, :uid :net-21, :rootnodes #{:hpt-10}},
+ :net-23 {:type :htn-network, :uid :net-23, :rootnodes #{:hpt-13}},
+ :net-25 {:type :htn-network, :uid :net-25, :rootnodes #{:hpt-16}},
  :network :net-19}

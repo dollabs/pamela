@@ -55,10 +55,5 @@
   :display-name "sequence-bounds",
   :label "sequence-bounds",
   :rootnodes #{:henpt-9}},
- :net-18
- {:type :htn-network,
-  :uid :net-18,
-  :display-name "Example()",
-  :label "Example()",
-  :rootnodes #{:hpt-10}},
+ :net-18 {:type :htn-network, :uid :net-18, :rootnodes #{:hpt-10}},
  :network :net-16}

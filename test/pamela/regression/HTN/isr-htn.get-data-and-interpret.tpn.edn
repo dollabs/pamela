@@ -11,7 +11,6 @@
   :htn-node :hem-44,
   :controllable false,
   :end-node :node-11,
-  :label "TEMP-evidence",
   :display-name "Evidence",
   :plant-part "isr1"},
  :act-30
@@ -27,7 +26,6 @@
   :htn-node :hem-47,
   :controllable false,
   :end-node :node-20,
-  :label "TEMP-interpret1",
   :display-name "Interpret 1",
   :plant-part "isr1"},
  :act-40
@@ -43,7 +41,6 @@
   :htn-node :hem-50,
   :controllable false,
   :end-node :node-34,
-  :label "TEMP-interpret2",
   :display-name "Interpret 2",
   :plant-part "isr1"},
  :act-50
@@ -59,7 +56,6 @@
   :htn-node :hem-53,
   :controllable false,
   :end-node :node-44,
-  :label "TEMP-interpret3",
   :display-name "Interpret 3",
   :plant-part "isr1"},
  :act-61
@@ -75,7 +71,6 @@
   :htn-node :hem-57,
   :controllable false,
   :end-node :node-67,
-  :label "TEMP-go-to",
   :display-name "Go To",
   :plant-part "isr1"},
  :act-66
@@ -91,7 +86,6 @@
   :htn-node :hem-57,
   :controllable false,
   :end-node :node-54,
-  :label "TEMP-capture",
   :display-name "Capture",
   :plant-part "isr1"},
  :na-10
@@ -168,7 +162,7 @@
   :activities #{:act-16},
   :incidence-set #{:na-18},
   :htn-node :hem-40,
-  :end-node :node-11},
+  :sequence-end :node-11},
  :node-20
  {:tpn-type :state,
   :uid :node-20,
@@ -196,7 +190,7 @@
   :activities #{:act-30},
   :incidence-set #{:na-32},
   :htn-node :hem-47,
-  :end-node :node-20},
+  :sequence-end :node-20},
  :node-34
  {:tpn-type :state,
   :uid :node-34,
@@ -209,8 +203,7 @@
   :constraints #{},
   :activities #{:act-40},
   :incidence-set #{:na-42},
-  :htn-node :hem-50,
-  :end-node :node-34},
+  :htn-node :hem-50},
  :node-44
  {:tpn-type :state,
   :uid :node-44,
@@ -223,8 +216,7 @@
   :constraints #{},
   :activities #{:act-50},
   :incidence-set #{:na-52},
-  :htn-node :hem-53,
-  :end-node :node-44},
+  :htn-node :hem-53},
  :node-54
  {:tpn-type :state,
   :uid :node-54,
@@ -243,16 +235,14 @@
   :constraints #{},
   :activities #{:act-61},
   :incidence-set #{:na-63},
-  :htn-node :hem-57,
-  :end-node :node-67},
+  :htn-node :hem-57},
  :node-67
  {:tpn-type :state,
   :uid :node-67,
   :constraints #{},
   :activities #{:act-66},
   :incidence-set #{:act-61},
-  :htn-node :hem-57,
-  :end-node :node-54},
+  :htn-node :hem-57},
  :node-7
  {:tpn-type :p-begin,
   :uid :node-7,

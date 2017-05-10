@@ -13,7 +13,6 @@
   :htn-node :hem-38,
   :controllable false,
   :end-node :node-9,
-  :label "TEMP-scp",
   :display-name "Scp",
   :plant-part "mypart"},
  :act-29
@@ -29,7 +28,6 @@
   :htn-node :hem-41,
   :controllable false,
   :end-node :node-23,
-  :label "TEMP-cp",
   :display-name "Cp",
   :plant-part "mypart"},
  :act-39
@@ -45,7 +43,6 @@
   :htn-node :hem-44,
   :controllable false,
   :end-node :node-33,
-  :label "TEMP-shell",
   :display-name "Shell",
   :plant-part "mypart"},
  :act-49
@@ -61,7 +58,7 @@
   :htn-node :hem-49,
   :controllable false,
   :end-node :node-47,
-  :label "TEMP-hardwork",
+  :label :hardwork,
   :display-name "Hardwork",
   :plant-part "mypart"},
  :act-58
@@ -82,7 +79,7 @@
   :htn-node :hem-49,
   :controllable false,
   :end-node :node-56,
-  :label "TEMP-python",
+  :label :python,
   :display-name "Python",
   :plant-part "mypart"},
  :act-73
@@ -100,7 +97,6 @@
   :htn-node :hem-51,
   :controllable false,
   :end-node :node-63,
-  :label "TEMP-scp",
   :display-name "Scp",
   :plant-part "mypart"},
  :act-82
@@ -116,15 +112,20 @@
   :htn-node :hem-53,
   :controllable false,
   :end-node :node-77,
-  :label "TEMP-cp",
   :display-name "Cp",
   :plant-part "mypart"},
+ :costle-87
+ {:tpn-type :cost<=-constraint,
+  :uid :costle-87,
+  :value 7,
+  :end-node :node-12,
+  :between [:xfer :work]},
  :da-6
  {:tpn-type :delay-activity,
   :uid :da-6,
   :constraints #{:tc-5},
   :end-node :node-4,
-  :label "TEMP-delay",
+  :label :initial-delay,
   :controllable false,
   :name "Delay",
   :htn-node :hem-34},
@@ -222,7 +223,7 @@
  :node-12
  {:tpn-type :c-end,
   :uid :node-12,
-  :constraints #{},
+  :constraints #{:costle-87 :tc-86 :rewardge-88},
   :activities #{:na-53},
   :incidence-set #{:na-36 :na-26 :na-16}},
  :node-13
@@ -232,7 +233,8 @@
   :activities #{:na-41 :na-21 :na-31},
   :incidence-set #{:na-14},
   :htn-node :hem-34,
-  :end-node :node-12},
+  :end-node :node-12,
+  :label :xfer},
  :node-20
  {:tpn-type :state,
   :uid :node-20,
@@ -240,7 +242,7 @@
   :activities #{:act-19},
   :incidence-set #{:na-21},
   :htn-node :hem-38,
-  :end-node :node-9},
+  :sequence-end :node-9},
  :node-23
  {:tpn-type :state,
   :uid :node-23,
@@ -253,8 +255,7 @@
   :constraints #{},
   :activities #{:act-29},
   :incidence-set #{:na-31},
-  :htn-node :hem-41,
-  :end-node :node-23},
+  :htn-node :hem-41},
  :node-33
  {:tpn-type :state,
   :uid :node-33,
@@ -273,8 +274,7 @@
   :constraints #{},
   :activities #{:act-39},
   :incidence-set #{:na-41},
-  :htn-node :hem-44,
-  :end-node :node-33},
+  :htn-node :hem-44},
  :node-47
  {:tpn-type :state,
   :uid :node-47,
@@ -287,8 +287,7 @@
   :constraints #{},
   :activities #{:act-49},
   :incidence-set #{:na-54},
-  :htn-node :hem-49,
-  :end-node :node-47},
+  :htn-node :hem-49},
  :node-51
  {:tpn-type :p-end,
   :uid :node-51,
@@ -302,7 +301,9 @@
   :activities #{:na-61 :na-54},
   :incidence-set #{:na-53},
   :htn-node :hem-49,
-  :end-node :node-51},
+  :end-node :node-51,
+  :label :work,
+  :sequence-end :node-43},
  :node-56
  {:tpn-type :state,
   :uid :node-56,
@@ -315,8 +316,7 @@
   :constraints #{},
   :activities #{:act-58},
   :incidence-set #{:na-61},
-  :htn-node :hem-49,
-  :end-node :node-56},
+  :htn-node :hem-49},
  :node-63
  {:tpn-type :state,
   :uid :node-63,
@@ -336,7 +336,8 @@
   :activities #{:na-75 :na-84},
   :incidence-set #{:na-69},
   :htn-node :hem-34,
-  :end-node :node-66},
+  :end-node :node-66,
+  :label :copy},
  :node-7
  {:tpn-type :state,
   :uid :node-7,
@@ -344,7 +345,7 @@
   :activities #{:da-6},
   :incidence-set #{},
   :htn-node :hem-34,
-  :end-node :node-4},
+  :sequence-label :everything},
  :node-74
  {:tpn-type :state,
   :uid :node-74,
@@ -352,7 +353,7 @@
   :activities #{:act-73},
   :incidence-set #{:na-75},
   :htn-node :hem-51,
-  :end-node :node-63},
+  :sequence-end :node-63},
  :node-77
  {:tpn-type :state,
   :uid :node-77,
@@ -365,14 +366,19 @@
   :constraints #{},
   :activities #{:act-82},
   :incidence-set #{:na-84},
-  :htn-node :hem-53,
-  :end-node :node-77},
+  :htn-node :hem-53},
  :node-9
  {:tpn-type :state,
   :uid :node-9,
   :constraints #{},
   :activities #{:na-16},
   :incidence-set #{:act-19}},
+ :rewardge-88
+ {:tpn-type :reward>=-constraint,
+  :uid :rewardge-88,
+  :value 1,
+  :end-node :node-12,
+  :between [:xfer :work]},
  :tc-10
  {:tpn-type :temporal-constraint,
   :uid :tc-10,
@@ -417,4 +423,10 @@
  {:tpn-type :temporal-constraint,
   :uid :tc-64,
   :value [20 50],
-  :end-node :node-63}}
+  :end-node :node-63},
+ :tc-86
+ {:tpn-type :temporal-constraint,
+  :uid :tc-86,
+  :value [13 17],
+  :end-node :node-12,
+  :between [:xfer :work]}}

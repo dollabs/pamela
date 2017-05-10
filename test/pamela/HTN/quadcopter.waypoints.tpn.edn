@@ -10,7 +10,6 @@
   :htn-node :hem-87,
   :controllable false,
   :end-node :node-116,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp3"},
  :act-115
@@ -25,7 +24,6 @@
   :htn-node :hem-89,
   :controllable false,
   :end-node :node-125,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp3"},
  :act-124
@@ -40,7 +38,6 @@
   :htn-node :hem-91,
   :controllable false,
   :end-node :node-135,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp3"},
  :act-13
@@ -56,7 +53,6 @@
   :htn-node :hem-58,
   :controllable false,
   :end-node :node-19,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp1"},
  :act-134
@@ -71,7 +67,6 @@
   :htn-node :hem-93,
   :controllable false,
   :end-node :node-87,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp3"},
  :act-18
@@ -87,7 +82,6 @@
   :htn-node :hem-58,
   :controllable false,
   :end-node :node-24,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp1"},
  :act-23
@@ -103,7 +97,6 @@
   :htn-node :hem-58,
   :controllable false,
   :end-node :node-29,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp1"},
  :act-28
@@ -119,7 +112,6 @@
   :htn-node :hem-58,
   :controllable false,
   :end-node :node-34,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp1"},
  :act-33
@@ -135,7 +127,6 @@
   :htn-node :hem-58,
   :controllable false,
   :end-node :node-4,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp1"},
  :act-46
@@ -151,7 +142,6 @@
   :htn-node :hem-68,
   :controllable false,
   :end-node :node-56,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp2"},
  :act-55
@@ -167,7 +157,6 @@
   :htn-node :hem-70,
   :controllable false,
   :end-node :node-65,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp2"},
  :act-64
@@ -183,7 +172,6 @@
   :htn-node :hem-72,
   :controllable false,
   :end-node :node-74,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp2"},
  :act-73
@@ -199,7 +187,6 @@
   :htn-node :hem-74,
   :controllable false,
   :end-node :node-84,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp2"},
  :act-83
@@ -215,7 +202,6 @@
   :htn-node :hem-76,
   :controllable false,
   :end-node :node-37,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp2"},
  :act-97
@@ -230,7 +216,6 @@
   :htn-node :hem-85,
   :controllable false,
   :end-node :node-107,
-  :label "TEMP-location",
   :display-name "Location",
   :plant-part "pp3"},
  :na-10
@@ -276,7 +261,7 @@
   :activities #{:act-106},
   :incidence-set #{:act-97},
   :htn-node :hem-87,
-  :end-node :node-116},
+  :sequence-end :node-101},
  :node-116
  {:tpn-type :state,
   :uid :node-116,
@@ -284,7 +269,7 @@
   :activities #{:act-115},
   :incidence-set #{:act-106},
   :htn-node :hem-89,
-  :end-node :node-125},
+  :sequence-end :node-110},
  :node-125
  {:tpn-type :state,
   :uid :node-125,
@@ -292,7 +277,7 @@
   :activities #{:act-124},
   :incidence-set #{:act-115},
   :htn-node :hem-91,
-  :end-node :node-135},
+  :sequence-end :node-119},
  :node-135
  {:tpn-type :state,
   :uid :node-135,
@@ -300,47 +285,42 @@
   :activities #{:act-134},
   :incidence-set #{:act-124},
   :htn-node :hem-93,
-  :end-node :node-87},
+  :sequence-end :node-128},
  :node-14
  {:tpn-type :state,
   :uid :node-14,
   :constraints #{},
   :activities #{:act-13},
   :incidence-set #{:na-15},
-  :htn-node :hem-58,
-  :end-node :node-19},
+  :htn-node :hem-58},
  :node-19
  {:tpn-type :state,
   :uid :node-19,
   :constraints #{},
   :activities #{:act-18},
   :incidence-set #{:act-13},
-  :htn-node :hem-58,
-  :end-node :node-24},
+  :htn-node :hem-58},
  :node-24
  {:tpn-type :state,
   :uid :node-24,
   :constraints #{},
   :activities #{:act-23},
   :incidence-set #{:act-18},
-  :htn-node :hem-58,
-  :end-node :node-29},
+  :htn-node :hem-58},
  :node-29
  {:tpn-type :state,
   :uid :node-29,
   :constraints #{},
   :activities #{:act-28},
   :incidence-set #{:act-23},
-  :htn-node :hem-58,
-  :end-node :node-34},
+  :htn-node :hem-58},
  :node-34
  {:tpn-type :state,
   :uid :node-34,
   :constraints #{},
   :activities #{:act-33},
   :incidence-set #{:act-28},
-  :htn-node :hem-58,
-  :end-node :node-4},
+  :htn-node :hem-58},
  :node-37
  {:tpn-type :state,
   :uid :node-37,
@@ -360,7 +340,7 @@
   :activities #{:act-46},
   :incidence-set #{:na-48},
   :htn-node :hem-65,
-  :end-node :node-56},
+  :sequence-end :node-41},
  :node-56
  {:tpn-type :state,
   :uid :node-56,
@@ -368,7 +348,7 @@
   :activities #{:act-55},
   :incidence-set #{:act-46},
   :htn-node :hem-70,
-  :end-node :node-65},
+  :sequence-end :node-50},
  :node-6
  {:tpn-type :p-end,
   :uid :node-6,
@@ -382,7 +362,7 @@
   :activities #{:act-64},
   :incidence-set #{:act-55},
   :htn-node :hem-72,
-  :end-node :node-74},
+  :sequence-end :node-59},
  :node-7
  {:tpn-type :p-begin,
   :uid :node-7,
@@ -398,7 +378,7 @@
   :activities #{:act-73},
   :incidence-set #{:act-64},
   :htn-node :hem-74,
-  :end-node :node-84},
+  :sequence-end :node-68},
  :node-84
  {:tpn-type :state,
   :uid :node-84,
@@ -406,7 +386,7 @@
   :activities #{:act-83},
   :incidence-set #{:act-73},
   :htn-node :hem-76,
-  :end-node :node-37},
+  :sequence-end :node-77},
  :node-87
  {:tpn-type :state,
   :uid :node-87,
@@ -420,7 +400,7 @@
   :activities #{:act-97},
   :incidence-set #{:na-99},
   :htn-node :hem-82,
-  :end-node :node-107},
+  :sequence-end :node-92},
  :tc-104
  {:tpn-type :temporal-constraint,
   :uid :tc-104,

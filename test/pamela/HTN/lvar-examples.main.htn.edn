@@ -49,16 +49,6 @@
   :display-name "camera",
   :label "camera",
   :rootnodes #{:henpt-7}},
- :net-14
- {:type :htn-network,
-  :uid :net-14,
-  :display-name "Main-0()",
-  :label "Main-0()",
-  :rootnodes #{:hpt-8}},
- :net-16
- {:type :htn-network,
-  :uid :net-16,
-  :display-name "Main-1()",
-  :label "Main-1()",
-  :rootnodes #{:hpt-10}},
+ :net-14 {:type :htn-network, :uid :net-14, :rootnodes #{:hpt-8}},
+ :net-16 {:type :htn-network, :uid :net-16, :rootnodes #{:hpt-10}},
  :network :net-12}

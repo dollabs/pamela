@@ -53,7 +53,5 @@
  :net-17
  {:type :htn-network,
   :uid :net-17,
-  :display-name "Main()",
-  :label "Main()",
   :rootnodes #{:hpt-10 :hpt-8 :hpt-12}},
  :network :net-15}

@@ -61,10 +61,5 @@
   :display-name "main",
   :label "main",
   :rootnodes #{:henpt-21}},
- :net-29
- {:type :htn-network,
-  :uid :net-29,
-  :display-name "Flip 3()",
-  :label "Flip 3()",
-  :rootnodes #{:hpt-22}},
+ :net-29 {:type :htn-network, :uid :net-29, :rootnodes #{:hpt-22}},
  :network :net-27}

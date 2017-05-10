@@ -11,7 +11,6 @@
   :htn-node :hem-25,
   :controllable false,
   :end-node :node-1,
-  :label "TEMP-flip",
   :display-name "Flip",
   :plant-part "coin-fsm"},
  :act-5
@@ -27,7 +26,6 @@
   :htn-node :hem-25,
   :controllable false,
   :end-node :node-10,
-  :label "TEMP-flip",
   :display-name "Flip",
   :plant-part "coin-fsm"},
  :act-9
@@ -43,7 +41,6 @@
   :htn-node :hem-25,
   :controllable false,
   :end-node :node-14,
-  :label "TEMP-flip",
   :display-name "Flip",
   :plant-part "coin-fsm"},
  :net-3
@@ -64,21 +61,18 @@
   :constraints #{},
   :activities #{:act-9},
   :incidence-set #{:act-5},
-  :htn-node :hem-25,
-  :end-node :node-14},
+  :htn-node :hem-25},
  :node-14
  {:tpn-type :state,
   :uid :node-14,
   :constraints #{},
   :activities #{:act-13},
   :incidence-set #{:act-9},
-  :htn-node :hem-25,
-  :end-node :node-1},
+  :htn-node :hem-25},
  :node-6
  {:tpn-type :state,
   :uid :node-6,
   :constraints #{},
   :activities #{:act-5},
   :incidence-set #{},
-  :htn-node :hem-25,
-  :end-node :node-10}}
+  :htn-node :hem-25}}

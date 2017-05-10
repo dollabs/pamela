@@ -19,7 +19,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-18,
-  :label "TEMP-assert",
   :display-name "Assert"},
  :act-17
  {:args
@@ -42,7 +41,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-22,
-  :label "TEMP-ask",
   :display-name "Ask"},
  :act-21
  {:args
@@ -71,7 +69,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-26,
-  :label "TEMP-ask",
   :display-name "Ask"},
  :act-25
  {:args
@@ -94,7 +91,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-30,
-  :label "TEMP-tell",
   :display-name "Tell"},
  :act-29
  {:args [],
@@ -107,7 +103,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-1,
-  :label "TEMP-initialize",
   :display-name "Initialize"},
  :act-9
  {:args [:field1.:simple2],
@@ -120,7 +115,6 @@
   :htn-node :hem-23,
   :controllable false,
   :end-node :node-14,
-  :label "TEMP-one-arg-method",
   :display-name "One Arg Method"},
  :net-3
  {:tpn-type :network,
@@ -141,44 +135,39 @@
   :activities #{:act-9},
   :incidence-set #{},
   :htn-node :hem-16,
-  :end-node :node-14},
+  :sequence-end :node-4},
  :node-14
  {:tpn-type :state,
   :uid :node-14,
   :constraints #{},
   :activities #{:act-13},
   :incidence-set #{:act-9},
-  :htn-node :hem-23,
-  :end-node :node-18},
+  :htn-node :hem-23},
  :node-18
  {:tpn-type :state,
   :uid :node-18,
   :constraints #{},
   :activities #{:act-17},
   :incidence-set #{:act-13},
-  :htn-node :hem-23,
-  :end-node :node-22},
+  :htn-node :hem-23},
  :node-22
  {:tpn-type :state,
   :uid :node-22,
   :constraints #{},
   :activities #{:act-21},
   :incidence-set #{:act-17},
-  :htn-node :hem-23,
-  :end-node :node-26},
+  :htn-node :hem-23},
  :node-26
  {:tpn-type :state,
   :uid :node-26,
   :constraints #{},
   :activities #{:act-25},
   :incidence-set #{:act-21},
-  :htn-node :hem-23,
-  :end-node :node-30},
+  :htn-node :hem-23},
  :node-30
  {:tpn-type :state,
   :uid :node-30,
   :constraints #{},
   :activities #{:act-29},
   :incidence-set #{:act-25},
-  :htn-node :hem-23,
-  :end-node :node-1}}
+  :htn-node :hem-23}}

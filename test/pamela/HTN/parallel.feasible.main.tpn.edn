@@ -9,7 +9,6 @@
   :htn-node :hem-14,
   :controllable false,
   :end-node :node-14,
-  :label "TEMP-option",
   :display-name "Option"},
  :act-22
  {:args [],
@@ -22,7 +21,6 @@
   :htn-node :hem-14,
   :controllable false,
   :end-node :node-20,
-  :label "TEMP-option",
   :display-name "Option"},
  :act-7
  {:args [],
@@ -35,7 +33,6 @@
   :htn-node :hem-14,
   :controllable false,
   :end-node :node-5,
-  :label "TEMP-option",
   :display-name "Option"},
  :na-12
  {:tpn-type :null-activity,
@@ -93,8 +90,7 @@
   :constraints #{},
   :activities #{:act-16},
   :incidence-set #{:na-18},
-  :htn-node :hem-14,
-  :end-node :node-14},
+  :htn-node :hem-14},
  :node-20
  {:tpn-type :state,
   :uid :node-20,
@@ -107,8 +103,7 @@
   :constraints #{},
   :activities #{:act-22},
   :incidence-set #{:na-25},
-  :htn-node :hem-14,
-  :end-node :node-20},
+  :htn-node :hem-14},
  :node-5
  {:tpn-type :state,
   :uid :node-5,
@@ -121,8 +116,7 @@
   :constraints #{},
   :activities #{:act-7},
   :incidence-set #{:na-12},
-  :htn-node :hem-14,
-  :end-node :node-5},
+  :htn-node :hem-14},
  :node-9
  {:tpn-type :p-end,
   :uid :node-9,

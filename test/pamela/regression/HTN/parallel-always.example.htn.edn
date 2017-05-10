@@ -55,7 +55,5 @@
  :net-16
  {:type :htn-network,
   :uid :net-16,
-  :display-name "Example()",
-  :label "Example()",
   :rootnodes #{:hpt-9 :hpt-10 :hpt-12 :hpt-11}},
  :network :net-14}

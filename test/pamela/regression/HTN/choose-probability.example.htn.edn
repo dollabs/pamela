@@ -62,22 +62,7 @@
   :display-name "choose-probability",
   :label "choose-probability",
   :rootnodes #{:henpt-9}},
- :net-18
- {:type :htn-network,
-  :uid :net-18,
-  :display-name "Example-0()",
-  :label "Example-0()",
-  :rootnodes #{:hpt-10}},
- :net-20
- {:type :htn-network,
-  :uid :net-20,
-  :display-name "Example-1()",
-  :label "Example-1()",
-  :rootnodes #{:hpt-12}},
- :net-22
- {:type :htn-network,
-  :uid :net-22,
-  :display-name "Example-2()",
-  :label "Example-2()",
-  :rootnodes #{:hpt-14}},
+ :net-18 {:type :htn-network, :uid :net-18, :rootnodes #{:hpt-10}},
+ :net-20 {:type :htn-network, :uid :net-20, :rootnodes #{:hpt-12}},
+ :net-22 {:type :htn-network, :uid :net-22, :rootnodes #{:hpt-14}},
  :network :net-16}

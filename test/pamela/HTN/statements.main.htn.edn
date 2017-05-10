@@ -149,16 +149,6 @@
   :display-name "main",
   :label "main",
   :rootnodes #{:henpt-14}},
- :net-27
- {:type :htn-network,
-  :uid :net-27,
-  :display-name "Main()",
-  :label "Main()",
-  :rootnodes #{:henpt-15}},
- :net-29
- {:type :htn-network,
-  :uid :net-29,
-  :display-name "Test Of Various\nStatements()",
-  :label "Test Of Various\nStatements()",
-  :rootnodes #{:hpt-17}},
+ :net-27 {:type :htn-network, :uid :net-27, :rootnodes #{:henpt-15}},
+ :net-29 {:type :htn-network, :uid :net-29, :rootnodes #{:hpt-17}},
  :network :net-25}
