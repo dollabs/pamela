@@ -280,7 +280,7 @@
   "A state node"
   [{:keys [prefix uid constraints activities incidence-set
            task htn-node end-node begin
-           label sequence-label
+           label sequence-end sequence-label
            ;; cost<= reward>=
            ]
     :or {prefix "node-"}}]
@@ -296,6 +296,7 @@
       :end-node end-node
       :begin begin
       :label label
+      :sequence-end sequence-end
       :sequence-label sequence-label
       ;; :cost<= cost<=
       ;; :reward>= reward>=
@@ -412,7 +413,8 @@
         a0-htn-node (:htn-node a0)
         s-uid (:end-node a0)
         s (if s-uid (get-tpn-plan-map s-uid))
-        {:keys [tpn-type constraints activities label sequence-label htn-node]} s
+        {:keys [tpn-type constraints activities label
+                sequence-end sequence-label htn-node]} s
         move-constraints? (pos? (count constraints))
         sn (count activities)
         s0-uid (first activities)
@@ -471,23 +473,31 @@
                              :constraints
                              (set/union b-constraints constraints)
                              :label label
-                             :sequence-label sequence-label)]
+                             :sequence-end sequence-end
+                             :sequence-label sequence-label
+                             )]
                           [(assoc-if a
                              :constraints
                              (set/union a-constraints constraints)
                              :label label
-                             :sequence-label sequence-label)
+                             :sequence-end sequence-end
+                             :sequence-label sequence-label
+                             )
                            b])
                         [a b])
                 a (if move-tc-to-b?
                     a
                     (assoc-if a
                       :label label
-                      :sequence-label sequence-label))
+                      :sequence-end sequence-end
+                      :sequence-label sequence-label
+                      ))
                 b (if move-tc-to-b?
                     (assoc-if b
                       :label label
-                      :sequence-label sequence-label)
+                      :sequence-end sequence-end
+                      :sequence-label sequence-label
+                      )
                     b)]
             (update-tpn-plan-map! a)
             (update-tpn-plan-map! b)
@@ -517,10 +527,11 @@
             (doseq [act a-activities] ;; move end-node to b-uid
               (update-tpn-plan-map!
                 (assoc (get-tpn-plan-map act) :end-node b-uid)))
-            (when (or label sequence-label htn-node)
+            (when (or label sequence-end sequence-label htn-node)
               (update-tpn-plan-map!
                 (assoc-if b
                   :label label
+                  :sequence-end sequence-end
                   :sequence-label sequence-label
                   :htn-node htn-node)))
             (when (or s0-cost s0-reward s0-probability s0-htn-node)
@@ -535,6 +546,7 @@
                 (assoc-if b
                   :constraints (set/union b-constraints constraints)
                   :label label
+                  :sequence-end sequence-end
                   :sequence-label sequence-label
                   :htn-node htn-node)))
             (move-constraints tpn-notes s-uid b-uid) ;; for other constraints
@@ -550,6 +562,7 @@
               (assoc-if a
                 :activities #{}
                 :label label
+                :sequence-end sequence-end
                 :sequence-label sequence-label
                 :htn-node (or a-htn-node htn-node)))
             (move-constraints tpn-notes s-uid a-uid)
@@ -568,7 +581,11 @@
                   :constraints (if (empty? a-constraints)
                                  constraints
                                  (set/union a-constraints constraints))
-                  :htn-node a-htn-node)))
+                  :htn-node a-htn-node
+                  :label (:label a)
+                  :sequence-end (:sequence-end a)
+                  :sequence-label (:sequence-label a)
+                  )))
             (when (or a0-cost a0-reward a0-probability
                     (and (not s0-htn-node) a0-htn-node))
               (update-tpn-plan-map!
@@ -646,18 +663,21 @@
     (remove-superfluous tpn-notes begin-node)))
 
 ;; remove invalid slots
+;; 1. Remove state :end-node if :sequence-end is not set
 (defn remove-invalid-tpn-attributes []
   (doseq [uid (keys @*tpn-plan-map*)]
     (let [object (get-tpn-plan-map uid)
-          {:keys [tpn-type end-node constraints]} object]
+          {:keys [tpn-type sequence-end end-node constraints]} object]
       (cond
-        (and (#{:state :c-end :p-end} tpn-type) end-node)
-        ;; NOTE: preserve htn-node
+        (and (= :state tpn-type) end-node (not sequence-end))
         (update-tpn-plan-map! (dissoc object :end-node))
-        (#{:c-end :p-end} tpn-type)
-        (update-tpn-plan-map! (dissoc object :htn-node))
-        (and (= :null-activity tpn-type) constraints)
-        (update-tpn-plan-map! (dissoc object :constraints))))))
+        ;; (and (#{:state :c-end :p-end} tpn-type) end-node)
+        ;; (update-tpn-plan-map! (dissoc object :end-node))
+        ;; (#{:c-end :p-end} tpn-type)
+        ;; (update-tpn-plan-map! (dissoc object :htn-node))
+        ;; (and (= :null-activity tpn-type) constraints)
+        ;; (update-tpn-plan-map! (dissoc object :constraints))
+        ))))
 
 (defn update-incidence-set []
   (doseq [uid (keys @*tpn-plan-map*)]
@@ -670,8 +690,8 @@
           (update-in node [:incidence-set] conj uid))))))
 
 (defn optimize-tpn-map []
+  (remove-invalid-tpn-attributes)
   (remove-superfluous-null-activities)
-  ;; (remove-invalid-tpn-attributes)
   (update-incidence-set))
 
 ;; (defn get-tc-from-body [body end-node]

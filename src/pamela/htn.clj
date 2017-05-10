@@ -1444,7 +1444,8 @@
 ;; root? is true to create the "synthetic" htn-network at the very
 ;; top of the HTN
 ;; begin is the state node of the parent task
-(defn construct-hem-plan-map [ir pargs hem henpt root? parent-begin-uid]
+(defn construct-hem-plan-map [ir pargs hem henpt root? parent-begin-uid
+                              labels all-betweens choice-begin-end]
   (let [{:keys [uid label subtasks subtask-constraints edges
                 ancestry-path argument-mappings irks]} hem
         ;; DEBUG
@@ -1458,6 +1459,11 @@
         [pclass kw-methods method mi kw-body int-zero more-irks] hem-irks
         hem-pclass pclass
         _ (dbg-println :debug "CHPN 1" pclass method int-zero more-irks kw-methods)
+        n-hem-irks (count hem-irks)
+        funcall (get-in ir (vec (take 6 hem-irks)))
+        hem-label (:label funcall)
+        betweens (get-in ir (conj hem-irks :betweens))
+        _ (dbg-println :debug "CHPN 2 hem-label" hem-label "betweens" betweens)
         top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
                    [pclass kw-methods method mi])
         top-bounds (irks->bounds ir top-irks)
@@ -1482,7 +1488,13 @@
               (first subtask-constraints))
         subtask-order (mapv :uid (if tsc (:tasks tsc) subtasks))
         n-subtasks (count subtask-order)
-        sequential? (or (not (nil? tsc)) (= 1 n-subtasks))
+        sequential? (or (not (nil? tsc)) (= 1 n-subtasks)) ;; could be a choice
+        hem-choice? (and sequential? (= 9 n-hem-irks))
+        [label sequence-label] (if (or (not sequential?) hem-choice?)
+                                 [hem-label nil] ;; parallel or choice
+                                 [nil hem-label]) ;; sequence
+        _ (dbg-println :debug "CHPN 3 n-hem-irks = " n-hem-irks
+            "label" label "sequence-label" sequence-label)
         i-last-subtask (dec (count subtask-order))
         net-map (if (pos? (count subtasks))
                   (htn-network {:label label :rootnodes #{}}))
@@ -1491,13 +1503,30 @@
         parent-end (tpn/get-tpn-plan-map end-node)
         hem-tc (if hem-bounds (tpn/tpn-temporal-constraint
                                {:value hem-bounds :end-node end-node}))
-        parent-begin (assoc parent-begin
-                            :htn-node (:uid hem-map)
-                            :constraints (if hem-tc
-                                           (conj (:constraints parent-begin)
-                                                 (:uid hem-tc))
-                                           (:constraints parent-begin)))
+        parent-begin (assoc-if parent-begin
+                       :htn-node (:uid hem-map)
+                       :constraints (if hem-tc
+                                      (conj (:constraints parent-begin)
+                                        (:uid hem-tc))
+                                      (:constraints parent-begin))
+                       :label (and (not hem-choice?) label)
+                       :sequence-label sequence-label)
+        ;; _ (when (and (not hem-choice?) (or label sequence-label))
+        ;;     (dbg-println :trace "CHPN 4 parent-begin-uid" parent-begin-uid
+        ;;       "getting :label" (and (not hem-choice?) label)))
         prev-end (atom nil)]
+    (when (or label sequence-label)
+      (when (and hem-choice? label (not (get @labels label)))
+        (dbg-println :debug "ADD choice label" label
+          "choice-begin-end" choice-begin-end)
+        (swap! labels assoc label choice-begin-end)
+        (tpn/update-tpn-plan-map!
+          (assoc
+            (tpn/get-tpn-plan-map (first choice-begin-end))
+            :label label)))
+      (when (not hem-choice?)
+        (swap! labels assoc (or label sequence-label)
+          [parent-begin-uid end-node])))
     (tpn/update-tpn-plan-map! parent-begin)
     (when root?
       (update-htn-plan-map! (update-in (get-htn-plan-map henpt)
@@ -1508,6 +1537,8 @@
         (update-htn-plan-map! net-map)
         (update-htn-plan-map! (assoc hem-map :network (:uid net-map))))
       (update-htn-plan-map! hem-map))
+    (when betweens
+      (swap! all-betweens concatv betweens))
     ;; HERE we need to recurse and, create a network of tasks, edges
     ;; to child hems
     (doseq [i (range n-subtasks)]
@@ -1517,13 +1548,15 @@
             subtask_ (get-htn-object subtask-uid)
             {:keys [type pclass name task-expansions arguments
                     irks ancestry-path]} subtask_
+            label (if irks (get-in ir (conj irks :label)))
             bounds (if (and irks (not= irks hem-irks))
                      (irks->bounds ir irks))
             m-task-expansions (count task-expansions)
             ;; DEBUG
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
                        "type" type "pclass" pclass "name" name
-                       "m-task-expansions" m-task-expansions)
+                       "m-task-expansions" m-task-expansions
+                       "label" label)
             ;; resolve pclass if (= type :htn-nonprimitive-task)
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
@@ -1578,7 +1611,10 @@
                                                       (seq (to-pamela (:args details_))))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
-                         :label (:label details_) ;; to be removed
+                         ;; do NOT use the "TEMP..." label from plant-details now
+                         ;; :label (:label details_) ;; to be removed
+                         ;; NOTE: labels go on activities if primitive
+                         :label label
                          :args (:args details_)
                          :argsmap (:argsmap details_)
                          :plantid (:plantid details_)
@@ -1588,19 +1624,26 @@
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
                          :end-node (:uid se)}))
+            ;; _ (when activity
+            ;;     (dbg-println :trace "activity" (:uid activity) (:name activity)
+            ;;       "getting :label" (and (not primitive?) label)))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
                                ;; do NOT add constraints on the node
                                ;; :constraints (if tc #{(:uid tc)})
+                               ;; WHILE we ONLY want :end-node for sequences, we
+                               ;; need it during construction and will remove it
+                               ;; during TPN optimization
+                               ;; :end-node (if sequential? (:uid se))
                                :end-node (:uid se)
-                               :htn-node (:uid hem-map)
-                               })
+                               :sequence-end (if (and sequential? (not activity))
+                                               (:uid se))
+                               :htn-node (:uid hem-map)})
             [begin end] (if parallel?
                           (if (zero? i)
                             (let [end (tpn/tpn-p-end {})
                                   begin (tpn/tpn-p-begin {:end-node (:uid end)
                                                           :htn-node
-                                                          (:uid hem-map)
-                                                          })]
+                                                          (:uid hem-map)})]
                               [begin end])
                             (let [parent-na-begin (tpn/get-tpn-plan-map
                                                    (->
@@ -1630,10 +1673,26 @@
                                          {:end-node (:uid end)
                                           :constraints (if choice-tc
                                                          #{(:uid choice-tc)})
-                                          :htn-node (:uid hem-map)
-                                          })]
+                                          :htn-node (:uid hem-map)})]
                               [begin end])
                             [sb se]))]
+        (when label
+          (dbg-println :debug "STlabel" label
+            "begin" (:uid begin) "end" (:uid end)
+            "sb" (:uid sb) "se" (:uid se)
+            (if primitive?
+              "on ACTIVITY"
+              (if choice? "on BEGIN" "on SB")))
+          (swap! labels assoc label
+            (if choice?
+              [(:uid begin) (:uid end)]
+              [(:uid sb) (:uid se)]))
+          (when-not primitive?
+            (tpn/update-tpn-plan-map!
+              (assoc (if choice? begin sb) :label label))))
+        (when (and (zero? i) choice?)
+          (dbg-println :debug "NOTE choice-begin-end will be SET"
+            [(:uid begin) (:uid end)]))
         (update-htn-plan-map! subtask-map)
         (if (or (not sequential?) (zero? i))
           (update-htn-plan-map! (update-in (get-htn-plan-map net-map)
@@ -1693,7 +1752,9 @@
                (update-in se [:activities] conj
                           (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
             (construct-hem-plan-map ir pargs task-expansion subtask_ false
-                                    (:uid sb))))
+              (:uid sb) labels all-betweens
+              (if (and (zero? i) choice?)
+                [(:uid begin) (:uid end)]))))
         ))
     ))
 
@@ -1703,6 +1764,8 @@
         ;; _ (dbg-println :debug "ERT PARGS" pargs) ;; DEBUG
         net (htn-network {:label label :rootnodes #{uid}})
         {:keys [task-expansions irks]} expanded-root-task
+        betweens (get-in ir (conj irks :betweens))
+        _ (dbg-println :debug "ROOT CHPM IRKS" irks "betweens" betweens) ;; DEBUG
         ert (assoc
              (dissoc expanded-root-task :pclass :pargs :arguments
                      :task-expansions :name
@@ -1716,7 +1779,14 @@
             ;; (with-out-str (pprint task-expansions)
             (mapv :label task-expansions)
             )
+        labels (atom {})
+        all-betweens (atom [])
         top-level-choose? (> (count task-expansions) 1)
+        ;; NOTE: the following heuristic is true for parallel as well, so, instead
+        ;; as we don't need a clean top level sb for a sequence here we can
+        ;; worry about this in construct-hem-plan-map
+        ;; sequence? (= (count task-expansions) 1)
+        sequence? false
         end ((if top-level-choose?
                tpn/tpn-c-end
                tpn/tpn-state)
@@ -1724,7 +1794,12 @@
         begin ((if top-level-choose?
                  tpn/tpn-c-begin
                  tpn/tpn-state)
-               {:end-node (:uid end)})]
+               ;; WHILE we ONLY want :end-node for sequences, we
+               ;; need it during construction and will remove it
+               ;; during TPN optimization
+               ;; {:end-node (if (or top-level-choose? sequence?) (:uid end))})]
+               {:end-node (:uid end)
+                :sequence-end (if sequence? (:uid end))})]
     (update-htn-plan-map! ert)
     (update-htn-plan-map! net)
     (swap! *htn-plan-map* assoc :network (:uid net)) ;; ENTRY POINT
@@ -1732,10 +1807,16 @@
            :network-id (:uid (tpn/tpn-network
                               {:begin-node (:uid begin)
                                :end-node (:uid end)})))
+    (when betweens
+      (swap! all-betweens concatv betweens))
     ;; now walk the graph
     (if (pos? (count task-expansions))
       (doseq [task-expansion task-expansions]
-        (construct-hem-plan-map ir pargs task-expansion ert true (:uid begin))))
+        (construct-hem-plan-map ir pargs task-expansion ert true (:uid begin)
+          labels all-betweens nil)))
+    _ (dbg-println :debug "ADD-BETWEEN-CONSTRAINTS"
+        (with-out-str (pprint @labels)) "\nAB" @all-betweens)
+    (tpn/add-between-constraints labels @all-betweens)
     (tpn/optimize-tpn-map)
     @*htn-plan-map*))
 
