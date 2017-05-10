@@ -127,7 +127,7 @@
   :constraints #{},
   :activities #{:act-22},
   :incidence-set #{:na-24},
-  :end-node :node-20},
+  :end-node :node-15},
  :node-25
  {:tpn-type :state,
   :uid :node-25,
@@ -140,7 +140,7 @@
   :constraints #{},
   :activities #{:act-31},
   :incidence-set #{:na-33},
-  :end-node :node-30},
+  :end-node :node-25},
  :node-38
  {:tpn-type :c-end,
   :uid :node-38,
@@ -166,7 +166,7 @@
   :constraints #{},
   :activities #{:act-48},
   :incidence-set #{:na-50},
-  :end-node :node-46},
+  :end-node :node-41},
  :node-51
  {:tpn-type :state,
   :uid :node-51,
@@ -179,7 +179,7 @@
   :constraints #{},
   :activities #{:act-57},
   :incidence-set #{:na-59},
-  :end-node :node-56},
+  :end-node :node-51},
  :tc-21
  {:tpn-type :temporal-constraint,
   :uid :tc-21,

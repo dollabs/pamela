@@ -53,7 +53,7 @@
   :activities #{:da-9},
   :incidence-set #{:da-5},
   :htn-node :hem-14,
-  :end-node :node-8},
+  :end-node :node-14},
  :node-14
  {:tpn-type :state,
   :uid :node-14,
@@ -61,7 +61,7 @@
   :activities #{:da-13},
   :incidence-set #{:da-9},
   :htn-node :hem-14,
-  :end-node :node-12},
+  :end-node :node-18},
  :node-18
  {:tpn-type :state,
   :uid :node-18,
@@ -69,7 +69,7 @@
   :activities #{:da-17},
   :incidence-set #{:da-13},
   :htn-node :hem-14,
-  :end-node :node-16},
+  :end-node :node-1},
  :node-6
  {:tpn-type :state,
   :uid :node-6,
@@ -77,4 +77,4 @@
   :activities #{:da-5},
   :incidence-set #{},
   :htn-node :hem-14,
-  :end-node :node-4}}
+  :end-node :node-10}}
