@@ -615,7 +615,7 @@
   :activities #{:act-9},
   :incidence-set #{},
   :htn-node :hem-40,
-  :end-node :node-7},
+  :end-node :node-15},
  :node-103
  {:tpn-type :state,
   :uid :node-103,
@@ -623,7 +623,7 @@
   :activities #{:act-102},
   :incidence-set #{:na-104},
   :htn-node :hem-76,
-  :end-node :node-101},
+  :end-node :node-97},
  :node-106
  {:tpn-type :state,
   :uid :node-106,
@@ -651,7 +651,7 @@
   :activities #{:act-116},
   :incidence-set #{:na-118},
   :htn-node :hem-83,
-  :end-node :node-114},
+  :end-node :node-106},
  :node-120
  {:tpn-type :state,
   :uid :node-120,
@@ -665,7 +665,7 @@
   :activities #{:act-126},
   :incidence-set #{:na-128},
   :htn-node :hem-86,
-  :end-node :node-124},
+  :end-node :node-120},
  :node-130
  {:tpn-type :state,
   :uid :node-130,
@@ -679,7 +679,7 @@
   :activities #{:act-136},
   :incidence-set #{:na-138},
   :htn-node :hem-89,
-  :end-node :node-134},
+  :end-node :node-130},
  :node-140
  {:tpn-type :state,
   :uid :node-140,
@@ -693,7 +693,7 @@
   :activities #{:act-147},
   :incidence-set #{:na-149},
   :htn-node :hem-93,
-  :end-node :node-145},
+  :end-node :node-153},
  :node-15
  {:tpn-type :state,
   :uid :node-15,
@@ -701,7 +701,7 @@
   :activities #{:act-14},
   :incidence-set #{:act-9},
   :htn-node :hem-45,
-  :end-node :node-12},
+  :end-node :node-19},
  :node-153
  {:tpn-type :state,
   :uid :node-153,
@@ -709,7 +709,7 @@
   :activities #{:act-152},
   :incidence-set #{:act-147},
   :htn-node :hem-93,
-  :end-node :node-150},
+  :end-node :node-140},
  :node-161
  {:tpn-type :p-end,
   :uid :node-161,
@@ -737,7 +737,7 @@
   :activities #{:act-171},
   :incidence-set #{:na-173},
   :htn-node :hem-100,
-  :end-node :node-170},
+  :end-node :node-166},
  :node-175
  {:tpn-type :state,
   :uid :node-175,
@@ -765,7 +765,7 @@
   :activities #{:act-185},
   :incidence-set #{:na-187},
   :htn-node :hem-107,
-  :end-node :node-183},
+  :end-node :node-175},
  :node-189
  {:tpn-type :state,
   :uid :node-189,
@@ -786,7 +786,7 @@
   :activities #{:act-195},
   :incidence-set #{:na-197},
   :htn-node :hem-110,
-  :end-node :node-193},
+  :end-node :node-189},
  :node-199
  {:tpn-type :state,
   :uid :node-199,
@@ -800,7 +800,7 @@
   :activities #{:act-205},
   :incidence-set #{:na-207},
   :htn-node :hem-113,
-  :end-node :node-203},
+  :end-node :node-199},
  :node-209
  {:tpn-type :state,
   :uid :node-209,
@@ -814,7 +814,7 @@
   :activities #{:act-216},
   :incidence-set #{:na-218},
   :htn-node :hem-117,
-  :end-node :node-214},
+  :end-node :node-222},
  :node-222
  {:tpn-type :state,
   :uid :node-222,
@@ -822,7 +822,7 @@
   :activities #{:act-221},
   :incidence-set #{:act-216},
   :htn-node :hem-117,
-  :end-node :node-219},
+  :end-node :node-209},
  :node-229
  {:tpn-type :state,
   :uid :node-229,
@@ -842,7 +842,7 @@
   :activities #{:act-234},
   :incidence-set #{:na-236},
   :htn-node :hem-121,
-  :end-node :node-233},
+  :end-node :node-229},
  :node-238
  {:tpn-type :state,
   :uid :node-238,
@@ -878,7 +878,7 @@
   :activities #{:act-248},
   :incidence-set #{:na-250},
   :htn-node :hem-128,
-  :end-node :node-246},
+  :end-node :node-238},
  :node-252
  {:tpn-type :state,
   :uid :node-252,
@@ -892,7 +892,7 @@
   :activities #{:act-258},
   :incidence-set #{:na-260},
   :htn-node :hem-131,
-  :end-node :node-256},
+  :end-node :node-252},
  :node-262
  {:tpn-type :state,
   :uid :node-262,
@@ -906,7 +906,7 @@
   :activities #{:act-268},
   :incidence-set #{:na-270},
   :htn-node :hem-134,
-  :end-node :node-266},
+  :end-node :node-262},
  :node-28
  {:tpn-type :state,
   :uid :node-28,
@@ -920,7 +920,7 @@
   :activities #{:act-33},
   :incidence-set #{:na-35},
   :htn-node :hem-52,
-  :end-node :node-32},
+  :end-node :node-28},
  :node-37
  {:tpn-type :state,
   :uid :node-37,
@@ -948,7 +948,7 @@
   :activities #{:act-47},
   :incidence-set #{:na-49},
   :htn-node :hem-59,
-  :end-node :node-45},
+  :end-node :node-37},
  :node-51
  {:tpn-type :state,
   :uid :node-51,
@@ -962,7 +962,7 @@
   :activities #{:act-57},
   :incidence-set #{:na-59},
   :htn-node :hem-62,
-  :end-node :node-55},
+  :end-node :node-51},
  :node-61
  {:tpn-type :state,
   :uid :node-61,
@@ -976,7 +976,7 @@
   :activities #{:act-67},
   :incidence-set #{:na-69},
   :htn-node :hem-65,
-  :end-node :node-65},
+  :end-node :node-61},
  :node-71
  {:tpn-type :state,
   :uid :node-71,
@@ -990,7 +990,7 @@
   :activities #{:act-78},
   :incidence-set #{:na-80},
   :htn-node :hem-69,
-  :end-node :node-76},
+  :end-node :node-84},
  :node-84
  {:tpn-type :state,
   :uid :node-84,
@@ -998,7 +998,7 @@
   :activities #{:act-83},
   :incidence-set #{:act-78},
   :htn-node :hem-69,
-  :end-node :node-81},
+  :end-node :node-71},
  :node-92
  {:tpn-type :p-end,
   :uid :node-92,

@@ -65,7 +65,7 @@
   :activities #{:act-9},
   :incidence-set #{:act-5},
   :htn-node :hem-25,
-  :end-node :node-8},
+  :end-node :node-14},
  :node-14
  {:tpn-type :state,
   :uid :node-14,
@@ -73,7 +73,7 @@
   :activities #{:act-13},
   :incidence-set #{:act-9},
   :htn-node :hem-25,
-  :end-node :node-12},
+  :end-node :node-1},
  :node-6
  {:tpn-type :state,
   :uid :node-6,
@@ -81,4 +81,4 @@
   :activities #{:act-5},
   :incidence-set #{},
   :htn-node :hem-25,
-  :end-node :node-4}}
+  :end-node :node-10}}
