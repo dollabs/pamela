@@ -129,7 +129,7 @@
   :activities #{:act-11},
   :incidence-set #{:act-6},
   :htn-node :hem-26,
-  :end-node :node-9},
+  :end-node :node-17},
  :node-17
  {:tpn-type :state,
   :uid :node-17,
@@ -137,7 +137,7 @@
   :activities #{:act-16},
   :incidence-set #{:act-11},
   :htn-node :hem-26,
-  :end-node :node-14},
+  :end-node :node-22},
  :node-22
  {:tpn-type :state,
   :uid :node-22,
@@ -145,7 +145,7 @@
   :activities #{:act-21},
   :incidence-set #{:act-16},
   :htn-node :hem-26,
-  :end-node :node-19},
+  :end-node :node-27},
  :node-27
  {:tpn-type :state,
   :uid :node-27,
@@ -153,7 +153,7 @@
   :activities #{:act-26},
   :incidence-set #{:act-21},
   :htn-node :hem-26,
-  :end-node :node-24},
+  :end-node :node-32},
  :node-32
  {:tpn-type :state,
   :uid :node-32,
@@ -161,7 +161,7 @@
   :activities #{:da-31},
   :incidence-set #{:act-26},
   :htn-node :hem-26,
-  :end-node :node-29},
+  :end-node :node-36},
  :node-36
  {:tpn-type :state,
   :uid :node-36,
@@ -169,7 +169,7 @@
   :activities #{:act-35},
   :incidence-set #{:da-31},
   :htn-node :hem-26,
-  :end-node :node-34},
+  :end-node :node-1},
  :node-7
  {:tpn-type :state,
   :uid :node-7,
@@ -177,7 +177,7 @@
   :activities #{:act-6},
   :incidence-set #{},
   :htn-node :hem-26,
-  :end-node :node-4},
+  :end-node :node-12},
  :tc-10
  {:tpn-type :temporal-constraint,
   :uid :tc-10,
