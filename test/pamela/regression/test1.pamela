@@ -1,0 +1,48 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+(defpclass host []
+  :methods [(defpmethod video-session {:display-name "Video Session"}
+              [client-host server-host display]
+              (sequence
+               (delay :bounds [15 15])
+               (video client-host server-host display)))
+
+            (defpmethod file-transfer {:display-name "File Xfer"}
+              [server-host size]
+              (sequence
+               (ftp server-host size)))
+
+            ;; These pmethods have no body, so they're considered to be primitive.
+            ;; Primitive methods have implementations that generate the actual network flows.
+            (defpmethod ftp [server-host size])
+
+            (defpmethod video [client server display])
+
+            (defpmethod sleep [duration-secs])
+            ])
+
+; pamela -i test1.pamela -o HTN/test1 -t "(main.main)" -f edn htn
+(defpclass main []
+  :meta {:doc "This defines all of the HTN methods for this domain"}
+  :fields {
+           :e1h1 (host :id "actuator" :plant-part "host0101")
+           :e7h1 (host :id "actuator" :plant-part "host0701")
+           }
+
+  :methods [(defpmethod main {:display-name "Main Activity"} []
+              (main-internal "host0101" "host0701"))
+
+            (defpmethod main-internal
+              {:display-name "test1"
+               :doc "The top-level task for this mission"}
+              [server-host client-host]
+              (parallel
+               (e7h1.file-transfer :bounds [1 7] server-host "100MB")
+               (e7h1.video-session :bounds [20 35] client-host server-host  "1")
+               ))
+            ]
+  )
