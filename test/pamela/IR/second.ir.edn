@@ -14,7 +14,17 @@
      [{:type :between,
        :from :do-choice,
        :to :b,
-       :temporal-constraints [{:type :bounds, :value [1 101]}]}],
+       :temporal-constraints [{:type :bounds, :value [1 101]}]}
+      {:type :between-starts,
+       :from :c,
+       :to :b,
+       :temporal-constraints [{:type :bounds, :value [2 46]}],
+       :cost<= 8}
+      {:type :between-ends,
+       :from :b,
+       :to :c,
+       :temporal-constraints [{:type :bounds, :value [3 57]}],
+       :reward>= 9}],
      :display-name "Start",
      :post {:type :literal, :value true},
      :cost 0,

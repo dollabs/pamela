@@ -388,7 +388,7 @@
                                  ;; else use the ancestry-path to
                                  ;; resolve the pclass of the caller
                                  (let [_ (dbg-println :debug "RPC Recursing on ancestry-path"
-                                           (mapv #(list (:uid %) (or (:label %) (:name %)))
+                                           (mapv #(list (:uid %) (or (:display-name %) (:name %)))
                                              ancestry-path))
                                        _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
                                        pc_ (resolve-plant-class
@@ -656,7 +656,7 @@
   [original-task & [argument-mapping]]
   (dbg-println :debug "MET" original-task "args:" (pr-str argument-mapping)) ;; DEBUG
   (let [task-type (:type original-task)
-        skeleton-task (dissoc original-task :uid :label)
+        skeleton-task (dissoc original-task :uid :display-name)
         task (if (= task-type :htn-primitive-task)
                (htn-primitive-task skeleton-task)
                (htn-expanded-nonprimitive-task skeleton-task))
@@ -937,10 +937,10 @@
   (let [task (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
                        :type :htn-expanded-nonprimitive-task
                        :task-expansions task-expansions)
-        label (if (empty? label) (name-with-args task) label)]
-    (update-htn-object! (assoc task
-                               :display-name (if (empty? display-name) label display-name)
-                               :label label))))
+        display-name (if (empty? display-name) (name-with-args task) display-name)]
+    (update-htn-object! (assoc-if task
+                          :display-name display-name
+                          :label label))))
 
 (defn htn-method
   "An HTN-method is used to decompose a nonprimitive-task into one or more subtasks"
@@ -957,7 +957,7 @@
            mission-task-combination
            choice-weight
            task-expansions
-           label incidence-set network edges
+           display-name label incidence-set network edges
            irks]
     :or {prefix "hm-"
          subtasks []
@@ -979,11 +979,10 @@
                          :edges edges
                          :network network
                          :irks irks)
-        label (if (empty? label) (name-with-args method) label)
-        display-name (if (empty? display-name) label display-name)
-        method (update-htn-object! (assoc method
-                                          :display-name display-name
-                                          :label label))]
+        display-name (if (empty? display-name) (name-with-args method) display-name)
+        method (update-htn-object! (assoc-if method
+                                     :display-name display-name
+                                     :label label))]
     (add-htn-method method)
     method))
 
@@ -995,7 +994,7 @@
   (update-htn-object!
    (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
              :type :htn-network
-             :display-name (if (empty? display-name) label display-name)
+             :display-name display-name
              :label label
              :rootnodes rootnodes
              :parentid parentid)))
@@ -1045,11 +1044,10 @@
                         :incidence-set incidence-set ;; NOTE should be a clojure set
                         :network network
                         :irks irks)
-        label (if (empty? label) (name-with-args hem) label)
-        display-name (if (empty? display-name) label display-name)
-        hem   (update-htn-object! (assoc hem
-                                         :display-name display-name
-                                         :label label))]
+        display-name (if (empty? display-name) (name-with-args hem) display-name)
+        hem   (update-htn-object! (assoc-if hem
+                                    :display-name display-name
+                                    :label label))]
     hem))
 
 ;; Expansion -------------------------------------------------
@@ -1404,7 +1402,7 @@
         name-str (str name)
         display-name (display-name-string name-str)
         details {:name name-str
-                 :label (str "TEMP-" name-str) ;; TEMPORARY
+                 ;; :display-name (str "TEMP-" name-str) ;; TEMPORARY
                  :display-name display-name}]
     (if (or (not primitive?) (= name 'delay))
       details
@@ -1446,7 +1444,7 @@
 ;; begin is the state node of the parent task
 (defn construct-hem-plan-map [ir pargs hem henpt root? parent-begin-uid
                               labels all-betweens choice-begin-end]
-  (let [{:keys [uid label subtasks subtask-constraints edges
+  (let [{:keys [uid display-name subtasks subtask-constraints edges
                 ancestry-path argument-mappings irks]} hem
         ;; DEBUG
         _ (dbg-println :debug "CHPM PARGS" pargs)
@@ -1459,9 +1457,16 @@
         [pclass kw-methods method mi kw-body int-zero more-irks] hem-irks
         hem-pclass pclass
         _ (dbg-println :debug "CHPN 1" pclass method int-zero more-irks kw-methods)
+        ;; Here we get the size of the hem irks vector to distinguish
+        ;; a choice from anything else. Using first.pamela as an example, the
+        ;; irks to the second choice is
+        ;; 9 = [first-tpn-htn :methods do-choice 0 :body 0 :body 1 :body]
+        ;; whereas the sequence in do-f-and-g is
+        ;; 6 = [first-tpn-htn :methods do-f-and-g 0 :body 0]
         n-hem-irks (count hem-irks)
-        funcall (get-in ir (vec (take 6 hem-irks)))
-        hem-label (:label funcall)
+        ;; Here funcall_ is the "function" (choice or other) that may have a display-name
+        funcall_ (get-in ir (vec (take 6 hem-irks)))
+        hem-label (:label funcall_)
         betweens (get-in ir (conj hem-irks :betweens))
         _ (dbg-println :debug "CHPN 2 hem-label" hem-label "betweens" betweens)
         top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
@@ -1489,6 +1494,7 @@
         subtask-order (mapv :uid (if tsc (:tasks tsc) subtasks))
         n-subtasks (count subtask-order)
         sequential? (or (not (nil? tsc)) (= 1 n-subtasks)) ;; could be a choice
+        ;; distinguish choice from sequence using n-hem-irks (see binding above)
         hem-choice? (and sequential? (= 9 n-hem-irks))
         [label sequence-label] (if (or (not sequential?) hem-choice?)
                                  [hem-label nil] ;; parallel or choice
@@ -1497,7 +1503,7 @@
             "label" label "sequence-label" sequence-label)
         i-last-subtask (dec (count subtask-order))
         net-map (if (pos? (count subtasks))
-                  (htn-network {:label label :rootnodes #{}}))
+                  (htn-network {:display-name display-name :rootnodes #{}}))
         parent-begin (tpn/get-tpn-plan-map parent-begin-uid) ;; TPN------
         {:keys [end-node]} parent-begin
         parent-end (tpn/get-tpn-plan-map end-node)
@@ -1514,6 +1520,9 @@
         ;; _ (when (and (not hem-choice?) (or label sequence-label))
         ;;     (dbg-println :trace "CHPN 4 parent-begin-uid" parent-begin-uid
         ;;       "getting :label" (and (not hem-choice?) label)))
+        _ (dbg-println :trace "CHPN 4 parent-begin-uid" parent-begin-uid
+            "parent-end-uid" end-node)
+        first-begin-uid (atom nil)
         prev-end (atom nil)]
     (when (or label sequence-label)
       (when (and hem-choice? label (not (get @labels label)))
@@ -1568,6 +1577,7 @@
                        "type" type
                        "parallel?" parallel?
                        "choice?" choice?
+                       "sequential?" sequential?
                        "\nsubtask_" (with-out-str
                                       (pprint
                                        (dissoc subtask_
@@ -1611,8 +1621,6 @@
                                                       (seq (to-pamela (:args details_))))))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
-                         ;; do NOT use the "TEMP..." label from plant-details now
-                         ;; :label (:label details_) ;; to be removed
                          ;; NOTE: labels go on activities if primitive
                          :label label
                          :args (:args details_)
@@ -1624,9 +1632,9 @@
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
                          :end-node (:uid se)}))
-            ;; _ (when activity
-            ;;     (dbg-println :trace "activity" (:uid activity) (:name activity)
-            ;;       "getting :label" (and (not primitive?) label)))
+            _ (when activity
+                (dbg-println :trace "activity" (:uid activity) (:name activity)
+                  "getting :label" (and (not primitive?) label)))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
                                ;; do NOT add constraints on the node
                                ;; :constraints (if tc #{(:uid tc)})
@@ -1635,8 +1643,10 @@
                                ;; during TPN optimization
                                ;; :end-node (if sequential? (:uid se))
                                :end-node (:uid se)
-                               :sequence-end (if (and sequential? (not activity))
-                                               (:uid se))
+                               ;; re-use an activity se as a sequence-end
+                               ;; :sequence-end (if (and sequential? (not activity))
+                               ;;                 (:uid se))
+                               ;; :sequence-end (if sequential? (:uid se))
                                :htn-node (:uid hem-map)})
             [begin end] (if parallel?
                           (if (zero? i)
@@ -1676,10 +1686,10 @@
                                           :htn-node (:uid hem-map)})]
                               [begin end])
                             [sb se]))]
+        (dbg-println :trace "begin" (:uid begin) "end" (:uid end)
+          "sb" (:uid sb) "se" (:uid se))
         (when label
           (dbg-println :debug "STlabel" label
-            "begin" (:uid begin) "end" (:uid end)
-            "sb" (:uid sb) "se" (:uid se)
             (if primitive?
               "on ACTIVITY"
               (if choice? "on BEGIN" "on SB")))
@@ -1704,6 +1714,7 @@
                       [:edges] conj (:uid edge))))
         ;; TPN
         (when (zero? i) ;; connect the parent to the beginning
+          (reset! first-begin-uid (:uid begin))
           (tpn/update-tpn-plan-map!
            (update-in
             (tpn/get-tpn-plan-map parent-begin)
@@ -1719,13 +1730,26 @@
                       (:uid (tpn/tpn-null-activity {:end-node (:uid sb)}))))
           (tpn/update-tpn-plan-map!
            (update-in se [:activities] conj
-                      (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
+             (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
+        ;; OLD
+        ;; (when (and (not parallel?) (pos? i))
+        ;;   ;; choice or sequence, interstitial na
+        ;;   (tpn/update-tpn-plan-map!
+        ;;    (update-in @prev-end [:activities] conj
+        ;;               (:uid (tpn/tpn-null-activity {:end-node (:uid begin)})))))
+        ;; (reset! prev-end end)
+        ;; WAIT
         (when (and (not parallel?) (pos? i))
           ;; choice or sequence, interstitial na
-          (tpn/update-tpn-plan-map!
-           (update-in @prev-end [:activities] conj
-                      (:uid (tpn/tpn-null-activity {:end-node (:uid begin)})))))
+          (let [na (tpn/tpn-null-activity {:end-node (:uid begin)})
+                {:keys [activities sequence-end]} @prev-end]
+            (tpn/update-tpn-plan-map!
+              (assoc @prev-end :activities (conj activities (:uid na))))
+            (tpn/update-tpn-plan-map!
+              (assoc (tpn/get-tpn-plan-map @first-begin-uid)
+                :sequence-end (:uid end)))))
         (reset! prev-end end)
+        ;; WAIT ============================
         ;; recurse down hem graph
         (doseq [j (range m-task-expansions)]
           (let [task-expansion (get task-expansions j)
@@ -1736,9 +1760,9 @@
                 sb (if (or parallel? (not choice?) (zero? j))
                      sb
                      (tpn/tpn-state {:end-node (:uid se)}))
-                label (if parallel? nil (str (inc i)))
+                display-name (if parallel? nil (str (inc i)))
                 hedge (htn-edge {:end-node (:uid task-expansion)
-                                 :label label
+                                 :display-name display-name
                                  :edge-type edge-type})]
             (update-htn-plan-map! hedge)
             (update-htn-plan-map!
@@ -1760,9 +1784,9 @@
 
 (defn construct-htn-plan-map [ir expanded-root-task]
   ;;(dbg-println :debug expanded-root-task)
-  (let [{:keys [uid label pargs]} expanded-root-task
+  (let [{:keys [uid display-name pargs]} expanded-root-task
         ;; _ (dbg-println :debug "ERT PARGS" pargs) ;; DEBUG
-        net (htn-network {:label label :rootnodes #{uid}})
+        net (htn-network {:display-name display-name :rootnodes #{uid}})
         {:keys [task-expansions irks]} expanded-root-task
         betweens (get-in ir (conj irks :betweens))
         _ (dbg-println :debug "ROOT CHPM IRKS" irks "betweens" betweens) ;; DEBUG
@@ -1777,16 +1801,17 @@
             "\nTASK-EXPANSIONS (" (count task-expansions)
             ") = "
             ;; (with-out-str (pprint task-expansions)
-            (mapv :label task-expansions)
+            (mapv :display-name task-expansions)
             )
         labels (atom {})
         all-betweens (atom [])
         top-level-choose? (> (count task-expansions) 1)
-        ;; NOTE: the following heuristic is true for parallel as well, so, instead
-        ;; as we don't need a clean top level sb for a sequence here we can
-        ;; worry about this in construct-hem-plan-map
-        ;; sequence? (= (count task-expansions) 1)
-        sequence? false
+        subtask-constraints (:subtask-constraints (first task-expansions))
+        sequence? (and (= (count task-expansions) 1)
+                    subtask-constraints
+                    (= (count subtask-constraints) 1)
+                    (= (:type (first subtask-constraints))
+                      :task-sequential-constraint))
         end ((if top-level-choose?
                tpn/tpn-c-end
                tpn/tpn-state)

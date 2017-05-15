@@ -26,7 +26,9 @@
                 (do-a-and-b)
                 ;; (do-choice-and-c :label :start-1)) ;; non-canonical label
                 (do-choice-and-c))
-              (between :do-choice :b :bounds [1 101]))
+              (between :do-choice :b :bounds [1 101])
+              (between-starts :c :b :bounds [2 46] :cost<= 8)
+              (between-ends :b :c :bounds [3 57] :reward>= 9))
 
             (defpmethod do-a-and-b
               []
