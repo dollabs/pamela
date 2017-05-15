@@ -741,6 +741,7 @@
 ;; remove invalid slots
 ;; 1. Remove state :end-node if :sequence-end is not set
 ;; 2. add :end-node if :sequence-end is set
+;; 3. remove :sequence-end everywhere
 (defn remove-invalid-tpn-attributes []
   (doseq [uid (keys @*tpn-plan-map*)]
     (let [object (get-tpn-plan-map uid)
@@ -749,7 +750,12 @@
         (and (= :state tpn-type) end-node (not sequence-end))
         (update-tpn-plan-map! (dissoc object :end-node))
         (and (= :state tpn-type) sequence-end (not= end-node sequence-end))
-        (update-tpn-plan-map! (assoc object :end-node sequence-end))
+        (update-tpn-plan-map!
+          (assoc
+            (dissoc object :sequence-end)
+              :end-node sequence-end))
+        sequence-end
+        (update-tpn-plan-map! (dissoc object :sequence-end))
         ;; (and (#{:state :c-end :p-end} tpn-type) end-node)
         ;; (update-tpn-plan-map! (dissoc object :end-node))
         ;; (#{:c-end :p-end} tpn-type)
