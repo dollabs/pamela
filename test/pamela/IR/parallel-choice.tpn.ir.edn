@@ -1,10 +1,9 @@
 {parallel-choice-tpn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta
-  {:version "0.2.0",
-   :depends {plant "0.2.0"},
-   :doc "Parallel and Choice, each with 2 Activities"},
+  {:depends {plant "0.2.0"},
+   :doc "Parallel and Choice, each with 2 Activities",
+   :version "0.2.0"},
   :methods
   {simple-parallel-tpn
    [{:args [],
@@ -44,4 +43,5 @@
              :name plant,
              :method unbounded,
              :args []}]}]}]}],
-     :doc "Simple Parallel TPN"}]}}}
+     :doc "Simple Parallel TPN"}]},
+  :type :pclass}}

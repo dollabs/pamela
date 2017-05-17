@@ -25,7 +25,7 @@
             [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log]
-            [plan-schema.coerce :refer [sort-map]])
+            [plan-schema.utils :refer [sort-map]])
   (:import [java.net
             URL]))
 

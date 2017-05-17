@@ -1,31 +1,66 @@
 {coverage-demo
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
-  {:sp1
+  {:run
    {:access :private,
-    :observable false,
+    :initial {:args [sp1], :pclass coverage-test, :type :pclass-ctor},
+    :observable false},
+   :sp1
+   {:access :private,
     :initial
-    {:type :pclass-ctor,
-     :pclass simpleplant,
-     :args [],
+    {:args [],
      :id "sp1",
+     :interface "RMQ",
+     :pclass simpleplant,
      :plant-part "mypart",
-     :interface "RMQ"}},
-   :run
-   {:access :private,
-    :observable false,
-    :initial
-    {:type :pclass-ctor, :pclass coverage-test, :args [sp1]}}}},
+     :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
  coverage-test
- {:type :pclass,
-  :args [plant],
-  :modes
-  {:local {:type :literal, :value true},
-   :networked {:type :literal, :value true}},
+ {:args [plant],
   :meta {:doc "Coverage Test"},
   :methods
-  {main
+  {copy
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Copy",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name plant,
+           :method scp,
+           :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"]}],
+         :probability 0.66,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :mode-reference, :pclass this, :mode :networked}
+           {:type :literal, :value true}]}}
+        {:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name plant,
+           :method cp,
+           :args ["bigfile" "copyofbigfile"],
+           :cost 5,
+           :reward 1}],
+         :probability 0.33,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :mode-reference, :pclass this, :mode :local}
+           {:type :literal, :value true}]}}]}]}],
+   main
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -154,79 +189,16 @@
          :temporal-constraints [{:type :bounds, :value [0 99]}],
          :label :python}],
        :cost<= 11,
-       :reward>= 6}]}],
-   copy
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Copy",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :choose,
-       :body
-       [{:type :choice,
-         :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method scp,
-           :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"]}],
-         :probability 0.66,
-         :condition
-         {:type :equal,
-          :args
-          [{:type :mode-reference, :pclass this, :mode :networked}
-           {:type :literal, :value true}]}}
-        {:type :choice,
-         :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method cp,
-           :args ["bigfile" "copyofbigfile"],
-           :cost 5,
-           :reward 1}],
-         :probability 0.33,
-         :condition
-         {:type :equal,
-          :args
-          [{:type :mode-reference, :pclass this, :mode :local}
-           {:type :literal, :value true}]}}]}]}]}},
+       :reward>= 6}]}]},
+  :modes
+  {:local {:type :literal, :value true},
+   :networked {:type :literal, :value true}},
+  :type :pclass},
  simpleplant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Simple Plant Example"},
   :methods
-  {hardwork
-   [{:args [time],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [1 20]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Hardwork",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Simulated work with a simulated failure"}],
-   scp
-   [{:args [fromfile tofile],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [10 20]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Scp",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Secure network file copy"}],
-   cp
+  {cp
    [{:args [fromfile tofile],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -239,19 +211,19 @@
      :cost 0,
      :body nil,
      :doc "local file copy"}],
-   shell
-   [{:args [cmd arg1 arg2 arg3],
+   hardwork
+   [{:args [time],
      :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 3]}],
+     :temporal-constraints [{:type :bounds, :value [1 20]}],
      :reward 0,
      :controllable false,
      :primitive true,
      :betweens [],
-     :display-name "Shell",
+     :display-name "Hardwork",
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Runs a command-line program"}],
+     :doc "Simulated work with a simulated failure"}],
    python
    [{:args [script options arg1 arg2 arg3],
      :pre {:type :literal, :value true},
@@ -265,6 +237,32 @@
      :cost 0,
      :body nil,
      :doc "Runs a python script"}],
+   scp
+   [{:args [fromfile tofile],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [10 20]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Scp",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Secure network file copy"}],
+   shell
+   [{:args [cmd arg1 arg2 arg3],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 3]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Shell",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Runs a command-line program"}],
    stop
    [{:args [area],
      :pre {:type :literal, :value true},
@@ -277,4 +275,5 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Stops the plant"}]}}}
+     :doc "Stops the plant"}]},
+  :type :pclass}}

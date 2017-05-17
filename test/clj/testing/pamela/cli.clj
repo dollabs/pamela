@@ -65,7 +65,7 @@
                    (if (re-find out-pattern#
                          (string/replace out-str# "\n" ""))
                      true ;; we have a match
-                     (str "stdout did NOT match '" out-pattern# "' ===\n"
+                     (str "stdout did NOT match '" ~out-expect "' ===\n"
                        out-str# "\n===")))
          err-pattern# (cond
                         (nil? ~err-expect)
@@ -80,7 +80,7 @@
                    (if (re-find err-pattern#
                          (string/replace err-str# "\n" ""))
                      true ;; we have a match
-                     (str "stderr did NOT match '" err-pattern# "' ===\n"
+                     (str "stderr did NOT match '" ~err-expect "' ===\n"
                        err-str# "\n===")))]
      ;; DEBUG
      ;; (println "OUT=>" out-str# "<=OUT")
@@ -111,7 +111,7 @@
     ;; NOTE: comprehensive build coverage tests have moved to parser.clj
     ;; build PASS
     (is (= [0 true true]
-          (match-eval-out-err "\\{bulb \\{:type :pclass" nil
+          (match-eval-out-err "\\{bulb \\{:args \\[vcc vdd\\]" nil
             (pamela "-i" "test/pamela/circuit.pamela" "build" )
             )))
     ;; build FAIL

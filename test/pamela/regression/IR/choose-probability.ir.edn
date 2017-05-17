@@ -1,12 +1,11 @@
 {choose-probability
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "choose example with probability"},
+ {:args [],
   :fields
   {:a
    {:access :private,
-    :observable false,
-    :initial {:type :lvar, :name :gensym}}},
+    :initial {:name :gensym, :type :lvar},
+    :observable false}},
+  :meta {:doc "choose example with probability", :version "0.2.0"},
   :methods
   {example
    [{:args [],
@@ -36,5 +35,6 @@
         {:type :choice,
          :body [{:type :delay, :body nil}],
          :probability {:type :lvar, :name "likelihood"}}]}],
-     :doc "choose based on probability"}]}},
- pamela/lvars {:type :lvars, :lvars {"likelihood" :unset}}}
+     :doc "choose based on probability"}]},
+  :type :pclass},
+ pamela/lvars {:lvars {"likelihood" :unset}, :type :lvars}}

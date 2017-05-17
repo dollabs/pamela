@@ -1,37 +1,8 @@
 {first-tpn-htn
- {:type :pclass,
-  :args [plnt],
+ {:args [plnt],
   :meta {:doc "A example with constraints. "},
   :methods
-  {start
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens
-     [{:type :between,
-       :from :choice,
-       :to :b,
-       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :display-name "Start",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :parallel,
-       :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method do-a-and-b,
-         :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method do-choice-and-c,
-         :args []}],
-       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "Simple TPN with constraints"}],
-   do-a-and-b
+  {do-a-and-b
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -56,29 +27,6 @@
          :args [],
          :label :b,
          :temporal-constraints [{:type :bounds, :value [3 6]}]}]}]}],
-   do-choice-and-c
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Do Choice And C",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :sequence,
-       :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method do-choice,
-         :args []}
-        {:type :plant-fn-symbol,
-         :name plnt,
-         :method do-c,
-         :args [],
-         :temporal-constraints [{:type :bounds, :value [85 90]}]}]}]}],
    do-choice
    [{:args [],
      :pre {:type :literal, :value true},
@@ -106,6 +54,29 @@
            :method do-f-and-g,
            :args []}]}],
        :label :choice}]}],
+   do-choice-and-c
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Do Choice And C",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method do-choice,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name plnt,
+         :method do-c,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [85 90]}]}]}]}],
    do-d-and-e
    [{:args [],
      :pre {:type :literal, :value true},
@@ -160,35 +131,63 @@
          :method do-g,
          :args [],
          :cost 4,
-         :temporal-constraints [{:type :bounds, :value [2 5]}]}]}]}]}},
+         :temporal-constraints [{:type :bounds, :value [2 5]}]}]}]}],
+   start
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens
+     [{:type :between,
+       :from :choice,
+       :to :b,
+       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+     :display-name "Start",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method do-a-and-b,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method do-choice-and-c,
+         :args []}],
+       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+     :doc "Simple TPN with constraints"}]},
+  :type :pclass},
  main
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:plnt
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass plant, :args []}},
+    :initial {:args [], :pclass plant, :type :pclass-ctor},
+    :observable false},
    :tpn
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass first-tpn, :args [:plnt]}}}},
+    :initial {:args [:plnt], :pclass first-tpn, :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
  main-htn
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:plnt
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass plant, :args []}},
+    :initial {:args [], :pclass plant, :type :pclass-ctor},
+    :observable false},
    :tpn
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor, :pclass first-tpn-htn, :args [:plnt]}}}},
+    {:args [:plnt], :pclass first-tpn-htn, :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {do-a
@@ -274,4 +273,5 @@
      :display-name "Do G",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}}}
+     :body nil}]},
+  :type :pclass}}

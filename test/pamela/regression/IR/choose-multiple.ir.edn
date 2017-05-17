@@ -1,6 +1,5 @@
 {choice-tpn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "New choose multiple example"},
   :methods
   {choose-multiple
@@ -54,13 +53,13 @@
            :method six,
            :args []}]}],
        :min 2,
-       :max 4}]}]}},
+       :max 4}]}]},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
-  {one
+  {five
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -68,31 +67,7 @@
      :controllable false,
      :primitive true,
      :betweens [],
-     :display-name "One",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil}],
-   two
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Two",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil}],
-   three
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Three",
+     :display-name "Five",
      :post {:type :literal, :value true},
      :cost 0,
      :body nil}],
@@ -108,7 +83,7 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil}],
-   five
+   one
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -116,7 +91,7 @@
      :controllable false,
      :primitive true,
      :betweens [],
-     :display-name "Five",
+     :display-name "One",
      :post {:type :literal, :value true},
      :cost 0,
      :body nil}],
@@ -131,4 +106,29 @@
      :display-name "Six",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}}}
+     :body nil}],
+   three
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Three",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}],
+   two
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Two",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}]},
+  :type :pclass}}

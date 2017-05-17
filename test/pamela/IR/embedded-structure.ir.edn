@@ -1,6 +1,5 @@
 {choose-sequence-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -39,10 +38,10 @@
             {:type :plant-fn-symbol,
              :name plant,
              :method unbounded,
-             :args []}]}]}]}]}]}},
+             :args []}]}]}]}]}]},
+  :type :pclass},
  double-parallel-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -77,10 +76,10 @@
           {:type :plant-fn-symbol,
            :name plant,
            :method unbounded,
-           :args []}]}]}]}]}},
+           :args []}]}]}]}]},
+  :type :pclass},
  parallel-sequence2-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -115,10 +114,10 @@
           {:type :plant-fn-symbol,
            :name plant,
            :method unbounded,
-           :args []}]}]}]}]}},
+           :args []}]}]}]}]},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {bounded
@@ -146,10 +145,10 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Unbounded"}]}},
+     :doc "Unbounded"}]},
+  :type :pclass},
  sequence-choose-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -192,10 +191,10 @@
            [{:type :plant-fn-symbol,
              :name plant,
              :method unbounded,
-             :args []}]}]}]}]}]}},
+             :args []}]}]}]}]}]},
+  :type :pclass},
  sequence-parallel1-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -224,10 +223,10 @@
           {:type :plant-fn-symbol,
            :name plant,
            :method unbounded,
-           :args []}]}]}]}]}},
+           :args []}]}]}]}]},
+  :type :pclass},
  sequence-parallel2-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -262,10 +261,10 @@
           {:type :plant-fn-symbol,
            :name plant,
            :method unbounded,
-           :args []}]}]}]}]}},
+           :args []}]}]}]}]},
+  :type :pclass},
  single-parallel-htn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :methods
   {main
    [{:args [],
@@ -288,4 +287,5 @@
         {:type :plant-fn-symbol,
          :name plant,
          :method unbounded,
-         :args []}]}]}]}}}
+         :args []}]}]}]},
+  :type :pclass}}

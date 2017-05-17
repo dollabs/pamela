@@ -1,32 +1,10 @@
 {coin
- {:type :pclass,
-  :args [],
-  :modes
-  {:biased {:type :literal, :value true},
-   :unbiased {:type :literal, :value true}},
+ {:args [],
   :fields
   {:observed-face
    {:access :private,
-    :observable true,
-    :initial
-    {:type :mode-reference, :pclass coin-faces, :mode :head}}},
-  :transitions
-  {:biased:unbiased
-   {:pre {:type :mode-reference, :pclass this, :mode :biased},
-    :post {:type :mode-reference, :pclass this, :mode :unbiased},
-    :probability {:type :lvar, :name "tBU", :default 0.1}},
-   :unbiased:biased
-   {:pre {:type :mode-reference, :pclass this, :mode :unbiased},
-    :post {:type :mode-reference, :pclass this, :mode :biased},
-    :probability {:type :lvar, :name "tUB", :default 0.1}},
-   :biased:biased
-   {:pre {:type :mode-reference, :pclass this, :mode :biased},
-    :post {:type :mode-reference, :pclass this, :mode :biased},
-    :probability {:type :lvar, :name "tBB", :default 0.9}},
-   :unbiased:unbiased
-   {:pre {:type :mode-reference, :pclass this, :mode :unbiased},
-    :post {:type :mode-reference, :pclass this, :mode :unbiased},
-    :probability {:type :lvar, :name "tUU", :default 0.9}}},
+    :initial {:mode :head, :pclass coin-faces, :type :mode-reference},
+    :observable true}},
   :methods
   {emit-head
    [{:args [],
@@ -123,51 +101,50 @@
           :args
           [{:type :mode-reference, :pclass this, :mode :unbiased}
            {:type :literal, :value true}]}}]}],
-     :doc "Flip the coin"}]}},
+     :doc "Flip the coin"}]},
+  :modes
+  {:biased {:type :literal, :value true},
+   :unbiased {:type :literal, :value true}},
+  :transitions
+  {:biased:biased
+   {:post {:mode :biased, :pclass this, :type :mode-reference},
+    :pre {:mode :biased, :pclass this, :type :mode-reference},
+    :probability {:default 0.9, :name "tBB", :type :lvar}},
+   :biased:unbiased
+   {:post {:mode :unbiased, :pclass this, :type :mode-reference},
+    :pre {:mode :biased, :pclass this, :type :mode-reference},
+    :probability {:default 0.1, :name "tBU", :type :lvar}},
+   :unbiased:biased
+   {:post {:mode :biased, :pclass this, :type :mode-reference},
+    :pre {:mode :unbiased, :pclass this, :type :mode-reference},
+    :probability {:default 0.1, :name "tUB", :type :lvar}},
+   :unbiased:unbiased
+   {:post {:mode :unbiased, :pclass this, :type :mode-reference},
+    :pre {:mode :unbiased, :pclass this, :type :mode-reference},
+    :probability {:default 0.9, :name "tUU", :type :lvar}}},
+  :type :pclass},
  coin-faces
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "Enumeration of coin faces"},
   :modes
   {:head {:type :literal, :value true},
-   :tail {:type :literal, :value true}}},
+   :tail {:type :literal, :value true}},
+  :type :pclass},
  main
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:acoin
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
-     :pclass coin,
-     :args [],
+    {:args [],
      :id "penny",
+     :interface "RMQ",
+     :pclass coin,
      :plant-part "coin-fsm",
-     :interface "RMQ"}}},
+     :type :pclass-ctor},
+    :observable false}},
   :methods
-  {flip-3
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Flip 3",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :sequence,
-       :body
-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field,
-         :method flip,
-         :args [],
-         :field :acoin}]}],
-     :doc "Series of 3 coin flips"}],
-   flip-1000
+  {flip-1000
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -194,15 +171,37 @@
          :method flip,
          :args [],
          :field :acoin}]}],
-     :doc "Series of 1000 coin flips"}]}},
+     :doc "Series of 1000 coin flips"}],
+   flip-3
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Flip 3",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+        {:type :plant-fn-field,
+         :method flip,
+         :args [],
+         :field :acoin}]}],
+     :doc "Series of 3 coin flips"}]},
+  :type :pclass},
  pamela/lvars
- {:type :lvars,
-  :lvars
-  {"tBU" 0.1,
-   "tUB" 0.1,
-   "tBB" 0.9,
-   "tUU" 0.9,
-   "eBH" 0.8,
+ {:lvars
+  {"eBH" 0.8,
    "eBT" 0.2,
    "eUH" 0.51,
-   "eUT" 0.49}}}
+   "eUT" 0.49,
+   "tBB" 0.9,
+   "tBU" 0.1,
+   "tUB" 0.1,
+   "tUU" 0.9},
+  :type :lvars}}

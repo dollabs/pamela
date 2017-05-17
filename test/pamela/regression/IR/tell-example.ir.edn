@@ -1,12 +1,11 @@
 {tell-example
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "tell example"},
+ {:args [],
   :fields
   {:a
    {:access :private,
-    :observable false,
-    :initial {:type :lvar, :name :gensym}}},
+    :initial {:name :gensym, :type :lvar},
+    :observable false}},
+  :meta {:doc "tell example", :version "0.2.0"},
   :methods
   {always-on
    [{:args [],
@@ -26,4 +25,5 @@
         :args
         [{:type :field-reference, :pclass this, :field :a}
          {:type :literal, :value 1.0}]}}],
-     :doc "ensure field :a is always 1.0"}]}}}
+     :doc "ensure field :a is always 1.0"}]},
+  :type :pclass}}

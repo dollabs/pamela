@@ -1,30 +1,27 @@
 {four
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta
-  {:version "0.2.0",
+  {:depends {one "0.2.0", three "0.2.0"},
    :doc "Forth",
-   :depends {one "0.2.0", three "0.2.0"}},
+   :version "0.2.0"},
   :modes
-  {:g {:type :literal, :value true},
-   :i {:type :literal, :value true}}},
+  {:g {:type :literal, :value true}, :i {:type :literal, :value true}},
+  :type :pclass},
  one
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "First"},
+ {:args [],
+  :meta {:doc "First", :version "0.2.0"},
   :modes
-  {:a {:type :literal, :value true},
-   :b {:type :literal, :value true}}},
+  {:a {:type :literal, :value true}, :b {:type :literal, :value true}},
+  :type :pclass},
  three
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "Third", :depends {two "0.2.0"}},
+ {:args [],
+  :meta {:depends {two "0.2.0"}, :doc "Third", :version "0.2.0"},
   :modes
-  {:e {:type :literal, :value true},
-   :f {:type :literal, :value true}}},
+  {:e {:type :literal, :value true}, :f {:type :literal, :value true}},
+  :type :pclass},
  two
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "Second"},
+ {:args [],
+  :meta {:doc "Second", :version "0.2.0"},
   :modes
-  {:c {:type :literal, :value true}, :d {:type :literal, :value true}}}}
+  {:c {:type :literal, :value true}, :d {:type :literal, :value true}},
+  :type :pclass}}

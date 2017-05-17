@@ -1,6 +1,5 @@
 {plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {do-a
@@ -62,17 +61,16 @@
      :display-name "Do E",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}},
+     :body nil}]},
+  :type :pclass},
  sequence-feasible
- {:type :pclass,
-  :args [plnt],
-  :meta {:doc "An example of infeasible sequence of activties"},
+ {:args [plnt],
   :fields
   {:main
    {:access :private,
-    :observable false,
-    :initial
-    {:type :pclass-ctor, :pclass sequence-feasible, :args []}}},
+    :initial {:args [], :pclass sequence-feasible, :type :pclass-ctor},
+    :observable false}},
+  :meta {:doc "An example of infeasible sequence of activties"},
   :methods
   {main
    [{:args [],
@@ -94,4 +92,5 @@
         {:type :plant-fn-symbol, :name plnt, :method do-d, :args []}
         {:type :plant-fn-symbol, :name plnt, :method do-e, :args []}],
        :temporal-constraints [{:type :bounds, :value [10 30]}]}],
-     :doc "Simple TPN with constraints"}]}}}
+     :doc "Simple TPN with constraints"}]},
+  :type :pclass}}

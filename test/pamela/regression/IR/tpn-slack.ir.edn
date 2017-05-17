@@ -1,6 +1,5 @@
 {plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {action1
@@ -28,10 +27,10 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Take action 2"}]}},
+     :doc "Take action 2"}]},
+  :type :pclass},
  slack
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "An example of using slack operations."},
   :methods
   {start
@@ -174,4 +173,5 @@
                :method action2,
                :args []}]}]}],
          :label :soft-parallel}]}],
-     :doc "Demo method"}]}}}
+     :doc "Demo method"}]},
+  :type :pclass}}

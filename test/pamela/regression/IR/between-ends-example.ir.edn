@@ -1,7 +1,6 @@
 {between-ends-example
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "between-ends example"},
+ {:args [],
+  :meta {:doc "between-ends example", :version "0.2.0"},
   :methods
   {example
    [{:args [],
@@ -19,4 +18,5 @@
        :from :a,
        :to :b,
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "between-ends example"}]}}}
+     :doc "between-ends example"}]},
+  :type :pclass}}

@@ -1,29 +1,13 @@
 {all-clear {:type :state-variable},
  box
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:ball-in-motion
    {:access :public,
-    :observable true,
-    :initial {:type :literal, :value false}}},
-  :modes
-  {:open {:type :literal, :value true},
-   :close {:type :literal, :value true}},
+    :initial {:type :literal, :value false},
+    :observable true}},
   :methods
-  {open-lid
-   [{:args [],
-     :pre {:type :mode-reference, :pclass this, :mode :close},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Open Lid",
-     :post {:type :mode-reference, :pclass this, :mode :open},
-     :cost 0,
-     :body nil}],
-   close-lid
+  {close-lid
    [{:args [],
      :pre {:type :mode-reference, :pclass this, :mode :open},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -33,6 +17,18 @@
      :betweens [],
      :display-name "Close Lid",
      :post {:type :mode-reference, :pclass this, :mode :close},
+     :cost 0,
+     :body nil}],
+   open-lid
+   [{:args [],
+     :pre {:type :mode-reference, :pclass this, :mode :close},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Open Lid",
+     :post {:type :mode-reference, :pclass this, :mode :open},
      :cost 0,
      :body nil}],
    reset
@@ -46,19 +42,22 @@
      :display-name "Reset",
      :post {:type :mode-reference, :pclass this, :mode :open},
      :cost 0,
-     :body nil}]}},
+     :body nil}]},
+  :modes
+  {:close {:type :literal, :value true},
+   :open {:type :literal, :value true}},
+  :type :pclass},
  cannon
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:ammunitions
    {:access :private,
-    :observable true,
-    :initial {:type :literal, :value 5}},
+    :initial {:type :literal, :value 5},
+    :observable true},
    :ready
    {:access :public,
-    :observable true,
-    :initial {:type :literal, :value false}}},
+    :initial {:type :literal, :value false},
+    :observable true}},
   :methods
   {fire
    [{:args [arg1 arg2],
@@ -83,19 +82,19 @@
      :display-name "Reset",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}},
+     :body nil}]},
+  :type :pclass},
  game
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
-  {:cannon-f
+  {:box-f
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass cannon, :args []}},
-   :box-f
+    :initial {:args [], :pclass box, :type :pclass-ctor},
+    :observable false},
+   :cannon-f
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass box, :args []}}},
+    :initial {:args [], :pclass cannon, :type :pclass-ctor},
+    :observable false}},
   :methods
   {main
    [{:args [],
@@ -206,4 +205,5 @@
             :field :cannon-f,
             :value :ready}
            {:type :literal, :value true}]}}],
-       :temporal-constraints [{:type :bounds, :value [1 60]}]}]}]}}}
+       :temporal-constraints [{:type :bounds, :value [1 60]}]}]}]},
+  :type :pclass}}

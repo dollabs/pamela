@@ -1,37 +1,7 @@
 {camera
- {:type :pclass,
-  :args [],
+ {:args [],
   :methods
-  {take-high-res-images
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints
-     [{:type :bounds,
-       :value
-       {:type :lvar, :name "high-res-bounds", :default [5 10]}}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Take High Res Images",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Take High Res Image"}],
-   take-medium-res-images
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Take Medium Res Images",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Take Medium Res Image"}],
-   main
+  {main
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -61,15 +31,45 @@
          [{:type :bounds,
            :value
            {:type :lvar, :name "med-res-bounds", :default [3 6]}}]}]}],
-     :doc "the tpn"}]}},
+     :doc "the tpn"}],
+   take-high-res-images
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints
+     [{:type :bounds,
+       :value
+       {:type :lvar, :name "high-res-bounds", :default [5 10]}}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Take High Res Images",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Take High Res Image"}],
+   take-medium-res-images
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Take Medium Res Images",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Take Medium Res Image"}]},
+  :type :pclass},
  example
- {:type :pclass,
-  :args [camera],
+ {:args [camera],
   :fields
   {:imager
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass camera, :args []}}}},
+    :initial {:args [], :pclass camera, :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
  pamela/lvars
- {:type :lvars,
-  :lvars {"high-res-bounds" [5 10], "med-res-bounds" [3 6]}}}
+ {:lvars {"high-res-bounds" [5 10], "med-res-bounds" [3 6]},
+  :type :lvars}}

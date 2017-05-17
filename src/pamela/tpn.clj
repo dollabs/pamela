@@ -424,9 +424,9 @@
       (swap! tpn-notes assoc-in [:sequence-begins to-end] sequence-end)
       (swap! tpn-notes assoc-in [:sequence-ends sequence-end] to-end)
       )
-
-    (when (or sequence-begin sequence-end)
-      (dbg-tpn-notes tpn-notes))
+    ;; for extreme debugging
+    ;; (when (or sequence-begin sequence-end)
+    ;;   (dbg-tpn-notes tpn-notes))
     ))
 
 (defn get-todo [tpn-notes node-id activities]
@@ -697,7 +697,8 @@
                 "an" an "acn" (count a-constraints))
               )
             (dbg-println :trace "  DONE for" a0-uid)
-            (dbg-tpn-notes tpn-notes)
+            ;; extreme debugging
+            ;; (dbg-tpn-notes tpn-notes)
             (update-todo tpn-notes a-uid a0-uid nil)
             a-uid))]
     (if next-uid
@@ -734,7 +735,8 @@
             (swap! tpn-notes assoc-in [:sequence-ends sequence-end] uid)
             ;; add pointer to the sequence begin
             (swap! tpn-notes assoc-in [:sequence-begins uid] sequence-end)
-            (dbg-tpn-notes tpn-notes)
+            ;; extreme debugging
+            ;; (dbg-tpn-notes tpn-notes)
             ))))
     (remove-superfluous tpn-notes begin-node)))
 
@@ -775,7 +777,7 @@
           (update-in node [:incidence-set] conj uid))))))
 
 (defn optimize-tpn-map []
-  ;; (remove-superfluous-null-activities)
+  (remove-superfluous-null-activities)
   (remove-invalid-tpn-attributes) ;; MUST run after remove-superfluous-null-activities
   (update-incidence-set))
 

@@ -1,6 +1,5 @@
 {parallel-choice-tpn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "Simple Parallel with 2 Activities"},
   :methods
   {simple-parallel-tpn
@@ -41,10 +40,10 @@
              :name plant,
              :method unbounded,
              :args []}]}]}]}],
-     :doc "Simple Parallel TPN"}]}},
+     :doc "Simple Parallel TPN"}]},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {bounded
@@ -72,4 +71,5 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Unbounded"}]}}}
+     :doc "Unbounded"}]},
+  :type :pclass}}

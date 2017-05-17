@@ -1475,12 +1475,16 @@
         bounds (irks->bounds ir hem-irks)
         hem-bounds (tpn/merge-bounds top-bounds bounds)
         hem-uid uid
+        ;; NOTE as the new args-mapping structure has not yet been implemented
+        ;; we are "guessing" at the positions of the arg values here:
+        args (vals argument-mappings)
         hem-map (assoc
                  (dissoc hem
                          :ancestry-path :expansion-method :argument-mappings :subtasks
                          :subtask-constraints :irks)
                  :incidence-set #{}
-                 :edges [])
+                 :edges []
+                 :args args)
         edge (if root? (htn-edge {:end-node hem-uid}))
         edge-uid (:uid edge)
         hem-map (if root?
