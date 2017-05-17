@@ -1,7 +1,6 @@
 {quadcopter-plant
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "The Plant API"},
+ {:args [],
+  :meta {:doc "The Plant API", :version "0.2.0"},
   :methods
   {wp1
    [{:args [],
@@ -67,14 +66,14 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Waypoint 5"}]}},
+     :doc "Waypoint 5"}]},
+  :type :pclass},
  waypoints-test
- {:type :pclass,
-  :args [quadcopter-plant],
+ {:args [quadcopter-plant],
   :meta
-  {:version "0.2.0",
-   :depends {quadcopter-plant "0.2.0"},
-   :doc "Quadcopter test waypoints"},
+  {:depends {quadcopter-plant "0.2.0"},
+   :doc "Quadcopter test waypoints",
+   :version "0.2.0"},
   :methods
   {waypoints
    [{:args [],
@@ -110,4 +109,5 @@
          :name quadcopter-plant,
          :method wp5,
          :args []}]}],
-     :doc "QC waypoints"}]}}}
+     :doc "QC waypoints"}]},
+  :type :pclass}}

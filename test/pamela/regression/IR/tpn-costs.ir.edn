@@ -1,6 +1,5 @@
 {plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {do-a
@@ -86,10 +85,10 @@
      :display-name "Do G",
      :post {:type :literal, :value true},
      :cost 3,
-     :body nil}]}},
+     :body nil}]},
+  :type :pclass},
  tpn-costs
- {:type :pclass,
-  :args [plnt],
+ {:args [plnt],
   :meta {:doc "A TPN example with costs and rewards."},
   :methods
   {start
@@ -167,4 +166,5 @@
        :temporal-constraints [{:type :bounds, :value [1 100]}],
        :cost<= 11,
        :reward>= 6}],
-     :doc "TPN method"}]}}}
+     :doc "TPN method"}]},
+  :type :pclass}}

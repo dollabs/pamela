@@ -1,7 +1,6 @@
 {qc
- {:type :pclass,
-  :args [],
-  :meta {:version "0.3.0", :doc "The Plant API"},
+ {:args [],
+  :meta {:doc "The Plant API", :version "0.3.0"},
   :methods
   {location
    [{:args [lat lon alt yaw],
@@ -84,48 +83,48 @@
        :name this,
        :method location,
        :args [42.445327 -71.227784 4.0 350]}],
-     :doc "Waypoint 4"}]}},
+     :doc "Waypoint 4"}]},
+  :type :pclass},
  qc-demo
- {:type :pclass,
-  :args [],
-  :meta
-  {:version "0.3.0",
-   :depends {qc "0.3.0", qc-waypoints "0.3.0"},
-   :doc "Quadcopter test waypoints"},
+ {:args [],
   :fields
   {:qc1
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
-     :pclass qc,
-     :args [],
+    {:args [],
      :id "qc1",
+     :interface "RMQ",
+     :pclass qc,
      :plant-part "pp1",
-     :interface "RMQ"}},
+     :type :pclass-ctor},
+    :observable false},
    :qc2
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
-     :pclass qc,
-     :args [],
+    {:args [],
      :id "qc2",
+     :interface "ZMQ",
+     :pclass qc,
      :plant-part "pp2",
-     :interface "ZMQ"}},
+     :type :pclass-ctor},
+    :observable false},
    :qc3
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
-     :pclass qc,
-     :args [],
+    {:args [],
      :id "qc3",
-     :plant-part "pp3"}}}},
+     :pclass qc,
+     :plant-part "pp3",
+     :type :pclass-ctor},
+    :observable false}},
+  :meta
+  {:depends {qc "0.3.0", qc-waypoints "0.3.0"},
+   :doc "Quadcopter test waypoints",
+   :version "0.3.0"},
+  :type :pclass},
  qc-waypoints
- {:type :pclass,
-  :args [],
-  :meta {:version "0.3.0", :doc "Quadcopter test waypoints"},
+ {:args [],
+  :meta {:doc "Quadcopter test waypoints", :version "0.3.0"},
   :methods
   {circuit-one
    [{:args [q],
@@ -167,26 +166,6 @@
          :args [42.44537 -71.227899 1.0 80],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}]}],
      :doc "First quadcopter circuit"}],
-   circuit-two
-   [{:args [q],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Circuit Two",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :sequence,
-       :body
-       [{:type :plant-fn-symbol, :name q, :method wp2, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp3, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp4, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp1, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp2, :args []}]}],
-     :doc "Second quadcopter circuit"}],
    circuit-three
    [{:args [q],
      :pre {:type :literal, :value true},
@@ -207,6 +186,26 @@
         {:type :plant-fn-symbol, :name q, :method wp2, :args []}
         {:type :plant-fn-symbol, :name q, :method wp3, :args []}]}],
      :doc "Third quadcopter circuit"}],
+   circuit-two
+   [{:args [q],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Circuit Two",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol, :name q, :method wp2, :args []}
+        {:type :plant-fn-symbol, :name q, :method wp3, :args []}
+        {:type :plant-fn-symbol, :name q, :method wp4, :args []}
+        {:type :plant-fn-symbol, :name q, :method wp1, :args []}
+        {:type :plant-fn-symbol, :name q, :method wp2, :args []}]}],
+     :doc "Second quadcopter circuit"}],
    waypoints
    [{:args [qc1 qc2 qc3],
      :pre {:type :literal, :value true},
@@ -233,4 +232,5 @@
          :name this,
          :method circuit-three,
          :args [qc3]}]}],
-     :doc "Three quadcopter pattern of waypoints"}]}}}
+     :doc "Three quadcopter pattern of waypoints"}]},
+  :type :pclass}}

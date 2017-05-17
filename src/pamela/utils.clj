@@ -24,7 +24,8 @@
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [plan-schema.utils :refer [sort-map]])
   (:import [java.net
             URL]))
 
@@ -57,7 +58,7 @@
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
           data (if (map? data)
-                 (into (sorted-map) data)
+                 (sort-map data)
                  data)
           out (cond
                 (= file-format "edn")

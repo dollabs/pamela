@@ -2,16 +2,27 @@
  door {:type :state-variable},
  foo {:type :state-variable},
  main
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:field1
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor, :pclass simple-pclass, :args ["black"]}}},
+    {:args ["black"], :pclass simple-pclass, :type :pclass-ctor},
+    :observable false}},
   :methods
-  {main
+  {initialize
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Initialize",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}],
+   main
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -27,18 +38,6 @@
        :name this,
        :method test-of-various-statements,
        :args []}]}],
-   initialize
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Initialize",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil}],
    one-arg-method
    [{:args [x],
      :pre {:type :literal, :value true},
@@ -105,19 +104,19 @@
         {:type :plant-fn-symbol,
          :name this,
          :method initialize,
-         :args []}]}]}]}},
+         :args []}]}]}]},
+  :type :pclass},
  simple-pclass
- {:type :pclass,
-  :args [simple2-initial],
+ {:args [simple2-initial],
   :fields
   {:simple1
    {:access :private,
-    :observable true,
-    :initial {:type :literal, :value "white"}},
+    :initial {:type :literal, :value "white"},
+    :observable true},
    :simple2
    {:access :private,
-    :observable true,
-    :initial {:type :arg-reference, :name simple2-initial}}},
+    :initial {:name simple2-initial, :type :arg-reference},
+    :observable true}},
   :methods
   {simple-method
    [{:args [],
@@ -130,4 +129,5 @@
      :display-name "Simple Method",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}}}
+     :body nil}]},
+  :type :pclass}}

@@ -1,6 +1,5 @@
 {choice-tpn
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "Simple Choice with 2 Activities"},
   :methods
   {simple-choice-tpn
@@ -29,10 +28,10 @@
            :name plant,
            :method unbounded,
            :args []}]}]}],
-     :doc "Simple Choice TPN"}]}},
+     :doc "Simple Choice TPN"}]},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {bounded
@@ -60,4 +59,5 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Unbounded"}]}}}
+     :doc "Unbounded"}]},
+  :type :pclass}}

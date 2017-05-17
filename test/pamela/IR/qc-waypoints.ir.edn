@@ -1,7 +1,6 @@
 {qc-waypoints
- {:type :pclass,
-  :args [qc1 qc2 qc3],
-  :meta {:version "0.2.1", :doc "Quadcopter test waypoints"},
+ {:args [qc1 qc2 qc3],
+  :meta {:doc "Quadcopter test waypoints", :version "0.2.1"},
   :methods
   {waypoints
    [{:args [],
@@ -65,4 +64,5 @@
         {:type :parallel,
          :body
          [{:type :delay, :body nil} {:type :delay, :body nil}]}]}],
-     :doc "QC waypoints for 3 quad copters"}]}}}
+     :doc "QC waypoints for 3 quad copters"}]},
+  :type :pclass}}

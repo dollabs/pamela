@@ -1,7 +1,6 @@
 {choose-time
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "choose example with time bounds"},
+ {:args [],
+  :meta {:doc "choose example with time bounds", :version "0.2.0"},
   :methods
   {example
    [{:args [],
@@ -26,4 +25,5 @@
         {:type :choice,
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [201 300]}]}]}],
-     :doc "choose based on time"}]}}}
+     :doc "choose based on time"}]},
+  :type :pclass}}

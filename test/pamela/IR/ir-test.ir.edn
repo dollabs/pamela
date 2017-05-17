@@ -1,70 +1,30 @@
 {all-clear {:type :state-variable},
  box
- {:type :pclass,
-  :args [],
-  :meta
-  {:version "0.0.1",
-   :depends {pwrvals "0.2.0"},
-   :icon "box.svg",
-   :doc "Box"},
+ {:args [],
   :fields
   {:ball-in-motion
    {:access :public,
-    :observable true,
-    :initial {:type :literal, :value false}},
-   :fred
-   {:access :private,
-    :observable false,
-    :initial {:type :lvar, :name "fred"}},
+    :initial {:type :literal, :value false},
+    :observable true},
    :dummy
    {:access :private,
-    :observable false,
-    :initial {:type :lvar, :name :gensym}},
+    :initial {:name :gensym, :type :lvar},
+    :observable false},
+   :fred
+   {:access :private,
+    :initial {:name "fred", :type :lvar},
+    :observable false},
    :pwr
    {:access :private,
-    :observable false,
-    :initial {:type :mode-reference, :pclass pwrvals, :mode :high}}},
-  :modes
-  {:open {:type :literal, :value true},
-   :close {:type :literal, :value true}},
-  :transitions
-  {:open:close
-   {:pre {:type :mode-reference, :pclass this, :mode :open},
-    :post {:type :mode-reference, :pclass this, :mode :close},
-    :doc "lid closes"},
-   :close:open
-   {:pre {:type :mode-reference, :pclass this, :mode :close},
-    :post
-    {:type :and,
-     :args
-     [{:type :equal,
-       :args
-       [{:type :field-reference, :pclass this, :field :pwr}
-        {:type :mode-reference, :pclass pwrvals, :mode :high}]}
-      {:type :equal,
-       :args
-       [{:type :field-reference, :pclass this, :field :fred}
-        {:type :literal, :value 123.456}]}
-      {:type :mode-reference, :pclass this, :mode :wacky}]},
-    :doc "lid opens",
-    :temporal-constraints [{:type :bounds, :value [12 34]}],
-    :cost 10,
-    :reward 100,
-    :probability 0.99}},
+    :initial {:mode :high, :pclass pwrvals, :type :mode-reference},
+    :observable false}},
+  :meta
+  {:depends {pwrvals "0.2.0"},
+   :doc "Box",
+   :icon "box.svg",
+   :version "0.0.1"},
   :methods
-  {open-lid
-   [{:args [],
-     :pre {:type :mode-reference, :pclass this, :mode :close},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
-     :betweens [],
-     :display-name "Open Lid",
-     :post {:type :mode-reference, :pclass this, :mode :open},
-     :cost 0,
-     :body nil}],
-   close-lid
+  {close-lid
    [{:args [],
      :pre {:type :mode-reference, :pclass this, :mode :open},
      :temporal-constraints [{:type :bounds, :value [123 456]}],
@@ -77,6 +37,18 @@
      :cost 100,
      :body nil,
      :doc "Close method"}],
+   open-lid
+   [{:args [],
+     :pre {:type :mode-reference, :pclass this, :mode :close},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Open Lid",
+     :post {:type :mode-reference, :pclass this, :mode :open},
+     :cost 0,
+     :body nil}],
    reset
    [{:args [],
      :pre {:type :literal, :value true},
@@ -88,19 +60,46 @@
      :display-name "Reset",
      :post {:type :mode-reference, :pclass this, :mode :open},
      :cost 0,
-     :body nil}]}},
+     :body nil}]},
+  :modes
+  {:close {:type :literal, :value true},
+   :open {:type :literal, :value true}},
+  :transitions
+  {:close:open
+   {:cost 10,
+    :doc "lid opens",
+    :post
+    {:args
+     [{:type :equal,
+       :args
+       [{:type :field-reference, :pclass this, :field :pwr}
+        {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+      {:type :equal,
+       :args
+       [{:type :field-reference, :pclass this, :field :fred}
+        {:type :literal, :value 123.456}]}
+      {:type :mode-reference, :pclass this, :mode :wacky}],
+     :type :and},
+    :pre {:mode :close, :pclass this, :type :mode-reference},
+    :probability 0.99,
+    :reward 100,
+    :temporal-constraints [{:type :bounds, :value [12 34]}]},
+   :open:close
+   {:doc "lid closes",
+    :post {:mode :close, :pclass this, :type :mode-reference},
+    :pre {:mode :open, :pclass this, :type :mode-reference}}},
+  :type :pclass},
  cannon
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {:ammunitions
    {:access :private,
-    :observable true,
-    :initial {:type :literal, :value 5}},
+    :initial {:type :literal, :value 5},
+    :observable true},
    :ready
    {:access :public,
-    :observable true,
-    :initial {:type :literal, :value false}}},
+    :initial {:type :literal, :value false},
+    :observable true}},
   :methods
   {fire
    [{:args [arg1 arg2],
@@ -125,52 +124,24 @@
      :display-name "Reset",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}},
+     :body nil}]},
+  :type :pclass},
  game
- {:type :pclass,
-  :args [power],
+ {:args [power],
   :fields
-  {:cannon-f
+  {:box-f
    {:access :private,
-    :observable false,
+    :initial {:args [], :pclass box, :type :pclass-ctor},
+    :observable false},
+   :cannon-f
+   {:access :private,
     :initial
-    {:type :pclass-ctor,
-     :pclass cannon,
-     :args [],
+    {:args [],
      :id "first-cannon",
-     :interface "ZMQ"}},
-   :box-f
-   {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass box, :args []}}},
-  :modes
-  {:wacky {:type :literal, :value true},
-   :bizarre
-   {:type :equal,
-    :args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field :cannon-f,
-      :value :ammunitions}
-     {:type :literal, :value 5}]},
-   :weird
-   {:type :and,
-    :args
-    [{:type :equal,
-      :args
-      [{:type :field-reference-field,
-        :pclass this,
-        :field :box-f,
-        :value :pwr}
-       {:type :mode-reference, :pclass pwrvals, :mode :high}]}
-     {:type :equal,
-      :args
-      [{:type :arg-reference, :name power}
-       {:type :mode-reference, :pclass pwrvals, :mode :high}]}
-     {:type :equal,
-      :args
-      [{:type :state-variable, :name global-state}
-       {:type :literal, :value true}]}]}},
+     :interface "ZMQ",
+     :pclass cannon,
+     :type :pclass-ctor},
+    :observable false}},
   :methods
   {main
    [{:args [initial-state],
@@ -463,14 +434,43 @@
        :name this,
        :method main,
        :args [true]}],
-     :doc "Unit test method entry point"}]}},
+     :doc "Unit test method entry point"}]},
+  :modes
+  {:bizarre
+   {:args
+    [{:type :field-reference-field,
+      :pclass this,
+      :field :cannon-f,
+      :value :ammunitions}
+     {:type :literal, :value 5}],
+    :type :equal},
+   :wacky {:type :literal, :value true},
+   :weird
+   {:args
+    [{:type :equal,
+      :args
+      [{:type :field-reference-field,
+        :pclass this,
+        :field :box-f,
+        :value :pwr}
+       {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+     {:type :equal,
+      :args
+      [{:type :arg-reference, :name power}
+       {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+     {:type :equal,
+      :args
+      [{:type :state-variable, :name global-state}
+       {:type :literal, :value true}]}],
+    :type :and}},
+  :type :pclass},
  global-state {:type :state-variable},
  initial-state {:type :state-variable},
  pwrvals
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "Enum for power values"},
+ {:args [],
+  :meta {:doc "Enum for power values", :version "0.2.0"},
   :modes
   {:high {:type :literal, :value true},
-   :none {:type :literal, :value true}}},
- pamela/lvars {:type :lvars, :lvars {"fred" :unset}}}
+   :none {:type :literal, :value true}},
+  :type :pclass},
+ pamela/lvars {:lvars {"fred" :unset}, :type :lvars}}

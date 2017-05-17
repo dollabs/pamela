@@ -1,6 +1,5 @@
 {choice-feasible
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "A feasible choice to be chewed by contraint solver"},
   :methods
   {main
@@ -51,4 +50,5 @@
      :display-name "Option",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}}}
+     :body nil}]},
+  :type :pclass}}

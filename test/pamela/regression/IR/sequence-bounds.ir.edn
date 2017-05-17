@@ -1,7 +1,6 @@
 {sequence-bounds
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "sequence example with time bounds"},
+ {:args [],
+  :meta {:doc "sequence example with time bounds", :version "0.2.0"},
   :methods
   {example
    [{:args [],
@@ -22,4 +21,5 @@
         {:type :delay, :body nil}
         {:type :delay, :body nil}],
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "sequence example"}]}}}
+     :doc "sequence example"}]},
+  :type :pclass}}

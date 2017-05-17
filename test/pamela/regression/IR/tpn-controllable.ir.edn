@@ -1,6 +1,5 @@
 {controllable
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "An example of invoking plant functions."},
   :methods
   {start
@@ -42,10 +41,10 @@
          :args [],
          :temporal-constraints [{:type :bounds, :value [1 10]}],
          :controllable false}]}],
-     :doc "Demo method"}]}},
+     :doc "Demo method"}]},
+  :type :pclass},
  plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {action1
@@ -73,4 +72,5 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Take action 2"}]}}}
+     :doc "Take action 2"}]},
+  :type :pclass}}

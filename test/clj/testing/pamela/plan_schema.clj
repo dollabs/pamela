@@ -9,6 +9,7 @@
             [pamela.cli :as pcli]
             [plan-schema.cli :as scli]
             [plan-schema.core :as psc]
+            [plan-schema.utils :as putils]
             [clojure.java.io :as io]
             [clojure.string :as str]
             [clojure.pprint :refer :all]

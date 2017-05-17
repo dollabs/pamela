@@ -1,7 +1,6 @@
 {qc
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.1", :doc "The Plant API"},
+ {:args [],
+  :meta {:doc "The Plant API", :version "0.2.1"},
   :methods
   {location
    [{:args [lat lon alt yaw],
@@ -84,4 +83,5 @@
        :name this,
        :method location,
        :args [42.445327 -71.227788 4.0 350]}],
-     :doc "Waypoint 4"}]}}}
+     :doc "Waypoint 4"}]},
+  :type :pclass}}

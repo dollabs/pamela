@@ -19,9 +19,9 @@
             [clojure.tools.logging :as log]
             [me.raynes.fs :as fs]
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
-            [pamela.utils :refer [output-file]]))
+            [pamela.utils :refer [output-file dbg-println]]))
 
-; local implementation of gensym so that we get predictable uids in generated plans.
+                                        ; local implementation of gensym so that we get predictable uids in generated plans.
 (defonce my-count (atom 0))
 
 (defn my-gensym [prefix]
@@ -172,7 +172,7 @@
   "A constraint superclass"
   [{:keys [prefix uid value end-node
            between between-ends between-starts
-           ;; label probability cost reward guard
+           label ;; probability cost reward guard
            ]
     :or {prefix "cnstr-"}}]
   (update-tpn-plan-map!
@@ -183,7 +183,7 @@
       :between between
       :between-ends between-ends
       :between-starts between-starts
-      ;; :label label
+      :label label
       ;; :probability probability
       ;; :cost cost
       ;; :reward reward
@@ -194,7 +194,8 @@
 (defn tpn-temporal-constraint
   "A temporal constraint"
   [{:keys [prefix uid value end-node
-           between between-ends between-starts]
+           between between-ends between-starts
+           label]
     :as options}]
   (update-tpn-plan-map!
     (assoc (tpn-constraint (assoc options :prefix (or prefix "tc-")))
@@ -203,7 +204,8 @@
 (defn tpn-cost<=-constraint
   "A cost<= constraint"
   [{:keys [prefix uid value end-node
-           between between-ends between-starts]
+           between between-ends between-starts
+           label]
     :as options}]
   (update-tpn-plan-map!
     (assoc (tpn-constraint (assoc options :prefix (or prefix "costle-")))
@@ -212,7 +214,8 @@
 (defn tpn-reward>=-constraint
   "A reward>= constraint"
   [{:keys [prefix uid value end-node
-           between between-ends between-starts]
+           between between-ends between-starts
+           label]
     :as options}]
   (update-tpn-plan-map!
     (assoc (tpn-constraint (assoc options :prefix (or prefix "rewardge-")))
@@ -250,7 +253,7 @@
       (assoc-if
         (assoc
           (tpn-null-activity (assoc options :prefix (or prefix "da-")))
-            :controllable controllable)
+          :controllable controllable)
         :tpn-type :delay-activity
         :task task
         :name name
@@ -280,7 +283,7 @@
   "A state node"
   [{:keys [prefix uid constraints activities incidence-set
            task htn-node end-node begin
-           label sequence-label
+           label sequence-end sequence-label
            ;; cost<= reward>=
            ]
     :or {prefix "node-"}}]
@@ -296,6 +299,7 @@
       :end-node end-node
       :begin begin
       :label label
+      :sequence-end sequence-end
       :sequence-label sequence-label
       ;; :cost<= cost<=
       ;; :reward>= reward>=
@@ -348,13 +352,41 @@
 (defn get-tpn-end-node-ids [activity-ids]
   (mapv #(:end-node (get-tpn-plan-map %)) activity-ids))
 
+
+(defn dbg-tpn-notes [tpn-notes]
+  (println "==TPN-NOTES====================")
+  (let [notes (dissoc @tpn-notes :network :tc-ends :nodes)
+        {:keys [sequence-begins sequence-ends]} notes]
+    (pprint notes)
+    (doseq [sequence-begin (keys sequence-begins)]
+      (let [begin (get-tpn-plan-map sequence-begin)
+            sequence-end (get sequence-begins sequence-begin)
+            reverse-begin (get sequence-ends sequence-end)
+            end (get-tpn-plan-map sequence-end)]
+        (println "VERIFY TPN-SEQUENCE sb" (or sequence-begin "BAD SB!")
+          "se" (or sequence-end "BAD SE!")
+          "begin:sequence-end" (and begin (:sequence-end begin)
+                                 (= (:sequence-end begin) sequence-end))
+          "end" (if (:uid end) "exists" "BAD END!")
+          (if (= reverse-begin sequence-begin)
+            "reverse MATCH"
+            (str "reverse BAD " reverse-begin))
+          )
+        ))
+    (println "============================")
+    ))
+
 ;; move all constraints that end on from-end to to-end
+;; ALSO handle state nodes that have :sequence-end
 (defn move-constraints [tpn-notes from-end to-end]
-  ;; (println "  MOVE CONSTRAINTS FROM" from-end "TO" to-end)
-  (let [{:keys [tc-ends network]} @tpn-notes
+  (let [{:keys [network tc-ends sequence-begins sequence-ends]} @tpn-notes
         {:keys [network-id begin-node end-node]} network
-        from-uids (or (get tc-ends from-end) [])
-        to-uids (or (get tc-ends to-end) [])]
+        tc-from-uids (get tc-ends from-end [])
+        tc-to-uids (get tc-ends to-end [])
+        sequence-begin (get sequence-ends from-end)
+        sequence-end (get sequence-begins from-end)]
+    (dbg-println :trace "  MOVE CONSTRAINTS FROM" from-end "TO" to-end
+      "SEQUENCE-BEGIN" sequence-begin "SEQUENCE-END" sequence-end)
     (when (= from-end begin-node)
       (update-tpn-plan-map!
         (assoc (get-tpn-plan-map network-id)
@@ -365,15 +397,37 @@
         (assoc (get-tpn-plan-map network-id)
           :end-node to-end))
       (swap! tpn-notes assoc-in [:network :end-node] to-end))
-    (when (pos? (count from-uids))
-      (doseq [from-uid from-uids]
+    (when (pos? (count tc-from-uids))
+      (doseq [from-uid tc-from-uids]
         (update-tpn-plan-map!
           (assoc (get-tpn-plan-map from-uid)
             :end-node to-end)))
       (swap! tpn-notes update-in [:tc-ends]
         (fn [tc-ends]
           (assoc (dissoc tc-ends from-end)
-            to-end (concatv to-uids from-uids)))))))
+            to-end (concatv tc-to-uids tc-from-uids)))))
+    ;; is from-end a sequence-begin, move the the begin to to-end
+    (when sequence-begin
+      (let [begin (get-tpn-plan-map sequence-begin)]
+        (if-not begin
+          (dbg-println :trace "  BAD sequence-begin node!")
+          (do
+            (update-tpn-plan-map! (assoc begin :sequence-end to-end))
+            (swap! tpn-notes update-in [:sequence-ends] #(dissoc % from-end))
+            (swap! tpn-notes assoc-in [:sequence-ends to-end] sequence-begin)
+            (swap! tpn-notes assoc-in [:sequence-begins sequence-begin] to-end)
+            )
+          )))
+    ;; if from-end is a sequence-end, update the sequence-begin
+    (when sequence-end
+      (swap! tpn-notes update-in [:sequence-begins] #(dissoc % from-end))
+      (swap! tpn-notes assoc-in [:sequence-begins to-end] sequence-end)
+      (swap! tpn-notes assoc-in [:sequence-ends sequence-end] to-end)
+      )
+    ;; for extreme debugging
+    ;; (when (or sequence-begin sequence-end)
+    ;;   (dbg-tpn-notes tpn-notes))
+    ))
 
 (defn get-todo [tpn-notes node-id activities]
   (let [{:keys [todo done]} (get-in @tpn-notes [:nodes node-id])]
@@ -390,7 +444,7 @@
         todo (if added (conj todo added) todo)
         done (conj done completed)]
     (swap! tpn-notes update-in [:nodes node-id]
-          assoc :todo  todo :done done)))
+      assoc :todo  todo :done done)))
 
 (defn remove-superfluous [tpn-notes a-uid]
   (let [a (get-tpn-plan-map a-uid)
@@ -412,7 +466,8 @@
         a0-htn-node (:htn-node a0)
         s-uid (:end-node a0)
         s (if s-uid (get-tpn-plan-map s-uid))
-        {:keys [tpn-type constraints activities label sequence-label htn-node]} s
+        {:keys [tpn-type constraints activities label display-name
+                sequence-end sequence-label htn-node]} s
         move-constraints? (pos? (count constraints))
         sn (count activities)
         s0-uid (first activities)
@@ -435,16 +490,16 @@
                         (and (#{:p-end :c-end} a-type)
                           ;; (= :state b-type)
                           (= an 1)))
-        ;; _ (println "CHECK a-uid" a-uid "a-type" a-type "a-htn-node" a-htn-node
-        ;;     "\n  AN" an "A0-UID" a0-uid
-        ;;     "\n  todo" (count a-todo) "=" a-todo
-        ;;     "\n  done" (count a-done) "=" a-done
-        ;;     "\n  a0-type" a0-type "s-uid" s-uid  "SN" sn "tpn-type" tpn-type
-        ;;     "\n  htn-node" htn-node
-        ;;     "\n  a-constraints" a-constraints
-        ;;     "\n  constraints" constraints "move-tc-to-b?" move-tc-to-b?
-        ;;     "\n  b-constraints" b-constraints
-        ;;     "\n  s0-type" s0-type "b-type" b-type "b-uid" b-uid)
+        _ (dbg-println :trace "CHECK a-uid" a-uid "a-type" a-type "a-htn-node" a-htn-node
+            "\n  AN" an "A0-UID" a0-uid
+            "\n  todo" (count a-todo) "=" a-todo
+            "\n  done" (count a-done) "=" a-done
+            "\n  a0-type" a0-type "s-uid" s-uid  "SN" sn "tpn-type" tpn-type
+            "\n  htn-node" htn-node "sequence-end" sequence-end
+            "\n  a-constraints" a-constraints
+            "\n  constraints" constraints "move-tc-to-b?" move-tc-to-b?
+            "\n  b-constraints" b-constraints
+            "\n  s0-type" s0-type "b-type" b-type "b-uid" b-uid)
         next-uid
         (cond
           (zero? (count a-todo))
@@ -470,24 +525,36 @@
                            (assoc-if b
                              :constraints
                              (set/union b-constraints constraints)
+                             :display-name display-name
                              :label label
-                             :sequence-label sequence-label)]
+                             :sequence-end sequence-end
+                             :sequence-label sequence-label
+                             )]
                           [(assoc-if a
                              :constraints
                              (set/union a-constraints constraints)
+                             :display-name display-name
                              :label label
-                             :sequence-label sequence-label)
+                             :sequence-end sequence-end
+                             :sequence-label sequence-label
+                             )
                            b])
                         [a b])
                 a (if move-tc-to-b?
                     a
                     (assoc-if a
+                      :display-name display-name
                       :label label
-                      :sequence-label sequence-label))
+                      :sequence-end sequence-end
+                      :sequence-label sequence-label
+                      ))
                 b (if move-tc-to-b?
                     (assoc-if b
+                      :display-name display-name
                       :label label
-                      :sequence-label sequence-label)
+                      :sequence-end sequence-end
+                      :sequence-label sequence-label
+                      )
                     b)]
             (update-tpn-plan-map! a)
             (update-tpn-plan-map! b)
@@ -503,8 +570,8 @@
                 b-uid a-uid))
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! s-uid)
-            ;; (println "  REMOVE s/ A na S a B / A a B /" a0-uid s-uid
-            ;;   "A" a-activities "S0-UID" s0-uid "A-TC" a-constraints)
+            (dbg-println :trace "  REMOVE s/ A na S a B / A a B /" a0-uid s-uid
+              "A" a-activities "S0-UID" s0-uid "A-TC" a-constraints)
             (update-todo tpn-notes a-uid a0-uid s0-uid)
             a-uid)
           ;; s/ A a S na B / A a B /
@@ -517,10 +584,12 @@
             (doseq [act a-activities] ;; move end-node to b-uid
               (update-tpn-plan-map!
                 (assoc (get-tpn-plan-map act) :end-node b-uid)))
-            (when (or label sequence-label htn-node)
+            (when (or label display-name sequence-end sequence-label htn-node)
               (update-tpn-plan-map!
                 (assoc-if b
+                  :display-name display-name
                   :label label
+                  :sequence-end sequence-end
                   :sequence-label sequence-label
                   :htn-node htn-node)))
             (when (or s0-cost s0-reward s0-probability s0-htn-node)
@@ -534,13 +603,15 @@
               (update-tpn-plan-map!
                 (assoc-if b
                   :constraints (set/union b-constraints constraints)
+                  :display-name display-name
                   :label label
+                  :sequence-end sequence-end
                   :sequence-label sequence-label
                   :htn-node htn-node)))
             (move-constraints tpn-notes s-uid b-uid) ;; for other constraints
             (remove-tpn-plan-map! s0-uid)
             (remove-tpn-plan-map! s-uid)
-            ;; (println "  REMOVE s/ A a S na B / A a B /" s0-uid s-uid)
+            (dbg-println :trace "  REMOVE s/ A a S na B / A a B /" s0-uid s-uid)
             a-uid)
           ;; s/ A na S / A / ;; END OF GRAPH
           (and (= a0-type :null-activity) (= 1 an) (zero? (count a-constraints))
@@ -549,11 +620,13 @@
             (update-tpn-plan-map!
               (assoc-if a
                 :activities #{}
+                :display-name display-name
                 :label label
+                :sequence-end sequence-end
                 :sequence-label sequence-label
                 :htn-node (or a-htn-node htn-node)))
             (move-constraints tpn-notes s-uid a-uid)
-            ;; (println "  REMOVE s/ A na S / A /" a0-uid s-uid)
+            (dbg-println :trace "  REMOVE s/ A na S / A /" a0-uid s-uid)
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! s-uid)
             nil)
@@ -568,7 +641,12 @@
                   :constraints (if (empty? a-constraints)
                                  constraints
                                  (set/union a-constraints constraints))
-                  :htn-node a-htn-node)))
+                  :htn-node a-htn-node
+                  :display-name (:display-name a)
+                  :label (:label a)
+                  :sequence-end (:sequence-end a)
+                  :sequence-label (:sequence-label a)
+                  )))
             (when (or a0-cost a0-reward a0-probability
                     (and (not s0-htn-node) a0-htn-node))
               (update-tpn-plan-map!
@@ -582,7 +660,8 @@
             (move-constraints tpn-notes a-uid s-uid)
             (remove-tpn-plan-map! a0-uid)
             (remove-tpn-plan-map! a-uid)
-            ;; (println "  REMOVE s/ S na A / A /" a0-uid a-uid)
+            (dbg-println :trace "  REMOVE s/ S na A / A /" a0-uid a-uid
+              "(:sequence-end S)" (:sequence-end a))
             s-uid)
           ;; move constraints, htn-node on state node before begin to the begin
           (and (= a-type :state) (= 1 an) (#{:p-begin :c-begin} tpn-type)
@@ -593,9 +672,9 @@
                     :htn-node a-htn-node)]
             (update-tpn-plan-map! a)
             (update-tpn-plan-map! s)
-            ;; (println "  MOVE a-constraints" a-constraints
-            ;;   "a-htn-node" a-htn-node
-            ;;   "on state node before begin to the begin" s-uid)
+            (dbg-println :trace "  MOVE a-constraints" a-constraints
+              "a-htn-node" a-htn-node
+              "on state node before begin to the begin" s-uid)
             s-uid)
           :else
           (do
@@ -606,18 +685,20 @@
               (let [ac (get-tpn-plan-map (first a-constraints))
                     a0 (get-tpn-plan-map (first a-activities))]
                 (when (= (:end-node ac) s-uid)
-                  ;; (println "  MOVING constraint from node" a-uid
-                  ;;   "to activity" (:uid a0))
+                  (dbg-println :trace "  MOVING constraint from node" a-uid
+                    "to activity" (:uid a0))
                   (update-tpn-plan-map!
                     (assoc a0
                       :constraints (set/union (:constraints a0) a-constraints)))
                   (update-tpn-plan-map!
                     (assoc a
                       :constraints #{}))))
-              ;; (println "  NOTMOVING constraint from node" a-uid
-              ;;   "an" an "acn" (count a-constraints))
+              (dbg-println :trace "  NOTMOVING constraint from node" a-uid
+                "an" an "acn" (count a-constraints))
               )
-            ;; (println "  DONE for" a0-uid)
+            (dbg-println :trace "  DONE for" a0-uid)
+            ;; extreme debugging
+            ;; (dbg-tpn-notes tpn-notes)
             (update-todo tpn-notes a-uid a0-uid nil)
             a-uid))]
     (if next-uid
@@ -638,26 +719,52 @@
     ;;   "begin-node" begin-node)
     (doseq [uid (keys @*tpn-plan-map*)]
       (let [object (get-tpn-plan-map uid)
-            {:keys [tpn-type end-node]} object]
-        (if (constraint? object)
+            {:keys [tpn-type end-node sequence-end]} object]
+        (cond
+          (constraint? object)
           (swap! tpn-notes update-in [:tc-ends end-node]
             (fn [tc-uids]
-              (if tc-uids (conj tc-uids uid) [uid]))))))
+              (if tc-uids (conj tc-uids uid) [uid])))
+          sequence-end
+          (do
+            (dbg-println :trace "TPN SEQUENCE sequence-begin" uid
+              "sequence-end" sequence-end)
+            ;; NOTE since a given node can have ONLY one :sequence-end
+            ;; we make the assumption that the sequence is a 1-1 mapping
+            ;; add pointer from sequence-end to the sequence-begin
+            (swap! tpn-notes assoc-in [:sequence-ends sequence-end] uid)
+            ;; add pointer to the sequence begin
+            (swap! tpn-notes assoc-in [:sequence-begins uid] sequence-end)
+            ;; extreme debugging
+            ;; (dbg-tpn-notes tpn-notes)
+            ))))
     (remove-superfluous tpn-notes begin-node)))
 
 ;; remove invalid slots
+;; 1. Remove state :end-node if :sequence-end is not set
+;; 2. add :end-node if :sequence-end is set
+;; 3. remove :sequence-end everywhere
 (defn remove-invalid-tpn-attributes []
   (doseq [uid (keys @*tpn-plan-map*)]
     (let [object (get-tpn-plan-map uid)
-          {:keys [tpn-type end-node constraints]} object]
+          {:keys [tpn-type sequence-end end-node constraints]} object]
       (cond
-        (and (#{:state :c-end :p-end} tpn-type) end-node)
-        ;; NOTE: preserve htn-node
+        (and (= :state tpn-type) end-node (not sequence-end))
         (update-tpn-plan-map! (dissoc object :end-node))
-        (#{:c-end :p-end} tpn-type)
-        (update-tpn-plan-map! (dissoc object :htn-node))
-        (and (= :null-activity tpn-type) constraints)
-        (update-tpn-plan-map! (dissoc object :constraints))))))
+        (and (= :state tpn-type) sequence-end (not= end-node sequence-end))
+        (update-tpn-plan-map!
+          (assoc
+            (dissoc object :sequence-end)
+              :end-node sequence-end))
+        sequence-end
+        (update-tpn-plan-map! (dissoc object :sequence-end))
+        ;; (and (#{:state :c-end :p-end} tpn-type) end-node)
+        ;; (update-tpn-plan-map! (dissoc object :end-node))
+        ;; (#{:c-end :p-end} tpn-type)
+        ;; (update-tpn-plan-map! (dissoc object :htn-node))
+        ;; (and (= :null-activity tpn-type) constraints)
+        ;; (update-tpn-plan-map! (dissoc object :constraints))
+        ))))
 
 (defn update-incidence-set []
   (doseq [uid (keys @*tpn-plan-map*)]
@@ -671,7 +778,7 @@
 
 (defn optimize-tpn-map []
   (remove-superfluous-null-activities)
-  ;; (remove-invalid-tpn-attributes)
+  (remove-invalid-tpn-attributes) ;; MUST run after remove-superfluous-null-activities
   (update-incidence-set))
 
 ;; (defn get-tc-from-body [body end-node]
@@ -763,7 +870,7 @@
                       :args args
                       :argsmap argsmap
                       :label label
-                      ;; :sequence-label sequence-label
+                      :sequence-label sequence-label
                       :cost cost
                       :reward reward
                       :controllable controllable
@@ -806,119 +913,119 @@
     ;; (println "BUILD-TPN begin" begin-uid "end" end-uid
     ;; "BODY" (count body))
     (when (and (not primitive) (#{:parallel :choose :sequence} type))
-        (doseq [b body]
-          ;; NOTE: not cost reward, etc.
-          (let [{:keys [type temporal-constraints
-                        label sequence-label cost<= reward>=
-                        probability cost reward guard primitive]} b
-                child-body (:body b)
-                child-choice? (= :choose type)
-                ;; _ (println "BUILD-TPN3" type
-                ;;     "choice?" choice?
-                ;;     "child-choice?" child-choice?
-                ;;     "body size" (count child-body)
-                ;;     "primitive" primitive
-                ;;     "cost<=" cost<= "reward>=" reward>=)
-                plant-fn? (= type :plant-fn-symbol)
-                ;; _ (println "--B" (dissoc b :body))
-                se (tpn-state {})
-                bounds (if (and temporal-constraints
-                             (not child-choice?)
-                             (= 1 (count temporal-constraints)))
-                         (:value (first temporal-constraints)))
-                bounds (if choice? ;; may be on choice and plant-fn
-                         (if (default-bounds? bounds) nil bounds))
-                tc (if bounds
-                     (tpn-temporal-constraint
-                       {:value bounds :end-node (:uid se)}))
-                cost-le (if (and (not child-choice?) cost<=)
-                          (tpn-cost<=-constraint
-                            {:value cost<= :end-node (:uid se)}))
-                reward-ge (if (and (not child-choice?) reward>=)
-                            (tpn-reward>=-constraint
-                              {:value reward>= :end-node (:uid se)}))
-                constraints (apply union-items
-                              (map :uid [tc cost-le reward-ge]))
-                choice-opts (if choice?
-                              (assoc-if {}
-                                :probability probability
-                                :cost cost
-                                :reward reward
-                                :guard guard)
-                              {})
-                b (if choice?
-                    (if (not primitive) (first child-body))
-                    b)
-                ;; _ (println "BUILD-TPN3.5 b" b)
-                ;; [choice-constraints choice-opts constraints b]
-                ;; (if choice?
-                ;;   [constraints
-                ;;    (assoc-if {}
-                ;;      :probability probability
-                ;;      :cost cost
-                ;;      :reward reward
-                ;;      :guard guard
-                ;;      )
-                ;;    nil ;; (get-tc-from-body (first body) (:uid se))
-                ;;    (and (not primitive) (first body))]
-                ;;   [nil
-                ;;    {}
-                ;;    constraints
-                ;;    b])
-                ;; avoid duplicating TC in a plant-fn
-                ;; choice-tc (if (and choice-tc
-                ;;                 (not= (:value choice-tc) (:value tc)))
-                ;;             choice-tc)
-                ;; _ (println "TC[" @order"]" tc "CHOICE-TC" choice-tc)
-                first-b? (zero? @order)
-                [label sequence-label] (if choice?
-                                         (if (#{:p-begin :c-begin} (:type b))
-                                           [label nil]
-                                           [nil label]
-                                           ))
-                sb (tpn-state (assoc-if
-                                {:constraints constraints
-                                 ;; (or constraints choice-constraints)
-                                 :end-node (:uid se)}
-                                :label label
-                                :sequence-label sequence-label))]
-            ;; (println "BUILD-TPN4 constraints from" (:uid sb) "\n"
-            ;;   (with-out-str (pprint (:constraints sb))))
-            ;; record label(s) for sb
-            (if (:label sb)
-              (swap! labels assoc (:label sb)
-                [(:uid sb) (:end-node sb)]))
-            (if (:sequence-label sb)
-              (swap! labels assoc (:sequence-label sb)
-                [(:uid sb) (:end-node sb)]))
-            (when sequence?
-              ;; more than 1 in sequence? disj end-na from end
-              (let [na (tpn-null-activity {:end-node (:uid sb)})]
-                ;; (println "SEQ JOIN-NA" na)
-                (update-tpn-plan-map!
-                  (update-in @prev-end [:activities] conj
-                    (:uid na))))
-              (reset! prev-end se))
-            (when (not sequence?)
-              (let [se-na (tpn-null-activity {:end-node end-uid})]
-                (update-tpn-plan-map!
-                  (update-in se [:activities] conj
-                    (:uid se-na))))
-              (let [na (tpn-null-activity
-                         (merge choice-opts {:end-node (:uid sb)}))
-                    begin (get-tpn-plan-map begin)
-                    begin (assoc-if begin
-                            :activities (conj (:activities begin) (:uid na))
-                            ;; :constraints (if choice-tc #{(:uid choice-tc)})
-                            )]
-                (update-tpn-plan-map! begin)))
-            (build-tpn ir labels plant plant-id plant-args b (:uid sb) @order)
-            (swap! order inc)))
-        (when sequence?
-          (let [na-end (tpn-null-activity {:end-node end-uid})]
-            (update-tpn-plan-map!
-              (update-in @prev-end [:activities] conj
-                (:uid na-end))))))))
+      (doseq [b body]
+        ;; NOTE: not cost reward, etc.
+        (let [{:keys [type temporal-constraints
+                      label sequence-label cost<= reward>=
+                      probability cost reward guard primitive]} b
+              child-body (:body b)
+              child-choice? (= :choose type)
+              ;; _ (println "BUILD-TPN3" type
+              ;;     "choice?" choice?
+              ;;     "child-choice?" child-choice?
+              ;;     "body size" (count child-body)
+              ;;     "primitive" primitive
+              ;;     "cost<=" cost<= "reward>=" reward>=)
+              plant-fn? (= type :plant-fn-symbol)
+              ;; _ (println "--B" (dissoc b :body))
+              se (tpn-state {})
+              bounds (if (and temporal-constraints
+                           (not child-choice?)
+                           (= 1 (count temporal-constraints)))
+                       (:value (first temporal-constraints)))
+              bounds (if choice? ;; may be on choice and plant-fn
+                       (if (default-bounds? bounds) nil bounds))
+              tc (if bounds
+                   (tpn-temporal-constraint
+                     {:value bounds :end-node (:uid se)}))
+              cost-le (if (and (not child-choice?) cost<=)
+                        (tpn-cost<=-constraint
+                          {:value cost<= :end-node (:uid se)}))
+              reward-ge (if (and (not child-choice?) reward>=)
+                          (tpn-reward>=-constraint
+                            {:value reward>= :end-node (:uid se)}))
+              constraints (apply union-items
+                            (map :uid [tc cost-le reward-ge]))
+              choice-opts (if choice?
+                            (assoc-if {}
+                              :probability probability
+                              :cost cost
+                              :reward reward
+                              :guard guard)
+                            {})
+              b (if choice?
+                  (if (not primitive) (first child-body))
+                  b)
+              ;; _ (println "BUILD-TPN3.5 b" b)
+              ;; [choice-constraints choice-opts constraints b]
+              ;; (if choice?
+              ;;   [constraints
+              ;;    (assoc-if {}
+              ;;      :probability probability
+              ;;      :cost cost
+              ;;      :reward reward
+              ;;      :guard guard
+              ;;      )
+              ;;    nil ;; (get-tc-from-body (first body) (:uid se))
+              ;;    (and (not primitive) (first body))]
+              ;;   [nil
+              ;;    {}
+              ;;    constraints
+              ;;    b])
+              ;; avoid duplicating TC in a plant-fn
+              ;; choice-tc (if (and choice-tc
+              ;;                 (not= (:value choice-tc) (:value tc)))
+              ;;             choice-tc)
+              ;; _ (println "TC[" @order"]" tc "CHOICE-TC" choice-tc)
+              first-b? (zero? @order)
+              [label sequence-label] (if choice?
+                                       (if (#{:p-begin :c-begin} (:type b))
+                                         [label nil]
+                                         [nil label]
+                                         ))
+              sb (tpn-state (assoc-if
+                              {:constraints constraints
+                               ;; (or constraints choice-constraints)
+                               :end-node (:uid se)}
+                              :label label
+                              :sequence-label sequence-label))]
+          ;; (println "BUILD-TPN4 constraints from" (:uid sb) "\n"
+          ;;   (with-out-str (pprint (:constraints sb))))
+          ;; record label(s) for sb
+          (if (:label sb)
+            (swap! labels assoc (:label sb)
+              [(:uid sb) (:end-node sb)]))
+          (if (:sequence-label sb)
+            (swap! labels assoc (:sequence-label sb)
+              [(:uid sb) (:end-node sb)]))
+          (when sequence?
+            ;; more than 1 in sequence? disj end-na from end
+            (let [na (tpn-null-activity {:end-node (:uid sb)})]
+              ;; (println "SEQ JOIN-NA" na)
+              (update-tpn-plan-map!
+                (update-in @prev-end [:activities] conj
+                  (:uid na))))
+            (reset! prev-end se))
+          (when (not sequence?)
+            (let [se-na (tpn-null-activity {:end-node end-uid})]
+              (update-tpn-plan-map!
+                (update-in se [:activities] conj
+                  (:uid se-na))))
+            (let [na (tpn-null-activity
+                       (merge choice-opts {:end-node (:uid sb)}))
+                  begin (get-tpn-plan-map begin)
+                  begin (assoc-if begin
+                          :activities (conj (:activities begin) (:uid na))
+                          ;; :constraints (if choice-tc #{(:uid choice-tc)})
+                          )]
+              (update-tpn-plan-map! begin)))
+          (build-tpn ir labels plant plant-id plant-args b (:uid sb) @order)
+          (swap! order inc)))
+      (when sequence?
+        (let [na-end (tpn-null-activity {:end-node end-uid})]
+          (update-tpn-plan-map!
+            (update-in @prev-end [:activities] conj
+              (:uid na-end))))))))
 
 (defn add-between-constraints [labels betweens]
   (doseq [between betweens]
@@ -936,8 +1043,8 @@
                     (tpn-cost<=-constraint
                       {:value cost<= :end-node end-uid type [from to]}))
           reward-ge (if reward>=
-                    (tpn-reward>=-constraint
-                      {:value reward>= :end-node end-uid type [from to]}))
+                      (tpn-reward>=-constraint
+                        {:value reward>= :end-node end-uid type [from to]}))
           constraints (apply union-items (map :uid [tc cost-le reward-ge]))]
       (update-tpn-plan-map!
         (update-in (get-tpn-plan-map begin-uid) [:constraints]
@@ -1020,8 +1127,8 @@
                           nil)
                         k))
               tpn-args (if plant
-                     [{:type :pclass-ctor, :pclass plant, :args []}]
-                     tpn-args)
+                         [{:type :pclass-ctor, :pclass plant, :args []}]
+                         tpn-args)
               tpn-ks (if (and (= :pclass type) (= (count methods) 1)
                            (or
                              (and (= plant k) (zero? (count args)))

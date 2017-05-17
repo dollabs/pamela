@@ -35,9 +35,9 @@
                     [avenir                    "0.2.2"]
                     [me.raynes/fs              "1.4.6"]
                     [camel-snake-kebab         "0.4.0"]
+                    [dollabs/plan-schema       "0.3.3"]
                     ;; testing
-                    [adzerk/boot-test          "1.1.2" :scope "test"]
-                    [dollabs/plan-schema       "0.3.1" :scope "test"]])
+                    [adzerk/boot-test          "1.1.2" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])

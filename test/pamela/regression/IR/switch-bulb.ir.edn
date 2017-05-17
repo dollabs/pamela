@@ -1,19 +1,18 @@
 {main
- {:type :pclass,
-  :args [],
-  :meta {:doc "An example circuit: power switch and light bulb"},
+ {:args [],
   :fields
   {:switchedpower
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
-     :pclass psw,
-     :args [],
+    {:args [],
      :id "switchedcircuit",
-     :plant-part "psw1"}}},
+     :pclass psw,
+     :plant-part "psw1",
+     :type :pclass-ctor},
+    :observable false}},
+  :meta {:doc "An example circuit: power switch and light bulb"},
   :methods
-  {turn-on-switch
+  {demo
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -21,30 +20,24 @@
      :controllable false,
      :primitive false,
      :betweens [],
-     :display-name "Turn On Switch",
+     :display-name "Demo",
      :post {:type :literal, :value true},
      :cost 0,
      :body
-     [{:type :plant-fn-field,
-       :field :switchedpower,
-       :method turn_on,
-       :args []}]}],
-   turn-off-switch
-   [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Turn Off Switch",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
-     [{:type :plant-fn-field,
-       :method turn_off,
-       :args [],
-       :field :switchedpower}]}],
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method toggle-switch,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method toggle-switch,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method toggle-switch,
+         :args []}]}]}],
    toggle-switch
    [{:args [],
      :pre {:type :literal, :value true},
@@ -73,7 +66,7 @@
         {:type :delay,
          :body nil,
          :temporal-constraints [{:type :bounds, :value [10 10]}]}]}]}],
-   demo
+   turn-off-switch
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -81,42 +74,36 @@
      :controllable false,
      :primitive false,
      :betweens [],
-     :display-name "Demo",
+     :display-name "Turn Off Switch",
      :post {:type :literal, :value true},
      :cost 0,
      :body
-     [{:type :sequence,
-       :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
-         :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
-         :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
-         :args []}]}]}]}},
- psw
- {:type :pclass,
-  :args [],
-  :meta {:doc "A power switch"},
-  :methods
-  {turn_on
+     [{:type :plant-fn-field,
+       :method turn_off,
+       :args [],
+       :field :switchedpower}]}],
+   turn-on-switch
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
      :reward 0,
      :controllable false,
-     :primitive true,
+     :primitive false,
      :betweens [],
-     :display-name "Turn On",
+     :display-name "Turn On Switch",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}],
-   turn_off
+     :body
+     [{:type :plant-fn-field,
+       :field :switchedpower,
+       :method turn_on,
+       :args []}]}]},
+  :type :pclass},
+ psw
+ {:args [],
+  :meta {:doc "A power switch"},
+  :methods
+  {turn_off
    [{:args [],
      :pre {:type :literal, :value true},
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
@@ -127,4 +114,17 @@
      :display-name "Turn Off",
      :post {:type :literal, :value true},
      :cost 0,
-     :body nil}]}}}
+     :body nil}],
+   turn_on
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Turn On",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}]},
+  :type :pclass}}

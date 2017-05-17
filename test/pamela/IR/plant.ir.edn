@@ -1,7 +1,6 @@
 {plant
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "The Plant API"},
+ {:args [],
+  :meta {:doc "The Plant API", :version "0.2.0"},
   :methods
   {bounded
    [{:args [],
@@ -28,4 +27,5 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Unbounded"}]}}}
+     :doc "Unbounded"}]},
+  :type :pclass}}

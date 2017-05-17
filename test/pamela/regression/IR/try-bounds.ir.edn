@@ -1,7 +1,6 @@
 {try-bounds
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "try example with time bounds"},
+ {:args [],
+  :meta {:doc "try example with time bounds", :version "0.2.0"},
   :methods
   {example
    [{:args [],
@@ -19,4 +18,5 @@
        :body [{:type :delay, :body nil}],
        :catch [{:type :delay, :body nil}],
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "try example"}]}}}
+     :doc "try example"}]},
+  :type :pclass}}

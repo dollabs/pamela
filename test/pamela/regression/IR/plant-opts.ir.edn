@@ -1,6 +1,5 @@
 {plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {action
@@ -15,10 +14,10 @@
      :post {:type :literal, :value true},
      :cost 0,
      :body nil,
-     :doc "Take action"}]}},
+     :doc "Take action"}]},
+  :type :pclass},
  plant-opts
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "An example of invoking a plant function."},
   :methods
   {start
@@ -41,4 +40,5 @@
        :label :demo,
        :cost 2,
        :reward 3}],
-     :doc "Demo method"}]}}}
+     :doc "Demo method"}]},
+  :type :pclass}}
