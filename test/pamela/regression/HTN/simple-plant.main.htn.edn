@@ -6,7 +6,7 @@
  :hedge-35 {:end-node :hpt-23, :type :edge, :uid :hedge-35},
  :hedge-36 {:end-node :hpt-25, :type :edge, :uid :hedge-36},
  :hem-26
- {:args nil,
+ {:args [],
   :display-name "Main",
   :edges [],
   :incidence-set #{:hedge-29},

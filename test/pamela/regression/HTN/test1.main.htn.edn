@@ -5,7 +5,7 @@
  :hedge-41 {:end-node :hem-32, :type :edge, :uid :hedge-41},
  :hedge-43 {:end-node :hpt-31, :type :edge, :uid :hedge-43},
  :hem-20
- {:args nil,
+ {:args [],
   :display-name "Main Activity",
   :edges [:hedge-37],
   :incidence-set #{:hedge-35},
@@ -13,7 +13,7 @@
   :type :htn-expanded-method,
   :uid :hem-20},
  :hem-25
- {:args ("host0101" "host0701"),
+ {:args ["host0101" "host0701"],
   :display-name "test1",
   :edges [:hedge-39 :hedge-41],
   :incidence-set #{},
@@ -21,7 +21,7 @@
   :type :htn-expanded-method,
   :uid :hem-25},
  :hem-27
- {:args ("host0101" "100MB"),
+ {:args ["host0101" "100MB"],
   :display-name "File Xfer",
   :edges [],
   :incidence-set #{},
@@ -29,7 +29,7 @@
   :type :htn-expanded-method,
   :uid :hem-27},
  :hem-32
- {:args ("host0701" "host0101" "1"),
+ {:args ["host0701" "host0101" "1"],
   :display-name "Video Session",
   :edges [],
   :incidence-set #{},

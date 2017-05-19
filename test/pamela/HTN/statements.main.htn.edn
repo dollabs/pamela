@@ -7,7 +7,7 @@
  :hedge-33 {:end-node :hpt-21, :type :edge, :uid :hedge-33},
  :hedge-34 {:end-node :hpt-22, :type :edge, :uid :hedge-34},
  :hem-16
- {:args nil,
+ {:args [],
   :display-name "Main",
   :edges [:hedge-28],
   :incidence-set #{:hedge-26},
@@ -15,7 +15,7 @@
   :type :htn-expanded-method,
   :uid :hem-16},
  :hem-23
- {:args nil,
+ {:args [],
   :display-name "Test Of Various Statements",
   :edges [],
   :incidence-set #{},

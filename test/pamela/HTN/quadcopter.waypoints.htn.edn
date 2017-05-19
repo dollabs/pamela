@@ -35,27 +35,7 @@
  :hedge-97 {:end-node :hem-58, :type :edge, :uid :hedge-97},
  :hedge-99 {:end-node :hpt-50, :type :edge, :uid :hedge-99},
  :hem-47
- {:args
-  ({:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc1",
-    :plant-part "pp1",
-    :interface "RMQ",
-    :param qc1}
-   {:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc2",
-    :plant-part "pp2",
-    :interface "ZMQ",
-    :param qc2}
-   {:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc3",
-    :plant-part "pp3",
-    :param qc3}),
+ {:args [qc1 qc2 qc3],
   :display-name "Waypoints",
   :edges [:hedge-97 :hedge-103 :hedge-119],
   :incidence-set #{:hedge-95},
@@ -63,14 +43,7 @@
   :type :htn-expanded-method,
   :uid :hem-47},
  :hem-58
- {:args
-  ({:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc1",
-    :plant-part "pp1",
-    :interface "RMQ",
-    :param qc1}),
+ {:args [qc1],
   :display-name "Circuit One",
   :edges [],
   :incidence-set #{},
@@ -78,14 +51,7 @@
   :type :htn-expanded-method,
   :uid :hem-58},
  :hem-65
- {:args
-  ({:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc2",
-    :plant-part "pp2",
-    :interface "ZMQ",
-    :param qc2}),
+ {:args [qc2],
   :display-name "Circuit Two",
   :edges [:hedge-105 :hedge-108 :hedge-111 :hedge-114 :hedge-117],
   :incidence-set #{},
@@ -93,7 +59,7 @@
   :type :htn-expanded-method,
   :uid :hem-65},
  :hem-68
- {:args nil,
+ {:args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -101,7 +67,7 @@
   :type :htn-expanded-method,
   :uid :hem-68},
  :hem-70
- {:args nil,
+ {:args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
@@ -109,7 +75,7 @@
   :type :htn-expanded-method,
   :uid :hem-70},
  :hem-72
- {:args nil,
+ {:args [],
   :display-name "Wp 4",
   :edges [],
   :incidence-set #{},
@@ -117,7 +83,7 @@
   :type :htn-expanded-method,
   :uid :hem-72},
  :hem-74
- {:args nil,
+ {:args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
@@ -125,7 +91,7 @@
   :type :htn-expanded-method,
   :uid :hem-74},
  :hem-76
- {:args nil,
+ {:args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -133,13 +99,7 @@
   :type :htn-expanded-method,
   :uid :hem-76},
  :hem-82
- {:args
-  ({:type :pclass-ctor,
-    :pclass qc,
-    :args [],
-    :id "qc3",
-    :plant-part "pp3",
-    :param qc3}),
+ {:args [qc3],
   :display-name "Circuit Three",
   :edges [:hedge-121 :hedge-124 :hedge-127 :hedge-130 :hedge-133],
   :incidence-set #{},
@@ -147,7 +107,7 @@
   :type :htn-expanded-method,
   :uid :hem-82},
  :hem-85
- {:args nil,
+ {:args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
@@ -155,7 +115,7 @@
   :type :htn-expanded-method,
   :uid :hem-85},
  :hem-87
- {:args nil,
+ {:args [],
   :display-name "Wp 4",
   :edges [],
   :incidence-set #{},
@@ -163,7 +123,7 @@
   :type :htn-expanded-method,
   :uid :hem-87},
  :hem-89
- {:args nil,
+ {:args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
@@ -171,7 +131,7 @@
   :type :htn-expanded-method,
   :uid :hem-89},
  :hem-91
- {:args nil,
+ {:args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -179,7 +139,7 @@
   :type :htn-expanded-method,
   :uid :hem-91},
  :hem-93
- {:args nil,
+ {:args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},

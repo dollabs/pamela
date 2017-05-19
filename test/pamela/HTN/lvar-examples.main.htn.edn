@@ -1,7 +1,7 @@
 {:hedge-13 {:end-node :hem-9, :type :edge, :uid :hedge-13},
  :hedge-15 {:end-node :hem-11, :type :edge, :uid :hedge-15},
  :hem-11
- {:args nil,
+ {:args [],
   :display-name "Main-1",
   :edges [],
   :incidence-set #{:hedge-15},
@@ -9,7 +9,7 @@
   :type :htn-expanded-method,
   :uid :hem-11},
  :hem-9
- {:args nil,
+ {:args [],
   :display-name "Main-0",
   :edges [],
   :incidence-set #{:hedge-13},

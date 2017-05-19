@@ -108,7 +108,7 @@
   :type :edge,
   :uid :hedge-202},
  :hem-100
- {:args ("C"),
+ {:args ["C"],
   :display-name "Evidence And Interpret",
   :edges [:hedge-180 :hedge-183 :hedge-185 :hedge-187],
   :incidence-set #{},
@@ -116,7 +116,7 @@
   :type :htn-expanded-method,
   :uid :hem-100},
  :hem-104
- {:args ("C"),
+ {:args ["C"],
   :display-name "Evidence",
   :edges [],
   :incidence-set #{},
@@ -124,7 +124,7 @@
   :type :htn-expanded-method,
   :uid :hem-104},
  :hem-107
- {:args ("C"),
+ {:args ["C"],
   :display-name "Interpret-0",
   :edges [],
   :incidence-set #{},
@@ -132,7 +132,7 @@
   :type :htn-expanded-method,
   :uid :hem-107},
  :hem-110
- {:args ("C"),
+ {:args ["C"],
   :display-name "Interpret-1",
   :edges [],
   :incidence-set #{},
@@ -140,7 +140,7 @@
   :type :htn-expanded-method,
   :uid :hem-110},
  :hem-113
- {:args ("C"),
+ {:args ["C"],
   :display-name "Interpret-2",
   :edges [],
   :incidence-set #{},
@@ -148,7 +148,7 @@
   :type :htn-expanded-method,
   :uid :hem-113},
  :hem-117
- {:args ("D"),
+ {:args ["D"],
   :display-name "Get Data At",
   :edges [],
   :incidence-set #{},
@@ -156,7 +156,7 @@
   :type :htn-expanded-method,
   :uid :hem-117},
  :hem-121
- {:args ("D"),
+ {:args ["D"],
   :display-name "Evidence And Interpret",
   :edges [:hedge-195 :hedge-198 :hedge-200 :hedge-202],
   :incidence-set #{},
@@ -164,7 +164,7 @@
   :type :htn-expanded-method,
   :uid :hem-121},
  :hem-125
- {:args ("D"),
+ {:args ["D"],
   :display-name "Evidence",
   :edges [],
   :incidence-set #{},
@@ -172,7 +172,7 @@
   :type :htn-expanded-method,
   :uid :hem-125},
  :hem-128
- {:args ("D"),
+ {:args ["D"],
   :display-name "Interpret-0",
   :edges [],
   :incidence-set #{},
@@ -180,7 +180,7 @@
   :type :htn-expanded-method,
   :uid :hem-128},
  :hem-131
- {:args ("D"),
+ {:args ["D"],
   :display-name "Interpret-1",
   :edges [],
   :incidence-set #{},
@@ -188,7 +188,7 @@
   :type :htn-expanded-method,
   :uid :hem-131},
  :hem-134
- {:args ("D"),
+ {:args ["D"],
   :display-name "Interpret-2",
   :edges [],
   :incidence-set #{},
@@ -196,7 +196,7 @@
   :type :htn-expanded-method,
   :uid :hem-134},
  :hem-40
- {:args ("A" "B" "C" "D"),
+ {:args ["A" "B" "C" "D"],
   :display-name "Main",
   :edges [:hedge-138 :hedge-142 :hedge-159 :hedge-176 :hedge-193],
   :incidence-set #{:hedge-136},
@@ -204,7 +204,7 @@
   :type :htn-expanded-method,
   :uid :hem-40},
  :hem-45
- {:args ("A"),
+ {:args ["A"],
   :display-name "Get Data At",
   :edges [],
   :incidence-set #{},
@@ -212,7 +212,7 @@
   :type :htn-expanded-method,
   :uid :hem-45},
  :hem-49
- {:args ("A" "B"),
+ {:args ["A" "B"],
   :display-name "Get Data And Interpret",
   :edges [:hedge-144 :hedge-155],
   :incidence-set #{},
@@ -220,7 +220,7 @@
   :type :htn-expanded-method,
   :uid :hem-49},
  :hem-52
- {:args ("A"),
+ {:args ["A"],
   :display-name "Evidence And Interpret",
   :edges [:hedge-146 :hedge-149 :hedge-151 :hedge-153],
   :incidence-set #{},
@@ -228,7 +228,7 @@
   :type :htn-expanded-method,
   :uid :hem-52},
  :hem-56
- {:args ("A"),
+ {:args ["A"],
   :display-name "Evidence",
   :edges [],
   :incidence-set #{},
@@ -236,7 +236,7 @@
   :type :htn-expanded-method,
   :uid :hem-56},
  :hem-59
- {:args ("A"),
+ {:args ["A"],
   :display-name "Interpret-0",
   :edges [],
   :incidence-set #{},
@@ -244,7 +244,7 @@
   :type :htn-expanded-method,
   :uid :hem-59},
  :hem-62
- {:args ("A"),
+ {:args ["A"],
   :display-name "Interpret-1",
   :edges [],
   :incidence-set #{},
@@ -252,7 +252,7 @@
   :type :htn-expanded-method,
   :uid :hem-62},
  :hem-65
- {:args ("A"),
+ {:args ["A"],
   :display-name "Interpret-2",
   :edges [],
   :incidence-set #{},
@@ -260,7 +260,7 @@
   :type :htn-expanded-method,
   :uid :hem-65},
  :hem-69
- {:args ("B"),
+ {:args ["B"],
   :display-name "Get Data At",
   :edges [],
   :incidence-set #{},
@@ -268,7 +268,7 @@
   :type :htn-expanded-method,
   :uid :hem-69},
  :hem-73
- {:args ("B" "C"),
+ {:args ["B" "C"],
   :display-name "Get Data And Interpret",
   :edges [:hedge-161 :hedge-172],
   :incidence-set #{},
@@ -276,7 +276,7 @@
   :type :htn-expanded-method,
   :uid :hem-73},
  :hem-76
- {:args ("B"),
+ {:args ["B"],
   :display-name "Evidence And Interpret",
   :edges [:hedge-163 :hedge-166 :hedge-168 :hedge-170],
   :incidence-set #{},
@@ -284,7 +284,7 @@
   :type :htn-expanded-method,
   :uid :hem-76},
  :hem-80
- {:args ("B"),
+ {:args ["B"],
   :display-name "Evidence",
   :edges [],
   :incidence-set #{},
@@ -292,7 +292,7 @@
   :type :htn-expanded-method,
   :uid :hem-80},
  :hem-83
- {:args ("B"),
+ {:args ["B"],
   :display-name "Interpret-0",
   :edges [],
   :incidence-set #{},
@@ -300,7 +300,7 @@
   :type :htn-expanded-method,
   :uid :hem-83},
  :hem-86
- {:args ("B"),
+ {:args ["B"],
   :display-name "Interpret-1",
   :edges [],
   :incidence-set #{},
@@ -308,7 +308,7 @@
   :type :htn-expanded-method,
   :uid :hem-86},
  :hem-89
- {:args ("B"),
+ {:args ["B"],
   :display-name "Interpret-2",
   :edges [],
   :incidence-set #{},
@@ -316,7 +316,7 @@
   :type :htn-expanded-method,
   :uid :hem-89},
  :hem-93
- {:args ("C"),
+ {:args ["C"],
   :display-name "Get Data At",
   :edges [],
   :incidence-set #{},
@@ -324,7 +324,7 @@
   :type :htn-expanded-method,
   :uid :hem-93},
  :hem-97
- {:args ("C" "D"),
+ {:args ["C" "D"],
   :display-name "Get Data And Interpret",
   :edges [:hedge-178 :hedge-189],
   :incidence-set #{},
