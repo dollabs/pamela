@@ -26,6 +26,7 @@ Changes
 * In HTN generation only state nodes which begin a sequence have
   an :end-node slot (Closes #105)
 * In HTN generation handle between constraints (Closes #102)
+* Adjustment of :args in HTN expanded methods (Closes #109)
 
 ### [0.6.0] - 2017-03-08
 
