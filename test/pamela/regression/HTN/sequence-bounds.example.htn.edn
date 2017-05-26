@@ -3,7 +3,7 @@
  :hedge-20 {:end-node :hpt-12, :type :edge, :uid :hedge-20},
  :hedge-21 {:end-node :hpt-13, :type :edge, :uid :hedge-21},
  :hem-14
- {:args nil,
+ {:args [],
   :display-name "Example",
   :edges [],
   :incidence-set #{:hedge-17},

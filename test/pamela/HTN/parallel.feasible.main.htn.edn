@@ -1,6 +1,6 @@
 {:hedge-16 {:end-node :hem-14, :type :edge, :uid :hedge-16},
  :hem-14
- {:args nil,
+ {:args [],
   :display-name "Main",
   :edges [],
   :incidence-set #{:hedge-16},

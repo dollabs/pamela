@@ -160,13 +160,14 @@
 (defn to-pamela [ir-snippet]
   (cond
     (map? ir-snippet)
-    (let [{:keys [type args name value condition field]} ir-snippet]
+    (let [{:keys [type args name value condition field param]} ir-snippet]
       (case type
         :ask (list 'ask (to-pamela condition))
         :tell (list 'tell (to-pamela condition))
         :assert (list 'assert (to-pamela condition))
         :state-variable name
         :arg-reference name
+        :pclass-ctor param
         :field-reference-field
         (let [typefn (if (keyword? field) as-keyword symbol)]
           (typefn (str (str field) "." (str value))))
@@ -1477,7 +1478,9 @@
         hem-uid uid
         ;; NOTE as the new args-mapping structure has not yet been implemented
         ;; we are "guessing" at the positions of the arg values here:
-        args (vals argument-mappings)
+        args (if (empty? argument-mappings)
+               []
+               (vec (to-pamela (vals argument-mappings))))
         hem-map (assoc
                  (dissoc hem
                          :ancestry-path :expansion-method :argument-mappings :subtasks

@@ -2,7 +2,7 @@
  :hedge-22 {:end-node :hem-15, :type :edge, :uid :hedge-22},
  :hedge-24 {:end-node :hem-18, :type :edge, :uid :hedge-24},
  :hem-12
- {:args nil,
+ {:args [],
   :display-name "Main-0",
   :edges [],
   :incidence-set #{:hedge-20},
@@ -10,7 +10,7 @@
   :type :htn-expanded-method,
   :uid :hem-12},
  :hem-15
- {:args nil,
+ {:args [],
   :display-name "Main-1",
   :edges [],
   :incidence-set #{:hedge-22},
@@ -18,7 +18,7 @@
   :type :htn-expanded-method,
   :uid :hem-15},
  :hem-18
- {:args nil,
+ {:args [],
   :display-name "Main-2",
   :edges [],
   :incidence-set #{:hedge-24},

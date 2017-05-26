@@ -22,7 +22,7 @@
  :hedge-79 {:end-node :hpt-58, :type :edge, :uid :hedge-79},
  :hedge-80 {:end-node :hpt-42, :type :edge, :uid :hedge-80},
  :hem-34
- {:args nil,
+ {:args [],
   :display-name "Start",
   :edges [:hedge-65 :hedge-68],
   :incidence-set #{:hedge-63},
@@ -30,7 +30,7 @@
   :type :htn-expanded-method,
   :uid :hem-34},
  :hem-39
- {:args nil,
+ {:args [],
   :display-name "Do A And B",
   :edges [],
   :incidence-set #{},
@@ -38,7 +38,7 @@
   :type :htn-expanded-method,
   :uid :hem-39},
  :hem-44
- {:args nil,
+ {:args [],
   :display-name "Do Choice And C",
   :edges [:hedge-70 :hedge-75],
   :incidence-set #{},
@@ -46,7 +46,7 @@
   :type :htn-expanded-method,
   :uid :hem-44},
  :hem-47
- {:args nil,
+ {:args [],
   :display-name "Do Choice-0",
   :edges [:hedge-72],
   :incidence-set #{},
@@ -54,7 +54,7 @@
   :type :htn-expanded-method,
   :uid :hem-47},
  :hem-49
- {:args nil,
+ {:args [],
   :display-name "Do Choice-1",
   :edges [:hedge-77],
   :incidence-set #{},
@@ -62,7 +62,7 @@
   :type :htn-expanded-method,
   :uid :hem-49},
  :hem-54
- {:args nil,
+ {:args [],
   :display-name "Do D And E",
   :edges [],
   :incidence-set #{},
@@ -70,7 +70,7 @@
   :type :htn-expanded-method,
   :uid :hem-54},
  :hem-60
- {:args nil,
+ {:args [],
   :display-name "Do F And G",
   :edges [],
   :incidence-set #{},
