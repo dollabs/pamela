@@ -73,7 +73,7 @@
 (defn find-htn-method [pclass name & [error-if-not-found?]]
   (let [method (get-in @*htn-methods* [pclass name])]
     (when (and (not method) error-if-not-found?)
-      (throw (AssertionError. (str "method not found: " name " in pclass " pclass))))
+      (fatal-error "method not found: " name " in pclass " pclass))
     method))
 
 ;; HTN Objects
@@ -403,7 +403,8 @@
                                    _ (dbg-println :debug "RPC Recursion result" pc_)
                                    pc_
                                    )))
-                             {:error :unresolved-pclass-ctor}))
+                             {:error (str "unresolved pclass-ctor for ("
+                                       name "." method " ...)")}))
 
                        (= type :delay)
                        {}
@@ -412,11 +413,10 @@
                        {} ;;TODO: Update this
 
                        :else
-                       (do
-                         (dbg-println :error "ERROR, not currently supported plant-fn type=" type)
-                         nil))
-        ]
+                       {:error (str "ERROR, not currently supported plant-fn type=" type)})]
     (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
+    (when (:error pclass-ctor_)
+      (fatal-error "Failure to find pclass constructor: " (:error pclass-ctor_)))
     pclass-ctor_))
 
 ;; name-with-argvals multi-methods --------------------------------------
@@ -639,10 +639,8 @@
     (if (or (not (vector? static-task-args))
             (not (vector? dynamic-task-args))
             (not= (count static-task-args) (count dynamic-task-args)))
-      (throw
-       (AssertionError.
-        (str "cannot create arg-mappings with static-task-args: "
-             static-task-args " and dynamic-task-args: " dynamic-task-args))))
+      (fatal-error "cannot create arg-mappings with static-task-args: "
+        static-task-args " and dynamic-task-args: " dynamic-task-args))
     ;; (dbg-println :debug (:name task) static-task-args dynamic-task-args (map type dynamic-task-args))
     (zipmap static-task-args dynamic-task-args)))
 
@@ -686,9 +684,7 @@
 
 (defmethod plan-htn-task :htn-object
   [ir object]
-  (throw
-   (AssertionError.
-    (str "cannot plan-htn-task for object type: " (:type object)))))
+  (fatal-error "cannot plan-htn-task for object type: " (:type object)))
 
 ;; "Nothing to do for primitive tasks"
 (defmethod plan-htn-task :htn-primitive-task
@@ -829,21 +825,22 @@
      :uid (or uid (keyword (my-gensym prefix)))}
     :ancestry-path ancestry-path)))
 
-(defn temporal-constraint
-  "A task-local temporal constraint for that task."
-  [{:keys [prefix uid ancestry-path lb ub
-           start-delay ;; Wait for this long (sec) before starting this task (included in lb/ub time)
-           start-time
-           end-time]
-    :or {prefix "tc-"}}]
-  (update-htn-object!
-   (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
-             :type :temporal-constraint
-             :lb lb
-             :ub ub
-             :start-delay start-delay
-             :start-time start-time
-             :end-time end-time)))
+;; NOTE this function is never called
+;; (defn temporal-constraint
+;;   "A task-local temporal constraint for that task."
+;;   [{:keys [prefix uid ancestry-path lb ub
+;;            start-delay ;; Wait for this long (sec) before starting this task (included in lb/ub time)
+;;            start-time
+;;            end-time]
+;;     :or {prefix "tc-"}}]
+;;   (update-htn-object!
+;;    (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
+;;              :type :temporal-constraint
+;;              :lb lb
+;;              :ub ub
+;;              :start-delay start-delay
+;;              :start-time start-time
+;;              :end-time end-time)))
 
 (defn inter-task-constraint
   "inter-task-constraint"
@@ -878,7 +875,7 @@
                         (make-network-flows name flow-characteristics arguments)
                         network-flows)]
     (if (and (not pclass) (not= name 'delay))
-      (throw (Exception. (str "htn-task constructed w/o pclass: name " name))))
+      (fatal-error "htn-task constructed w/o pclass: name " name))
     (update-htn-object!
      (assoc-if (htn-object {:prefix prefix :uid uid :ancestry-path ancestry-path})
                :type :htn-task
@@ -1053,35 +1050,40 @@
 
 ;; Expansion -------------------------------------------------
 
+;; NOTE we no longer use temporal-constraint objects
+;; and so there is no need to "copy" them.
 (defn copy-temporal-constraints [from-temporal-constraints]
-  (mapv
-   #(temporal-constraint (dissoc % :uid))
-   from-temporal-constraints))
+  ;; Old implementation
+  ;; (mapv
+  ;;  #(temporal-constraint (dissoc % :uid))
+  ;;  from-temporal-constraints)
+  ;; New implementation
+  from-temporal-constraints)
 
 ;; Dan says this was never used
-(defn computed-duration [temporal-constraint]
-  (let [{:keys [start-time end-time]} temporal-constraint]
-    (and start-time end-time (- end-time start-time))))
+;; (defn computed-duration [temporal-constraint]
+;;   (let [{:keys [start-time end-time]} temporal-constraint]
+;;     (and start-time end-time (- end-time start-time))))
 
-(defn lb [temporal-constraint]
-  (let [{:keys [lb]} temporal-constraint]
-    (or lb (computed-duration temporal-constraint) 0)))
+;; (defn lb [temporal-constraint]
+;;   (let [{:keys [lb]} temporal-constraint]
+;;     (or lb (computed-duration temporal-constraint) 0)))
 
-(defn ub [temporal-constraint]
-  (let [{:keys [ub]} temporal-constraint]
-    (or ub (computed-duration temporal-constraint) :infinity)))
+;; (defn ub [temporal-constraint]
+;;   (let [{:keys [ub]} temporal-constraint]
+;;     (or ub (computed-duration temporal-constraint) :infinity)))
 
-(defn contains-non-default-values? [temporal-constraint]
-  (let [{:keys [lb ub start-delay start-time end-time]} temporal-constraint]
-    (or (and lb (not (zero? lb)))
-        (and ub (not (= ub :infinity)))
-        start-delay
-        start-time
-        end-time)))
+;; (defn contains-non-default-values? [temporal-constraint]
+;;   (let [{:keys [lb ub start-delay start-time end-time]} temporal-constraint]
+;;     (or (and lb (not (zero? lb)))
+;;         (and ub (not (= ub :infinity)))
+;;         start-delay
+;;         start-time
+;;         end-time)))
 
-(defn make-temporal-constraint-for-sequential-subtasks [from-temporal-constraint]
-  (temporal-constraint
-   (assoc (dissoc from-temporal-constraint :uid) :lb 0)))
+;; (defn make-temporal-constraint-for-sequential-subtasks [from-temporal-constraint]
+;;   (temporal-constraint
+;;    (assoc (dissoc from-temporal-constraint :uid) :lb 0)))
 
 ;; -------------------------------------------------------------------------
 
@@ -1259,7 +1261,7 @@
         ir-syms (keys ir)]
     ;; (dbg-println :debug "IR" (with-out-str (pprint ir))) ;; DEBUG
     (if (and rir (= (first rir) :error))
-      (throw (AssertionError. (second rir)))
+      (fatal-error (second rir))
       (if rir ;; verify
         (let [_ (dbg-println :debug "RIR" (with-out-str (pprint rir)))
               args (root-task-args ir (rest rir))
@@ -1396,6 +1398,14 @@
                              method args))]
               bounds))))))
 
+(defn bounds-from-mdef [mdef]
+  (let [bounds (:value
+                (first
+                  (filter #(= (:type %) :bounds)
+                    (:temporal-constraints mdef))))]
+    (if-not (tpn/default-bounds? bounds)
+      bounds)))
+
 ;; returns plant details map with keys
 ;;   name display-name plantid plant-part interface args argvals
 (defn plant-details [ir pargs subtask_ pclass-ctor_ primitive?]
@@ -1438,7 +1448,9 @@
                   :argsmap argsmap
                   :plantid plantid
                   :plant-part plant-part
-                  :interface interface)))))
+                  :interface interface
+                  :method-bounds (bounds-from-mdef mdef)
+                  )))))
 
 ;; root? is true to create the "synthetic" htn-network at the very
 ;; top of the HTN
@@ -1475,6 +1487,10 @@
         top-bounds (irks->bounds ir top-irks)
         bounds (irks->bounds ir hem-irks)
         hem-bounds (tpn/merge-bounds top-bounds bounds)
+        _ (dbg-println :debug "CHPN 2.5 top-irks" top-irks
+            "top-bounds" top-bounds
+            "hem-irks" hem-irks "bounds" bounds
+            "hem-bounds" hem-bounds)
         hem-uid uid
         ;; NOTE as the new args-mapping structure has not yet been implemented
         ;; we are "guessing" at the positions of the arg values here:
@@ -1515,13 +1531,15 @@
         {:keys [end-node]} parent-begin
         parent-end (tpn/get-tpn-plan-map end-node)
         hem-tc (if hem-bounds (tpn/tpn-temporal-constraint
-                               {:value hem-bounds :end-node end-node}))
+                                {:value hem-bounds :end-node end-node}))
+        parent-begin-constraints (:constraints parent-begin)
         parent-begin (assoc-if parent-begin
                        :htn-node (:uid hem-map)
-                       :constraints (if hem-tc
-                                      (conj (:constraints parent-begin)
-                                        (:uid hem-tc))
-                                      (:constraints parent-begin))
+                       ;; only if there isn't an override at the call site
+                       :constraints (if (and (empty? parent-begin-constraints)
+                                          hem-tc)
+                                      #{(:uid hem-tc)}
+                                      parent-begin-constraints)
                        :label (and (not hem-choice?) label)
                        :sequence-label sequence-label)
         ;; _ (when (and (not hem-choice?) (or label sequence-label))
@@ -1572,13 +1590,16 @@
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
                        "type" type "pclass" pclass "name" name
                        "m-task-expansions" m-task-expansions
-                       "label" label)
+                       "label" label "bounds" bounds)
             ;; resolve pclass if (= type :htn-nonprimitive-task)
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
             primitive? (= type :htn-primitive-task)
             parallel? (not sequential?)
             choice? (and (not parallel?) (> m-task-expansions 1))
+            bounds (if (and (not bounds) primitive?)
+                     nil ;; look up default
+                     bounds)
             ;; DEBUG
             _ (dbg-println :debug "SUBTASK primitive?" primitive?
                        "type" type
@@ -1601,11 +1622,14 @@
                                   :irks)
                           :incidence-set (if edge #{(:uid edge)} #{})
                           :edges [])
-                         details_)
+                         (dissoc details_ :method-bounds))
             ;; TPN ------------------
             se (tpn/tpn-state {})
-            tc (if bounds (tpn/tpn-temporal-constraint
-                           {:value bounds :end-node (:uid se)}))
+            ;; if call site bounds are not specified use default
+            bounds (or bounds (:method-bounds details_))
+            tc (if bounds
+                 (tpn/tpn-temporal-constraint
+                   {:value bounds :end-node (:uid se)}))
             activity (if primitive?
                        ((if (= name 'delay)
                           tpn/tpn-delay-activity
@@ -1644,7 +1668,9 @@
                   "getting :label" (and (not primitive?) label)))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
                                ;; do NOT add constraints on the node
-                               ;; :constraints (if tc #{(:uid tc)})
+                               ;; for primitive? activities
+                               :constraints (if (and tc (not primitive?))
+                                              #{(:uid tc)})
                                ;; WHILE we ONLY want :end-node for sequences, we
                                ;; need it during construction and will remove it
                                ;; during TPN optimization
@@ -1658,7 +1684,12 @@
             [begin end] (if parallel?
                           (if (zero? i)
                             (let [end (tpn/tpn-p-end {})
+                                  tc (if (and tc (not primitive?))
+                                       (tpn/update-tpn-plan-map!
+                                         (assoc tc :end-node (:uid end))))
                                   begin (tpn/tpn-p-begin {:end-node (:uid end)
+                                                          :constraints
+                                                          (if tc #{(:uid tc)})
                                                           :htn-node
                                                           (:uid hem-map)})]
                               [begin end])
