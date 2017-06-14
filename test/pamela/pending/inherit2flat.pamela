@@ -26,15 +26,15 @@
           :dead (= :temperature 0)})
 
 (defpclass c []
-  :inherit [a b]
+  ;; :inherit [a b]
 
   ;; inherited fields
-  ;; :fields {:breathing true
-  ;;          :temperature 25}
+  :fields {:breathing true
+           :temperature 25}
 
   ;; inherited modes
   ;; NOTE: for :alive (and ...) may be better, but how could we tell
   ;; automatically?
-  ;; :modes {:alive (or (= :breathing true) (not (= :temperature 0)))a
-  ;;         :dead (or (= :breathing false) (= :temperature 0))}
+  :modes {:alive (or (= :breathing true) (not (= :temperature 0)))
+          :dead (or (= :breathing false) (= :temperature 0))}
   )
