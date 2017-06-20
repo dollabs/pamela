@@ -1,154 +1,154 @@
-{:hedge-100 {:end-node :hpt-52, :type :edge, :uid :hedge-100},
- :hedge-101 {:end-node :hpt-54, :type :edge, :uid :hedge-101},
- :hedge-102 {:end-node :hpt-56, :type :edge, :uid :hedge-102},
- :hedge-103 {:end-node :hem-65, :type :edge, :uid :hedge-103},
- :hedge-105
- {:display-name "1", :end-node :hem-68, :type :edge, :uid :hedge-105},
- :hedge-107 {:end-node :henpt-61, :type :edge, :uid :hedge-107},
- :hedge-108
- {:display-name "2", :end-node :hem-70, :type :edge, :uid :hedge-108},
- :hedge-110 {:end-node :henpt-62, :type :edge, :uid :hedge-110},
- :hedge-111
- {:display-name "3", :end-node :hem-72, :type :edge, :uid :hedge-111},
- :hedge-113 {:end-node :henpt-63, :type :edge, :uid :hedge-113},
- :hedge-114
- {:display-name "4", :end-node :hem-74, :type :edge, :uid :hedge-114},
- :hedge-116 {:end-node :henpt-64, :type :edge, :uid :hedge-116},
- :hedge-117
- {:display-name "5", :end-node :hem-76, :type :edge, :uid :hedge-117},
- :hedge-119 {:end-node :hem-82, :type :edge, :uid :hedge-119},
- :hedge-121
- {:display-name "1", :end-node :hem-85, :type :edge, :uid :hedge-121},
- :hedge-123 {:end-node :henpt-78, :type :edge, :uid :hedge-123},
- :hedge-124
- {:display-name "2", :end-node :hem-87, :type :edge, :uid :hedge-124},
- :hedge-126 {:end-node :henpt-79, :type :edge, :uid :hedge-126},
- :hedge-127
- {:display-name "3", :end-node :hem-89, :type :edge, :uid :hedge-127},
- :hedge-129 {:end-node :henpt-80, :type :edge, :uid :hedge-129},
- :hedge-130
- {:display-name "4", :end-node :hem-91, :type :edge, :uid :hedge-130},
- :hedge-132 {:end-node :henpt-81, :type :edge, :uid :hedge-132},
- :hedge-133
- {:display-name "5", :end-node :hem-93, :type :edge, :uid :hedge-133},
- :hedge-95 {:end-node :hem-47, :type :edge, :uid :hedge-95},
- :hedge-97 {:end-node :hem-58, :type :edge, :uid :hedge-97},
- :hedge-99 {:end-node :hpt-50, :type :edge, :uid :hedge-99},
+{:hedge-100
+ {:display-name "1", :end-node :hem-63, :type :edge, :uid :hedge-100},
+ :hedge-102 {:end-node :henpt-56, :type :edge, :uid :hedge-102},
+ :hedge-103
+ {:display-name "2", :end-node :hem-65, :type :edge, :uid :hedge-103},
+ :hedge-105 {:end-node :henpt-57, :type :edge, :uid :hedge-105},
+ :hedge-106
+ {:display-name "3", :end-node :hem-67, :type :edge, :uid :hedge-106},
+ :hedge-108 {:end-node :henpt-58, :type :edge, :uid :hedge-108},
+ :hedge-109
+ {:display-name "4", :end-node :hem-69, :type :edge, :uid :hedge-109},
+ :hedge-111 {:end-node :henpt-59, :type :edge, :uid :hedge-111},
+ :hedge-112
+ {:display-name "5", :end-node :hem-71, :type :edge, :uid :hedge-112},
+ :hedge-114 {:end-node :hem-77, :type :edge, :uid :hedge-114},
+ :hedge-116
+ {:display-name "1", :end-node :hem-80, :type :edge, :uid :hedge-116},
+ :hedge-118 {:end-node :henpt-73, :type :edge, :uid :hedge-118},
+ :hedge-119
+ {:display-name "2", :end-node :hem-82, :type :edge, :uid :hedge-119},
+ :hedge-121 {:end-node :henpt-74, :type :edge, :uid :hedge-121},
+ :hedge-122
+ {:display-name "3", :end-node :hem-84, :type :edge, :uid :hedge-122},
+ :hedge-124 {:end-node :henpt-75, :type :edge, :uid :hedge-124},
+ :hedge-125
+ {:display-name "4", :end-node :hem-86, :type :edge, :uid :hedge-125},
+ :hedge-127 {:end-node :henpt-76, :type :edge, :uid :hedge-127},
+ :hedge-128
+ {:display-name "5", :end-node :hem-88, :type :edge, :uid :hedge-128},
+ :hedge-90 {:end-node :hem-47, :type :edge, :uid :hedge-90},
+ :hedge-92 {:end-node :hem-53, :type :edge, :uid :hedge-92},
+ :hedge-94 {:end-node :hpt-49, :type :edge, :uid :hedge-94},
+ :hedge-95 {:end-node :hpt-50, :type :edge, :uid :hedge-95},
+ :hedge-96 {:end-node :hpt-51, :type :edge, :uid :hedge-96},
+ :hedge-97 {:end-node :hpt-52, :type :edge, :uid :hedge-97},
+ :hedge-98 {:end-node :hem-60, :type :edge, :uid :hedge-98},
  :hem-47
  {:args [qc1 qc2 qc3],
   :display-name "Waypoints",
-  :edges [:hedge-97 :hedge-103 :hedge-119],
-  :incidence-set #{:hedge-95},
-  :network :net-96,
+  :edges [:hedge-92 :hedge-98 :hedge-114],
+  :incidence-set #{:hedge-90},
+  :network :net-91,
   :type :htn-expanded-method,
   :uid :hem-47},
- :hem-58
+ :hem-53
  {:args [qc1],
   :display-name "Circuit One",
   :edges [],
   :incidence-set #{},
-  :network :net-98,
+  :network :net-93,
   :type :htn-expanded-method,
-  :uid :hem-58},
- :hem-65
+  :uid :hem-53},
+ :hem-60
  {:args [qc2],
   :display-name "Circuit Two",
-  :edges [:hedge-105 :hedge-108 :hedge-111 :hedge-114 :hedge-117],
+  :edges [:hedge-100 :hedge-103 :hedge-106 :hedge-109 :hedge-112],
+  :incidence-set #{},
+  :network :net-99,
+  :type :htn-expanded-method,
+  :uid :hem-60},
+ :hem-63
+ {:args [],
+  :display-name "Wp 2",
+  :edges [],
+  :incidence-set #{},
+  :network :net-101,
+  :type :htn-expanded-method,
+  :uid :hem-63},
+ :hem-65
+ {:args [],
+  :display-name "Wp 3",
+  :edges [],
   :incidence-set #{},
   :network :net-104,
   :type :htn-expanded-method,
   :uid :hem-65},
- :hem-68
- {:args [],
-  :display-name "Wp 2",
-  :edges [],
-  :incidence-set #{},
-  :network :net-106,
-  :type :htn-expanded-method,
-  :uid :hem-68},
- :hem-70
- {:args [],
-  :display-name "Wp 3",
-  :edges [],
-  :incidence-set #{},
-  :network :net-109,
-  :type :htn-expanded-method,
-  :uid :hem-70},
- :hem-72
+ :hem-67
  {:args [],
   :display-name "Wp 4",
   :edges [],
   :incidence-set #{},
-  :network :net-112,
+  :network :net-107,
   :type :htn-expanded-method,
-  :uid :hem-72},
- :hem-74
+  :uid :hem-67},
+ :hem-69
  {:args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
-  :network :net-115,
+  :network :net-110,
   :type :htn-expanded-method,
-  :uid :hem-74},
- :hem-76
+  :uid :hem-69},
+ :hem-71
  {:args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
-  :network :net-118,
+  :network :net-113,
   :type :htn-expanded-method,
-  :uid :hem-76},
- :hem-82
+  :uid :hem-71},
+ :hem-77
  {:args [qc3],
   :display-name "Circuit Three",
-  :edges [:hedge-121 :hedge-124 :hedge-127 :hedge-130 :hedge-133],
+  :edges [:hedge-116 :hedge-119 :hedge-122 :hedge-125 :hedge-128],
+  :incidence-set #{},
+  :network :net-115,
+  :type :htn-expanded-method,
+  :uid :hem-77},
+ :hem-80
+ {:args [],
+  :display-name "Wp 3",
+  :edges [],
+  :incidence-set #{},
+  :network :net-117,
+  :type :htn-expanded-method,
+  :uid :hem-80},
+ :hem-82
+ {:args [],
+  :display-name "Wp 4",
+  :edges [],
   :incidence-set #{},
   :network :net-120,
   :type :htn-expanded-method,
   :uid :hem-82},
- :hem-85
- {:args [],
-  :display-name "Wp 3",
-  :edges [],
-  :incidence-set #{},
-  :network :net-122,
-  :type :htn-expanded-method,
-  :uid :hem-85},
- :hem-87
- {:args [],
-  :display-name "Wp 4",
-  :edges [],
-  :incidence-set #{},
-  :network :net-125,
-  :type :htn-expanded-method,
-  :uid :hem-87},
- :hem-89
+ :hem-84
  {:args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
-  :network :net-128,
+  :network :net-123,
   :type :htn-expanded-method,
-  :uid :hem-89},
- :hem-91
+  :uid :hem-84},
+ :hem-86
  {:args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
-  :network :net-131,
+  :network :net-126,
   :type :htn-expanded-method,
-  :uid :hem-91},
- :hem-93
+  :uid :hem-86},
+ :hem-88
  {:args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
-  :network :net-134,
+  :network :net-129,
   :type :htn-expanded-method,
-  :uid :hem-93},
+  :uid :hem-88},
  :henpt-43
  {:display-name "qc-waypoints",
-  :edges [:hedge-95],
+  :edges [:hedge-90],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-43},
@@ -173,81 +173,81 @@
   :name "circuit-three",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-46},
- :henpt-60
+ :henpt-55
  {:display-name "Wp 2",
-  :edges [:hedge-107],
+  :edges [:hedge-102],
   :incidence-set #{},
   :name "wp2",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-60},
- :henpt-61
+  :uid :henpt-55},
+ :henpt-56
  {:display-name "Wp 3",
-  :edges [:hedge-110],
-  :incidence-set #{:hedge-107},
+  :edges [:hedge-105],
+  :incidence-set #{:hedge-102},
   :name "wp3",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-61},
- :henpt-62
+  :uid :henpt-56},
+ :henpt-57
  {:display-name "Wp 4",
-  :edges [:hedge-113],
-  :incidence-set #{:hedge-110},
+  :edges [:hedge-108],
+  :incidence-set #{:hedge-105},
   :name "wp4",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-62},
- :henpt-63
+  :uid :henpt-57},
+ :henpt-58
  {:display-name "Wp 1",
-  :edges [:hedge-116],
-  :incidence-set #{:hedge-113},
+  :edges [:hedge-111],
+  :incidence-set #{:hedge-108},
   :name "wp1",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-63},
- :henpt-64
+  :uid :henpt-58},
+ :henpt-59
  {:display-name "Wp 2",
   :edges [],
-  :incidence-set #{:hedge-116},
+  :incidence-set #{:hedge-111},
   :name "wp2",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-64},
- :henpt-77
+  :uid :henpt-59},
+ :henpt-72
  {:display-name "Wp 3",
-  :edges [:hedge-123],
+  :edges [:hedge-118],
   :incidence-set #{},
   :name "wp3",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-77},
- :henpt-78
+  :uid :henpt-72},
+ :henpt-73
  {:display-name "Wp 4",
-  :edges [:hedge-126],
-  :incidence-set #{:hedge-123},
+  :edges [:hedge-121],
+  :incidence-set #{:hedge-118},
   :name "wp4",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-78},
- :henpt-79
+  :uid :henpt-73},
+ :henpt-74
  {:display-name "Wp 1",
-  :edges [:hedge-129],
-  :incidence-set #{:hedge-126},
+  :edges [:hedge-124],
+  :incidence-set #{:hedge-121},
   :name "wp1",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-79},
- :henpt-80
+  :uid :henpt-74},
+ :henpt-75
  {:display-name "Wp 2",
-  :edges [:hedge-132],
-  :incidence-set #{:hedge-129},
+  :edges [:hedge-127],
+  :incidence-set #{:hedge-124},
   :name "wp2",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-80},
- :henpt-81
+  :uid :henpt-75},
+ :henpt-76
  {:display-name "Wp 3",
   :edges [],
-  :incidence-set #{:hedge-132},
+  :incidence-set #{:hedge-127},
   :name "wp3",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-81},
+  :uid :henpt-76},
  :hpt-48
  {:args [42.44537 -71.227895 1.0 80],
   :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227895, "yaw" 80},
   :display-name "Location",
-  :edges [:hedge-99],
+  :edges [:hedge-94],
   :incidence-set #{},
   :interface "RMQ",
   :name "location",
@@ -255,55 +255,55 @@
   :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-48},
- :hpt-50
+ :hpt-49
  {:args [42.445435 -71.227846 2.0 170],
   :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227846, "yaw" 170},
   :display-name "Location",
-  :edges [:hedge-100],
-  :incidence-set #{:hedge-99},
+  :edges [:hedge-95],
+  :incidence-set #{:hedge-94},
+  :interface "RMQ",
+  :name "location",
+  :plant-part "pp1",
+  :plantid "qc1",
+  :type :htn-primitive-task,
+  :uid :hpt-49},
+ :hpt-50
+ {:args [42.445389 -71.227737 3.0 260],
+  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227737, "yaw" 260},
+  :display-name "Location",
+  :edges [:hedge-96],
+  :incidence-set #{:hedge-95},
   :interface "RMQ",
   :name "location",
   :plant-part "pp1",
   :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-50},
- :hpt-52
- {:args [42.445389 -71.227737 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227737, "yaw" 260},
+ :hpt-51
+ {:args [42.445327 -71.227788 4.0 350],
+  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227788, "yaw" 350},
   :display-name "Location",
-  :edges [:hedge-101],
-  :incidence-set #{:hedge-100},
+  :edges [:hedge-97],
+  :incidence-set #{:hedge-96},
+  :interface "RMQ",
+  :name "location",
+  :plant-part "pp1",
+  :plantid "qc1",
+  :type :htn-primitive-task,
+  :uid :hpt-51},
+ :hpt-52
+ {:args [42.44537 -71.227899 1.0 80],
+  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227899, "yaw" 80},
+  :display-name "Location",
+  :edges [],
+  :incidence-set #{:hedge-97},
   :interface "RMQ",
   :name "location",
   :plant-part "pp1",
   :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-52},
- :hpt-54
- {:args [42.445327 -71.227788 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227788, "yaw" 350},
-  :display-name "Location",
-  :edges [:hedge-102],
-  :incidence-set #{:hedge-101},
-  :interface "RMQ",
-  :name "location",
-  :plant-part "pp1",
-  :plantid "qc1",
-  :type :htn-primitive-task,
-  :uid :hpt-54},
- :hpt-56
- {:args [42.44537 -71.227899 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227899, "yaw" 80},
-  :display-name "Location",
-  :edges [],
-  :incidence-set #{:hedge-102},
-  :interface "RMQ",
-  :name "location",
-  :plant-part "pp1",
-  :plantid "qc1",
-  :type :htn-primitive-task,
-  :uid :hpt-56},
- :hpt-67
+ :hpt-62
  {:args [42.445435 -71.227842 2.0 170],
   :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
   :display-name "Location",
@@ -314,8 +314,8 @@
   :plant-part "pp2",
   :plantid "qc2",
   :type :htn-primitive-task,
-  :uid :hpt-67},
- :hpt-69
+  :uid :hpt-62},
+ :hpt-64
  {:args [42.445389 -71.227733 3.0 260],
   :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
   :display-name "Location",
@@ -326,8 +326,8 @@
   :plant-part "pp2",
   :plantid "qc2",
   :type :htn-primitive-task,
-  :uid :hpt-69},
- :hpt-71
+  :uid :hpt-64},
+ :hpt-66
  {:args [42.445327 -71.227784 4.0 350],
   :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
   :display-name "Location",
@@ -338,8 +338,8 @@
   :plant-part "pp2",
   :plantid "qc2",
   :type :htn-primitive-task,
-  :uid :hpt-71},
- :hpt-73
+  :uid :hpt-66},
+ :hpt-68
  {:args [42.44537 -71.227891 1.0 80],
   :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
   :display-name "Location",
@@ -350,8 +350,8 @@
   :plant-part "pp2",
   :plantid "qc2",
   :type :htn-primitive-task,
-  :uid :hpt-73},
- :hpt-75
+  :uid :hpt-68},
+ :hpt-70
  {:args [42.445435 -71.227842 2.0 170],
   :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
   :display-name "Location",
@@ -362,8 +362,8 @@
   :plant-part "pp2",
   :plantid "qc2",
   :type :htn-primitive-task,
-  :uid :hpt-75},
- :hpt-84
+  :uid :hpt-70},
+ :hpt-79
  {:args [42.445389 -71.227733 3.0 260],
   :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
   :display-name "Location",
@@ -373,8 +373,8 @@
   :plant-part "pp3",
   :plantid "qc3",
   :type :htn-primitive-task,
-  :uid :hpt-84},
- :hpt-86
+  :uid :hpt-79},
+ :hpt-81
  {:args [42.445327 -71.227784 4.0 350],
   :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
   :display-name "Location",
@@ -384,8 +384,8 @@
   :plant-part "pp3",
   :plantid "qc3",
   :type :htn-primitive-task,
-  :uid :hpt-86},
- :hpt-88
+  :uid :hpt-81},
+ :hpt-83
  {:args [42.44537 -71.227891 1.0 80],
   :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
   :display-name "Location",
@@ -395,8 +395,8 @@
   :plant-part "pp3",
   :plantid "qc3",
   :type :htn-primitive-task,
-  :uid :hpt-88},
- :hpt-90
+  :uid :hpt-83},
+ :hpt-85
  {:args [42.445435 -71.227842 2.0 170],
   :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
   :display-name "Location",
@@ -406,8 +406,8 @@
   :plant-part "pp3",
   :plantid "qc3",
   :type :htn-primitive-task,
-  :uid :hpt-90},
- :hpt-92
+  :uid :hpt-85},
+ :hpt-87
  {:args [42.445389 -71.227733 3.0 260],
   :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
   :display-name "Location",
@@ -417,80 +417,80 @@
   :plant-part "pp3",
   :plantid "qc3",
   :type :htn-primitive-task,
-  :uid :hpt-92},
+  :uid :hpt-87},
+ :net-101
+ {:display-name "Wp 2",
+  :rootnodes #{:hpt-62},
+  :type :htn-network,
+  :uid :net-101},
  :net-104
- {:display-name "Circuit Two",
-  :rootnodes #{:henpt-60},
+ {:display-name "Wp 3",
+  :rootnodes #{:hpt-64},
   :type :htn-network,
   :uid :net-104},
- :net-106
- {:display-name "Wp 2",
-  :rootnodes #{:hpt-67},
-  :type :htn-network,
-  :uid :net-106},
- :net-109
- {:display-name "Wp 3",
-  :rootnodes #{:hpt-69},
-  :type :htn-network,
-  :uid :net-109},
- :net-112
+ :net-107
  {:display-name "Wp 4",
-  :rootnodes #{:hpt-71},
+  :rootnodes #{:hpt-66},
   :type :htn-network,
-  :uid :net-112},
- :net-115
+  :uid :net-107},
+ :net-110
  {:display-name "Wp 1",
-  :rootnodes #{:hpt-73},
+  :rootnodes #{:hpt-68},
+  :type :htn-network,
+  :uid :net-110},
+ :net-113
+ {:display-name "Wp 2",
+  :rootnodes #{:hpt-70},
+  :type :htn-network,
+  :uid :net-113},
+ :net-115
+ {:display-name "Circuit Three",
+  :rootnodes #{:henpt-72},
   :type :htn-network,
   :uid :net-115},
- :net-118
- {:display-name "Wp 2",
-  :rootnodes #{:hpt-75},
+ :net-117
+ {:display-name "Wp 3",
+  :rootnodes #{:hpt-79},
   :type :htn-network,
-  :uid :net-118},
+  :uid :net-117},
  :net-120
- {:display-name "Circuit Three",
-  :rootnodes #{:henpt-77},
+ {:display-name "Wp 4",
+  :rootnodes #{:hpt-81},
   :type :htn-network,
   :uid :net-120},
- :net-122
- {:display-name "Wp 3",
-  :rootnodes #{:hpt-84},
-  :type :htn-network,
-  :uid :net-122},
- :net-125
- {:display-name "Wp 4",
-  :rootnodes #{:hpt-86},
-  :type :htn-network,
-  :uid :net-125},
- :net-128
+ :net-123
  {:display-name "Wp 1",
-  :rootnodes #{:hpt-88},
+  :rootnodes #{:hpt-83},
   :type :htn-network,
-  :uid :net-128},
- :net-131
+  :uid :net-123},
+ :net-126
  {:display-name "Wp 2",
-  :rootnodes #{:hpt-90},
+  :rootnodes #{:hpt-85},
   :type :htn-network,
-  :uid :net-131},
- :net-134
+  :uid :net-126},
+ :net-129
  {:display-name "Wp 3",
-  :rootnodes #{:hpt-92},
+  :rootnodes #{:hpt-87},
   :type :htn-network,
-  :uid :net-134},
- :net-94
+  :uid :net-129},
+ :net-89
  {:display-name "qc-waypoints",
   :rootnodes #{:henpt-43},
   :type :htn-network,
-  :uid :net-94},
- :net-96
+  :uid :net-89},
+ :net-91
  {:display-name "Waypoints",
   :rootnodes #{:henpt-44 :henpt-46 :henpt-45},
   :type :htn-network,
-  :uid :net-96},
- :net-98
+  :uid :net-91},
+ :net-93
  {:display-name "Circuit One",
   :rootnodes #{:hpt-48},
   :type :htn-network,
-  :uid :net-98},
- :network :net-94}
+  :uid :net-93},
+ :net-99
+ {:display-name "Circuit Two",
+  :rootnodes #{:henpt-55},
+  :type :htn-network,
+  :uid :net-99},
+ :network :net-89}
