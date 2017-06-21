@@ -233,6 +233,7 @@
    (apply merge {:type :pclass} {:args args} options)})
 
 (defn ir-defpmethod [method & args]
+  (println "DEBUG ir-defpmethod" method "ARGS" args)
   (loop [m {:pre {:type :literal :value true}
             :post {:type :literal :value true}
             :cost 0
@@ -256,8 +257,8 @@
                                       (if (vector? a) a [a]))]
                                  [(inc args-seen?) (update-in m [:betweens]
                                                      conj a)]))]
-          ;; (println "  args-seen?" args-seen? "M"
-          ;;   (with-out-str (pprint (dissoc m :body))))
+          (println "  args-seen?" args-seen? "M"
+            (with-out-str (pprint (dissoc m :body))))
           (recur m args-seen? (first more) (rest more)))))))
 
 (defn ir-bounds-literal [lb ub]

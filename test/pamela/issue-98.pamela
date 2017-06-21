@@ -13,11 +13,26 @@
 
 (defpclass plant []
   :meta {:doc "The Plant API"}
-  :methods [(defpmethod do-a {:bounds [2 4]} [])
-            (defpmethod do-b {:bounds [3 6]} [])
-            (defpmethod do-c {:bounds [4 8]} [])
-            (defpmethod do-d [])
-            (defpmethod do-e {:bounds [5 10]} [])])
+  :methods [(defpmethod do-a
+              {:bounds [2 4]
+               :display-name "Due Eh"}
+              [])
+            (defpmethod do-b
+              {:bounds [3 6]
+               :controllable true}
+              [])
+            (defpmethod do-c
+              {:bounds [4 8]
+               :cost 4}
+              [])
+            (defpmethod do-d
+              {:primitive true}
+              []
+              (delay :bounds [0 1]))
+            (defpmethod do-e
+              {:bounds [5 10]
+               :reward 5}
+              [])])
 
 (defpclass infeasible-sequence [plnt]
   :meta {:doc "An example of infeasible sequence of activties"}
