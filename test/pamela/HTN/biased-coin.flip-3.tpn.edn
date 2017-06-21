@@ -4,6 +4,7 @@
   :command "flip",
   :constraints #{},
   :controllable false,
+  :cost 0,
   :display-name "Flip",
   :end-node :node-1,
   :htn-node :hem-25,
@@ -11,6 +12,7 @@
   :name "Flip",
   :plant-part "coin-fsm",
   :plantid "penny",
+  :reward 0,
   :tpn-type :activity,
   :uid :act-13},
  :act-5
@@ -19,6 +21,7 @@
   :command "flip",
   :constraints #{},
   :controllable false,
+  :cost 0,
   :display-name "Flip",
   :end-node :node-10,
   :htn-node :hem-25,
@@ -26,6 +29,7 @@
   :name "Flip",
   :plant-part "coin-fsm",
   :plantid "penny",
+  :reward 0,
   :tpn-type :activity,
   :uid :act-5},
  :act-9
@@ -34,6 +38,7 @@
   :command "flip",
   :constraints #{},
   :controllable false,
+  :cost 0,
   :display-name "Flip",
   :end-node :node-14,
   :htn-node :hem-25,
@@ -41,6 +46,7 @@
   :name "Flip",
   :plant-part "coin-fsm",
   :plantid "penny",
+  :reward 0,
   :tpn-type :activity,
   :uid :act-9},
  :net-3

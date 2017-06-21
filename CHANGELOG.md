@@ -28,9 +28,9 @@ Changes
 * In HTN generation handle between constraints (Closes #102)
 * Adjustment of :args in HTN expanded methods (Closes #109)
 * Fix using default bounds for TPN's generated with HTN method
-  * (Closes #98)
   * (Closes #108)
 * Consistently throw exceptions in HTN generation using fatal-error
+* Ensure metadata in TPN's flows from method definitions when generated with the HTN method (Closes #98)
 
 ### [0.6.0] - 2017-03-08
 
