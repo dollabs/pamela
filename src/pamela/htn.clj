@@ -1413,7 +1413,6 @@
         name-str (str name)
         display-name (display-name-string name-str)
         details {:name name-str
-                 ;; :display-name (str "TEMP-" name-str) ;; TEMPORARY
                  :display-name display-name}]
     (if (or (not primitive?) (= name 'delay))
       details
@@ -1449,7 +1448,8 @@
                   :plantid plantid
                   :plant-part plant-part
                   :interface interface
-                  :method-bounds (bounds-from-mdef mdef)
+                  :display-name (or (:display-name mdef) display-name)
+                  :mdef (assoc mdef :method-bounds (bounds-from-mdef mdef))
                   )))))
 
 ;; root? is true to create the "synthetic" htn-network at the very
@@ -1614,6 +1614,7 @@
                            (resolve-plant-class ir hem-pclass pargs
                                                 henpt subtask_))
             details_ (plant-details ir pargs subtask_ pclass-ctor_ primitive?)
+            ;; _ (dbg-println :debug "DETAILS_" (with-out-str (pprint details_)))
             subtask-map (merge
                          (assoc
                           (dissoc subtask_ :pclass :pargs :arguments
@@ -1622,11 +1623,11 @@
                                   :irks)
                           :incidence-set (if edge #{(:uid edge)} #{})
                           :edges [])
-                         (dissoc details_ :method-bounds))
+                         (dissoc details_ :mdef))
             ;; TPN ------------------
             se (tpn/tpn-state {})
             ;; if call site bounds are not specified use default
-            bounds (or bounds (:method-bounds details_))
+            bounds (or bounds (get-in details_ [:mdef :method-bounds]))
             tc (if bounds
                  (tpn/tpn-temporal-constraint
                    {:value bounds :end-node (:uid se)}))
@@ -1662,7 +1663,13 @@
                          ;; add constraints on the activity
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
-                         :end-node (:uid se)}))
+                         :end-node (:uid se)
+                         ;; method metadata
+                         :cost (get-in details_ [:mdef :cost])
+                         :reward (get-in details_ [:mdef :reward])
+                         :controllable (boolean (get-in details_
+                                                  [:mdef :controllable]))
+                         }))
             _ (when activity
                 (dbg-println :trace "activity" (:uid activity) (:name activity)
                   "getting :label" (and (not primitive?) label)))

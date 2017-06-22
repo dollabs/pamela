@@ -233,6 +233,7 @@
    (apply merge {:type :pclass} {:args args} options)})
 
 (defn ir-defpmethod [method & args]
+  ;; (println "DEBUG ir-defpmethod" method "ARGS" args)
   (loop [m {:pre {:type :literal :value true}
             :post {:type :literal :value true}
             :cost 0
@@ -429,8 +430,8 @@
    :body (vec (repeat times fn))})
 
 
-;; If you're doing some REPL-based development, and change any of the above helper functions:
-;;    !!! Don't forget to re-eval pamela-ir !!!
+;; If you're doing some REPL-based development, and change any of the above
+;; helper functions: Don't forget to re-eval pamela-ir !!!
 (def pamela-ir {
                 ;; :access handled in ir-field
                 :and-expr (partial ir-cond-expr :and)
@@ -525,7 +526,9 @@
                 :plant-part ir-plant-part
                 :post (partial ir-map-kv :post)
                 :pre (partial ir-map-kv :pre)
+                :primitive (partial ir-map-kv :primitive)
                 :probability (partial ir-map-kv :probability)
+                ;; reserved-fn-symbol only for grammer disambiguation
                 ;; reserved-keyword only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
                 :reward (partial ir-map-kv :reward)

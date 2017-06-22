@@ -141,7 +141,7 @@
  :hpt-34
  {:args ["bigfile" "copyofbigfile"],
   :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
-  :display-name "Cp",
+  :display-name "Copy",
   :edges [],
   :incidence-set #{},
   :interface "RMQ",
@@ -208,7 +208,7 @@
  :hpt-43
  {:args ["bigfile" "copyofbigfile"],
   :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
-  :display-name "Cp",
+  :display-name "Copy",
   :edges [],
   :incidence-set #{},
   :interface "RMQ",
