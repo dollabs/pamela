@@ -1,0 +1,121 @@
+{test
+ {:args [],
+  :methods
+  {main
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method perform-activities,
+         :args []}
+        {:type :delay,
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [10 10]}]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method perform-activities,
+         :args []}]}]}],
+   perform-15-minutes-of-activities
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Perform 15 Minutes Of Activities",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method something-simple,
+         :args []}]}]}],
+   perform-activities
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Perform Activities",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method perform-15-minutes-of-activities,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method perform-15-minutes-of-activities,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method perform-15-minutes-of-activities,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method perform-15-minutes-of-activities,
+         :args []}]}]}],
+   something-simple
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Something Simple",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil}]},
+  :type :pclass}}

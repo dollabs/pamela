@@ -352,6 +352,20 @@
 (defn get-tpn-end-node-ids [activity-ids]
   (mapv #(:end-node (get-tpn-plan-map %)) activity-ids))
 
+(defn get-uncompleted-ids [tpn-notes a-uid end-node-ids]
+  (let [completed (:completed
+                   (swap! tpn-notes update-in [:completed] conj a-uid))]
+    (loop [uncompleted-ids []
+           end-node (first end-node-ids)
+           more (rest end-node-ids)]
+      (if-not end-node
+        uncompleted-ids
+        (recur
+          (if (completed end-node)
+            uncompleted-ids
+            (conj uncompleted-ids end-node))
+          (first more)
+          (rest more))))))
 
 (defn dbg-tpn-notes [tpn-notes]
   (println "==TPN-NOTES====================")
@@ -503,11 +517,13 @@
         next-uid
         (cond
           (zero? (count a-todo))
-          (let [node-ids (get-tpn-end-node-ids a-activities)]
+          (let [end-node-ids (get-tpn-end-node-ids a-activities)
+                uncompleted-ids (get-uncompleted-ids
+                                  tpn-notes a-uid end-node-ids)]
             ;; (println "  ... no more to remove for" a-uid)
-            (doseq [node-id (rest node-ids)]
+            (doseq [node-id (rest uncompleted-ids)]
               (remove-superfluous tpn-notes node-id))
-            (first node-ids))
+            (first uncompleted-ids))
           ;; s/ A a0 S s0 B / A s0 B /
           (and (= tpn-type :state) (= 1 sn) (= s0-type :null-activity)
             (= a0-type :null-activity))
@@ -714,7 +730,8 @@
         ;; network-end-node end-node
         tpn-notes (atom {:network {:network-id network-id
                                    :begin-node begin-node
-                                   :end-node end-node}})]
+                                   :end-node end-node}
+                         :completed #{}})]
     ;; (println "REMOVE SUPERFLUOUS NA's network-id" network-id
     ;;   "begin-node" begin-node)
     (doseq [uid (keys @*tpn-plan-map*)]

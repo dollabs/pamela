@@ -36,12 +36,12 @@
                 (something-simple)
                 (something-simple)
                 (something-simple)
-                ;; (something-simple)
-                ;; (something-simple)
-                ;; (something-simple) ;; ~20 sec
-                ;; (something-simple) ;; ~39 sec
-                ;; (something-simple) ;; ~86 sec
-                ;; (something-simple) ;; ~195 sec
+                (something-simple)
+                (something-simple)
+                (something-simple) ;; ~20 sec
+                (something-simple) ;; ~39 sec
+                (something-simple) ;; ~86 sec
+                (something-simple) ;; ~195 sec
                 ))
 
             (defpmethod something-simple

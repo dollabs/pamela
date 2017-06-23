@@ -31,6 +31,8 @@ Changes
   * (Closes #108)
 * Consistently throw exceptions in HTN generation using fatal-error
 * Ensure metadata in TPN's flows from method definitions when generated with the HTN method (Closes #98)
+* Ensure remove-superfluous in TPN optimization does not re-visit nodes
+  unnecessarily (Closes #115)
 
 ### [0.6.0] - 2017-03-08
 
