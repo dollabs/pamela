@@ -46,8 +46,8 @@
                 (plnt.do-d)
                 (plnt.do-e)))])
 
-;; NOTE this pclass must be defined to make the plant instanciation
-;; explicit. Root-task: (infeasible-sequence.demo.run.start)
+;; NOTE this pclass must be defined to make the plant instantiation
+;; explicit. Root-task: (infeasible-sequence-demo.run.start)
 (defpclass infeasible-sequence-demo []
   :fields {:p1 (plant :id "p1" :plant-part "t1" :interface "RMQ")
            :run (infeasible-sequence p1)})
