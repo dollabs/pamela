@@ -1,44 +1,44 @@
-{:hedge-35 {:end-node :hem-20, :type :edge, :uid :hedge-35},
- :hedge-37
- {:display-name "1", :end-node :hem-25, :type :edge, :uid :hedge-37},
- :hedge-39 {:end-node :hem-27, :type :edge, :uid :hedge-39},
- :hedge-41 {:end-node :hem-32, :type :edge, :uid :hedge-41},
- :hedge-43 {:end-node :hpt-31, :type :edge, :uid :hedge-43},
+{:hedge-32 {:end-node :hem-20, :type :edge, :uid :hedge-32},
+ :hedge-34
+ {:display-name "1", :end-node :hem-23, :type :edge, :uid :hedge-34},
+ :hedge-36 {:end-node :hem-25, :type :edge, :uid :hedge-36},
+ :hedge-38 {:end-node :hem-29, :type :edge, :uid :hedge-38},
+ :hedge-40 {:end-node :hpt-28, :type :edge, :uid :hedge-40},
  :hem-20
  {:args [],
   :display-name "Main Activity",
-  :edges [:hedge-37],
-  :incidence-set #{:hedge-35},
-  :network :net-36,
+  :edges [:hedge-34],
+  :incidence-set #{:hedge-32},
+  :network :net-33,
   :type :htn-expanded-method,
   :uid :hem-20},
- :hem-25
+ :hem-23
  {:args ["host0101" "host0701"],
   :display-name "test1",
-  :edges [:hedge-39 :hedge-41],
+  :edges [:hedge-36 :hedge-38],
   :incidence-set #{},
-  :network :net-38,
+  :network :net-35,
   :type :htn-expanded-method,
-  :uid :hem-25},
- :hem-27
+  :uid :hem-23},
+ :hem-25
  {:args ["host0101" "100MB"],
   :display-name "File Xfer",
   :edges [],
   :incidence-set #{},
-  :network :net-40,
+  :network :net-37,
   :type :htn-expanded-method,
-  :uid :hem-27},
- :hem-32
+  :uid :hem-25},
+ :hem-29
  {:args ["host0701" "host0101" "1"],
   :display-name "Video Session",
   :edges [],
   :incidence-set #{},
-  :network :net-42,
+  :network :net-39,
   :type :htn-expanded-method,
-  :uid :hem-32},
+  :uid :hem-29},
  :henpt-18
  {:display-name "main",
-  :edges [:hedge-35],
+  :edges [:hedge-32],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-18},
@@ -56,14 +56,14 @@
   :name "file-transfer",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-21},
- :henpt-23
+ :henpt-22
  {:display-name "Video Session",
   :edges [],
   :incidence-set #{},
   :name "video-session",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-23},
- :hpt-26
+  :uid :henpt-22},
+ :hpt-24
  {:args ["host0101" "100MB"],
   :argsmap {"server-host" "host0101", "size" "100MB"},
   :display-name "Ftp",
@@ -73,48 +73,48 @@
   :plant-part "host0701",
   :plantid "actuator",
   :type :htn-primitive-task,
-  :uid :hpt-26},
- :hpt-29
+  :uid :hpt-24},
+ :hpt-27
  {:display-name "Delay",
-  :edges [:hedge-43],
+  :edges [:hedge-40],
   :incidence-set #{},
   :name "delay",
   :type :htn-primitive-task,
-  :uid :hpt-29},
- :hpt-31
+  :uid :hpt-27},
+ :hpt-28
  {:args ["host0701" "host0101" "1"],
   :argsmap {"client" "host0701", "display" "1", "server" "host0101"},
   :display-name "Video",
   :edges [],
-  :incidence-set #{:hedge-43},
+  :incidence-set #{:hedge-40},
   :name "video",
   :plant-part "host0701",
   :plantid "actuator",
   :type :htn-primitive-task,
-  :uid :hpt-31},
- :net-34
+  :uid :hpt-28},
+ :net-31
  {:display-name "main",
   :rootnodes #{:henpt-18},
   :type :htn-network,
-  :uid :net-34},
- :net-36
+  :uid :net-31},
+ :net-33
  {:display-name "Main Activity",
   :rootnodes #{:henpt-19},
   :type :htn-network,
-  :uid :net-36},
- :net-38
+  :uid :net-33},
+ :net-35
  {:display-name "test1",
-  :rootnodes #{:henpt-21 :henpt-23},
+  :rootnodes #{:henpt-21 :henpt-22},
   :type :htn-network,
-  :uid :net-38},
- :net-40
+  :uid :net-35},
+ :net-37
  {:display-name "File Xfer",
-  :rootnodes #{:hpt-26},
+  :rootnodes #{:hpt-24},
   :type :htn-network,
-  :uid :net-40},
- :net-42
+  :uid :net-37},
+ :net-39
  {:display-name "Video Session",
-  :rootnodes #{:hpt-29},
+  :rootnodes #{:hpt-27},
   :type :htn-network,
-  :uid :net-42},
- :network :net-34}
+  :uid :net-39},
+ :network :net-31}

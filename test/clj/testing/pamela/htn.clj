@@ -21,9 +21,10 @@
             [pamela.log :as plog]
             [pamela.htn :refer :all]
             [pamela.cli :refer [reset-gensym-generator htn]]
-            [pamela.parser :refer [fs-file-name]]
-            [testing.pamela.cli :refer [match-eval-out-err]]
-            [testing.pamela.parser :refer [fs-get-path]]))
+            [plan-schema.utils :refer [fs-get-path fs-basename
+                                       match-eval-out-err stderr-no-errors
+                                       stdout-ignore stderr-ignore
+                                       stdout-empty stderr-empty]]))
 
 (deftest testing-pamela-htn
   (testing "testing-pamela-htn"
@@ -36,11 +37,11 @@
           regression (fs/file test-pamela "regression" "HTN")
           errors (fs/file test-pamela "errors")
           errors-htn (fs/file errors "HTN")
-          examples (filter #(string/ends-with? (fs-file-name %) ".root-task")
+          examples (filter #(string/ends-with? (fs-basename %) ".root-task")
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
-          neg-examples (filter #(string/ends-with? (fs-file-name %) ".root-task")
+          neg-examples (filter #(string/ends-with? (fs-basename %) ".root-task")
                          (sort-by fs/base-name (fs/list-dir errors-htn)))
           pamela-htn (fs/file top "target" "parser" "HTN")
           regression-htn (fs/file top "target" "parser" "regression" "HTN")]
@@ -50,7 +51,7 @@
         (fs/mkdirs regression-htn))
       (doseq [example examples]
         (reset-gensym-generator)
-        (let [example-name (fs-file-name example)
+        (let [example-name (fs-basename example)
               example-path (fs-get-path example top-path)
               regression? (string/includes? example-path "/regression/")
               root-task (slurp example-path)
@@ -126,7 +127,7 @@
       ;; NOTE: negative HTN examples currently do not use TAGs
       (doseq [neg-example neg-examples]
         (reset-gensym-generator)
-        (let [neg-example-name (fs-file-name neg-example)
+        (let [neg-example-name (fs-basename neg-example)
               neg-example-path (fs-get-path neg-example)
               root-task (slurp neg-example-path)
               _ (println "Negative HTN" neg-example-name)
@@ -139,7 +140,7 @@
               options {:input [pamela-src-path] :output output
                        :file-format file-format :root-task root-task}]
           (is (= [nil true true]
-                (match-eval-out-err nil #"EXCEPTION.*Embedding a :parallel is not supported within a defpmethod when used for HTN generation"
+                (match-eval-out-err nil #"Embedding a :parallel is not supported within a defpmethod when used for HTN generation"
                   (htn options)
                   )))
           ))

@@ -1,47 +1,51 @@
-{:act-10
+{:act-11
  {:args [],
   :argsmap {},
   :command "take-medium-res-images",
   :constraints #{},
   :controllable false,
+  :cost 0,
   :display-name "Take Medium Res Images",
-  :end-node :node-9,
+  :end-node :node-10,
   :htn-node :hem-11,
   :name "Take Medium Res Images",
+  :reward 0,
   :tpn-type :activity,
-  :uid :act-10},
- :act-5
+  :uid :act-11},
+ :act-6
  {:args [],
   :argsmap {},
   :command "take-high-res-images",
-  :constraints #{},
+  :constraints #{:tc-5},
   :controllable false,
+  :cost 0,
   :display-name "Take High Res Images",
   :end-node :node-4,
   :htn-node :hem-9,
   :name "Take High Res Images",
+  :reward 0,
   :tpn-type :activity,
-  :uid :act-5},
- :na-12
- {:constraints #{},
-  :end-node :node-11,
-  :tpn-type :null-activity,
-  :uid :na-12},
+  :uid :act-6},
  :na-13
  {:constraints #{},
-  :end-node :node-1,
+  :end-node :node-12,
   :tpn-type :null-activity,
   :uid :na-13},
- :na-7
- {:constraints #{},
-  :end-node :node-6,
-  :tpn-type :null-activity,
-  :uid :na-7},
- :na-8
+ :na-14
  {:constraints #{},
   :end-node :node-1,
   :tpn-type :null-activity,
+  :uid :na-14},
+ :na-8
+ {:constraints #{},
+  :end-node :node-7,
+  :tpn-type :null-activity,
   :uid :na-8},
+ :na-9
+ {:constraints #{},
+  :end-node :node-1,
+  :tpn-type :null-activity,
+  :uid :na-9},
  :net-3
  {:begin-node :node-2,
   :end-node :node-1,
@@ -51,18 +55,24 @@
  :node-1
  {:activities #{},
   :constraints #{},
-  :incidence-set #{:na-13 :na-8},
+  :incidence-set #{:na-9 :na-14},
   :tpn-type :c-end,
   :uid :node-1},
- :node-11
- {:activities #{:act-10},
+ :node-10
+ {:activities #{:na-14},
+  :constraints #{},
+  :incidence-set #{:act-11},
+  :tpn-type :state,
+  :uid :node-10},
+ :node-12
+ {:activities #{:act-11},
   :constraints #{},
   :htn-node :hem-11,
-  :incidence-set #{:na-12},
+  :incidence-set #{:na-13},
   :tpn-type :state,
-  :uid :node-11},
+  :uid :node-12},
  :node-2
- {:activities #{:na-7 :na-12},
+ {:activities #{:na-13 :na-8},
   :constraints #{},
   :end-node :node-1,
   :htn-node :hem-11,
@@ -70,21 +80,20 @@
   :tpn-type :c-begin,
   :uid :node-2},
  :node-4
- {:activities #{:na-8},
+ {:activities #{:na-9},
   :constraints #{},
-  :incidence-set #{:act-5},
+  :incidence-set #{:act-6},
   :tpn-type :state,
   :uid :node-4},
- :node-6
- {:activities #{:act-5},
+ :node-7
+ {:activities #{:act-6},
   :constraints #{},
   :htn-node :hem-9,
-  :incidence-set #{:na-7},
+  :incidence-set #{:na-8},
   :tpn-type :state,
-  :uid :node-6},
- :node-9
- {:activities #{:na-13},
-  :constraints #{},
-  :incidence-set #{:act-10},
-  :tpn-type :state,
-  :uid :node-9}}
+  :uid :node-7},
+ :tc-5
+ {:end-node :node-4,
+  :tpn-type :temporal-constraint,
+  :uid :tc-5,
+  :value {:default [5 10], :name "high-res-bounds", :type :lvar}}}
