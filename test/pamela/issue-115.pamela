@@ -12,7 +12,7 @@
 ;; views of the Army Contracting Command and DARPA.
 
 ;;; To generate the HTN and TPN from this:
-;;;     pamela -v -i test3.pamela -o test3 -f edn -t "(test.main)" htn
+;;;     pamela -v -i issue-115.pamela -o issue-115 -f edn -t "(test.main)" htn
 
 (defpclass test []
   :methods [(defpmethod main
@@ -37,7 +37,7 @@
                 (something-simple)
                 (something-simple)
                 (something-simple)
-                (something-simple)
+                (something-simple) ;; HTN/TPN Build times BEFORE Issue #115 was resolved:
                 (something-simple) ;; ~20 sec
                 (something-simple) ;; ~39 sec
                 (something-simple) ;; ~86 sec
