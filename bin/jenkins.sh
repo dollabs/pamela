@@ -25,7 +25,7 @@ if [[ ^$JAVA_VER =~ "1.7" ]];
 then
     echo "We have java 7"
     # https://github.com/boot-clj/boot/wiki/JVM-Options
-    export BOOT_JVM_OPTIONS="-Xmx2g -client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:MaxPermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xverify:none"
+    export BOOT_JVM_OPTIONS="-Xmx2g -client -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:MaxPermSize=128m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xverify:none -Dhttps.protocols=TLSv1.2"
     echo "boot jvm options: $BOOT_JVM_OPTIONS"
 fi
 
