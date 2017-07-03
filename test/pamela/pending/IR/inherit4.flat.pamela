@@ -1,0 +1,59 @@
+;; PAMELA source generated from IR
+
+(defpclass a []
+  :modes [:on :off]
+  :methods [(defpmethod
+             turn-on
+             {:bounds [1 3],
+              :controllable true,
+              :cost 2,
+              :display-name "turn-on/a",
+              :doc "turns on the power supply type a",
+              :post :on,
+              :pre :off,
+              :primitive true,
+              :reward 5}
+             [])])
+
+(defpclass b []
+  :modes [:on :off]
+  :methods [(defpmethod
+             turn-on
+             {:bounds [1 3],
+              :controllable false,
+              :cost 2,
+              :display-name "turn-on/b",
+              :doc "turns on the power supply type b",
+              :post :on,
+              :pre :off,
+              :primitive true,
+              :reward 5}
+             [])])
+
+(defpclass c []
+  :inherit [a b]
+  :modes [:on :off]
+  :methods [(defpmethod
+             turn-on
+             {:bounds [1 3],
+              :controllable true,
+              :cost 2,
+              :display-name "turn-on/a",
+              :doc "turns on the power supply type a",
+              :post :on,
+              :pre :off,
+              :primitive true,
+              :reward 5}
+             [])
+            (defpmethod
+             turn-on
+             {:bounds [1 3],
+              :controllable false,
+              :cost 2,
+              :display-name "turn-on/b",
+              :doc "turns on the power supply type b",
+              :post :on,
+              :pre :off,
+              :primitive true,
+              :reward 5}
+             [])])

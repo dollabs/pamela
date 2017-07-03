@@ -21,10 +21,10 @@
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
             [camel-snake-kebab.core :as translate]
-            [pamela.utils :refer [output-file display-name-string]]
+            [pamela.utils :refer [output-file display-name-string dbg-println]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta]
-            [plan-schema.utils :refer [fs-basename]])
+            [plan-schema.utils :refer [fs-basename sort-map]])
   (:import [java.lang
             Long Double]))
 
@@ -100,7 +100,9 @@
 ;; IR helper functions
 
 (defn ir-boolean [v]
-  (and (vector? v) (= (first v) :TRUE)))
+  (if (and (vector? v) (= (first v) :TRUE))
+    true
+    false))
 
 (defn ir-integer [v]
   (Long/parseLong v))
@@ -234,7 +236,8 @@
     ;; (println "defpmethod" method)
     (loop [m m args-seen? false a (first args) more (rest args)]
       (if-not a
-        {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
+        {method
+         (sort-map (assoc m :primitive (or (nil? (:body m)) (:primitive m))))}
         (let [[args-seen? m] (if (not args-seen?)
                                (if (map? a)
                                  [false (merge m a)] ;; merge in cond-map
@@ -670,7 +673,7 @@
 
 ;; return Validated condition or {:error "message"}
 (defn validate-condition [ir state-vars pclass fields modes context condition]
-  ;; (log/info "VALIDATE-CONDITION for" pclass
+  ;; (dbg-println :debug  "VALIDATE-CONDITION for" pclass
   ;;   "\nfields:" (keys fields)
   ;;   "\nmodes:" (keys modes)
   ;;   "\ncontext:" context
@@ -687,7 +690,7 @@
       condition
       (= type :equal)
       (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
-        (if-not a
+        (if (and (not a) (not (false? a)))
           (assoc vcond :args (mode-qualification ir pclass fields vargs))
           (cond
             (map? a) ;; already specified by instaparse
@@ -982,6 +985,103 @@
                          (assoc vmethods method vmdefs))]
           (recur vmethods (first more) (rest more)))))))
 
+
+;; takes the current subclass flat-modes and disjunctively combines
+;; any modes from superclass-modes IFF they are not overridden by
+;; the subclass (i.e. subclass-modes-keys)
+;; returns updated flat-modes
+(defn modes-combine-disjunctive [subclass-modes-keys flat-modes
+                                 superclass superclass-modes]
+  (let [s-m-defs (seq superclass-modes)]
+    (loop [new-flat-modes flat-modes
+           s-m-def (first s-m-defs)
+           more (rest s-m-defs)]
+      (if-not s-m-def
+        new-flat-modes
+        (let [[m def] s-m-def
+              f-m-def (get new-flat-modes m)
+              new-flat-modes (if (subclass-modes-keys m)
+                               new-flat-modes ;; overridden in subclass
+                               (assoc new-flat-modes m
+                                 (if (and f-m-def
+                                       (not= f-m-def def))
+                                   {:type :or  ;; combine
+                                    :args [f-m-def def]}
+                                   def)))] ;; new mode
+          (recur new-flat-modes (first more) (rest more)))))))
+
+;; converts an mdef to a msig = method signature
+(defn mdef->msig [mdef]
+  (assoc
+    (dissoc mdef :args :betweens :display-name :doc :body)
+    :arity (count (:args mdef))))
+
+;; returns true if none of the mdefs match msig
+(defn unique-msig? [msig mdefs]
+  (every?
+    #(not= % msig)
+    (map mdef->msig mdefs)))
+
+;; takes the current subclass flat-methods and combines
+;; any methods from superclass-methods IFF the signature for the superclass
+;; method has not yet been set in flat-methods.
+;; returns updated flat-methods
+(defn methods-combine [flat-methods superclass superclass-methods]
+  (let [s-m-mdefss (seq superclass-methods)]
+    (loop [new-flat-methods flat-methods
+           s-m-mdefs (first s-m-mdefss)
+           more (rest s-m-mdefss)]
+      (if-not s-m-mdefs
+        new-flat-methods
+        (let [[method mdefs] s-m-mdefs
+              f-m-mdefs (get new-flat-methods method [])
+              new-mdefs
+              (loop [new-mdefs f-m-mdefs
+                     mi 0
+                     mdef (first mdefs)
+                     moar (rest mdefs)]
+                (if-not mdef
+                  new-mdefs
+                  (let [msig (mdef->msig mdef)
+                        new-mdefs (if (unique-msig? msig f-m-mdefs)
+                                    (conj new-mdefs mdef)
+                                    new-mdefs)]
+                    (dbg-println :debug "METHOD" superclass "." method "MSIG" msig)
+                    (recur new-mdefs (inc mi) (first moar) (rest moar)))))
+              new-flat-methods (if (empty? new-mdefs)
+                                 new-flat-methods
+                                 (assoc new-flat-methods method new-mdefs))]
+          (recur new-flat-methods (first more) (rest more)))))))
+
+;; Technical study to flatten just fields and modes
+;; returns [fields modes]
+(defn flatten-pclass [ir pclass pclass-def]
+  (let [{:keys [type args inherit fields modes transitions methods]} pclass-def
+        subclass-modes-keys (set (keys modes))]
+    (dbg-println :debug "Flatten" pclass
+      "subclass-modes" subclass-modes-keys)
+    (loop [flat-fields fields
+           flat-modes modes
+           flat-methods methods
+           superclass (first inherit)
+           more (rest inherit)]
+      (if-not superclass
+        [flat-fields flat-modes flat-methods]
+        (let [{:keys [fields modes methods]} (get ir superclass)
+              super-fields (if (empty? (keys flat-fields))
+                             fields
+                             (apply dissoc fields (keys flat-fields)))
+              flat-fields (merge flat-fields super-fields)
+              flat-modes (modes-combine-disjunctive subclass-modes-keys
+                           flat-modes superclass modes)
+              flat-methods (methods-combine flat-methods superclass methods)]
+          (dbg-println :debug "  Superclass" superclass
+            "\nflat-fields" flat-fields
+            "\nflat-modes" flat-modes
+            "\nflat-methods" flat-methods)
+          (recur flat-fields flat-modes flat-methods (first more) (rest more))
+          )))))
+
 ;; PAMELA semantic checks
 ;; Hoist state variables, disambiguate conditional expression operands
 ;; return Validated PAMELA IR or {:error "message"}
@@ -995,10 +1095,15 @@
           vir
           (merge vir @state-vars))
         (let [[sym val] sym-val
-              {:keys [type args fields modes transitions methods]} val
+              {:keys [type args inherit fields modes transitions methods]} val
               pclass? (= type :pclass)
+              [fields modes methods] (if (and pclass? inherit)
+                               (flatten-pclass ir sym val)
+                               [fields modes methods])
+              ;; _ (dbg-println :debug "VP pamela fields1" fields)
               fields (if (and pclass? fields)
                       (validate-fields ir state-vars sym fields))
+              ;; _ (dbg-println :debug "VP pamela fields2" fields)
               modes (if (and pclass? (not (:error fields)) modes)
                       (validate-modes ir state-vars sym fields modes))
               transitions (if (and pclass? transitions
@@ -1012,6 +1117,7 @@
                             (validate-methods ir state-vars
                               sym fields modes methods))
               val (assoc-if val
+                    :fields fields
                     :modes modes
                     :transitions transitions
                     :methods methods)
@@ -1094,15 +1200,16 @@
                             ";; " input-names "\n"
                             (for [k (keys lvars)]
                               (str "(lvar \"" k "\" " (get lvars k) ")\n"))))]
-          (if out-magic
-            (do
-              (if output-magic
-                (output-file output-magic "string" out-magic))
-              (assoc ir
-                'pamela/lvars
-                {:type :lvars
-                 :lvars lvars}))
-            ir))
+          (identity ;; NOTE sort-map will not allow (:error ir)
+            (if out-magic
+              (do
+                (if output-magic
+                  (output-file output-magic "string" out-magic))
+                (assoc ir
+                  'pamela/lvars
+                  {:type :lvars
+                   :lvars lvars}))
+              ir)))
         (let [tree (if (fs/exists? input-filename)
                      (insta/parses parser (slurp input-filename)))
               ir (cond
@@ -1134,3 +1241,181 @@
                        pir
                        (merge ir pir))))]
           (recur ir (first more) (rest more)))))))
+
+
+
+(defn pprint-option [option val]
+  (let [ppval (with-out-str (pprint val))]
+    (str "\n  " option " "
+      (string/replace
+        (subs ppval 0 (dec (count ppval)))
+        "\n"
+        (apply str "\n" (repeat (+ (count (str option)) 3) " "))))))
+
+;; -------------------------
+
+(defn unparse-field-type-dispatch [field-type]
+  (:type field-type))
+
+(defmulti unparse-field-type
+  #'unparse-field-type-dispatch
+  :default :default)
+
+(defmethod unparse-field-type :default [field-type]
+  (pprint-option nil field-type))
+
+(defmethod unparse-field-type :literal [field-type]
+  (:value field-type))
+
+;; -------------------------
+
+(defn literal? [v]
+  (or (number? v) ;; literal
+    (true? v) ;; (boolean? v) ;; literal
+    (false? v) ;; (boolean? v) ;; literal
+    (string? v) ;; literal
+    (keyword? v) ;; literal
+    (symbol? v))) ;; symbol
+
+(defn cond-operand? [v]
+  (or (literal? v) ;; literal
+    (#{:literal :field-reference :mode-reference} (:type v))))
+
+(defn unparse-cond-operand-dispatch [cond-operand]
+  (if (literal? cond-operand)
+    :default
+    (:type cond-operand)))
+
+(defmulti unparse-cond-operand
+  #'unparse-cond-operand-dispatch
+  :default :default)
+
+(defmethod unparse-cond-operand :default [cond-operand]
+  cond-operand)
+
+(defmethod unparse-cond-operand :literal [cond-operand]
+  (:value cond-operand))
+
+(defmethod unparse-cond-operand :field-reference [cond-operand]
+  (let [{:keys [pclass field]} cond-operand]
+    (if (= pclass 'this)
+      field
+      (symbol (str pclass "." field)))))
+
+(defmethod unparse-cond-operand :mode-reference [cond-operand]
+  (let [{:keys [pclass mode]} cond-operand]
+    (if (= pclass 'this)
+      mode
+      (symbol (str pclass "." mode)))))
+
+;; -------------------------
+
+;; handle :literal case as a service
+(defn unparse-cond-expr [cond-expr]
+  (let [{:keys [type args]} cond-expr]
+    (if (cond-operand? cond-expr)
+      (unparse-cond-operand cond-expr)
+      (apply list
+        (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
+        (map unparse-cond-expr args)))))
+
+;; -------------------------
+
+(defn unparse-option-dispatch [option def]
+  (or option :inherit))
+
+(defmulti unparse-option
+  #'unparse-option-dispatch)
+
+(defmethod unparse-option :inherit [option def]
+  (pprint-option option def))
+
+(defmethod unparse-option :fields [option def]
+  (let [field-keys (keys def)]
+    (loop [fields def field (first field-keys) more (rest field-keys)]
+      (if-not field
+        (pprint-option option fields)
+        (let [{:keys [access observable initial]} (get def field)
+              field-type-source (unparse-field-type initial)
+              fields (if (and (= access :private) (false? observable))
+                       (assoc fields field field-type-source)
+                       (assoc-in fields [field :initial] field-type-source))]
+          (recur fields (first more) (rest more)))))))
+
+;; if the value of all the modes is {:type :literal, :value true}
+;; then convert to a mode-enum
+;; else if value is true then use that
+;; else unparse-cond-expr
+(defmethod unparse-option :modes [option def]
+  (pprint-option option
+    (let [modes-kvs (seq def)]
+      (if (every? #(= % {:type :literal, :value true}) (map second modes-kvs))
+        (mapv first modes-kvs) ;; mode-enum
+        (loop [modes-source {} mode-kv (first modes-kvs) more (rest modes-kvs)]
+          (if-not mode-kv
+            modes-source
+            (let [[mode v] mode-kv
+                  mode-init-source (unparse-cond-expr v)
+                  modes-source (assoc modes-source mode mode-init-source)]
+              (recur modes-source (first more) (rest more)))))))))
+
+(defn unparse-defpmethod [method mdef]
+  (let [{:keys [args betweens body pre post temporal-constraints]} mdef
+        bounds (and temporal-constraints
+                 (first temporal-constraints) ;; todo generalize
+                 (:value (first temporal-constraints)))
+        pre-src (if pre (unparse-cond-expr pre))
+        post-src (if post (unparse-cond-expr post))
+        cond-map (assoc-if (dissoc mdef :betweens :body
+                             :args :temporal-constraints)
+                   :bounds bounds
+                   :pre pre-src
+                   :post post-src)
+        src (if (empty? betweens) nil betweens) ;; todo unparse
+        src (if (empty? body) src (cons body src)) ;; todo body
+        src (cons args src)
+        src (cons cond-map src) ;; todo, elide if all default
+        src (cons method src)
+        src (cons 'defpmethod src)]
+    src))
+
+(defmethod unparse-option :methods [option def]
+  (pprint-option option
+    (let [method-mdefss (seq def)]
+      (loop [methods-source []
+             method-mdefs (first method-mdefss)
+             more (rest method-mdefss)]
+          (if-not method-mdefs
+            methods-source
+            (let [[method mdefs] method-mdefs
+                  mdefs-source (mapv (partial unparse-defpmethod method) mdefs)
+                  methods-source (concatv methods-source mdefs-source)]
+              (recur methods-source (first more) (rest more))))))))
+
+;; -------------------------
+
+;; currently only unparses
+;; :inherit :fields :modes :methods
+(defn unparse-pclass [pclass pdef]
+  (let [{:keys [inherit fields modes methods]} pdef]
+    (str
+      (if inherit (unparse-option :inherit inherit))
+      (if fields (unparse-option :fields fields))
+      (if modes (unparse-option :modes modes))
+      (if methods (unparse-option :methods methods)))))
+
+;; converts from ir back to pamela source
+(defn unparse [ir]
+  (apply str
+    (interpose "\n\n"
+      (cons
+        ";; PAMELA source generated from IR"
+        (for [pclass (keys ir)
+              :let [pdef (get ir pclass)
+                    {:keys [type args]} pdef
+                    pclass-str (if (= type :pclass)
+                                 (str "(defpclass " pclass " " args
+                                   (unparse-pclass pclass pdef)
+                                   ")"))]
+              :when pclass-str]
+          pclass-str)))))
