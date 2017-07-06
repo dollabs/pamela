@@ -23,23 +23,10 @@
             [camel-snake-kebab.core :as translate]
             [pamela.utils :refer [output-file display-name-string]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
-            [instaparse.core :as insta])
-  (:import [java.io
-            File]
-           [java.lang
+            [instaparse.core :as insta]
+            [plan-schema.utils :refer [fs-basename]])
+  (:import [java.lang
             Long Double]))
-
-
-;; This is a complement to me.raynes.fs and will return the name
-;; of each file (or string).
-(defn fs-file-name [path]
-  (cond
-    (= (type path) File) ;; (fs/file? path)
-    (.getName path)
-    (string? path)
-    path
-    :else
-    (str path)))
 
 (defn merge-keys-one
   "converts each map value v into a vector [v]"
@@ -1099,7 +1086,7 @@
     (loop [ir {} input-filename (first input) more (rest input)]
       (if (or (:error ir) (not input-filename))
         (let [lvars (if check-only? [] @pamela-lvars)
-              input-names (mapv fs-file-name input)
+              input-names (mapv fs-basename input)
               out-magic (if (pos? (count lvars))
                           (apply str
                             ";; -*- Mode: clojure; coding: utf-8  -*-\n"

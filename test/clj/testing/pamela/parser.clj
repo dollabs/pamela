@@ -19,13 +19,8 @@
             [avenir.utils :refer [and-fn]]
             [pamela.parser :refer :all]
             [pamela.cli :refer [reset-gensym-generator]]
-            [pamela.utils :refer [output-file]]))
-
-(defn fs-get-path [file & [prefix]]
-  (let [path (.getPath file)]
-    (if prefix
-      (string/replace path prefix "")
-      path)))
+            [pamela.utils :refer [output-file]]
+            [plan-schema.utils :refer [fs-get-path fs-basename]]))
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
@@ -36,11 +31,11 @@
           regression (fs/file pamela "regression")
           errors (fs/file pamela "errors")
           errors-ir (fs/file errors "IR")
-          examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
+          examples (filter #(string/ends-with? (fs-basename %) ".pamela")
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
-          neg-examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
+          neg-examples (filter #(string/ends-with? (fs-basename %) ".pamela")
                          (sort-by fs/base-name (fs/list-dir errors-ir)))
           pamela-ir (fs/file top "target" "parser" "IR")
           regression-ir (fs/file top "target" "parser" "regression" "IR")]
@@ -50,7 +45,7 @@
         (fs/mkdirs regression-ir))
       (doseq [example examples]
         (reset-gensym-generator)
-        (let [example-name (fs-file-name example)
+        (let [example-name (fs-basename example)
               example-path (fs-get-path example)
               regression? (string/includes? example-path "/regression/")
               example-ir-name (string/replace example-name
@@ -78,7 +73,7 @@
       ;; Negative examples that are *expected* to FAIL
       (doseq [neg-example neg-examples]
         (reset-gensym-generator)
-        (let [neg-example-name (fs-file-name neg-example)
+        (let [neg-example-name (fs-basename neg-example)
               neg-example-path (fs-get-path neg-example)
               options {:input [neg-example-path]}
               specimen-ir (parse options)]
