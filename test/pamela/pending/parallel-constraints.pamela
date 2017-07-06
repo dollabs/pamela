@@ -1,0 +1,50 @@
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; To construct HTN and TPN:
+;; pamela -v -i parallel-constraints.pamela -o parallel-constraints -t "(parallel-constraints.main)" htn
+
+
+
+
+(defpclass parallel-constraints []
+  :methods [(defpmethod main {:display-name "Top-Level Activity"
+                              } []
+              (top-level-sequence "host0101" "host0301" "host0501" "host0701"))
+
+            (defpmethod top-level-sequence
+              [loc1 loc2 loc3 loc4]
+              (sequence
+               (coordination1 :bounds [20 30] loc1 loc2 loc3 loc4)
+               (coordination2 :bounds [15 25] loc1 loc2 loc3 loc4)
+               ))
+
+            (defpmethod coordination1  [loc1 loc2 loc3 loc4]
+              (parallel
+               (video-flow :bounds [5 10] loc1 loc2)
+               (video-flow :bounds [5 11] loc1 loc3)
+               (video-flow :bounds [5 12] loc1 loc4)
+               (video-flow :bounds [5 13] loc2 loc3)
+               (video-flow :bounds [5 14] loc2 loc4)
+               (video-flow :bounds [5 15] loc3 loc4)
+               ))
+
+            (defpmethod coordination2  [loc1 loc2 loc3 loc4]
+              (parallel
+               (video :bounds [5 10] loc1 loc2 "1")
+               (video :bounds [5 11] loc1 loc3 "1")
+               (video :bounds [5 12] loc1 loc4 "1")
+               (video :bounds [5 13] loc2 loc3 "1")
+               (video :bounds [5 14] loc2 loc4 "1")
+               (video :bounds [5 15] loc3 loc4 "1")
+               ))
+
+            (defpmethod video-flow {:display-name "Video"} [loc1 loc2]
+              (video loc1 loc2 "1"))
+
+            (defpmethod video [client server display])
+
+            ])
