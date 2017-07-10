@@ -173,6 +173,8 @@
           (typefn (str (str field) "." (str value))))
         :literal value
         :equal (conj (map to-pamela args) '=)
+        :or (conj (map to-pamela args) 'or)
+        :and (conj (map to-pamela args) 'and)
         (do
           (log/warn "to-pamela: type" type "not handled")
           ir-snippet)))
