@@ -88,9 +88,9 @@ with the following entries:
 
 #### :inherit
 
-The **:inherit** option specifies a vector of Pamela super-classes.
+The **:inherit** option specifies a vector of Pamela superclasses.
 The idea is that Pamela classes may subclass a parent class for
-further specialization. Pamela superclasses are *not* yet implemented.
+code reuse and specialization. Pamela superclass inheritance is **not** yet implemented.
 
 *NOTE*: **:inherit** may be folded in with **:meta** in the future.
 
