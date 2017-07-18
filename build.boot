@@ -12,7 +12,7 @@
 ;; views of the Army Contracting Command and DARPA.
 
 (def project 'dollabs/pamela)
-(def version "0.6.1-SNAPSHOT")
+(def version "0.6.2-SNAPSHOT")
 (def description "Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)")
 (def project-url "https://github.com/dollabs/pamela")
 (def main 'pamela.cli)
@@ -54,7 +54,7 @@
   aot {:namespace   #{main}}
   jar {:main        main}
   test {:namespaces #{'testing.pamela.cli 'testing.pamela.utils
-                      'testing.pamela.parser
+                      'testing.pamela.parser 'testing.pamela.unparser
                       'testing.pamela.tpn 'testing.pamela.htn
                       'testing.pamela.plan-schema
                       }})

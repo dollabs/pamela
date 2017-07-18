@@ -29,6 +29,29 @@
   (:import [java.net
             URL]))
 
+;; Temporary workaround for the inability of sorted-map to
+;; handle keys that are not symbols
+(defn sort-map2
+  "Ensures that it an all values which are maps are in sorted order"
+  {:added "0.3.3"}
+  ([v]
+   (cond
+     (map? v)
+     (if (some symbol? (keys v))
+       ;; do NOT try to sort when there are keys as symbols
+       (reduce-kv sort-map2 {} v)
+       (into (sorted-map) (reduce-kv sort-map2 {} v)))
+     :else v))
+  ([m k v]
+   (assoc m k
+     (cond
+       (map? v)
+       (if (some symbol? (keys v))
+         ;; do NOT try to sort when there are keys as symbols
+         (reduce-kv sort-map2 {} v)
+         (into (sorted-map) (reduce-kv sort-map2 {} v)))
+       :else v))))
+
 (defn stdout?
   "Returns true if the output file name is STDOUT (or running as pamelad)"
   {:added "0.2.0"}
@@ -58,7 +81,7 @@
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
           data (if (map? data)
-                 (sort-map data)
+                 (sort-map2 data)
                  data)
           out (cond
                 (= file-format "edn")

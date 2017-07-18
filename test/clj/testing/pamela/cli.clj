@@ -25,7 +25,7 @@
   (testing "testing-pamela-cli"
     (is (= log-levels #{"trace" "debug" "info" "warn" "error" "fatal" "report"}))
     (is (= output-formats #{"edn" "json"}))
-    (is (= (sort (keys actions)) '("build" "check" "htn" "tpn")))
+    (is (= (sort (keys actions)) '("build" "check" "htn" "tpn" "unparse")))
     (is (= (base-64-decode "KGNvaW4uZmxpcC0zKQ==") "(coin.flip-3)"))
 
     (set-test-mode! true) ;; no need to set repl-mode
@@ -48,7 +48,7 @@
     ;; build PASS
     (is (= [0 true true]
           (match-eval-out-err
-            (re-pattern-opts "^\\{bulb.*\\{:args.*\\[vcc vdd\\]," :dotall)
+            (re-pattern-opts "^\\{pwrvals.*\\{:args.*\\[\\]," :dotall)
             stderr-no-errors
             (pamela "-i" "test/pamela/circuit.pamela" "build" )
             )))
@@ -86,5 +86,13 @@
             (pamela "-i" "test/pamela/tpn-demo.pamela"
               "-t" "(tpn.elephant)"
               "htn")
+            )))
+
+    ;; basic unparsing test
+    (is (= [0 true true]
+          (match-eval-out-err
+            #"defpclass one"
+            stderr-no-errors
+            (pamela "-i" "test/pamela/IR/one.ir.edn" "unparse")
             )))
     ))

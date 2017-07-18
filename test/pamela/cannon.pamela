@@ -60,7 +60,7 @@
                             (ask (= all-clear true)
                               ) ;; wait / rendezvous
                             ))
-                        (:box-f.close))
+                        (:box-f.close-lid))
                       (catch
                           (sequence
                             (parallel

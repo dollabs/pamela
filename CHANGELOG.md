@@ -34,6 +34,7 @@ Changes
 * Updated plan-schema to leverage the match-eval-out-err macro in testing
 * Ensure remove-superfluous in TPN optimization does not re-visit nodes
   unnecessarily (Closes #115)
+* Added unparse action (Closes #125)
 
 ### [0.6.0] - 2017-03-08
 

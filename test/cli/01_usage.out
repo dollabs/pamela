@@ -4,20 +4,22 @@ Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA)
 Usage: pamela [options] action
 
 Options:
-  -h, --help                              Print usage
   -V, --version                           Print PAMELA version
-  -v, --verbose                           Increase verbosity
+  -a, --magic MAGIC                       Magic lvar initializtions
+  -b, --output-magic OUTPUT-MAGIC         Output magic file
   -c, --construct-tpn CFM                 Construct TPN using class C field F method M (as C:F:M)
   -f, --file-format FORMAT         json   Output file format [json]
+  -h, --help                              Print usage
   -i, --input INPUT                ["-"]  Input file(s) (or - for STDIN)
   -l, --log-level LEVEL            warn   Logging level
   -o, --output OUTPUT              -      Output file (or - for STDOUT)
-  -a, --magic MAGIC                       Magic lvar initializtions
-  -b, --output-magic OUTPUT-MAGIC         Output magic file
+  -s, --source PAMELA                     source as reconstructed from IR
   -t, --root-task ROOTTASK                Label for HTN root-task [main]
+  -v, --verbose                           Increase verbosity
 
 Actions:
   build	Load model(s) and build intermediate representation (IR)
   check	Perform syntatic check on a PAMELA model
   htn	Load model(s) and construct HTN and TPN
   tpn	Load model(s) and construct as a TPN
+  unparse	Load model(s) and build intermediate representation (IR)

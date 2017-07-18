@@ -42,7 +42,7 @@
         [:cond-operand [:literal [:keyword ":pwr"]]]
         [:cond-operand
          [:mode-expr [:symbol "pwrvals"] [:keyword ":none"]]]]]]
-     [:mode-init [:keyword ":fail"] [:TRUE]]]]]
+     [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -168,7 +168,7 @@
           [:cond-operand [:literal [:keyword ":sensed-illumination"]]]
           [:cond-operand
            [:mode-expr [:symbol "lightvals"] [:keyword ":dark"]]]]]]]]
-     [:mode-init [:keyword ":fail"] [:TRUE]]]]]
+     [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
   [:option
    [:transitions
     [:transition

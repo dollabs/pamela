@@ -98,7 +98,7 @@
                                (ask (= all-clear true) :bounds [200 300]
                                  ) ;; wait / rendezvous
                                ))
-                           (:box-f.close)
+                           (:box-f.close-lid)
                            (choose :label :pickme :bounds [36 37]
                              :cost<= 45 :reward>= 46
                              (choice :label :chance
