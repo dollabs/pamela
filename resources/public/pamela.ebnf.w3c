@@ -21,8 +21,8 @@ inherit ::= INHERIT LB symbol+ RB
 modes ::= MODES ( mode-enum | mode-map )
 mode-enum ::= LB keyword* RB
 mode-map ::= LM mode-init+ RM
-mode-init ::= keyword ( TRUE | cond-expr )
-cond-expr ::= ( and-expr | or-expr | implies-expr | not-expr | equal-expr)
+mode-init ::= keyword cond-expr
+cond-expr ::= ( TRUE | FALSE | and-expr | or-expr | implies-expr | not-expr | equal-expr)
 and-expr ::= LP AND ( cond-expr | cond-operand )+ RP
 or-expr ::= LP OR ( cond-expr | cond-operand )+ RP
 implies-expr ::= LP IMPLIES ( cond-expr | cond-operand )+ RP
@@ -34,7 +34,7 @@ mode-expr ::= LP MODE_OF symbol keyword RP
 
 fields ::= FIELDS LM field+ RM
 field ::= keyword ( LM field-init+ RM | field-type )
-field-type ::= ( literal | symbol | lvar-ctor|  pclass-ctor | mode-expr )
+field-type ::= ( literal | symbol | lvar-ctor |  pclass-ctor | mode-expr )
 field-init ::= ( initial | access | observable )
 
 initial ::= INITIAL field-type
@@ -138,7 +138,7 @@ keyword ::= ':' [A-Za-z0-9:*-.]+
 boolean ::= ( TRUE | FALSE )
 string ::= '"'  [^"]* '"'
 number ::= ( float | integer )
-float ::= [-]?[0-9]+.[0-9]+
+float ::= ( [-]?[0-9]+.[0-9]+ | [-]?[0-9].[0-9]+E[+-][0-9]+)
 integer ::= [-]?[0-9]+
 natural ::= [0-9]+
 

@@ -17,15 +17,7 @@
    [clojure.string :as string]
    [clojure.pprint :as pp :refer [pprint]]
    [clojure.tools.logging :as log]
-   ;; [environ.core :refer [env]]
-   ;; [me.raynes.fs :as fs]
-   ;; [clojure.java.io :refer [resource]]
-   ;; [camel-snake-kebab.core :as translate]
-   ;; [pamela.utils :refer [output-file display-name-string]]
-   [avenir.utils :refer [assoc-if concatv]]
-   ;; [instaparse.core :as insta]
-   ;; [plan-schema.utils :refer [fs-basename]]
-   ))
+   [avenir.utils :refer [assoc-if concatv]]))
 
 (defn pprint-option [option val]
   (let [ppval (with-out-str (pprint val))]
@@ -35,19 +27,30 @@
         "\n"
         (apply str "\n" (repeat (+ (count (str option)) 3) " "))))))
 
-;; -------------------------
+(defn unparse-number-ref [number-ref]
+  (let [{:keys [type name default]} number-ref]
+    (if (= type :lvar)
+      (let [lvar '()
+            lvar (if default (cons default lvar) lvar)
+            lvar (if name (cons name lvar) lvar)]
+        (cons 'lvar lvar))
+      number-ref)))
 
-(declare unparse-field-type)
+(defn literal? [v]
+  (or (number? v) ;; literal
+    (true? v) ;; (boolean? v) ;; literal
+    (false? v) ;; (boolean? v) ;; literal
+    (string? v) ;; literal
+    (keyword? v) ;; literal
+    (symbol? v))) ;; symbol
 
-(defn unparse-temporal-constraints [temporal-constraints]
-  (let [[tc0] temporal-constraints ;; consider only first one
-        {:keys [type value]} tc0]
-    (when (= type :bounds)
-      (if (map? value)
-        (unparse-field-type value)
-        value))))
+(defn cond-operand? [v]
+  (or (literal? v) ;; literal
+    (#{:literal :field-reference :mode-reference :field-reference-field
+       :state-variable}
+      (:type v))))
 
-;; -------------------------
+;; unparse-field-type -------------------------
 
 (defn unparse-field-type-dispatch [field-type]
   (:type field-type))
@@ -56,12 +59,8 @@
   #'unparse-field-type-dispatch
   :default :default)
 
-(declare unparse-number-ref)
-
 (defmethod unparse-field-type :default [field-type]
-  ;; (pprint-option nil field-type)
-  (unparse-number-ref field-type)
-  )
+  (unparse-number-ref field-type))
 
 (defmethod unparse-field-type :literal [field-type]
   (:value field-type))
@@ -98,21 +97,20 @@
   (let [{:keys [name]} field-type]
     name))
 
-;; -------------------------
+;; unparse-temporal-constraints -------------------------
 
-(defn literal? [v]
-  (or (number? v) ;; literal
-    (true? v) ;; (boolean? v) ;; literal
-    (false? v) ;; (boolean? v) ;; literal
-    (string? v) ;; literal
-    (keyword? v) ;; literal
-    (symbol? v))) ;; symbol
+(defn unparse-temporal-constraints [temporal-constraints]
+  (let [[tc0] temporal-constraints ;; consider only first one
+        {:keys [type value]} tc0]
+    (when (> (count temporal-constraints) 1)
+      (log/error "Unable to unparse more than one temporal constraint"
+        temporal-constraints))
+    (when (= type :bounds)
+      (if (map? value) ;; lvar
+        (unparse-field-type value)
+        value))))
 
-(defn cond-operand? [v]
-  (or (literal? v) ;; literal
-    (#{:literal :field-reference :mode-reference :field-reference-field
-       :state-variable}
-      (:type v))))
+;; unparse-cond-operand -------------------------
 
 (defn unparse-cond-operand-dispatch [cond-operand]
   (if (literal? cond-operand)
@@ -160,9 +158,8 @@
       ;; (symbol (str pclass "." mode)))))
       (list 'mode-of pclass mode))))
 
-;; -------------------------
+;; unparse-cond-expr -------------------------
 
-;; handle :literal case as a service
 (defn unparse-cond-expr [cond-expr]
   (let [{:keys [type args]} cond-expr]
     (if (cond-operand? cond-expr)
@@ -171,7 +168,7 @@
         (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
         (map unparse-cond-expr args)))))
 
-;; -------------------------
+;; unparse-option -------------------------
 
 (defn unparse-option-dispatch [option def]
   (or option :inherit))
@@ -225,15 +222,6 @@
                        (assoc-in fields [field :initial] field-type-source))]
           (recur fields (first more) (rest more)))))))
 
-(defn unparse-number-ref [number-ref]
-  (let [{:keys [type name default]} number-ref]
-    (if (= type :lvar)
-      (let [lvar '()
-            lvar (if default (cons default lvar) lvar)
-            lvar (if name (cons name lvar) lvar)]
-        (cons 'lvar lvar))
-      number-ref)))
-
 (defn unparse-trans-map [trans-map]
     (let [{:keys [doc pre post cost reward probability
                   temporal-constraints]} trans-map
@@ -271,10 +259,7 @@
                 exactly min max controllable
                 catch label enter leave]} fn
         bounds (unparse-temporal-constraints temporal-constraints)]
-    ;; (println "CCC type" type)
     (cond
-      (nil? type)
-      (list 'ERROR-nil-type fn) ;; TODO remove this
       (#{:ask :assert :choose :choose-whenever :maintain
          :delay :parallel :sequence :tell :unless :when :whenever
          :catch} type)
@@ -308,33 +293,17 @@
             body-src (if label
                          (cons :label (cons label body-src))
                          body-src)]
-        ;; (print "DDD BODY" body)
-        (cons (symbol (clojure.core/name type)) body-src)
-        )
+        (cons (symbol (clojure.core/name type)) body-src))
       (= type :try)
       (let [catch-src (if-not (empty? catch)
                         (list (cons 'catch (map unparse-fn catch))))
             body-src (if (empty? body)
                        catch-src
                        (concat (map unparse-fn body) catch-src))
-            body-src (if reward>=
-                          (cons :reward>= (cons reward>= body-src))
-                          body-src)
-            body-src (if cost<=
-                       (cons :cost<=
-                         (cons (unparse-number-ref cost<=) body-src))
-                       body-src)
-            body-src (if condition
-                       (cons (unparse-cond-expr condition) body-src)
-                       body-src)
             body-src (if bounds
                          (cons :bounds (cons bounds body-src))
-                         body-src)
-            body-src (if label
-                         (cons :label (cons label body-src))
                          body-src)]
-        (cons (symbol (clojure.core/name type)) body-src)
-        )
+        (cons (symbol (clojure.core/name type)) body-src))
       (= type :choice)
       (let [choice-src (list (unparse-fn (first body)))
             choice-src (if leave
@@ -413,7 +382,9 @@
                          plant-src)]
         (cons field-method plant-src))
       :else
-      fn))) ;; todo
+      (do
+        (log/error "Unable to unparse fn type:" type " raw IR inserted in place")
+        fn)))) ;; default case for new fn that are not yet handled
 
 (defn unparse-between-stmt [between-stmt]
   (let [{:keys [type from to temporal-constraints
@@ -443,7 +414,7 @@
                    :pre pre-src
                    :post post-src)
         src (if-not (empty? betweens) (map unparse-between-stmt betweens))
-        src (if (empty? body) src (cons (unparse-fn (first body)) src)) ;; todo body
+        src (if (empty? body) src (cons (unparse-fn (first body)) src))
         src (cons args src)
         src (cons cond-map src) ;; todo, elide if all default
         src (cons method src)
@@ -463,10 +434,8 @@
                 methods-source (concatv methods-source mdefs-source)]
             (recur methods-source (first more) (rest more))))))))
 
-;; -------------------------
+;; unparse-pclass -------------------------
 
-;; currently only unparses
-;; :inherit :fields :modes :methods
 (defn unparse-pclass [pclass pdef]
   (let [{:keys [meta inherit fields modes transitions methods]} pdef]
     (str
@@ -476,6 +445,8 @@
       (if modes (unparse-option :modes modes))
       (if transitions (unparse-option :transitions transitions))
       (if methods (unparse-option :methods methods)))))
+
+;; unparse -------------------------
 
 ;; converts from ir back to pamela source
 (defn unparse [ir]

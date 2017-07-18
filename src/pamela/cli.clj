@@ -83,7 +83,7 @@
 
 (defn unparse-model
   "Load model(s) and build intermediate representation (IR)"
-  {:added "0.3.0"}
+  {:added "0.6.2"}
   [options]
   (let [{:keys [input output source]} options
         ir (read-string (slurp (fs-get-path (first input))))]
