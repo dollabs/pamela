@@ -82,7 +82,7 @@
         0))))
 
 (defn unparse-model
-  "Load model(s) and build intermediate representation (IR)"
+  "Convert intermediate representation (IR) back into Pamela source"
   {:added "0.6.2"}
   [options]
   (let [{:keys [input output source]} options

@@ -48,7 +48,7 @@
     ;; build PASS
     (is (= [0 true true]
           (match-eval-out-err
-            (re-pattern-opts "^\\{pwrvals.*\\{:args.*\\[\\]," :dotall)
+            (re-pattern-opts "^\\{bulb.*\\{:args.*\\[vcc vdd\\]," :dotall)
             stderr-no-errors
             (pamela "-i" "test/pamela/circuit.pamela" "build" )
             )))

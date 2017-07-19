@@ -22,4 +22,4 @@ Actions:
   check	Perform syntatic check on a PAMELA model
   htn	Load model(s) and construct HTN and TPN
   tpn	Load model(s) and construct as a TPN
-  unparse	Load model(s) and build intermediate representation (IR)
+  unparse	Convert intermediate representation (IR) back into Pamela source

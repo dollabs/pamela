@@ -26,31 +26,75 @@
             [avenir.utils :refer [str-append]]
             [clojure.tools.logging :as log]
             [plan-schema.utils :refer [sort-map]])
-  (:import [java.net
-            URL]))
+  (:import [java.lang ;; required by sort-map2
+            Number]
+           [java.util
+            Comparator]
+           [java.io
+            Serializable]
+           [clojure.lang
+            Numbers]))
 
-;; Temporary workaround for the inability of sorted-map to
-;; handle keys that are not symbols
+;; implementation of sort-map2 -- to move to plan-schema.utils -------------
+
+(defn compare-by-class
+  "Compare two objects. If they are of the same class use the class
+   specific Comparator else compare on the class name"
+  [o1 o2]
+  (if (nil? o1)
+    (if (nil? o2)
+      0   ;; nil == nil
+      -1) ;; nil < non-nil
+    (if (nil? o2)
+      1   ;; non-nil > nil
+      (let [c1 (class o1)
+            c2 (class o2)]
+        (if (= c1 c2) ;; same class?
+          (if (number? o1)
+            (Numbers/compare o1 o2) ;; numeric comparison
+            (.compareTo o1 o2))     ;; non-numeric comparison
+          (.compareTo (.getName c1) (.getName c2))))))) ;; compare on class name
+
+(declare default-comparator-by-class)
+
+;; This is a special "interface' of Serializable
+;; http://docs.oracle.com/javase/8/docs/api/java/io/Serializable.html
+(definterface ReadResolve
+  (readResolve []))
+
+;; implements Comparator, Serializable
+(deftype comparator-by-class []
+  Comparator
+  (compare [_ o1 o2]
+    (compare-by-class o1 o2))
+  ReadResolve ;; Serializable
+  (readResolve [_]
+    default-comparator-by-class))
+
+(def default-comparator-by-class (->comparator-by-class))
+
+(defn sorted-map-by-class
+  "Like sorted-map, but uses compare-by-class such that maps with
+   heterogeneously typed keys will always sort into a consistent, stable order"
+  [& keyvals]
+  (apply sorted-map-by default-comparator-by-class keyvals))
+
 (defn sort-map2
-  "Ensures that it an all values which are maps are in sorted order"
+  "Returns a map (including any nested maps) are in sorted order"
   {:added "0.3.3"}
   ([v]
    (cond
      (map? v)
-     (if (some symbol? (keys v))
-       ;; do NOT try to sort when there are keys as symbols
-       (reduce-kv sort-map2 {} v)
-       (into (sorted-map) (reduce-kv sort-map2 {} v)))
+     (reduce-kv sort-map2 (sorted-map-by-class) v)
      :else v))
   ([m k v]
    (assoc m k
      (cond
        (map? v)
-       (if (some symbol? (keys v))
-         ;; do NOT try to sort when there are keys as symbols
-         (reduce-kv sort-map2 {} v)
-         (into (sorted-map) (reduce-kv sort-map2 {} v)))
+       (reduce-kv sort-map2 (sorted-map-by-class) v)
        :else v))))
+
+;; --------------------------------------------------------------------
 
 (defn stdout?
   "Returns true if the output file name is STDOUT (or running as pamelad)"
