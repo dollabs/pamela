@@ -35,6 +35,7 @@ Changes
 * Ensure remove-superfluous in TPN optimization does not re-visit nodes
   unnecessarily (Closes #115)
 * Update doc/PAMELA.md to include documentation for all of the Pamela built-in statements
+* Added unparse action (Closes #125)
 
 ### [0.6.0] - 2017-03-08
 

@@ -31,10 +31,14 @@ pamela -i "$CODE/test/pamela/biased-coin.pamela" \
 
 if ! diff -u "$dir/${NUMBER}_$label.htn.$format" \
      "$RESULTS/${NUMBER}_$label.htn.$format"; then
+    echo "HTN output differs: target/cli-test/60_flip-3.htn.edn"
     exit 1
 fi
 
 if ! diff -u "$dir/${NUMBER}_$label.tpn.$format" \
      "$RESULTS/${NUMBER}_$label.tpn.$format"; then
+    echo "TPN output differs: target/cli-test/60_flip-3.tpn.edn"
     exit 1
 fi
+
+exit 0

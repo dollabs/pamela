@@ -21,10 +21,11 @@
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
             [camel-snake-kebab.core :as translate]
-            [pamela.utils :refer [output-file display-name-string]]
+            [pamela.utils :refer [output-file display-name-string dbg-println
+                                  sort-map2]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta]
-            [plan-schema.utils :refer [fs-basename]])
+            [plan-schema.utils :refer [fs-basename sort-map]])
   (:import [java.lang
             Long Double]))
 
@@ -100,7 +101,9 @@
 ;; IR helper functions
 
 (defn ir-boolean [v]
-  (and (vector? v) (= (first v) :TRUE)))
+  (if (and (vector? v) (= (first v) :TRUE))
+    true
+    false))
 
 (defn ir-integer [v]
   (Long/parseLong v))
@@ -204,8 +207,17 @@
   {:methods (apply merge-keys methods)})
 
 (defn ir-cond-expr [op & operands]
-  {:type op
-   :args (vec operands)})
+  (if (= op :COND-EXPR)
+    (let [expr (first operands)]
+      (cond
+        (and (vector? expr) (= (first expr) :TRUE))
+        {:type :literal :value true}
+        (and (vector? expr) (= (first expr) :FALSE))
+        {:type :literal :value false}
+        :else
+        expr))
+    {:type op
+     :args (vec operands)}))
 
 (defn ir-map-kv [k v]
   {k v})
@@ -234,7 +246,8 @@
     ;; (println "defpmethod" method)
     (loop [m m args-seen? false a (first args) more (rest args)]
       (if-not a
-        {method (assoc m :primitive (or (nil? (:body m)) (:primitive m)))}
+        {method
+         (sort-map2 (assoc m :primitive (or (nil? (:body m)) (:primitive m))))}
         (let [[args-seen? m] (if (not args-seen?)
                                (if (map? a)
                                  [false (merge m a)] ;; merge in cond-map
@@ -440,7 +453,7 @@
                 ;; :choose-opt handled by ir-choose
                 :choose-whenever (partial ir-choose :choose-whenever)
                 :cond identity
-                :cond-expr identity
+                :cond-expr (partial ir-cond-expr :COND-EXPR)
                 :cond-map ir-merge
                 :cond-operand identity
                 :controllable (partial ir-map-kv :controllable)
@@ -670,7 +683,7 @@
 
 ;; return Validated condition or {:error "message"}
 (defn validate-condition [ir state-vars pclass fields modes context condition]
-  ;; (log/info "VALIDATE-CONDITION for" pclass
+  ;; (dbg-println :debug  "VALIDATE-CONDITION for" pclass
   ;;   "\nfields:" (keys fields)
   ;;   "\nmodes:" (keys modes)
   ;;   "\ncontext:" context
@@ -730,8 +743,8 @@
 ;; or {:mdef {}) method definition matching arity of caller-args
 (defn validate-arity [in-pclass in-method in-mi
                       pclass methods method caller-args]
-  ;; (log/warn "VALIDATE-ARITY" in-pclass in-method
-  ;;   "TO" pclass method "WITH" caller-args)
+  (dbg-println :trace  "VALIDATE-ARITY" in-pclass in-method
+    "TO" pclass method "WITH" caller-args)
   (let [caller-arity (count caller-args)
         caller-arg-str (if (= 1 caller-arity) " arg" " args")
         candidate-mdefs (get methods method)
@@ -763,7 +776,7 @@
          more (if (vector? mbody) (rest mbody))]
     (if (or (:error vmbody) (not b))
       vmbody
-      (let [{:keys [type name method args condition body]} b
+      (let [{:keys [type field name method args condition body]} b
             [b error] (cond
                         (and (= type :plant-fn-symbol) (= name 'this))
                         (let [{:keys [error mdef]}
@@ -781,11 +794,15 @@
                         ;; NOTE: at this point of building the IR we do not yet
                         ;; have a root-task and cannot check for arity match
                         [b nil]
-                        (and (= type :plant-fn-symbol)
-                          (some #(= (keyword name) %)
-                            (keys fields)))
+                        (or
+                          (and (= type :plant-fn-field)
+                            (some #(= field %) (keys fields)))
+                          (and (= type :plant-fn-symbol)
+                            (some #(= (keyword name) %) (keys fields))))
                         ;; interpret name as a field reference
-                        (let [field (keyword name)
+                        (let [field (if (= type :plant-fn-field)
+                                      field
+                                      (keyword name))
                               pclass-ctor_ (get-in fields [field :initial])
                               {:keys [type pclass]} pclass-ctor_
                               {:keys [error mdef]}

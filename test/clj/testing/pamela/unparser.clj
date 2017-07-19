@@ -11,40 +11,55 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-(ns testing.pamela.parser
+(ns testing.pamela.unparser
   (:require [clojure.test :refer :all]
             [clojure.string :as string]
             [environ.core :refer [env]]
             [me.raynes.fs :as fs]
             [avenir.utils :refer [and-fn]]
-            [pamela.parser :refer :all]
+            [pamela.unparser :refer :all]
+            [pamela.parser :refer [parse]]
             [pamela.cli :refer [reset-gensym-generator]]
             [pamela.utils :refer [output-file]]
             [plan-schema.utils :refer [fs-get-path fs-basename]]))
 
-(deftest testing-pamela-parser
-  (testing "testing-pamela-parser"
-    (is (= [0 0] zero-bounds))
-    (let [top (fs/file (:user-dir env))
+(deftest testing-pamela-unparser
+  (testing "testing-pamela-unparser"
+    (let [excludes #{"biased-coin.pamela" ;; #127
+                     "ir-test.pamela" ;; #127, note betweens OK
+                     "statements.pamela" ;; #122
+                     ;; regression/ ------------------------------------
+                     "ask-bounds.pamela" ;; #122
+                     "assert-bounds.pamela" ;; #122
+                     "between-ends-example.pamela" ;; #128
+                     "between-example.pamela" ;; #128
+                     "between-starts-example.pamela" ;; #128
+                     "maintain-bounds.pamela" ;; #122
+                     "switch-bulb.example" ;; #127
+                     "tpn-slack.pamela" ;; #127
+                     "unless-bounds.pamela" ;; #122
+                     "when-bounds.pamela" ;; #122
+                     "whenever-bounds.pamela" ;; #122
+                     }
+          top (fs/file (:user-dir env))
           top-path (str (fs-get-path top) "/")
           pamela (fs/file top "test" "pamela")
           regression (fs/file pamela "regression")
-          errors (fs/file pamela "errors")
-          errors-ir (fs/file errors "IR")
-          examples (filter #(string/ends-with? (fs-basename %) ".pamela")
+          test-example? (fn [path]
+                          (let [filename (fs-basename path)]
+                            (and (string/ends-with? filename ".pamela")
+                              (not (excludes filename)))))
+          examples (filter test-example?
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
-          neg-examples (filter #(string/ends-with? (fs-basename %) ".pamela")
-                         (sort-by fs/base-name (fs/list-dir errors-ir)))
-          pamela-ir (fs/file top "target" "parser" "IR")
-          regression-ir (fs/file top "target" "parser" "regression" "IR")]
-      (if-not (fs/exists? pamela-ir)
-        (fs/mkdirs pamela-ir))
-      (if-not (fs/exists? regression-ir)
-        (fs/mkdirs regression-ir))
+          pamela-unparse (fs/file top "target" "parser" "UNPARSE")
+          regression-unparse (fs/file top "target" "parser" "regression" "UNPARSE")]
+      (if-not (fs/exists? pamela-unparse)
+        (fs/mkdirs pamela-unparse))
+      (if-not (fs/exists? regression-unparse)
+        (fs/mkdirs regression-unparse))
       (doseq [example examples]
-        (reset-gensym-generator)
         (let [example-name (fs-basename example)
               example-path (fs-get-path example)
               regression? (string/includes? example-path "/regression/")
@@ -57,28 +72,26 @@
                            {:error (str "Rubrique does not exist: "
                                      example-ir-path)})
               specimen-ir-file (fs/file
-                                 (if regression? regression-ir pamela-ir)
+                                 (if regression? regression-unparse pamela-unparse)
                                  example-ir-name)
               specimen-ir-path (fs-get-path specimen-ir-file top-path)
-              options {:input [example-path]}
+              specimen-src-file (fs/file
+                                 (if regression? regression-unparse pamela-unparse)
+                                 example-name)
+              specimen-src-path (fs-get-path specimen-src-file top-path)
+              _ (println "UNPARSE" example-name
+                  ;; "\n  RUBRIC" example-ir-path
+                  ;; "\n  SPECIMEN" specimen-ir-path
+                  ;; "\n  KEYS" (keys example-ir)
+                  )
+              specimen-src (unparse example-ir)
+              _ (output-file specimen-src-path "raw" specimen-src)
+              options {:input [specimen-src-path]}
               specimen-ir (parse options)
               _ (output-file specimen-ir-path "edn" specimen-ir) ;; will sort
               specimen-ir (if (fs/exists? specimen-ir-file)
                             (read-string (slurp specimen-ir-path))
                             {:error (str "Specimen does not exist: "
                                       specimen-ir-path)})]
-          (println "BUILD" example-name
-            ;; "\n  RUBRIC" example-ir-path
-            ;; "\n  SPECIMEN" specimen-ir-path
-            )
           (is (= example-ir specimen-ir))))
-      ;; Negative examples that are *expected* to FAIL
-      (doseq [neg-example neg-examples]
-        (reset-gensym-generator)
-        (let [neg-example-name (fs-basename neg-example)
-              neg-example-path (fs-get-path neg-example)
-              options {:input [neg-example-path]}
-              specimen-ir (parse options)]
-          ;; (println "BUILD" neg-example-name)
-          (is (not (nil? (:error specimen-ir))))))
       )))
