@@ -1,0 +1,120 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
+;;; Test for all Pamela built-ins examples contained in doc/PAMELA.md
+;;; Initially, only IR can be generated (via "build").
+;;; In the near future, Pamela will fully support HTN/TPN creation of all Pamela statements types.
+
+(defpclass simple-pclass [simple2-initial]
+  :fields {:simple1 {:observable true :initial "white"}
+           :simple2 {:observable true :initial simple2-initial}}
+  :methods [(defpmethod simple-method []
+              )]
+  )
+
+(defpclass main []
+  :fields {:field1 (simple-pclass "black")}
+  :methods [(defpmethod main []
+              (test-of-various-statements))
+
+            (defpmethod initialize []
+              )
+            (defpmethod reset-and-initialize []
+              )
+
+            (defpmethod one-arg-method [x]
+              )
+
+            (defpmethod option1 [])
+            (defpmethod option2 [])
+            (defpmethod option3 [])
+            (defpmethod clean-window [])
+            (defpmethod open-door [])
+            (defpmethod do-lots-of-stuff-possibly-involving-the-door [])
+            (defpmethod do-this [])
+            (defpmethod do-that [])
+            (defpmethod do-this-first [])
+            (defpmethod do-this-second [])
+
+
+            (defpmethod test-of-choose []
+              (choose :bounds [50 100]
+                      (choice
+                       (option1 :bounds [55 65]))
+                      (choice
+                       (option2 :bounds [65 75]))
+                      (choice
+                       (option3 :bounds [75 85]))))
+
+            (defpmethod test-of-choose-whenever []
+              (choose-whenever :bounds [50 100]
+                      (choice
+                       (option1 :bounds [55 65]))
+                      (choice
+                       (option2 :bounds [65 75]))
+                      (choice
+                       (option3 :bounds [75 85]))))
+
+            (defpmethod test-of-parallel []
+              (parallel :bounds [50 100] (do-this) (do-that)))
+
+            (defpmethod test-of-slack-parallel []
+              (slack-parallel :bounds [50 100] (do-this) (do-that)))
+
+            (defpmethod test-of-soft-parallel []
+              (soft-parallel :bounds [50 100] (do-this) (do-that)))
+
+            (defpmethod test-of-sequence []
+              (sequence :bounds [50 100] (do-this-first) (do-this-second)))
+
+            (defpmethod test-of-slack-sequence []
+              (slack-sequence :bounds [50 100] (do-this-first) (do-this-second)))
+
+            (defpmethod test-of-soft-sequence []
+              (soft-sequence :bounds [50 100] (do-this-first) (do-this-second)))
+
+            (defpmethod test-of-various-statements []
+              (sequence
+               (ask (= door "open") :bounds [0 10])
+               (assert (= door "open") :bounds [0 10])
+               (test-of-choose)
+               (test-of-choose-whenever)
+               (optional (clean-window))
+               (delay :bounds [10 10])
+               (test-of-parallel)
+               (test-of-slack-parallel)
+               (test-of-soft-parallel)
+               (test-of-sequence)
+               (test-of-sequence :bounds [0 10])
+               (test-of-slack-sequence)
+               (test-of-soft-sequence)
+               (tell (= door "open"))
+               (try :bounds [2 3]
+                    (initialize)
+                    (catch (reset-and-initialize)))
+               (unless (= door "open") :bounds [2 3]
+                       (open-door))
+               (when (not (= door "open")) :bounds [2 3]
+                     (open-door))
+               (whenever (not (= door "open")) :bounds [2 30]
+                         (open-door))
+               (maintain (= door "open") :bounds [2 30]
+                         (do-lots-of-stuff-possibly-involving-the-door))
+               ;; Issue #124
+               ;; (soft-maintain (= door "open") :bounds [2 30]
+               ;;                (do-lots-of-stuff-possibly-involving-the-door))
+               (dotimes 3 (open-door))
+
+               )
+              )
+            ])
