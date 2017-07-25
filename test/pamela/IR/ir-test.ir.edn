@@ -1,10 +1,4 @@
-{pwrvals
- {:args [],
-  :meta {:doc "Enum for power values", :version "0.2.0"},
-  :modes
-  {:high {:type :literal, :value true},
-   :none {:type :literal, :value true}},
-  :type :pclass},
+{all-clear {:type :state-variable},
  box
  {:args [],
   :fields
@@ -30,19 +24,7 @@
    :icon "box.svg",
    :version "0.0.1"},
   :methods
-  {open-lid
-   [{:args [],
-     :betweens [],
-     :body nil,
-     :controllable false,
-     :cost 0,
-     :display-name "Open Lid",
-     :post {:type :mode-reference, :pclass this, :mode :open},
-     :pre {:type :mode-reference, :pclass this, :mode :close},
-     :primitive true,
-     :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
-   close-lid
+  {close-lid
    [{:args [],
      :betweens [],
      :body nil,
@@ -55,6 +37,18 @@
      :primitive true,
      :reward 1000,
      :temporal-constraints [{:type :bounds, :value [123 456]}]}],
+   open-lid
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-name "Open Lid",
+     :post {:type :mode-reference, :pclass this, :mode :open},
+     :pre {:type :mode-reference, :pclass this, :mode :close},
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    reset
    [{:args [],
      :betweens [],
@@ -162,13 +156,6 @@
      [{:type :parallel,
        :body
        [{:type :whenever,
-         :body
-         [{:type :tell,
-           :condition
-           {:type :equal,
-            :args
-            [{:type :state-variable, :name all-clear}
-             {:type :state-variable, :name initial-state}]}}],
          :condition
          {:type :equal,
           :args
@@ -176,25 +163,55 @@
             :pclass this,
             :field :box-f,
             :value :ball-in-motion}
-           {:type :literal, :value true}]}}
+           {:type :literal, :value true}]},
+         :body
+         [{:type :tell,
+           :condition
+           {:type :equal,
+            :args
+            [{:type :state-variable, :name all-clear}
+             {:type :state-variable, :name initial-state}]}}]}
         {:type :whenever,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference-field,
+            :pclass this,
+            :field :cannon-f,
+            :value :ready}
+           {:type :literal, :value true}]},
          :body
          [{:type :unless,
+           :condition
+           {:type :equal,
+            :args
+            [{:type :field-reference-field,
+              :pclass this,
+              :field :cannon-f,
+              :value :ammunitions}
+             {:type :literal, :value 0}]},
            :body
            [{:type :try,
              :body
              [{:type :sequence,
                :body
                [{:type :assert,
-                 :body nil,
                  :condition
                  {:type :equal,
                   :args
                   [{:type :field-reference,
                     :pclass this,
                     :field :box-f}
-                   {:type :mode-reference, :pclass box, :mode :open}]}}
+                   {:type :mode-reference, :pclass box, :mode :open}]},
+                 :body nil}
                 {:type :maintain,
+                 :condition
+                 {:type :equal,
+                  :args
+                  [{:type :field-reference,
+                    :pclass this,
+                    :field :box-f}
+                   {:type :mode-reference, :pclass box, :mode :open}]},
                  :body
                  [{:type :sequence,
                    :body
@@ -205,26 +222,19 @@
                      :temporal-constraints
                      [{:type :bounds, :value [1 7]}]}
                     {:type :ask,
-                     :body
-                     [{:temporal-constraints
-                       [{:type :bounds, :value [200 300]}]}],
                      :condition
                      {:type :equal,
                       :args
                       [{:type :state-variable, :name all-clear}
-                       {:type :literal, :value true}]}}],
+                       {:type :literal, :value true}]},
+                     :body nil,
+                     :temporal-constraints
+                     [{:type :bounds, :value [200 300]}]}],
                    :label :my,
                    :temporal-constraints
                    [{:type :bounds, :value [98 101]}],
                    :cost<= 11,
-                   :reward>= 90}],
-                 :condition
-                 {:type :equal,
-                  :args
-                  [{:type :field-reference,
-                    :pclass this,
-                    :field :box-f}
-                   {:type :mode-reference, :pclass box, :mode :open}]}}
+                   :reward>= 90}]}
                 {:type :plant-fn-field,
                  :field :box-f,
                  :method close-lid,
@@ -272,23 +282,8 @@
                  :body nil,
                  :temporal-constraints
                  [{:type :bounds, :value [30 30]}]}]}],
-             :temporal-constraints [{:type :bounds, :value [2 20]}]}],
-           :condition
-           {:type :equal,
-            :args
-            [{:type :field-reference-field,
-              :pclass this,
-              :field :cannon-f,
-              :value :ammunitions}
-             {:type :literal, :value 0}]}}],
-         :condition
-         {:type :equal,
-          :args
-          [{:type :field-reference-field,
-            :pclass this,
-            :field :cannon-f,
-            :value :ready}
-           {:type :literal, :value true}]}}
+             :temporal-constraints
+             [{:type :bounds, :value [2 20]}]}]}]}
         {:type :sequence,
          :body
          [{:type :delay,
@@ -471,6 +466,12 @@
     :type :and}},
   :type :pclass},
  global-state {:type :state-variable},
- all-clear {:type :state-variable},
  initial-state {:type :state-variable},
+ pwrvals
+ {:args [],
+  :meta {:doc "Enum for power values", :version "0.2.0"},
+  :modes
+  {:high {:type :literal, :value true},
+   :none {:type :literal, :value true}},
+  :type :pclass},
  pamela/lvars {:lvars {"fred" :unset}, :type :lvars}}

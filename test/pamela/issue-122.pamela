@@ -1,0 +1,31 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Issue #122 test
+
+(defpclass issue-122 []
+  :fields {:value 122}
+  :methods [(defpmethod main []
+              (parallel
+                (ask (= :value 100) :bounds [0 1])
+                (assert (= :value 200) :bounds [2 3])
+                (maintain (= :value 300) :bounds [4 5]
+                  (delay))
+                (tell (= :value 400))
+                (unless (= :value 500) :bounds [6 7]
+                  (delay))
+                (when (= :value 600) :bounds [8 9]
+                      (delay))
+                (whenever (= :value 700) :bounds [10 11]
+                  (delay))
+                ))])

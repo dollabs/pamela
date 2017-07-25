@@ -36,6 +36,9 @@ Changes
   unnecessarily (Closes #115)
 * Update doc/PAMELA.md to include documentation for all of the Pamela built-in statements
 * Added unparse action (Closes #125)
+* Fixed statements include ask, assert, maintain, unless, when, whenever
+  (Closes #122)
+* Updated plan-schema dependency to 0.3.6
 
 ### [0.6.0] - 2017-03-08
 
