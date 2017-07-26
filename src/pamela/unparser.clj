@@ -260,9 +260,7 @@
                 catch label enter leave]} fn
         bounds (unparse-temporal-constraints temporal-constraints)]
     (cond
-      (#{:ask :assert :choose :choose-whenever :maintain
-         :delay :parallel :sequence :tell :unless :when :whenever
-         :catch} type)
+      (#{:choose :choose-whenever :delay :parallel :sequence :tell :catch} type)
       (let [body-src (if-not (empty? body) (map unparse-fn body))
             body-src (if (nil? controllable)
                        body-src
@@ -293,6 +291,15 @@
             body-src (if label
                          (cons :label (cons label body-src))
                          body-src)]
+        (cons (symbol (clojure.core/name type)) body-src))
+      (#{:ask :assert :maintain :unless :when :whenever} type)
+      (let [body-src (if-not (empty? body) (map unparse-fn body))
+            body-src (if bounds
+                         (cons :bounds (cons bounds body-src))
+                         body-src)
+            body-src (if condition
+                       (cons (unparse-cond-expr condition) body-src)
+                       body-src)]
         (cons (symbol (clojure.core/name type)) body-src))
       (= type :try)
       (let [catch-src (if-not (empty? catch)

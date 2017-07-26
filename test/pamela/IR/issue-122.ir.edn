@@ -1,0 +1,77 @@
+{issue-122
+ {:args [],
+  :fields
+  {:value
+   {:access :private,
+    :initial {:type :literal, :value 122},
+    :observable false}},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :ask,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 100}]},
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [0 1]}]}
+        {:type :assert,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 200}]},
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [2 3]}]}
+        {:type :maintain,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 300}]},
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [4 5]}]}
+        {:type :tell,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 400}]}}
+        {:type :unless,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 500}]},
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [6 7]}]}
+        {:type :when,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 600}]},
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [8 9]}]}
+        {:type :whenever,
+         :condition
+         {:type :equal,
+          :args
+          [{:type :field-reference, :pclass this, :field :value}
+           {:type :literal, :value 700}]},
+         :body [{:type :delay, :body nil}],
+         :temporal-constraints [{:type :bounds, :value [10 11]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass}}

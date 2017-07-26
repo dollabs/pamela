@@ -1,4 +1,4 @@
-{:act-13
+{:act-14
  {:args
   [{:type :equal,
     :args
@@ -11,16 +11,16 @@
      {:type :literal, :value :illuminated}],
     :type :equal}},
   :command "assert",
-  :constraints #{},
+  :constraints #{:tc-13},
   :controllable false,
   :display-name "Assert",
-  :end-node :node-18,
+  :end-node :node-20,
   :htn-node :hem-23,
   :name "Assert((= foo :illuminated))",
   :plantid "bsm1",
   :tpn-type :activity,
-  :uid :act-13},
- :act-17
+  :uid :act-14},
+ :act-19
  {:args
   [{:type :equal,
     :args
@@ -33,16 +33,16 @@
      {:type :literal, :value :dead}],
     :type :equal}},
   :command "ask",
-  :constraints #{},
+  :constraints #{:tc-18},
   :controllable false,
   :display-name "Ask",
-  :end-node :node-22,
+  :end-node :node-25,
   :htn-node :hem-23,
   :name "Ask((= bar :dead))",
   :plantid "bsm1",
   :tpn-type :activity,
-  :uid :act-17},
- :act-21
+  :uid :act-19},
+ :act-24
  {:args
   [{:type :equal,
     :args
@@ -61,16 +61,16 @@
      {:type :literal, :value "white"}],
     :type :equal}},
   :command "ask",
-  :constraints #{},
+  :constraints #{:tc-23},
   :controllable false,
   :display-name "Ask",
-  :end-node :node-26,
+  :end-node :node-29,
   :htn-node :hem-23,
   :name "Ask((= :field1.:simple2 \"white\"))",
   :plantid "bsm1",
   :tpn-type :activity,
-  :uid :act-21},
- :act-25
+  :uid :act-24},
+ :act-28
  {:args
   [{:type :equal,
     :args
@@ -86,13 +86,13 @@
   :constraints #{},
   :controllable false,
   :display-name "Tell",
-  :end-node :node-30,
+  :end-node :node-33,
   :htn-node :hem-23,
   :name "Tell((= door :open))",
   :plantid "bsm1",
   :tpn-type :activity,
-  :uid :act-25},
- :act-29
+  :uid :act-28},
+ :act-32
  {:args [],
   :argsmap {},
   :command "initialize",
@@ -105,7 +105,7 @@
   :name "Initialize",
   :reward 0,
   :tpn-type :activity,
-  :uid :act-29},
+  :uid :act-32},
  :act-9
  {:args [:field1.:simple2],
   :argsmap {"x" :field1.:simple2},
@@ -114,7 +114,7 @@
   :controllable false,
   :cost 0,
   :display-name "One Arg Method",
-  :end-node :node-14,
+  :end-node :node-15,
   :htn-node :hem-23,
   :name "One Arg Method(:field1.:simple2)",
   :reward 0,
@@ -129,7 +129,7 @@
  :node-1
  {:activities #{},
   :constraints #{},
-  :incidence-set #{:act-29},
+  :incidence-set #{:act-32},
   :tpn-type :state,
   :uid :node-1},
  :node-10
@@ -140,38 +140,53 @@
   :incidence-set #{},
   :tpn-type :state,
   :uid :node-10},
- :node-14
- {:activities #{:act-13},
+ :node-15
+ {:activities #{:act-14},
   :constraints #{},
   :htn-node :hem-23,
   :incidence-set #{:act-9},
   :tpn-type :state,
-  :uid :node-14},
- :node-18
- {:activities #{:act-17},
+  :uid :node-15},
+ :node-20
+ {:activities #{:act-19},
   :constraints #{},
   :htn-node :hem-23,
-  :incidence-set #{:act-13},
+  :incidence-set #{:act-14},
   :tpn-type :state,
-  :uid :node-18},
- :node-22
- {:activities #{:act-21},
+  :uid :node-20},
+ :node-25
+ {:activities #{:act-24},
   :constraints #{},
   :htn-node :hem-23,
-  :incidence-set #{:act-17},
+  :incidence-set #{:act-19},
   :tpn-type :state,
-  :uid :node-22},
- :node-26
- {:activities #{:act-25},
+  :uid :node-25},
+ :node-29
+ {:activities #{:act-28},
   :constraints #{},
   :htn-node :hem-23,
-  :incidence-set #{:act-21},
+  :incidence-set #{:act-24},
   :tpn-type :state,
-  :uid :node-26},
- :node-30
- {:activities #{:act-29},
+  :uid :node-29},
+ :node-33
+ {:activities #{:act-32},
   :constraints #{},
   :htn-node :hem-23,
-  :incidence-set #{:act-25},
+  :incidence-set #{:act-28},
   :tpn-type :state,
-  :uid :node-30}}
+  :uid :node-33},
+ :tc-13
+ {:end-node :node-20,
+  :tpn-type :temporal-constraint,
+  :uid :tc-13,
+  :value [3 5]},
+ :tc-18
+ {:end-node :node-25,
+  :tpn-type :temporal-constraint,
+  :uid :tc-18,
+  :value [4 7]},
+ :tc-23
+ {:end-node :node-29,
+  :tpn-type :temporal-constraint,
+  :uid :tc-23,
+  :value [4 7]}}

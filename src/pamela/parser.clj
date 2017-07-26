@@ -21,11 +21,11 @@
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
             [camel-snake-kebab.core :as translate]
-            [pamela.utils :refer [output-file display-name-string dbg-println
-                                  sort-map2]]
+            [pamela.utils :refer [output-file display-name-string dbg-println]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta]
-            [plan-schema.utils :refer [fs-basename sort-map]])
+            [plan-schema.utils :refer [fs-basename]]
+            [plan-schema.sorting :refer [sort-mixed-map]])
   (:import [java.lang
             Long Double]))
 
@@ -247,7 +247,8 @@
     (loop [m m args-seen? false a (first args) more (rest args)]
       (if-not a
         {method
-         (sort-map2 (assoc m :primitive (or (nil? (:body m)) (:primitive m))))}
+         (sort-mixed-map
+           (assoc m :primitive (or (nil? (:body m)) (:primitive m))))}
         (let [[args-seen? m] (if (not args-seen?)
                                (if (map? a)
                                  [false (merge m a)] ;; merge in cond-map
@@ -302,13 +303,22 @@
         (recur (merge fn-opts (second a)) body (first more) (rest more))
         (recur fn-opts (conj body a) (first more) (rest more))))))
 
+;; by definition (at the call sites)
+;; (#{:ask :assert :maintain :unless :when :whenever} f)
 (defn ir-fn-cond [f cond-expr & args]
-  (loop [fn-opts {:condition cond-expr} body [] a (first args) more (rest args)]
-    (if-not a
-      (merge {:type f :body (if (empty? body) nil body)} fn-opts)
-      (if (and (vector? a) (#{:fn-opt :delay-opt} (first a)))
-        (recur (merge fn-opts (second a)) body (first more) (rest more))
-        (recur fn-opts (conj body a) (first more) (rest more))))))
+  (let [fn {:type f
+            :condition cond-expr
+            :body nil}
+        [arg0 arg1] args
+        [fn arg1] (if (and (map? arg0)
+                        (= '(:temporal-constraints) (keys arg0)))
+                    [(merge fn arg0) arg1] ;; opt-bounds? present
+                    [fn arg0]) ;; opt-bounds? NOT present
+        fn (if arg1
+             (assoc fn :body [arg1])
+             fn)]
+    (dbg-println :trace "IR-FN-COND" f cond-expr "ARGS" args "\nFN" fn)
+    fn))
 
 (defn ir-choice [& args]
   (loop [choice-opts {} body [] a (first args) more (rest args)]

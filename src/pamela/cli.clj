@@ -76,7 +76,7 @@
         (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
         1)
       (do
-        (output-file output "edn" ir)
+        (output-file output "edn-mixed" ir)
         (when source
           (output-file source "raw" (unparser/unparse ir)))
         0))))
