@@ -17,7 +17,17 @@
    [clojure.string :as string]
    [clojure.pprint :as pp :refer [pprint]]
    [clojure.tools.logging :as log]
-   [avenir.utils :refer [assoc-if concatv]]))
+   [avenir.utils :refer [assoc-if concatv]]
+   [pamela.parser :refer [true-type default-bounds-type
+                          default-bounds default-mdef]]))
+
+(defn dissoc-default
+  "Dissoc k from m if the current value is equal to default"
+  [m k default]
+  (let [v (get m k)]
+    (if (= v default)
+      (dissoc m k)
+      m)))
 
 (defn pprint-option [option val]
   (let [ppval (with-out-str (pprint val))]
@@ -102,7 +112,8 @@
 (defn unparse-temporal-constraints [temporal-constraints]
   (let [[tc0] temporal-constraints ;; consider only first one
         {:keys [type value]} tc0]
-    (when (> (count temporal-constraints) 1)
+    (when (and (vector? temporal-constraints)
+            (> (count temporal-constraints) 1))
       (log/error "Unable to unparse more than one temporal constraint"
         temporal-constraints))
     (when (= type :bounds)
@@ -161,12 +172,14 @@
 ;; unparse-cond-expr -------------------------
 
 (defn unparse-cond-expr [cond-expr]
-  (let [{:keys [type args]} cond-expr]
-    (if (cond-operand? cond-expr)
-      (unparse-cond-operand cond-expr)
-      (apply list
-        (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
-        (map unparse-cond-expr args)))))
+  (if cond-expr
+    (let [{:keys [type args]} cond-expr]
+      (if (cond-operand? cond-expr)
+        (unparse-cond-operand cond-expr)
+        (apply list
+          (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
+          (map unparse-cond-expr args))))
+    true-type)) ;; assume default is the constant true (if-not cond-expr)
 
 ;; unparse-option -------------------------
 
@@ -199,7 +212,7 @@
 (defmethod unparse-option :modes [option def]
   (pprint-option option
     (let [modes-kvs (seq def)]
-      (if (every? #(= % {:type :literal, :value true}) (map second modes-kvs))
+      (if (every? #(= % true-type) (map second modes-kvs))
         (mapv first modes-kvs) ;; mode-enum
         (loop [modes-source {} mode-kv (first modes-kvs) more (rest modes-kvs)]
           (if-not mode-kv
@@ -216,10 +229,16 @@
         (pprint-option option fields)
         (let [field-init (get def field)
               {:keys [access observable initial]} field-init
-              field-type-source (unparse-field-type initial)
-              fields (if (and (= access :private) (false? observable))
-                       (assoc fields field field-type-source)
-                       (assoc-in fields [field :initial] field-type-source))]
+              initial-src (unparse-field-type initial)
+              field-type-src (if (and (= access :private) (false? observable))
+                               initial-src
+                               (->
+                                 {:initial initial-src
+                                  :access access
+                                  :observable observable}
+                                 (dissoc-default :access :private)
+                                 (dissoc-default :observable false)))
+               fields (assoc fields field field-type-src)]
           (recur fields (first more) (rest more)))))))
 
 (defn unparse-trans-map [trans-map]
@@ -411,19 +430,36 @@
         (cons to between-src)))))
 
 (defn unparse-defpmethod [method mdef]
-  (let [{:keys [args betweens body pre post temporal-constraints]} mdef
-        bounds (unparse-temporal-constraints temporal-constraints)
-        pre-src (if pre (unparse-cond-expr pre))
-        post-src (if post (unparse-cond-expr post))
-        cond-map (assoc-if (dissoc mdef :betweens :body
-                             :args :temporal-constraints)
-                   :bounds bounds
-                   :pre pre-src
-                   :post post-src)
+  (let [{:keys [doc pre post cost reward controllable primitive display-name
+                temporal-constraints ;; bounds in cond-map
+                args betweens body]} mdef
+        cond-map (dissoc mdef :args :betweens :body)
+        primitive-default (nil? body)
+        cond-map-default (assoc (dissoc (default-mdef method) :betweens :body)
+                           :primitive primitive-default)
+        display-name-default (:display-name cond-map-default)
+        cond-map-src (->
+                       (if (= cond-map cond-map-default)
+                         {}
+                         (assoc
+                           (dissoc cond-map :temporal-constraints)
+                           :bounds (unparse-temporal-constraints
+                                     temporal-constraints)
+                           :pre (unparse-cond-expr pre)
+                           :post (unparse-cond-expr post)))
+                       (dissoc-default :bounds default-bounds)
+                       (dissoc-default :pre true)
+                       (dissoc-default :post true)
+                       (dissoc-default :cost 0)
+                       (dissoc-default :reward 0)
+                       (dissoc-default :controllable false)
+                       (dissoc-default :primitive primitive-default)
+                       (dissoc-default :bounds default-bounds)
+                       (dissoc-default :display-name display-name-default))
         src (if-not (empty? betweens) (map unparse-between-stmt betweens))
         src (if (empty? body) src (cons (unparse-fn (first body)) src))
         src (cons args src)
-        src (cons cond-map src) ;; todo, elide if all default
+        src (if-not (empty? cond-map-src) (cons cond-map-src src) src)
         src (cons method src)
         src (cons 'defpmethod src)]
     src))

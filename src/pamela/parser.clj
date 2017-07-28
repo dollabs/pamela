@@ -86,6 +86,11 @@
                     :temporal-constraints [default-bounds-type]
                     :body nil})
 
+(def true-type {:type :literal, :value true})
+
+(def false-type {:type :literal, :value true})
+
+
 (defn pamela-filename? [filename]
   (string/ends-with? filename ".pamela"))
 
@@ -190,10 +195,10 @@
         (recur field-map (first more) (rest more))))))
 
 (defn ir-mode-enum [& modes]
-  (zipmap modes (repeat {:type :literal :value true})))
+  (zipmap modes (repeat true-type)))
 
 (defn ir-mode-init [mode v]
-  {mode (if (= v [:TRUE]) {:type :literal :value true} v)})
+  {mode (if (= v [:TRUE]) true-type v)})
 
 (defn ir-merge [& ms]
   (if (empty? ms)
@@ -211,9 +216,9 @@
     (let [expr (first operands)]
       (cond
         (and (vector? expr) (= (first expr) :TRUE))
-        {:type :literal :value true}
+        true-type
         (and (vector? expr) (= (first expr) :FALSE))
-        {:type :literal :value false}
+        false-type
         :else
         expr))
     {:type op
@@ -231,19 +236,23 @@
   {pclass
    (apply merge {:type :pclass} {:args args} options)})
 
+(defn default-mdef [method]
+  (let [cond-map {:pre true-type
+                  :post true-type
+                  :cost 0
+                  :reward 0
+                  :controllable false
+                  :temporal-constraints [default-bounds-type]
+                  :betweens []
+                  :primitive false
+                  :display-name nil
+                  :body nil}
+        display-name (if method (display-name-string method))]
+    (assoc-if cond-map :display-name display-name)))
+
 (defn ir-defpmethod [method & args]
   ;; (println "DEBUG ir-defpmethod" method "ARGS" args)
-  (loop [m {:pre {:type :literal :value true}
-            :post {:type :literal :value true}
-            :cost 0
-            :reward 0
-            :controllable false
-            :temporal-constraints [default-bounds-type]
-            :betweens []
-            :primitive false
-            :display-name (display-name-string method)
-            :body nil}]
-    ;; (println "defpmethod" method)
+  (loop [m (default-mdef method)]
     (loop [m m args-seen? false a (first args) more (rest args)]
       (if-not a
         {method
