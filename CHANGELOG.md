@@ -39,6 +39,8 @@ Changes
 * Fixed statements include ask, assert, maintain, unless, when, whenever
   (Closes #122)
 * Updated plan-schema dependency to 0.3.6
+* Unparse now elides default defpmethod cond-map (and default field
+  initializers) (Closes #126)
 
 ### [0.6.0] - 2017-03-08
 
