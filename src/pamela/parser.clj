@@ -90,6 +90,7 @@
 
 (def false-type {:type :literal, :value true})
 
+(def between-stmt-types #{:between :between-ends :between-starts})
 
 (defn pamela-filename? [filename]
   (string/ends-with? filename ".pamela"))
@@ -251,7 +252,7 @@
     (assoc-if cond-map :display-name display-name)))
 
 (defn ir-defpmethod [method & args]
-  ;; (println "DEBUG ir-defpmethod" method "ARGS" args)
+  (dbg-println :trace "ir-defpmethod" method "ARGS" args)
   (loop [m (default-mdef method)]
     (loop [m m args-seen? false a (first args) more (rest args)]
       (if-not a
@@ -262,11 +263,13 @@
                                (if (map? a)
                                  [false (merge m a)] ;; merge in cond-map
                                  [0 (assoc m :args a)]) ;; merge in :args
-                               (if (zero? args-seen?) ;; fn
+                               (if (and (zero? args-seen?)
+                                     (not (between-stmt-types (:type a))))
                                  [1 (assoc m :body
                                       (if (vector? a) a [a]))]
                                  [(inc args-seen?) (update-in m [:betweens]
                                                      conj a)]))]
+          (dbg-println :trace "  args-seen?" args-seen? "A" a)
           ;; (println "  args-seen?" args-seen? "M"
           ;;   (with-out-str (pprint (dissoc m :body))))
           (recur m args-seen? (first more) (rest more)))))))
