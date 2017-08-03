@@ -1,0 +1,57 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+(defpclass issue-120 []
+  :methods [(defpmethod main
+              []
+              (top-level))
+            (defpmethod top-level
+              []
+              (sequence
+                (ex-choose-1)
+                (ex-choose-2)
+                (ex-parallel)
+                (ex-sequence)))
+            (defpmethod ex-choose-1
+              []
+              (choose
+                (choice
+                  (action :bounds [1 10]))
+                (choice
+                  (action :bounds [1 20]))
+                (choice
+                  (action :bounds [1 30]))))
+            (defpmethod ex-choose-2
+              []
+              (choose
+                (choice :bounds [2 10]
+                  (action))
+                (choice :bounds [2 20]
+                  (action))
+                (choice :bounds [2 30]
+                  (action))))
+            (defpmethod ex-parallel
+              []
+              (parallel
+                (action :bounds [3 10])
+                (action :bounds [3 20])
+                (action :bounds [3 30])))
+            (defpmethod ex-sequence
+              []
+              (sequence
+                (action :bounds [4 10])
+                (action :bounds [3 20])
+                (action :bounds [4 30])))
+            (defpmethod action
+              [])
+            ])

@@ -42,6 +42,7 @@ Changes
 * Unparse now elides default defpmethod cond-map (and default field
   initializers) (Closes #126)
 * Fix IR generation defpmethods with betweens, but no body (Closes #128)
+* Fix Temporal constraint not properly defined for some special cases (Closes #120)
 
 ### [0.6.0] - 2017-03-08
 

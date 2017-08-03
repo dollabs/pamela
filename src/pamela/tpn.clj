@@ -56,30 +56,48 @@
         (= 0 (first bounds))
         (= :infinity (second bounds))))))
 
+(defn remove-default-bounds [bounds]
+  (if (default-bounds? bounds)
+    nil
+    bounds))
+
 ;; returns the narrowest bounds
+;; if a is an lvar {:type :lvar ...} then use a,
+;; else if b is an lvar then use b
+;; else expect both are bounds vectors
 (defn merge-bounds [a b]
-  (let [[a-lb a-ub] (if (default-bounds? a) nil a)
-        [b-lb b-ub] (if (default-bounds? b) nil b)
-        lb (if a-lb
-             (if b-lb
-               (min a-lb b-lb)
-               a-lb)
-             (if b-lb
-               b-lb
-               0))
-        ub (if a-ub
-             (if b-ub
-               (if (or (= a-ub :infinity) (= b-ub :infinity))
-                 :infinity
-                 (max a-ub b-ub))
-               a-ub)
-             (if b-ub
-               b-ub
-               :infinity))
-        rv (if (and (= lb 0) (= ub :infinity))
-             nil ;; do NOT explicitly return default bounds
-             [lb ub])]
-    rv))
+  (cond
+    (and (map? a) (= (:type a) :lvar))
+    a
+    (and (map? b) (= (:type b) :lvar))
+    b
+    (map? a)
+    (remove-default-bounds b)
+    (map? b)
+    (remove-default-bounds a)
+    :else
+    (let [[a-lb a-ub] (remove-default-bounds a)
+          [b-lb b-ub] (remove-default-bounds b)
+          lb (if a-lb
+               (if b-lb
+                 (min a-lb b-lb)
+                 a-lb)
+               (if b-lb
+                 b-lb
+                 0))
+          ub (if a-ub
+               (if b-ub
+                 (if (or (= a-ub :infinity) (= b-ub :infinity))
+                   :infinity
+                   (max a-ub b-ub))
+                 a-ub)
+               (if b-ub
+                 b-ub
+                 :infinity))
+          rv (if (and (= lb 0) (= ub :infinity))
+               nil ;; do NOT explicitly return default bounds
+               [lb ub])]
+      rv)))
 
 ;; {uid tpn-object} where tpn-object has keys trimmed
 (def ^{:dynamic true} *tpn-plan-map* (atom {}))
