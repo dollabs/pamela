@@ -1,8 +1,8 @@
-{:act-11
+{:act-12
  {:args [],
   :argsmap {},
   :command "take-medium-res-images",
-  :constraints #{},
+  :constraints #{:tc-11},
   :controllable false,
   :cost 0,
   :display-name "Take Medium Res Images",
@@ -11,7 +11,7 @@
   :name "Take Medium Res Images",
   :reward 0,
   :tpn-type :activity,
-  :uid :act-11},
+  :uid :act-12},
  :act-6
  {:args [],
   :argsmap {},
@@ -26,16 +26,16 @@
   :reward 0,
   :tpn-type :activity,
   :uid :act-6},
- :na-13
- {:constraints #{},
-  :end-node :node-12,
-  :tpn-type :null-activity,
-  :uid :na-13},
  :na-14
+ {:constraints #{},
+  :end-node :node-13,
+  :tpn-type :null-activity,
+  :uid :na-14},
+ :na-15
  {:constraints #{},
   :end-node :node-1,
   :tpn-type :null-activity,
-  :uid :na-14},
+  :uid :na-15},
  :na-8
  {:constraints #{},
   :end-node :node-7,
@@ -55,24 +55,24 @@
  :node-1
  {:activities #{},
   :constraints #{},
-  :incidence-set #{:na-9 :na-14},
+  :incidence-set #{:na-9 :na-15},
   :tpn-type :c-end,
   :uid :node-1},
  :node-10
- {:activities #{:na-14},
+ {:activities #{:na-15},
   :constraints #{},
-  :incidence-set #{:act-11},
+  :incidence-set #{:act-12},
   :tpn-type :state,
   :uid :node-10},
- :node-12
- {:activities #{:act-11},
+ :node-13
+ {:activities #{:act-12},
   :constraints #{},
   :htn-node :hem-11,
-  :incidence-set #{:na-13},
+  :incidence-set #{:na-14},
   :tpn-type :state,
-  :uid :node-12},
+  :uid :node-13},
  :node-2
- {:activities #{:na-13 :na-8},
+ {:activities #{:na-8 :na-14},
   :constraints #{},
   :end-node :node-1,
   :htn-node :hem-11,
@@ -92,6 +92,11 @@
   :incidence-set #{:na-8},
   :tpn-type :state,
   :uid :node-7},
+ :tc-11
+ {:end-node :node-10,
+  :tpn-type :temporal-constraint,
+  :uid :tc-11,
+  :value {:default [3 6], :name "med-res-bounds", :type :lvar}},
  :tc-5
  {:end-node :node-4,
   :tpn-type :temporal-constraint,

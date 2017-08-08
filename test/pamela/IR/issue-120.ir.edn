@@ -1,0 +1,191 @@
+{issue-120
+ {:args [],
+  :methods
+  {action
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-name "Action",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   ex-choose-1
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args [],
+           :temporal-constraints [{:type :bounds, :value [1 10]}]}]}
+        {:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args [],
+           :temporal-constraints [{:type :bounds, :value [1 20]}]}]}
+        {:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args [],
+           :temporal-constraints
+           [{:type :bounds, :value [1 30]}]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Ex Choose 1",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   ex-choose-2
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args []}],
+         :temporal-constraints [{:type :bounds, :value [2 10]}]}
+        {:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args []}],
+         :temporal-constraints [{:type :bounds, :value [2 20]}]}
+        {:type :choice,
+         :body
+         [{:type :plant-fn-symbol,
+           :name this,
+           :method action,
+           :args []}],
+         :temporal-constraints [{:type :bounds, :value [2 30]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Ex Choose 2",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   ex-parallel
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [3 10]}]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [3 20]}]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [3 30]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Ex Parallel",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   ex-sequence
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [4 10]}]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [3 20]}]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method action,
+         :args [],
+         :temporal-constraints [{:type :bounds, :value [4 30]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Ex Sequence",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :plant-fn-symbol,
+       :name this,
+       :method top-level,
+       :args []}],
+     :controllable false,
+     :cost 0,
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   top-level
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol,
+         :name this,
+         :method ex-choose-1,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method ex-choose-2,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method ex-parallel,
+         :args []}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method ex-sequence,
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-name "Top Level",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass}}

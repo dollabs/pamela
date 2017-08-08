@@ -1471,7 +1471,7 @@
         hem-irks irks
         [pclass kw-methods method mi kw-body int-zero more-irks] hem-irks
         hem-pclass pclass
-        _ (dbg-println :debug "CHPN 1" pclass method int-zero more-irks kw-methods)
+        _ (dbg-println :debug "CHPM 1" pclass method int-zero more-irks kw-methods)
         ;; Here we get the size of the hem irks vector to distinguish
         ;; a choice from anything else. Using first.pamela as an example, the
         ;; irks to the second choice is
@@ -1480,19 +1480,11 @@
         ;; 6 = [first-tpn-htn :methods do-f-and-g 0 :body 0]
         n-hem-irks (count hem-irks)
         ;; Here funcall_ is the "function" (choice or other) that may have a display-name
-        funcall_ (get-in ir (vec (take 6 hem-irks)))
+        fun-irks (vec (take 6 hem-irks))
+        funcall_ (get-in ir fun-irks)
         hem-label (:label funcall_)
         betweens (get-in ir (conj hem-irks :betweens))
-        _ (dbg-println :debug "CHPN 2 hem-label" hem-label "betweens" betweens)
-        top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
-                   [pclass kw-methods method mi])
-        top-bounds (irks->bounds ir top-irks)
-        bounds (irks->bounds ir hem-irks)
-        hem-bounds (tpn/merge-bounds top-bounds bounds)
-        _ (dbg-println :debug "CHPN 2.5 top-irks" top-irks
-            "top-bounds" top-bounds
-            "hem-irks" hem-irks "bounds" bounds
-            "hem-bounds" hem-bounds)
+        _ (dbg-println :debug "CHPM 2 hem-label" hem-label "betweens" betweens)
         hem-uid uid
         ;; NOTE as the new args-mapping structure has not yet been implemented
         ;; we are "guessing" at the positions of the arg values here:
@@ -1521,10 +1513,19 @@
         sequential? (or (not (nil? tsc)) (= 1 n-subtasks)) ;; could be a choice
         ;; distinguish choice from sequence using n-hem-irks (see binding above)
         hem-choice? (and sequential? (= 9 n-hem-irks))
+        top-irks (if (and pclass method (zero? int-zero) (nil? more-irks))
+                   [pclass kw-methods method mi])
+        top-bounds (irks->bounds ir top-irks)
+        bounds (irks->bounds ir hem-irks)
+        hem-bounds (tpn/merge-bounds top-bounds bounds)
+        _ (dbg-println :debug "CHPM 2.5 top-irks" top-irks
+            "top-bounds" top-bounds
+            "hem-irks" hem-irks "bounds" bounds
+            "hem-bounds" hem-bounds)
         [label sequence-label] (if (or (not sequential?) hem-choice?)
                                  [hem-label nil] ;; parallel or choice
                                  [nil hem-label]) ;; sequence
-        _ (dbg-println :debug "CHPN 3 n-hem-irks = " n-hem-irks
+        _ (dbg-println :debug "CHPM 3 n-hem-irks = " n-hem-irks
             "label" label "sequence-label" sequence-label)
         i-last-subtask (dec (count subtask-order))
         net-map (if (pos? (count subtasks))
@@ -1545,9 +1546,9 @@
                        :label (and (not hem-choice?) label)
                        :sequence-label sequence-label)
         ;; _ (when (and (not hem-choice?) (or label sequence-label))
-        ;;     (dbg-println :trace "CHPN 4 parent-begin-uid" parent-begin-uid
+        ;;     (dbg-println :trace "CHPM 4 parent-begin-uid" parent-begin-uid
         ;;       "getting :label" (and (not hem-choice?) label)))
-        _ (dbg-println :trace "CHPN 4 parent-begin-uid" parent-begin-uid
+        _ (dbg-println :trace "CHPM 4 parent-begin-uid" parent-begin-uid
             "parent-end-uid" end-node)
         first-begin-uid (atom nil)
         prev-end (atom nil)]
@@ -1585,8 +1586,11 @@
             {:keys [type pclass name task-expansions arguments
                     irks ancestry-path]} subtask_
             label (if irks (get-in ir (conj irks :label)))
+            choice-bounds (if hem-choice? ;; (choice :bounds [1 2] (fn))
+                            (irks->bounds ir (vec (take 8 hem-irks))))
             bounds (if (and irks (not= irks hem-irks))
                      (irks->bounds ir irks))
+            bounds (tpn/merge-bounds choice-bounds bounds)
             m-task-expansions (count task-expansions)
             ;; DEBUG
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
@@ -1633,6 +1637,7 @@
             tc (if bounds
                  (tpn/tpn-temporal-constraint
                    {:value bounds :end-node (:uid se)}))
+            _ (dbg-println :debug "TC" tc)
             activity (if primitive?
                        ((if (= name 'delay)
                           tpn/tpn-delay-activity
@@ -1675,6 +1680,7 @@
             _ (when activity
                 (dbg-println :trace "activity" (:uid activity) (:name activity)
                   "getting :label" (and (not primitive?) label)))
+            _ (dbg-println :debug "ACTIVITY TCs" (:constraints activity))
             sb (tpn/tpn-state {:activities (if activity #{(:uid activity)})
                                ;; do NOT add constraints on the node
                                ;; for primitive? activities
@@ -1690,17 +1696,21 @@
                                ;;                 (:uid se))
                                ;; :sequence-end (if sequential? (:uid se))
                                :htn-node (:uid hem-map)})
+            _ (dbg-println :debug "SB TCs" (:constraints sb))
             [begin end] (if parallel?
                           (if (zero? i)
                             (let [end (tpn/tpn-p-end {})
-                                  tc (if (and tc (not primitive?))
-                                       (tpn/update-tpn-plan-map!
-                                         (assoc tc :end-node (:uid end))))
-                                  begin (tpn/tpn-p-begin {:end-node (:uid end)
-                                                          :constraints
-                                                          (if tc #{(:uid tc)})
-                                                          :htn-node
-                                                          (:uid hem-map)})]
+                                  ;; comment out for issue-120
+                                  ;; tc (if (and tc (not primitive?))
+                                  ;;      (tpn/update-tpn-plan-map!
+                                  ;;        (assoc tc :end-node (:uid end))))
+                                  begin (tpn/tpn-p-begin
+                                          {:end-node (:uid end)
+                                           ;; comment out for issue-120
+                                           ;; :constraints
+                                           ;; (if tc #{(:uid tc)})
+                                           :htn-node
+                                           (:uid hem-map)})]
                               [begin end])
                             (let [parent-na-begin (tpn/get-tpn-plan-map
                                                    (->
@@ -1733,6 +1743,7 @@
                                           :htn-node (:uid hem-map)})]
                               [begin end])
                             [sb se]))]
+        _ (dbg-println :debug "BEGIN TCs" (:constraints begin))
         (dbg-println :trace "begin" (:uid begin) "end" (:uid end)
           "sb" (:uid sb) "se" (:uid se))
         (when label
