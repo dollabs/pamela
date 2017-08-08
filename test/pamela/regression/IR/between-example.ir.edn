@@ -4,19 +4,19 @@
   :methods
   {example
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
-     :betweens [],
-     :display-name "Example",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body
+     :betweens
      [{:type :between,
        :from :a,
        :to :b,
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "between example"}]},
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-name "Example",
+     :doc "between example",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}
