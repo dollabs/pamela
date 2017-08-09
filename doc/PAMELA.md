@@ -32,7 +32,7 @@ The `pamela` executable supports 2 primary operations: `build` and `htn`.  The `
 
 The `defpclass` command is the top level Pamela construct which
 defines a Pamela class and defines a model symbol which is
-bound to a the class constructor function.
+bound to a the class constructor method.
 
 ```
 (defpclass psw [gnd pwr]
@@ -138,7 +138,7 @@ instance. Certain modes (e.g. failure modes or enumerations)
 may have the trivial condition expression `true` which means that
 the given mode is always possible.
 
-##### <a name="conditional-expressions"></a>conditional expressions
+##### <a name="conditional-expressions"></a>Conditional expressions
 
 A conditional expression may be comprised, recursively, of the following:
 
@@ -173,32 +173,42 @@ by the *defpmethod* command.
 (defpmethod turn-on
   {:pre :off :post :on :bounds [1 3]
    :doc "turns on the power supply"}
-  [])
+  [flavor]
+  (sequence (prepare-to-turn-on)(really-turn-on flavor)))
 ````
 
 The first argument to `defpmethod` is the symbol for the method
 to be defined. Note that this symbol cannot override the name any of the [Pamela built-in methods](#builtins).
 
-Then there is an optional conditions map which may contain any
+Then there is an *optional* conditions map which may contain any
 of the following keys:
 
 * **:doc** The documentation string for this method
 * **:pre** The precondition for running this method (see [conditional expressions](#conditional-expressions))
 * **:post** The postcondition for running this method (see [conditional expressions](#conditional-expressions))
-* **:bounds** The [bounds](#bounds) for this function
-* **:cost** The cost of this function (number)
-* **:reward** The reward of this function (number)
+* **:bounds** The [bounds](#bounds) for this method
+* **:cost** The cost of this method (number)
+* **:reward** The reward of this method (number)
 * **:controllable** By default, user-defined methods are not controllable (while the built-ins like **delay** and **ask** are controllable). This field may be set to true to indicate the method is controllable by the planner (boolean), meaning that the planner has the ability to cancel execution of that method before it finishes.
 * **:primitive** By default, methods without a body are assumed to be primitive (where the implementation is defined by the plant), and methods with a body are non-primitive.  This provides an override: when `true`, the body is assumed to be documentation for the method behavior, that may optionally be used for higher-level reasoning (e.g., by the planner).
 * **:display-name** This specifies the name of this method that is displayed to the user (e.g., in PlanViz).  If not specified, the `:display-name` is assumed to be a Title Case version of the method name symbol, with the hyphens converted to spaces (e.g., `"Turn On"`).
 
 The third argument to `defpmethod` is a vector of zero or more formal arguments to the method.
 
-The next form is the function which comprises the body of the method.
+The next form is the body of the method, which is a call to either a user-defined method (defined via `defpmethod`) or one of the built-in Pamela methods (see below).
 If the body is empty then this is considered a *primitive method* which
 is implemented by the plant (unless overridden by the **:primitive** key as described above).
 
-Lastly, following the function form of the method, there may be zero or more `between` statements.
+##### Arguments used within calls to user-defined methods
+When calling a user method (either non-primitive or primitive), each of the arguments can be a **Literal** (i.e., boolean, string, number, map, vector, keyword) or a **Reference**.  A **reference** can be either a **Symbol** or a dotted pair of symbols.
+
+**Symbols** must have a value (through argument unification via args list) that is one of the supported literals (see above).  Alternatively, the value of a symbol could be a pclass instance.  In the case of a dotted pair of symbols, the first symbol designates a pclass instance and the second refers to a field of that pclass instance.
+
+A **keyword** represents a specific *mode* value (if that mode is defined in the **modes** section of the current `defpclass`).  Otherwise, it's treated as a simple literal, very similar to a string.  [In fact, when generating JSON forms of the HTN/TPN, keywords and strings have the same representation type].
+
+When specifying a complex literal as an argument value (i.e., map or vector), any of the components of that complex literal structure can be a literal of any type.  E.g., `{:age 40 :siblings ["tom" "dick" "harry"]`
+
+Lastly, following the main body of the method, there may be zero or more `between` statements.
 
 <!--* *TBD*
 * all not controllable by default, except delay
