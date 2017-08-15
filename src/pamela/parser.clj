@@ -210,7 +210,9 @@
   {k (apply merge ms)})
 
 (defn ir-methods [& methods]
-  {:methods (apply merge-keys methods)})
+  {:methods (if (empty? methods)
+              []
+              (apply merge-keys methods))})
 
 (defn ir-cond-expr [op & operands]
   (if (= op :COND-EXPR)
