@@ -8,49 +8,41 @@
   :methods
   {emit-head
    [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-name "Emit Head",
+     :doc "Heads",
+     :post {:type :literal, :value true},
      :pre
      {:type :equal,
       :args
       [{:type :field-reference, :pclass this, :field :observed-face}
        {:type :mode-reference, :pclass coin-faces, :mode :head}]},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
      :primitive true,
-     :betweens [],
-     :display-name "Emit Head",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Heads"}],
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    emit-tail
    [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-name "Emit Tail",
+     :doc "Tails",
+     :post {:type :literal, :value true},
      :pre
      {:type :equal,
       :args
       [{:type :field-reference, :pclass this, :field :observed-face}
        {:type :mode-reference, :pclass coin-faces, :mode :tail}]},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
      :primitive true,
-     :betweens [],
-     :display-name "Emit Tail",
-     :post {:type :literal, :value true},
-     :cost 0,
-     :body nil,
-     :doc "Tails"}],
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    flip
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive true,
      :betweens [],
-     :display-name "Flip",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :choose,
        :body
@@ -101,7 +93,15 @@
           :args
           [{:type :mode-reference, :pclass this, :mode :unbiased}
            {:type :literal, :value true}]}}]}],
-     :doc "Flip the coin"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Flip",
+     :doc "Flip the coin",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:biased {:type :literal, :value true},
    :unbiased {:type :literal, :value true}},
@@ -146,15 +146,7 @@
   :methods
   {flip-1000
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Flip 1000",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :sequence,
        :body
@@ -171,18 +163,18 @@
          :method flip,
          :args [],
          :field :acoin}]}],
-     :doc "Series of 1000 coin flips"}],
+     :controllable false,
+     :cost 0,
+     :display-name "Flip 1000",
+     :doc "Series of 1000 coin flips",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    flip-3
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Flip 3",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :sequence,
        :body
@@ -192,7 +184,15 @@
          :method flip,
          :args [],
          :field :acoin}]}],
-     :doc "Series of 3 coin flips"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Flip 3",
+     :doc "Series of 3 coin flips",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
  pamela/lvars
  {:lvars

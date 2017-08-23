@@ -4,19 +4,19 @@
   :methods
   {example
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Example",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :try,
        :body [{:type :delay, :body nil}],
        :catch [{:type :delay, :body nil}],
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-     :doc "try example"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Example",
+     :doc "try example",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

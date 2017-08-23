@@ -44,6 +44,7 @@ Changes
 * Fix IR generation defpmethods with betweens, but no body (Closes #128)
 * Fix Temporal constraint not properly defined for some special cases (Closes #120)
 * Support defining a pclass without defpmethods (Closes #113)
+* Plant functions can begin with any of the reserved function symbols (Closes #121)
 
 ### [0.6.0] - 2017-03-08
 

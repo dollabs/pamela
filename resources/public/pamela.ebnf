@@ -20,7 +20,8 @@ modes = <MODES> ( mode-enum | mode-map )
 mode-enum = <LB> keyword* <RB>
 mode-map = <LM> mode-init+ <RM>
 mode-init = keyword cond-expr
-cond-expr = ( TRUE | FALSE | and-expr | or-expr | implies-expr | not-expr | equal-expr)
+cond-expr = ( TRUE | FALSE | and-expr | or-expr | implies-expr |
+              not-expr | equal-expr )
 and-expr = <LP> <AND> ( cond-expr | cond-operand )+ <RP>
 or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
@@ -32,7 +33,8 @@ mode-expr = <LP> <MODE_OF> symbol keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = keyword ( <LM> field-init+ <RM> | field-type )
-field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor | mode-expr )
+field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor |
+               mode-expr )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type
@@ -46,7 +48,8 @@ transitions = <TRANSITIONS> <LM> transition* <RM>
 transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
-cond = ( doc | pre | post | opt-bounds | cost | reward | controllable | primitive | display-name )
+cond = ( doc | pre | post | opt-bounds | cost | reward | controllable |
+         primitive | display-name )
 trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
 pre = <PRE> ( keyword | cond-expr )
@@ -54,44 +57,46 @@ post = <POST> ( keyword | cond-expr )
 
 display-name = <DISPLAY_NAME> string
 
-fn = ( ask | assert | choose | choose-whenever | optional | maintain | delay | parallel | slack-parallel | soft-parallel | sequence | slack-sequence | soft-sequence | tell | try | unless | when | whenever | dotimes | plant-fn )
+fn = ( ask | assert | choose | choose-whenever | delay | dotimes | maintain |
+       optional | parallel | sequence | slack-parallel | slack-sequence |
+       soft-parallel | soft-sequence | tell | try | unless | when | whenever |
+       plant-fn )
 
 ask = <LP> <ASK> cond-expr opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
 choice = <LP> <CHOICE> choice-opt* fn <RP>
 choose = <LP> <CHOOSE> choose-opt* choice+ <RP>
 choose-whenever = <LP> <CHOOSE_WHENEVER> choose-opt* choice+ <RP>
-dotimes = <LP> <DOTIMES> natural fn <RP>
-optional = <LP> <OPTIONAL> fn-opt* fn <RP>
-maintain = <LP> <MAINTAIN> cond-expr opt-bounds? fn <RP>
 delay = <LP> <DELAY> delay-opt*  <RP>
+dotimes = <LP> <DOTIMES> natural fn <RP>
+maintain = <LP> <MAINTAIN> cond-expr opt-bounds? fn <RP>
+optional = <LP> <OPTIONAL> fn-opt* fn <RP>
 parallel = <LP> <PARALLEL> fn-opt* fn+ <RP>
-slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
-soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
-plant-fn = <LP> ( symbol <'.'> symbol | plant-fn-symbol | keyword ) plant-opt* argval* <RP>
-plant-fn-symbol = !reserved-fn-symbol symbol
-reserved-fn-symbol = ( <ASK> | <ASSERT> | <CHOOSE> | <CHOOSE_WHENEVER> | <OPTIONAL> | <MAINTAIN> | <DELAY> | <PARALLEL> | <SLACK_PARALLEL> | <SOFT_PARALLEL> | <SEQUENCE> | <SLACK_SEQUENCE> | <SOFT_SEQUENCE> | <TELL> | <TRY> | <UNLESS> | <WHEN> | <WHENEVER> | <DOTIMES> )
 sequence = <LP> <SEQUENCE> fn-opt* fn+ <RP>
+slack-parallel = <LP> <SLACK_PARALLEL> fn-opt* fn+ <RP>
 slack-sequence = <LP> <SLACK_SEQUENCE> fn-opt* fn+ <RP>
+soft-parallel = <LP> <SOFT_PARALLEL> fn-opt* fn+ <RP>
 soft-sequence = <LP> <SOFT_SEQUENCE> fn-opt* fn+ <RP>
 tell = <LP> <TELL> cond-expr <RP>
 try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
+plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt*
+                  argval* <RP>
 
 between-stmt = (between | between-ends | between-starts)
-
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
 between-ends = <LP> <BETWEEN-ENDS> keyword keyword between-opt+ <RP>
 between-starts = <LP> <BETWEEN-STARTS> keyword keyword between-opt+ <RP>
 
-fn-opt = ( label | opt-bounds | cost-le | reward-ge )
-choose-opt = ( fn-opt | exactly | min | max )
-delay-opt = ( label | opt-bounds | cost-le | reward-ge | controllable )
 between-opt = ( opt-bounds | cost-le | reward-ge )
-plant-opt = ( label | opt-bounds | cost | reward | controllable )
-choice-opt = ( label | opt-bounds | cost | reward | probability | guard | enter | leave )
+fn-opt = ( between-opt | label )
+choose-opt = ( fn-opt | exactly | min | max )
+delay-opt = ( fn-opt | controllable )
+plant-opt = ( opt-bounds | label | cost | reward | controllable )
+choice-opt = ( opt-bounds | label | cost | reward | probability | guard |
+               enter | leave )
 
 opt-bounds = <BOUNDS> bounds
 label = <LABEL> keyword
@@ -114,12 +119,11 @@ number-ref = ( symbol | lvar-ctor | number )
 lvar-ctor = ( <LP> <LVAR> <RP> | <LP> <LVAR> string lvar-init? <RP> )
 lvar-init = literal | bounds-literal
 
-pclass-ctor = <LP> pclass-name pclass-ctor-arg* pclass-ctor-option* <RP>
-pclass-name = !MODE_OF symbol
+pclass-ctor = <LP> symbol pclass-ctor-arg* pclass-ctor-option* <RP>
 pclass-ctor-arg = ( boolean | string | number | symbol | pclass-arg-keyword )
 pclass-ctor-option = ( id | plant-part | interface )
 pclass-arg-keyword = !reserved-pclass-ctor-keyword keyword
-reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> | <PLANT_PART> )
+reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> | <PLANT_PART> ) stop-token
 id = <ID> string
 plant-part = <PLANT_PART> string
 interface = <INTERFACE> string
@@ -127,12 +131,24 @@ interface = <INTERFACE> string
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
-symbol = !boolean #'[A-Za-z][A-Za-z0-9-_]*'
+symbol = !reserved-symbol #'[A-Za-z][A-Za-z0-9-_]*'
+reserved-symbol = reserved-string stop-token
+reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN-ENDS> |
+                    <BETWEEN-STARTS> | <CATCH> | <CHOICE> | <CHOOSE> |
+                    <CHOOSE_WHENEVER> | <DEFPCLASS> | <DEFPMETHOD> | <DELAY> |
+                    <DOTIMES> | <FALSE> | <IMPLIES> | <LVAR> | <MAINTAIN> |
+                    <MODE_OF> | <NOT> | <OPTIONAL> | <OR> | <PARALLEL> |
+                    <SEQUENCE> | <SLACK_PARALLEL> | <SLACK_SEQUENCE> |
+                    <SOFT_PARALLEL> | <SOFT_SEQUENCE> | <TELL> | <TRUE> |
+                    <TRY> | <UNLESS> | <WHEN> | <WHENEVER> )
+stop-token = (whitespace | '.' | LP | RP )
+
 literal = ( boolean | string | keyword | number )
 argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
-keyword = #'^:[A-Za-z0-9\:\*\-\_\.]+'
+                   stop-token
+keyword = #'^:[A-Za-z0-9:\*\.-_]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
@@ -217,3 +233,5 @@ LB = <'['>
 RB = <']'>
 LM = <'{'>
 RM = <'}'>
+
+whitespace = #'([,\\s]+|;.*\\n)+'

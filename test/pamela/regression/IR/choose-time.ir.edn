@@ -4,15 +4,7 @@
   :methods
   {example
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Example",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :choose,
        :body
@@ -25,5 +17,13 @@
         {:type :choice,
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [201 300]}]}]}],
-     :doc "choose based on time"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Example",
+     :doc "choose based on time",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

@@ -31,7 +31,7 @@
                     [org.clojure/tools.logging "0.3.1"]
                     ;; utilities
                     [environ                   "1.1.0"]
-                    [instaparse                "1.4.3"]
+                    [instaparse                "1.4.7"]
                     [avenir                    "0.2.2"]
                     [me.raynes/fs              "1.4.6"]
                     [camel-snake-kebab         "0.4.0"]
