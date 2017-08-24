@@ -29,3 +29,5 @@ _TBD_
 1. Handling multiple function arities (#86)
   * with only one method definition ("mdef") per name the **irks** to the **mdef** was `[pclass :methods method]`
   * now `[pclass :methods method]` is a vector or **mdefs** (which differ in signature, including arity)
+2. New syntatic organization of rubrics with PR#137
+  * In the process of fixing #121 running `boot test --namespaces testing.pamela.parser` passed 100% indicating proper semantic comparison of the maps. New rubrics were checked in to ensure that they are also syntactically identical (benefiting from the previous changes in sorting maps).
