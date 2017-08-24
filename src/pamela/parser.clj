@@ -309,17 +309,44 @@
             (recur (merge plant-opts v) argvals (first more) (rest more))
             (recur plant-opts (conj argvals v) (first more) (rest more))))))))
 
+;; NOTE: due to the refactoring of *-opts in the grammar as
+;;     between-opt = ( opt-bounds | cost-le | reward-ge )
+;;     fn-opt = ( between-opt | label )
+;;     delay-opt = ( fn-opt | controllable )
+;; AND the dispatching of those terminals in 'pamela-ir
+;;     :between-opt identity
+;;     ;; :fn-opt handled in ir-fn
+;;     ;; :delay-opt handled in ir-fn
+;; We handle the args as shown in comments below...
 (defn ir-fn [f & args]
+  (dbg-println :trace "IR-FN" f "ARGS" args)
   (loop [fn-opts {} body [] a (first args) more (rest args)]
+    (dbg-println :trace "  FN-OPTS" fn-opts "A" a)
     (if-not a
       (merge {:type f :body (if (empty? body) nil body)} fn-opts)
-      (if (and (vector? a) (#{:fn-opt :delay-opt} (first a)))
-        (recur (merge fn-opts (second a)) body (first more) (rest more))
-        (recur fn-opts (conj body a) (first more) (rest more))))))
+      (cond
+        ;; [:fn-opt OPT] where OPT is opt-bounds | cost-le | reward-ge | label
+        (and (vector? a) (= :fn-opt (first a)))
+        (recur (merge fn-opts (second a)) body
+          (first more) (rest more))
+        ;; [:delay-opt [:fn-opt OPT]]
+        ;; where OPT is opt-bounds | cost-le | reward-ge | label
+        (and (vector? a) (= :delay-opt (first a))
+          (vector? (second a)) (= :fn-opt (first (second a))))
+        (recur (merge fn-opts (-> a second second)) body
+          (first more) (rest more))
+        ;; [:delay-opt {:controllable true-or-false}]
+        (and (vector? a) (= :delay-opt (first a)) (map? (second a)))
+        (recur (merge fn-opts (second a)) body
+          (first more) (rest more))
+        :else
+        (recur fn-opts (conj body a)
+          (first more) (rest more))))))
 
 ;; by definition (at the call sites)
 ;; (#{:ask :assert :maintain :unless :when :whenever} f)
 (defn ir-fn-cond [f cond-expr & args]
+  (dbg-println :trace "IR-FN-COND" f "COND-EXPR" cond-expr "ARGS" args)
   (let [fn {:type f
             :condition cond-expr
             :body nil}
@@ -335,8 +362,9 @@
     fn))
 
 (defn ir-choice [& args]
+  (dbg-println :trace "IR-CHOICE ARGS" args)
   (loop [choice-opts {} body [] a (first args) more (rest args)]
-    ;; (log/warn "IR-CHOICE" a)
+    (dbg-println :trace "IR-CHOICE-OPTS" choice-opts "A" a)
     (if-not a
       (merge {:type :choice :body (if (empty? body) nil body)} choice-opts)
       (if (and (vector? a) (= :choice-opt (first a)))
@@ -486,7 +514,7 @@
                 :defpclass ir-defpclass
                 :defpmethod ir-defpmethod
                 :delay (partial ir-fn :delay)
-                ;; :delay-opt handled in ir-fn and ir-fn-cond
+                ;; :delay-opt handled in ir-fn
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
                 :display-name (partial ir-map-kv :display-name)
@@ -502,7 +530,7 @@
                 :fields (partial ir-k-merge :fields)
                 :float ir-float
                 :fn identity
-                ;; :fn-opt handled in ir-fn and ir-fn-cond
+                ;; :fn-opt handled in ir-fn
                 ;; :guard handled in ir-choice
                 :icon (partial ir-map-kv :icon)
                 :id ir-id
@@ -543,9 +571,7 @@
                 :pclass-ctor ir-pclass-ctor
                 :pclass-ctor-arg identity
                 :pclass-ctor-option identity
-                :pclass-name identity
                 :plant-fn ir-plant-fn
-                :plant-fn-symbol identity
                 ;; :plant-opt handled in ir-plant-fn
                 :plant-part ir-plant-part
                 :post (partial ir-map-kv :post)

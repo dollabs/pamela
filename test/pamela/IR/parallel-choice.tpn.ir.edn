@@ -7,15 +7,7 @@
   :methods
   {simple-parallel-tpn
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Simple Parallel Tpn",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :sequence,
        :body
@@ -43,5 +35,13 @@
              :name plant,
              :method unbounded,
              :args []}]}]}]}],
-     :doc "Simple Parallel TPN"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Simple Parallel Tpn",
+     :doc "Simple Parallel TPN",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

@@ -9,15 +9,7 @@
   :methods
   {example
    [{:args [],
-     :pre {:type :literal, :value true},
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-     :reward 0,
-     :controllable false,
-     :primitive false,
      :betweens [],
-     :display-name "Example",
-     :post {:type :literal, :value true},
-     :cost 0,
      :body
      [{:type :choose,
        :body
@@ -35,6 +27,14 @@
         {:type :choice,
          :body [{:type :delay, :body nil}],
          :probability {:type :lvar, :name "likelihood"}}]}],
-     :doc "choose based on probability"}]},
+     :controllable false,
+     :cost 0,
+     :display-name "Example",
+     :doc "choose based on probability",
+     :post {:type :literal, :value true},
+     :pre {:type :literal, :value true},
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
  pamela/lvars {:lvars {"likelihood" :unset}, :type :lvars}}

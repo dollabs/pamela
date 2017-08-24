@@ -261,7 +261,7 @@
      [:keyword ":bulb1"]
      [:field-type
       [:pclass-ctor
-       [:pclass-name [:symbol "bulb"]]
+       [:symbol "bulb"]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":source"]]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":drain"]]]
        [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
@@ -270,7 +270,7 @@
      [:keyword ":switchedpower"]
      [:field-type
       [:pclass-ctor
-       [:pclass-name [:symbol "psw"]]
+       [:symbol "psw"]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":source"]]]
        [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":drain"]]]
        [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
