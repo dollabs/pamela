@@ -87,8 +87,8 @@ plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt*
 
 between-stmt = (between | between-ends | between-starts)
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
-between-ends = <LP> <BETWEEN-ENDS> keyword keyword between-opt+ <RP>
-between-starts = <LP> <BETWEEN-STARTS> keyword keyword between-opt+ <RP>
+between-ends = <LP> <BETWEEN_ENDS> keyword keyword between-opt+ <RP>
+between-starts = <LP> <BETWEEN_STARTS> keyword keyword between-opt+ <RP>
 
 between-opt = ( opt-bounds | cost-le | reward-ge )
 fn-opt = ( between-opt | label )
@@ -133,8 +133,8 @@ bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
 symbol = !reserved-symbol #'[A-Za-z][A-Za-z0-9-_]*'
 reserved-symbol = reserved-string stop-token
-reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN-ENDS> |
-                    <BETWEEN-STARTS> | <CATCH> | <CHOICE> | <CHOOSE> |
+reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
+                    <BETWEEN_STARTS> | <CATCH> | <CHOICE> | <CHOOSE> |
                     <CHOOSE_WHENEVER> | <DEFPCLASS> | <DEFPMETHOD> | <DELAY> |
                     <DOTIMES> | <FALSE> | <IMPLIES> | <LVAR> | <MAINTAIN> |
                     <MODE_OF> | <NOT> | <OPTIONAL> | <OR> | <PARALLEL> |
@@ -161,8 +161,8 @@ AND = <'and'>
 ASK = <'ask'>
 ASSERT = <'assert'>
 BETWEEN = <'between'>
-BETWEEN-ENDS = <'between-ends'>
-BETWEEN-STARTS = <'between-starts'>
+BETWEEN_ENDS = <'between-ends'>
+BETWEEN_STARTS = <'between-starts'>
 BOUNDS = <':bounds'>
 CATCH = <'catch'>
 CHOICE = <'choice'>
