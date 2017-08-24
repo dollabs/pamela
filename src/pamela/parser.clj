@@ -309,6 +309,15 @@
             (recur (merge plant-opts v) argvals (first more) (rest more))
             (recur plant-opts (conj argvals v) (first more) (rest more))))))))
 
+;; NOTE: due to the refactoring of *-opts in the grammar as
+;;     between-opt = ( opt-bounds | cost-le | reward-ge )
+;;     fn-opt = ( between-opt | label )
+;;     delay-opt = ( fn-opt | controllable )
+;; AND the dispatching of those terminals in 'pamela-ir
+;;     :between-opt identity
+;;     ;; :fn-opt handled in ir-fn
+;;     ;; :delay-opt handled in ir-fn
+;; We handle the args as shown in comments below...
 (defn ir-fn [f & args]
   (dbg-println :trace "IR-FN" f "ARGS" args)
   (loop [fn-opts {} body [] a (first args) more (rest args)]
@@ -316,13 +325,17 @@
     (if-not a
       (merge {:type f :body (if (empty? body) nil body)} fn-opts)
       (cond
+        ;; [:fn-opt OPT] where OPT is opt-bounds | cost-le | reward-ge | label
         (and (vector? a) (= :fn-opt (first a)))
         (recur (merge fn-opts (second a)) body
           (first more) (rest more))
+        ;; [:delay-opt [:fn-opt OPT]]
+        ;; where OPT is opt-bounds | cost-le | reward-ge | label
         (and (vector? a) (= :delay-opt (first a))
           (vector? (second a)) (= :fn-opt (first (second a))))
         (recur (merge fn-opts (-> a second second)) body
           (first more) (rest more))
+        ;; [:delay-opt {:controllable true-or-false}]
         (and (vector? a) (= :delay-opt (first a)) (map? (second a)))
         (recur (merge fn-opts (second a)) body
           (first more) (rest more))
@@ -501,7 +514,7 @@
                 :defpclass ir-defpclass
                 :defpmethod ir-defpmethod
                 :delay (partial ir-fn :delay)
-                ;; :delay-opt handled in ir-fn and ir-fn-cond
+                ;; :delay-opt handled in ir-fn
                 :dep ir-map-kv
                 :depends (partial ir-k-merge :depends)
                 :display-name (partial ir-map-kv :display-name)
@@ -517,7 +530,7 @@
                 :fields (partial ir-k-merge :fields)
                 :float ir-float
                 :fn identity
-                ;; :fn-opt handled in ir-fn and ir-fn-cond
+                ;; :fn-opt handled in ir-fn
                 ;; :guard handled in ir-choice
                 :icon (partial ir-map-kv :icon)
                 :id ir-id
