@@ -16,7 +16,7 @@
          :depends [[qc "0.2.1"]
                    [qc-waypoints "0.2.1"]]
          :doc "Quadcopter test waypoints"}
-  :fields {:qc1 (qc :id "qc1" :interface "RMQ") ;;Note that this map (:id and :interface) is implicit
-           :qc2 (qc :id "qc2" :interface "ZMQ")
-           :qc3 (qc :id "qc3") ;this uses the default :interface (i.e., RMQ)
-           :qc-waypoints (qc-waypoints qc1 qc2 qc3)})
+  :fields {qc1 (qc :id "qc1" :interface "RMQ") ;;Note that this map (:id and :interface) is implicit
+           qc2 (qc :id "qc2" :interface "ZMQ")
+           qc3 (qc :id "qc3") ;this uses the default :interface (i.e., RMQ)
+           qc-waypoints (qc-waypoints qc1 qc2 qc3)})

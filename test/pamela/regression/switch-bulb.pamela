@@ -22,9 +22,9 @@
 
 (defpclass main []
   :meta { :doc "An example circuit: power switch and light bulb" }
-  :fields {:switchedpower (psw :id "switchedcircuit" :plant-part "psw1")}
+  :fields {switchedpower (psw :id "switchedcircuit" :plant-part "psw1")}
   :methods [(defpmethod turn-on-switch []
-              (:switchedpower.turn_on)) ;; field reference plant-fn
+              (switchedpower.turn_on)) ;; field reference plant-fn
             (defpmethod turn-off-switch []
               (switchedpower.turn_off)) ;; implied field reference plant-fn
             (defpmethod toggle-switch []

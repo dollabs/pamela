@@ -29,8 +29,8 @@
 (defpclass main []
   :meta {:doc "This defines all of the HTN methods for this domain"}
   :fields {
-           :e1h1 (host :id "actuator" :plant-part "host0101")
-           :e7h1 (host :id "actuator" :plant-part "host0701")
+           e1h1 (host :id "actuator" :plant-part "host0101")
+           e7h1 (host :id "actuator" :plant-part "host0701")
            }
 
   :methods [(defpmethod main {:display-name "Main Activity"} []

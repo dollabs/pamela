@@ -86,5 +86,5 @@
             ])
 
 (defpclass coverage-demo []
-  :fields {:sp1 (simpleplant :id "sp1" :plant-part "mypart" :interface "RMQ")
-           :run (coverage-test sp1)})
+  :fields {sp1 (simpleplant :id "sp1" :plant-part "mypart" :interface "RMQ")
+           run (coverage-test sp1)})

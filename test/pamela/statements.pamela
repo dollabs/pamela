@@ -14,14 +14,14 @@
 ;;; Test of various Pamela functions
 
 (defpclass simple-pclass [simple2-initial]
-  :fields {:simple1 {:observable true :initial "white"}
-           :simple2 {:observable true :initial simple2-initial}}
+  :fields {simple1 {:observable true :initial "white"}
+           simple2 {:observable true :initial simple2-initial}}
   :methods [(defpmethod simple-method []
               )]
   )
 
 (defpclass main []
-  :fields {:field1 (simple-pclass "black")}
+  :fields {field1 (simple-pclass "black")}
   :methods [(defpmethod main []
               (test-of-various-statements))
 
@@ -33,10 +33,10 @@
 
             (defpmethod test-of-various-statements []
               (sequence
-               (one-arg-method :field1.:simple2) ;;Field reference syntax will change soon
+               (one-arg-method (field-of field1 simple2)) ;;Field reference syntax will change soon
                (assert (= foo :illuminated) :bounds [3 5])
                (ask (= bar :dead) :bounds [4 7])
-               (ask (= :field1.:simple2 "white") :bounds [4 7])
+               (ask (= (field-of field1 simple2) "white") :bounds [4 7])
                (tell (= door :open))
                (initialize)
                ;; These commented-out statements aren't yet supported for HTN/TPN generation

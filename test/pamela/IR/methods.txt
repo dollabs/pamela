@@ -1,0 +1,99 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant-methods"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "primitive"]
+     [:cond-map [:cond [:doc [:string "A primitive method"]]]]
+     [:args [:symbol "arg1"] [:symbol "arg2"]]]
+    [:defpmethod
+     [:symbol "nonprimitive"]
+     [:cond-map
+      [:cond [:doc [:string "A non primitive method"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:plant-fn
+       [:symbol "this"]
+       [:symbol "primitive"]
+       [:argval [:number [:float "42.445370"]]]
+       [:argval [:number [:float "-71.227891"]]]]]]]]]
+ [:defpclass
+  [:symbol "tpn-methods"]
+  [:args [:symbol "arg1"] [:symbol "arg2"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry
+     [:doc [:string "TPN with primitive and non primitive methods"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "entry-method"]
+     [:cond-map [:cond [:doc [:string "Check methods"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:sequence
+         [:fn
+          [:plant-fn
+           [:symbol "arg1"]
+           [:symbol "primitive"]
+           [:plant-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "5"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445370"]]]
+           [:argval [:number [:float "-71.227891"]]]]]]]
+       [:fn
+        [:sequence
+         [:fn
+          [:plant-fn
+           [:symbol "arg2"]
+           [:symbol "nonprimitive"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "wrapper"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:depends
+      [:dep [:symbol "plant-methods"] [:string "0.2.1"]]
+      [:dep [:symbol "tpn-methods"] [:string "0.2.1"]]]]
+    [:meta-entry [:doc [:string "Test methods"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "qc1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant-methods"]
+       [:pclass-ctor-option [:id [:string "qc1"]]]]]]
+    [:field
+     [:symbol "qc2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant-methods"]
+       [:pclass-ctor-option [:id [:string "qc2"]]]]]]
+    [:field
+     [:symbol "go"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "tpn-methods"]
+       [:pclass-ctor-arg [:symbol "qc1"]]
+       [:pclass-ctor-arg [:symbol "qc2"]]]]]]]]]

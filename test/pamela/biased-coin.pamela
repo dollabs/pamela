@@ -21,7 +21,7 @@
 (defpclass coin []
   :modes [:biased :unbiased]
 
-  :fields {:observed-face {:initial (mode-of coin-faces :head)
+  :fields {observed-face {:initial (mode-of coin-faces :head)
                            :observable true}}
 
   :transitions {:biased:unbiased   {:pre         :biased :post :unbiased
@@ -35,11 +35,11 @@
 
   :methods [(defpmethod emit-head
               {:doc "Heads"
-               :pre (= :observed-face (mode-of coin-faces :head))}
+               :pre (= observed-face (mode-of coin-faces :head))}
               []) ;; no body ==> :primitive
             (defpmethod emit-tail
               {:doc "Tails"
-               :pre (= :observed-face (mode-of coin-faces :tail))}
+               :pre (= observed-face (mode-of coin-faces :tail))}
               [])
             (defpmethod flip
               {:doc "Flip the coin"
@@ -60,7 +60,7 @@
                       (emit-tail))))))])
 
 (defpclass main []
-  :fields {:acoin (coin :id "penny" :plant-part "coin-fsm" :interface "RMQ")}
+  :fields {acoin (coin :id "penny" :plant-part "coin-fsm" :interface "RMQ")}
   :methods [(defpmethod flip-3
                         {:doc "Series of 3 coin flips"}
                         []

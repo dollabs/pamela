@@ -1,0 +1,120 @@
+[:pamela
+ [:defpclass
+  [:symbol "host"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "video-session"]
+     [:cond-map [:cond [:display-name [:string "Video Session"]]]]
+     [:args
+      [:symbol "client-host"]
+      [:symbol "server-host"]
+      [:symbol "display"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "15"]]
+               [:number [:integer "15"]]]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "video"]
+         [:argval [:symbol "client-host"]]
+         [:argval [:symbol "server-host"]]
+         [:argval [:symbol "display"]]]]]]]
+    [:defpmethod
+     [:symbol "file-transfer"]
+     [:cond-map [:cond [:display-name [:string "File Xfer"]]]]
+     [:args [:symbol "server-host"] [:symbol "size"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:plant-fn
+         [:symbol "ftp"]
+         [:argval [:symbol "server-host"]]
+         [:argval [:symbol "size"]]]]]]]
+    [:defpmethod
+     [:symbol "ftp"]
+     [:args [:symbol "server-host"] [:symbol "size"]]]
+    [:defpmethod
+     [:symbol "video"]
+     [:args [:symbol "client"] [:symbol "server"] [:symbol "display"]]]
+    [:defpmethod
+     [:symbol "sleep"]
+     [:args [:symbol "duration-secs"]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string
+       "This defines all of the HTN methods for this domain"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "e1h1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "host"]
+       [:pclass-ctor-option [:id [:string "actuator"]]]
+       [:pclass-ctor-option [:plant-part [:string "host0101"]]]]]]
+    [:field
+     [:symbol "e7h1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "host"]
+       [:pclass-ctor-option [:id [:string "actuator"]]]
+       [:pclass-ctor-option [:plant-part [:string "host0701"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:display-name [:string "Main Activity"]]]]
+     [:args]
+     [:fn
+      [:plant-fn
+       [:symbol "main-internal"]
+       [:argval [:string "host0101"]]
+       [:argval [:string "host0701"]]]]]
+    [:defpmethod
+     [:symbol "main-internal"]
+     [:cond-map
+      [:cond [:display-name [:string "test1"]]]
+      [:cond [:doc [:string "The top-level task for this mission"]]]]
+     [:args [:symbol "server-host"] [:symbol "client-host"]]
+     [:fn
+      [:parallel
+       [:fn
+        [:plant-fn
+         [:symbol "e7h1"]
+         [:symbol "file-transfer"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "7"]]]]]]
+         [:argval [:symbol "server-host"]]
+         [:argval [:string "100MB"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "e7h1"]
+         [:symbol "video-session"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "20"]]
+             [:number [:integer "35"]]]]]]
+         [:argval [:symbol "client-host"]]
+         [:argval [:symbol "server-host"]]
+         [:argval [:string "1"]]]]]]]]]]]

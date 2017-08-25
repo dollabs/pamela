@@ -83,6 +83,6 @@
          :depends [[qc "0.3.0"]
                    [qc-waypoints "0.3.0"]]
          :doc "Quadcopter test waypoints"}
-  :fields {:qc1 (qc :id "qc1" :plant-part "pp1" :interface "RMQ")
-           :qc2 (qc :id "qc2" :plant-part "pp2" :interface "ZMQ")
-           :qc3 (qc :id "qc3" :plant-part "pp3")})
+  :fields {qc1 (qc :id "qc1" :plant-part "pp1" :interface "RMQ")
+           qc2 (qc :id "qc2" :plant-part "pp2" :interface "ZMQ")
+           qc3 (qc :id "qc3" :plant-part "pp3")})

@@ -1,0 +1,11 @@
+[:pamela
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn [:parallel [:fn [:plant-fn [:symbol "tell-branch"]]]]]]
+    [:defpmethod [:symbol "tell-branch"] [:args]]]]]]

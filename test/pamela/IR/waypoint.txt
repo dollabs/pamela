@@ -1,0 +1,88 @@
+[:pamela
+ [:defpclass
+  [:symbol "quadcopter-plant"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "wp1"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 1"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "wp2"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 2"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "wp3"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 3"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "wp4"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 4"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "wp5"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 5"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "waypoints-test"]
+  [:args [:symbol "quadcopter-plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:depends [:dep [:symbol "quadcopter-plant"] [:string "0.2.0"]]]]
+    [:meta-entry [:doc [:string "Quadcopter test waypoints"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "waypoints"]
+     [:cond-map [:cond [:doc [:string "QC waypoints"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp1"]]]
+       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp2"]]]
+       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp3"]]]
+       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp4"]]]
+       [:fn
+        [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp5"]]]]]]]]]]

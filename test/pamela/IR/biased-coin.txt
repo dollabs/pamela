@@ -1,0 +1,183 @@
+[:pamela
+ [:defpclass
+  [:symbol "coin-faces"]
+  [:args]
+  [:option
+   [:meta [:meta-entry [:doc [:string "Enumeration of coin faces"]]]]]
+  [:option
+   [:modes [:mode-enum [:keyword ":head"] [:keyword ":tail"]]]]]
+ [:defpclass
+  [:symbol "coin"]
+  [:args]
+  [:option
+   [:modes [:mode-enum [:keyword ":biased"] [:keyword ":unbiased"]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "observed-face"]
+     [:field-init
+      [:initial
+       [:field-type
+        [:mode-expr [:symbol "coin-faces"] [:keyword ":head"]]]]]
+     [:field-init [:observable [:boolean [:TRUE]]]]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword ":biased:unbiased"]
+     [:trans-map
+      [:trans [:pre [:keyword ":biased"]]]
+      [:trans [:post [:keyword ":unbiased"]]]
+      [:trans
+       [:probability
+        [:number-ref
+         [:lvar-ctor
+          [:string "tBU"]
+          [:lvar-init [:literal [:number [:float "0.1"]]]]]]]]]]
+    [:transition
+     [:keyword ":unbiased:biased"]
+     [:trans-map
+      [:trans [:pre [:keyword ":unbiased"]]]
+      [:trans [:post [:keyword ":biased"]]]
+      [:trans
+       [:probability
+        [:number-ref
+         [:lvar-ctor
+          [:string "tUB"]
+          [:lvar-init [:literal [:number [:float "0.1"]]]]]]]]]]
+    [:transition
+     [:keyword ":biased:biased"]
+     [:trans-map
+      [:trans [:pre [:keyword ":biased"]]]
+      [:trans [:post [:keyword ":biased"]]]
+      [:trans
+       [:probability
+        [:number-ref
+         [:lvar-ctor
+          [:string "tBB"]
+          [:lvar-init [:literal [:number [:float "0.9"]]]]]]]]]]
+    [:transition
+     [:keyword ":unbiased:unbiased"]
+     [:trans-map
+      [:trans [:pre [:keyword ":unbiased"]]]
+      [:trans [:post [:keyword ":unbiased"]]]
+      [:trans
+       [:probability
+        [:number-ref
+         [:lvar-ctor
+          [:string "tUU"]
+          [:lvar-init [:literal [:number [:float "0.9"]]]]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "emit-head"]
+     [:cond-map
+      [:cond [:doc [:string "Heads"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol "observed-face"]]
+          [:cond-operand
+           [:mode-expr [:symbol "coin-faces"] [:keyword ":head"]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "emit-tail"]
+     [:cond-map
+      [:cond [:doc [:string "Tails"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol "observed-face"]]
+          [:cond-operand
+           [:mode-expr [:symbol "coin-faces"] [:keyword ":tail"]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "flip"]
+     [:cond-map
+      [:cond [:doc [:string "Flip the coin"]]]
+      [:cond [:primitive [:boolean [:TRUE]]]]]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:literal [:keyword ":biased"]]]
+            [:cond-operand [:literal [:boolean [:TRUE]]]]]]]]
+        [:fn
+         [:choose
+          [:choice
+           [:choice-opt
+            [:probability
+             [:number-ref
+              [:lvar-ctor
+               [:string "eBH"]
+               [:lvar-init [:literal [:number [:float "0.8"]]]]]]]]
+           [:fn [:plant-fn [:symbol "emit-head"]]]]
+          [:choice
+           [:choice-opt
+            [:probability
+             [:number-ref
+              [:lvar-ctor
+               [:string "eBT"]
+               [:lvar-init [:literal [:number [:float "0.2"]]]]]]]]
+           [:fn [:plant-fn [:symbol "emit-tail"]]]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:literal [:keyword ":unbiased"]]]
+            [:cond-operand [:literal [:boolean [:TRUE]]]]]]]]
+        [:fn
+         [:choose
+          [:choice
+           [:choice-opt
+            [:probability
+             [:number-ref
+              [:lvar-ctor
+               [:string "eUH"]
+               [:lvar-init [:literal [:number [:float "0.51"]]]]]]]]
+           [:fn [:plant-fn [:symbol "emit-head"]]]]
+          [:choice
+           [:choice-opt
+            [:probability
+             [:number-ref
+              [:lvar-ctor
+               [:string "eUT"]
+               [:lvar-init [:literal [:number [:float "0.49"]]]]]]]]
+           [:fn [:plant-fn [:symbol "emit-tail"]]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "acoin"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "coin"]
+       [:pclass-ctor-option [:id [:string "penny"]]]
+       [:pclass-ctor-option [:plant-part [:string "coin-fsm"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "flip-3"]
+     [:cond-map [:cond [:doc [:string "Series of 3 coin flips"]]]]
+     [:args]
+     [:fn
+      [:dotimes
+       [:natural "3"]
+       [:fn [:plant-fn [:symbol "acoin"] [:symbol "flip"]]]]]]
+    [:defpmethod
+     [:symbol "flip-1000"]
+     [:cond-map [:cond [:doc [:string "Series of 1000 coin flips"]]]]
+     [:args]
+     [:fn
+      [:dotimes
+       [:natural "10"]
+       [:fn [:plant-fn [:symbol "acoin"] [:symbol "flip"]]]]]]]]]]

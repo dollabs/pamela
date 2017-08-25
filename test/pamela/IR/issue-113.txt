@@ -1,0 +1,2 @@
+[:pamela
+ [:defpclass [:symbol "issue-113"] [:args] [:option [:methods]]]]

@@ -1,0 +1,25 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "bounded"]
+     [:cond-map
+      [:cond [:doc [:string "Bounded"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "5"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "unbounded"]
+     [:cond-map [:cond [:doc [:string "Unbounded"]]]]
+     [:args]]]]]]

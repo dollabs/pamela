@@ -1,0 +1,31 @@
+[:pamela
+ [:defpclass
+  [:symbol "parallel-choice-tpn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:depends [:dep [:symbol "plant"] [:string "0.2.0"]]]]
+    [:meta-entry
+     [:doc [:string "Parallel and Choice, each with 2 Activities"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "simple-parallel-tpn"]
+     [:cond-map [:cond [:doc [:string "Simple Parallel TPN"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:parallel
+         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
+         [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]
+       [:fn
+        [:choose
+         [:choice
+          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]]
+         [:choice
+          [:fn
+           [:plant-fn
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]]

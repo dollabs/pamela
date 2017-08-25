@@ -1,0 +1,21 @@
+[:pamela
+ [:defpclass
+  [:symbol "parallel-always"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:doc [:string "parallel example with no time bounds"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "parallel example"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]]]]]]]]

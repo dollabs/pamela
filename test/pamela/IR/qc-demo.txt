@@ -1,0 +1,42 @@
+[:pamela
+ [:defpclass
+  [:symbol "qc-demo"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry
+     [:depends
+      [:dep [:symbol "qc"] [:string "0.2.1"]]
+      [:dep [:symbol "qc-waypoints"] [:string "0.2.1"]]]]
+    [:meta-entry [:doc [:string "Quadcopter test waypoints"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "qc1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc1"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+    [:field
+     [:symbol "qc2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc2"]]]
+       [:pclass-ctor-option [:interface [:string "ZMQ"]]]]]]
+    [:field
+     [:symbol "qc3"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc3"]]]]]]
+    [:field
+     [:symbol "qc-waypoints"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc-waypoints"]
+       [:pclass-ctor-arg [:symbol "qc1"]]
+       [:pclass-ctor-arg [:symbol "qc2"]]
+       [:pclass-ctor-arg [:symbol "qc3"]]]]]]]]]

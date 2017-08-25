@@ -1,0 +1,90 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-a"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "2"]]
+          [:number [:integer "4"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-b"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "3"]]
+          [:number [:integer "6"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-c"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "4"]]
+          [:number [:integer "8"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-d"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "2"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-e"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "5"]]
+          [:number [:integer "10"]]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "sequence-feasible"]
+  [:args [:symbol "plnt"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string "An example of infeasible sequence of activties"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "main"]
+     [:field-type [:pclass-ctor [:symbol "sequence-feasible"]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "Simple TPN with constraints"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "10"]]
+            [:number [:integer "30"]]]]]]]
+       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-a"]]]
+       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-b"]]]
+       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-c"]]]
+       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-d"]]]
+       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]]

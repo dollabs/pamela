@@ -1,0 +1,9 @@
+[:pamela
+ [:defpclass
+  [:symbol "two"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Second"]]]]]
+  [:option [:modes [:mode-enum [:keyword ":c"] [:keyword ":d"]]]]]]

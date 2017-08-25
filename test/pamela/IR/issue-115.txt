@@ -1,0 +1,48 @@
+[:pamela
+ [:defpclass
+  [:symbol "test"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:plant-fn [:symbol "perform-activities"]]]
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "10"]]
+               [:number [:integer "10"]]]]]]]]]]
+       [:fn [:plant-fn [:symbol "perform-activities"]]]]]]
+    [:defpmethod
+     [:symbol "perform-activities"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
+       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
+       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
+       [:fn
+        [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]]]]
+    [:defpmethod
+     [:symbol "perform-15-minutes-of-activities"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]
+       [:fn [:plant-fn [:symbol "something-simple"]]]]]]
+    [:defpmethod [:symbol "something-simple"] [:args]]]]]]

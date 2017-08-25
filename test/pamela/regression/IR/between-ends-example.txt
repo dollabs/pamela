@@ -1,0 +1,24 @@
+[:pamela
+ [:defpclass
+  [:symbol "between-ends-example"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "between-ends example"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "between-ends example"]]]]
+     [:args]
+     [:between-stmt
+      [:between-ends
+       [:keyword ":a"]
+       [:keyword ":b"]
+       [:between-opt
+        [:opt-bounds
+         [:bounds
+          [:bounds-literal
+           [:number [:integer "1"]]
+           [:number [:integer "100"]]]]]]]]]]]]]

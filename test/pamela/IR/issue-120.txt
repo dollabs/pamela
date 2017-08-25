@@ -1,0 +1,148 @@
+[:pamela
+ [:defpclass
+  [:symbol "issue-120"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn [:plant-fn [:symbol "top-level"]]]]
+    [:defpmethod
+     [:symbol "top-level"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:plant-fn [:symbol "ex-choose-1"]]]
+       [:fn [:plant-fn [:symbol "ex-choose-2"]]]
+       [:fn [:plant-fn [:symbol "ex-parallel"]]]
+       [:fn [:plant-fn [:symbol "ex-sequence"]]]]]]
+    [:defpmethod
+     [:symbol "ex-choose-1"]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:fn
+         [:plant-fn
+          [:symbol "action"]
+          [:plant-opt
+           [:opt-bounds
+            [:bounds
+             [:bounds-literal
+              [:number [:integer "1"]]
+              [:number [:integer "10"]]]]]]]]]
+       [:choice
+        [:fn
+         [:plant-fn
+          [:symbol "action"]
+          [:plant-opt
+           [:opt-bounds
+            [:bounds
+             [:bounds-literal
+              [:number [:integer "1"]]
+              [:number [:integer "20"]]]]]]]]]
+       [:choice
+        [:fn
+         [:plant-fn
+          [:symbol "action"]
+          [:plant-opt
+           [:opt-bounds
+            [:bounds
+             [:bounds-literal
+              [:number [:integer "1"]]
+              [:number [:integer "30"]]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "ex-choose-2"]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "10"]]]]]]
+        [:fn [:plant-fn [:symbol "action"]]]]
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "20"]]]]]]
+        [:fn [:plant-fn [:symbol "action"]]]]
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "30"]]]]]]
+        [:fn [:plant-fn [:symbol "action"]]]]]]]
+    [:defpmethod
+     [:symbol "ex-parallel"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "3"]]
+             [:number [:integer "10"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "3"]]
+             [:number [:integer "20"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "3"]]
+             [:number [:integer "30"]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "ex-sequence"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "4"]]
+             [:number [:integer "10"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "3"]]
+             [:number [:integer "20"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "action"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "4"]]
+             [:number [:integer "30"]]]]]]]]]]]
+    [:defpmethod [:symbol "action"] [:args]]]]]]

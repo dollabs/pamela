@@ -1,0 +1,28 @@
+[:pamela
+ [:defpclass
+  [:symbol "parallel-bounds"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:doc [:string "parallel example with time bounds"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "parallel example"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "1"]]
+            [:number [:integer "100"]]]]]]]
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]]]]]]]]

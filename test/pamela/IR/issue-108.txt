@@ -1,0 +1,86 @@
+[:pamela
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main1"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "3"]]
+          [:number [:integer "21"]]]]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "20"]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "submethod"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "10"]]]]]]]]
+       [:fn [:plant-fn [:symbol "submethod"]]]
+       [:fn [:plant-fn [:symbol "submethod"]]]]]]
+    [:defpmethod
+     [:symbol "submethod"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "5"]]
+          [:number [:integer "11"]]]]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "9"]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "primitive-method"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "2"]]]]]]]]
+       [:fn [:plant-fn [:symbol "primitive-method"]]]
+       [:fn
+        [:plant-fn
+         [:symbol "primitive-method-b"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "3"]]]]]]]]
+       [:fn [:plant-fn [:symbol "primitive-method-b"]]]]]]
+    [:defpmethod [:symbol "primitive-method"] [:args]]
+    [:defpmethod
+     [:symbol "primitive-method-b"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "1"]]]]]]]
+     [:args]]]]]]

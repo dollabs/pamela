@@ -1,0 +1,53 @@
+[:pamela
+ [:defpclass
+  [:symbol "parallel-feasible"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string
+       "A feasible choice to be chewed by contraint solver"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "Entry point"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "50"]]
+            [:number [:integer "100"]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "option"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "55"]]
+             [:number [:integer "65"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "option"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "65"]]
+             [:number [:integer "75"]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol "option"]
+         [:plant-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "75"]]
+             [:number [:integer "85"]]]]]]]]]]]
+    [:defpmethod [:symbol "option"] [:args]]]]]]

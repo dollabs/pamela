@@ -23,7 +23,7 @@
 
 (defpclass sequence-feasible [plnt]
   :meta {:doc "An example of infeasible sequence of activties"}
-  :fields {:main (sequence-feasible)}
+  :fields {main (sequence-feasible)}
   :methods [(defpmethod main
               {:doc "Simple TPN with constraints"}
               []

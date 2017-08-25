@@ -62,9 +62,9 @@
                 (plnt.do-g :label :g :cost 4 :bounds [2 5])))])
 
 (defpclass main []
-  :fields {:plnt (plant)
-           :tpn (first-tpn :plnt)})
+  :fields {plnt (plant)
+           tpn (first-tpn plnt)})
 
 (defpclass main-htn []
-  :fields {:plnt (plant)
-           :tpn (first-tpn-htn :plnt)})
+  :fields {plnt (plant)
+           tpn (first-tpn-htn plnt)})

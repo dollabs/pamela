@@ -31,7 +31,7 @@
 
 (defpclass isr-htn [sensor]
   :meta {:doc "This defines all of the HTN methods for this ISR domain"}
-  :fields {:sensor-f sensor}
+  :fields {sensor-f sensor}
   :methods [(defpmethod main [a b c d]
               (sequence
                (get-data-at a)
@@ -41,8 +41,8 @@
                (evidence-and-interpret d)))
             (defpmethod get-data-at [loc]
               (sequence
-               (:sensor-f.go-to loc)
-               (:sensor-f.capture :bounds [5 10] loc)))
+               (sensor-f.go-to loc)
+               (sensor-f.capture :bounds [5 10] loc)))
             (defpmethod get-data-and-interpret [location1 location2]
               (parallel
                (evidence-and-interpret location1)
@@ -52,16 +52,16 @@
                (evidence from)
                (interpret from)))
             (defpmethod evidence [at]
-              (:sensor-f.evidence :bounds [15 25] at))
+              (sensor-f.evidence :bounds [15 25] at))
             (defpmethod interpret [place]
               (choose
-               (choice (:sensor-f.interpret1 :bounds [15 25] place))
-               (choice (:sensor-f.interpret2 :bounds [15 25] place))
-               (choice (:sensor-f.interpret3 :bounds [15 25] place))))
+               (choice (sensor-f.interpret1 :bounds [15 25] place))
+               (choice (sensor-f.interpret2 :bounds [15 25] place))
+               (choice (sensor-f.interpret3 :bounds [15 25] place))))
             ]
   )
 
 (defpclass isr-htn-demo []
   :meta {:doc "ISR HTN Demo"}
-  :fields {:plant (sensor :id "sensor1" :plant-part "isr1" :interface "RMQ")
-           :htn (isr-htn plant)})
+  :fields {plant (sensor :id "sensor1" :plant-part "isr1" :interface "RMQ")
+           htn (isr-htn plant)})
