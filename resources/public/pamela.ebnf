@@ -148,7 +148,7 @@ argval = ( symbol | boolean | string | number | safe-keyword )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
                    stop-token
-keyword = #'^:[A-Za-z0-9:\*\.-_]+'
+keyword = #'^:[A-Za-z0-9:*._-]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
 number = ( float | integer )
