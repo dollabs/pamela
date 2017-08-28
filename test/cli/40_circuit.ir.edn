@@ -1,19 +1,19 @@
 {bulb
  {:args [vcc vdd],
   :fields
-  {:anode
+  {anode
    {:access :private,
     :initial {:name vcc, :type :arg-reference},
     :observable false},
-   :cathode
+   cathode
    {:access :private,
     :initial {:name vdd, :type :arg-reference},
     :observable false},
-   :illumination
+   illumination
    {:access :public,
     :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
     :observable false},
-   :sensed-illumination
+   sensed-illumination
    {:access :public,
     :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
     :observable true}},
@@ -21,33 +21,33 @@
   {:depends {lightvals "0.2.0"},
    :doc "A light bulb",
    :icon "bulb.svg",
-   :version "0.2.1"},
+   :version "0.3.0"},
   :modes
   {:fail {:type :literal, :value true},
    :off
    {:args
     [{:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :illumination}
+      [{:type :field-reference, :pclass this, :field illumination}
        {:type :mode-reference, :pclass lightvals, :mode :dark}]}
      {:type :equal,
       :args
       [{:type :field-reference,
         :pclass this,
-        :field :sensed-illumination}
+        :field sensed-illumination}
        {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
     :type :and},
    :on
    {:args
     [{:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :illumination}
+      [{:type :field-reference, :pclass this, :field illumination}
        {:type :mode-reference, :pclass lightvals, :mode :bright}]}
      {:type :equal,
       :args
       [{:type :field-reference,
         :pclass this,
-        :field :sensed-illumination}
+        :field sensed-illumination}
        {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
     :type :and}},
   :transitions
@@ -62,13 +62,13 @@
      [{:type :mode-reference, :pclass this, :mode :off}
       {:type :equal,
        :args
-       [{:type :field-reference, :pclass this, :field :anode}
+       [{:type :field-reference, :pclass this, :field anode}
         {:type :mode-reference, :pclass pwrvals, :mode :high}]}
       {:type :equal,
        :args
        [{:type :field-reference,
          :pclass this,
-         :field :sensed-illumination}
+         :field sensed-illumination}
         {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
      :type :and},
     :temporal-constraints [{:type :bounds, :value [1 3]}]},
@@ -80,13 +80,13 @@
      [{:type :mode-reference, :pclass this, :mode :on}
       {:type :equal,
        :args
-       [{:type :field-reference, :pclass this, :field :anode}
+       [{:type :field-reference, :pclass this, :field anode}
         {:type :mode-reference, :pclass pwrvals, :mode :none}]}
       {:type :equal,
        :args
        [{:type :field-reference,
          :pclass this,
-         :field :sensed-illumination}
+         :field sensed-illumination}
         {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
      :type :and},
     :temporal-constraints [{:type :bounds, :value [1 3]}]}},
@@ -94,27 +94,27 @@
  circuit1
  {:args [],
   :fields
-  {:bulb1
+  {bulb1
    {:access :private,
     :initial
-    {:args [:source :drain],
+    {:args [source drain],
      :id "switchedcircuit",
      :pclass bulb,
      :plant-part "Bulb1",
      :type :pclass-ctor},
     :observable false},
-   :drain
+   drain
    {:access :private,
     :initial {:name "drain", :type :lvar},
     :observable false},
-   :source
+   source
    {:access :private,
     :initial {:name "source", :type :lvar},
     :observable false},
-   :switchedpower
+   switchedpower
    {:access :private,
     :initial
-    {:args [:source :drain],
+    {:args [source drain],
      :id "switchedcircuit",
      :interface "RMQ",
      :pclass psw,
@@ -122,9 +122,9 @@
      :type :pclass-ctor},
     :observable false}},
   :meta
-  {:depends {bulb "0.2.1", psw "0.2.1"},
+  {:depends {bulb "0.3.0", psw "0.3.0"},
    :doc "An example circuit with a power switch and light bulb",
-   :version "0.2.1"},
+   :version "0.3.0"},
   :type :pclass},
  lightvals
  {:args [],
@@ -136,20 +136,20 @@
  psw
  {:args [gnd pwr],
   :fields
-  {:TP1
+  {TP1
    {:access :private,
     :initial {:name gnd, :type :arg-reference},
     :observable false},
-   :TP2
+   TP2
    {:access :private,
     :initial {:name pwr, :type :arg-reference},
     :observable false},
-   :pwr
+   pwr
    {:access :private,
     :initial {:mode :none, :pclass pwrvals, :type :mode-reference},
     :observable false}},
   :meta
-  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.2.1"},
+  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.3.0"},
   :methods
   {reset
    [{:args [],
@@ -194,12 +194,12 @@
   {:fail {:type :literal, :value true},
    :off
    {:args
-    [{:type :field-reference, :pclass this, :field :pwr}
+    [{:type :field-reference, :pclass this, :field pwr}
      {:type :mode-reference, :pclass pwrvals, :mode :none}],
     :type :equal},
    :on
    {:args
-    [{:type :field-reference, :pclass this, :field :pwr}
+    [{:type :field-reference, :pclass this, :field pwr}
      {:type :mode-reference, :pclass pwrvals, :mode :high}],
     :type :equal}},
   :transitions

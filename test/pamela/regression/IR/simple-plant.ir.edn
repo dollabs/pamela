@@ -53,11 +53,11 @@
  simple-plant-demo
  {:args [],
   :fields
-  {:run
+  {run
    {:access :private,
     :initial {:args [sp1], :pclass planttest, :type :pclass-ctor},
     :observable false},
-   :sp1
+   sp1
    {:access :private,
     :initial
     {:args [],

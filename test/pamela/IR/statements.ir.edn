@@ -4,7 +4,7 @@
  main
  {:args [],
   :fields
-  {:field1
+  {field1
    {:access :private,
     :initial
     {:args ["black"], :pclass simple-pclass, :type :pclass-ctor},
@@ -59,7 +59,8 @@
        [{:type :plant-fn-symbol,
          :name this,
          :method one-arg-method,
-         :args [:field1.:simple2]}
+         :args
+         [{:type :field-reference, :pclass field1, :field simple2}]}
         {:type :assert,
          :condition
          {:type :equal,
@@ -82,8 +83,8 @@
           :args
           [{:type :field-reference-field,
             :pclass this,
-            :field :field1,
-            :value :simple2}
+            :field field1,
+            :value simple2}
            {:type :literal, :value "white"}]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [4 7]}]}
@@ -109,11 +110,11 @@
  simple-pclass
  {:args [simple2-initial],
   :fields
-  {:simple1
+  {simple1
    {:access :private,
     :initial {:type :literal, :value "white"},
     :observable true},
-   :simple2
+   simple2
    {:access :private,
     :initial {:name simple2-initial, :type :arg-reference},
     :observable true}},

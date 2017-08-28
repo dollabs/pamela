@@ -65,7 +65,7 @@
  example
  {:args [camera],
   :fields
-  {:imager
+  {imager
    {:access :private,
     :initial {:args [], :pclass camera, :type :pclass-ctor},
     :observable false}},

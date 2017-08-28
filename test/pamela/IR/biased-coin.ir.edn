@@ -1,7 +1,7 @@
 {coin
  {:args [],
   :fields
-  {:observed-face
+  {observed-face
    {:access :private,
     :initial {:mode :head, :pclass coin-faces, :type :mode-reference},
     :observable true}},
@@ -18,7 +18,7 @@
      :pre
      {:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :observed-face}
+      [{:type :field-reference, :pclass this, :field observed-face}
        {:type :mode-reference, :pclass coin-faces, :mode :head}]},
      :primitive true,
      :reward 0,
@@ -35,7 +35,7 @@
      :pre
      {:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :observed-face}
+      [{:type :field-reference, :pclass this, :field observed-face}
        {:type :mode-reference, :pclass coin-faces, :mode :tail}]},
      :primitive true,
      :reward 0,
@@ -133,7 +133,7 @@
  main
  {:args [],
   :fields
-  {:acoin
+  {acoin
    {:access :private,
     :initial
     {:args [],
@@ -150,19 +150,19 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+       [{:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
         {:type :plant-fn-field,
          :method flip,
          :args [],
-         :field :acoin}]}],
+         :field acoin}]}],
      :controllable false,
      :cost 0,
      :display-name "Flip 1000",
@@ -178,12 +178,12 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+       [{:type :plant-fn-field, :method flip, :args [], :field acoin}
+        {:type :plant-fn-field, :method flip, :args [], :field acoin}
         {:type :plant-fn-field,
          :method flip,
          :args [],
-         :field :acoin}]}],
+         :field acoin}]}],
      :controllable false,
      :cost 0,
      :display-name "Flip 3",

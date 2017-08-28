@@ -71,17 +71,17 @@
  wrapper
  {:args [],
   :fields
-  {:go
+  {go
    {:access :private,
     :initial
     {:args [qc1 qc2], :pclass tpn-methods, :type :pclass-ctor},
     :observable false},
-   :qc1
+   qc1
    {:access :private,
     :initial
     {:args [], :id "qc1", :pclass plant-methods, :type :pclass-ctor},
     :observable false},
-   :qc2
+   qc2
    {:access :private,
     :initial
     {:args [], :id "qc2", :pclass plant-methods, :type :pclass-ctor},

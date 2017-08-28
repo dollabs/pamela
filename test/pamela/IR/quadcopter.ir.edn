@@ -88,7 +88,7 @@
  qc-demo
  {:args [],
   :fields
-  {:qc1
+  {qc1
    {:access :private,
     :initial
     {:args [],
@@ -98,7 +98,7 @@
      :plant-part "pp1",
      :type :pclass-ctor},
     :observable false},
-   :qc2
+   qc2
    {:access :private,
     :initial
     {:args [],
@@ -108,7 +108,7 @@
      :plant-part "pp2",
      :type :pclass-ctor},
     :observable false},
-   :qc3
+   qc3
    {:access :private,
     :initial
     {:args [],

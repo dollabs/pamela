@@ -33,7 +33,7 @@
 
             (defpmethod test-of-various-statements []
               (sequence
-               (one-arg-method (field-of field1 simple2)) ;;Field reference syntax will change soon
+               (one-arg-method (field-of field1 simple2))
                (assert (= foo :illuminated) :bounds [3 5])
                (ask (= bar :dead) :bounds [4 7])
                (ask (= (field-of field1 simple2) "white") :bounds [4 7])

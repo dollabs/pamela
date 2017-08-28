@@ -1,0 +1,1681 @@
+--- test/pamela/IR/biased-coin.ir.edn	2017-08-25 12:53:18.608636384 -0500
++++ target/parser/IR/biased-coin.ir.edn	2017-08-27 08:29:46.265016307 -0500
+@@ -1,7 +1,7 @@
+ {coin
+  {:args [],
+   :fields
+-  {:observed-face
++  {observed-face
+    {:access :private,
+     :initial {:mode :head, :pclass coin-faces, :type :mode-reference},
+     :observable true}},
+@@ -18,7 +18,7 @@
+      :pre
+      {:type :equal,
+       :args
+-      [{:type :field-reference, :pclass this, :field :observed-face}
++      [{:type :field-reference, :pclass this, :field observed-face}
+        {:type :mode-reference, :pclass coin-faces, :mode :head}]},
+      :primitive true,
+      :reward 0,
+@@ -35,7 +35,7 @@
+      :pre
+      {:type :equal,
+       :args
+-      [{:type :field-reference, :pclass this, :field :observed-face}
++      [{:type :field-reference, :pclass this, :field observed-face}
+        {:type :mode-reference, :pclass coin-faces, :mode :tail}]},
+      :primitive true,
+      :reward 0,
+@@ -133,7 +133,7 @@
+  main
+  {:args [],
+   :fields
+-  {:acoin
++  {acoin
+    {:access :private,
+     :initial
+     {:args [],
+@@ -150,19 +150,19 @@
+      :body
+      [{:type :sequence,
+        :body
+-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
++       [{:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+         {:type :plant-fn-field,
+          :method flip,
+          :args [],
+-         :field :acoin}]}],
++         :field acoin}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Flip 1000",
+@@ -178,12 +178,12 @@
+      :body
+      [{:type :sequence,
+        :body
+-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
+-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
++       [{:type :plant-fn-field, :method flip, :args [], :field acoin}
++        {:type :plant-fn-field, :method flip, :args [], :field acoin}
+         {:type :plant-fn-field,
+          :method flip,
+          :args [],
+-         :field :acoin}]}],
++         :field acoin}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Flip 3",
+--- test/pamela/IR/cannon.ir.edn	2017-08-23 16:18:43.668581413 -0500
++++ target/parser/IR/cannon.ir.edn	2017-08-27 08:29:48.301022169 -0500
+@@ -2,7 +2,7 @@
+  box
+  {:args [],
+   :fields
+-  {:ball-in-motion
++  {ball-in-motion
+    {:access :public,
+     :initial {:type :literal, :value false},
+     :observable true}},
+@@ -50,11 +50,11 @@
+  cannon
+  {:args [],
+   :fields
+-  {:ammunitions
++  {ammunitions
+    {:access :private,
+     :initial {:type :literal, :value 5},
+     :observable true},
+-   :ready
++   ready
+    {:access :public,
+     :initial {:type :literal, :value false},
+     :observable true}},
+@@ -87,11 +87,11 @@
+  game
+  {:args [],
+   :fields
+-  {:box-f
++  {box-f
+    {:access :private,
+     :initial {:args [], :pclass box, :type :pclass-ctor},
+     :observable false},
+-   :cannon-f
++   cannon-f
+    {:access :private,
+     :initial {:args [], :pclass cannon, :type :pclass-ctor},
+     :observable false}},
+@@ -108,8 +108,8 @@
+           :args
+           [{:type :field-reference-field,
+             :pclass this,
+-            :field :box-f,
+-            :value :ball-in-motion}
++            :field box-f,
++            :value ball-in-motion}
+            {:type :literal, :value true}]},
+          :body
+          [{:type :tell,
+@@ -124,8 +124,8 @@
+           :args
+           [{:type :field-reference-field,
+             :pclass this,
+-            :field :cannon-f,
+-            :value :ready}
++            :field cannon-f,
++            :value ready}
+            {:type :literal, :value true}]},
+          :body
+          [{:type :unless,
+@@ -134,8 +134,8 @@
+             :args
+             [{:type :field-reference-field,
+               :pclass this,
+-              :field :cannon-f,
+-              :value :ammunitions}
++              :field cannon-f,
++              :value ammunitions}
+              {:type :literal, :value 0}]},
+            :body
+            [{:type :try,
+@@ -146,28 +146,24 @@
+                  :condition
+                  {:type :equal,
+                   :args
+-                  [{:type :field-reference,
+-                    :pclass this,
+-                    :field :box-f}
++                  [{:type :field-reference, :pclass this, :field box-f}
+                    {:type :mode-reference, :pclass box, :mode :open}]},
+                  :body nil}
+                 {:type :maintain,
+                  :condition
+                  {:type :equal,
+                   :args
+-                  [{:type :field-reference,
+-                    :pclass this,
+-                    :field :box-f}
++                  [{:type :field-reference, :pclass this, :field box-f}
+                    {:type :mode-reference, :pclass box, :mode :open}]},
+                  :body
+                  [{:type :sequence,
+                    :body
+                    [{:type :plant-fn-field,
+-                     :field :cannon-f,
+                      :method fire,
+                      :args [123 "456"],
+                      :temporal-constraints
+-                     [{:type :bounds, :value [1 7]}]}
++                     [{:type :bounds, :value [1 7]}],
++                     :field cannon-f}
+                     {:type :ask,
+                      :condition
+                      {:type :equal,
+@@ -176,20 +172,20 @@
+                        {:type :literal, :value true}]},
+                      :body nil}]}]}
+                 {:type :plant-fn-field,
+-                 :field :box-f,
+                  :method close-lid,
+-                 :args []}]}],
++                 :args [],
++                 :field box-f}]}],
+              :catch
+              [{:type :sequence,
+                :body
+                [{:type :parallel,
+                  :body
+-                 [{:type :plant-fn-field,
+-                   :field :box-f,
++                 [{:type :plant-fn-symbol,
++                   :name box-f,
+                    :method reset,
+                    :args []}
+-                  {:type :plant-fn-field,
+-                   :field :cannon-f,
++                  {:type :plant-fn-symbol,
++                   :name cannon-f,
+                    :method reset,
+                    :args []}]}
+                 {:type :delay,
+--- test/pamela/IR/circuit.ir.edn	2017-08-25 12:53:18.608636384 -0500
++++ target/parser/IR/circuit.ir.edn	2017-08-27 08:29:52.213033431 -0500
+@@ -1,19 +1,19 @@
+ {bulb
+  {:args [vcc vdd],
+   :fields
+-  {:anode
++  {anode
+    {:access :private,
+     :initial {:name vcc, :type :arg-reference},
+     :observable false},
+-   :cathode
++   cathode
+    {:access :private,
+     :initial {:name vdd, :type :arg-reference},
+     :observable false},
+-   :illumination
++   illumination
+    {:access :public,
+     :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
+     :observable false},
+-   :sensed-illumination
++   sensed-illumination
+    {:access :public,
+     :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
+     :observable true}},
+@@ -21,33 +21,33 @@
+   {:depends {lightvals "0.2.0"},
+    :doc "A light bulb",
+    :icon "bulb.svg",
+-   :version "0.2.1"},
++   :version "0.3.0"},
+   :modes
+   {:fail {:type :literal, :value true},
+    :off
+    {:args
+     [{:type :equal,
+       :args
+-      [{:type :field-reference, :pclass this, :field :illumination}
++      [{:type :field-reference, :pclass this, :field illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :dark}]}
+      {:type :equal,
+       :args
+       [{:type :field-reference,
+         :pclass this,
+-        :field :sensed-illumination}
++        :field sensed-illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
+     :type :and},
+    :on
+    {:args
+     [{:type :equal,
+       :args
+-      [{:type :field-reference, :pclass this, :field :illumination}
++      [{:type :field-reference, :pclass this, :field illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :bright}]}
+      {:type :equal,
+       :args
+       [{:type :field-reference,
+         :pclass this,
+-        :field :sensed-illumination}
++        :field sensed-illumination}
+        {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
+     :type :and}},
+   :transitions
+@@ -62,13 +62,13 @@
+      [{:type :mode-reference, :pclass this, :mode :off}
+       {:type :equal,
+        :args
+-       [{:type :field-reference, :pclass this, :field :anode}
++       [{:type :field-reference, :pclass this, :field anode}
+         {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+       {:type :equal,
+        :args
+        [{:type :field-reference,
+          :pclass this,
+-         :field :sensed-illumination}
++         :field sensed-illumination}
+         {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
+      :type :and},
+     :temporal-constraints [{:type :bounds, :value [1 3]}]},
+@@ -80,13 +80,13 @@
+      [{:type :mode-reference, :pclass this, :mode :on}
+       {:type :equal,
+        :args
+-       [{:type :field-reference, :pclass this, :field :anode}
++       [{:type :field-reference, :pclass this, :field anode}
+         {:type :mode-reference, :pclass pwrvals, :mode :none}]}
+       {:type :equal,
+        :args
+        [{:type :field-reference,
+          :pclass this,
+-         :field :sensed-illumination}
++         :field sensed-illumination}
+         {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
+      :type :and},
+     :temporal-constraints [{:type :bounds, :value [1 3]}]}},
+@@ -94,27 +94,27 @@
+  circuit1
+  {:args [],
+   :fields
+-  {:bulb1
++  {bulb1
+    {:access :private,
+     :initial
+-    {:args [:source :drain],
++    {:args [source drain],
+      :id "switchedcircuit",
+      :pclass bulb,
+      :plant-part "Bulb1",
+      :type :pclass-ctor},
+     :observable false},
+-   :drain
++   drain
+    {:access :private,
+     :initial {:name "drain", :type :lvar},
+     :observable false},
+-   :source
++   source
+    {:access :private,
+     :initial {:name "source", :type :lvar},
+     :observable false},
+-   :switchedpower
++   switchedpower
+    {:access :private,
+     :initial
+-    {:args [:source :drain],
++    {:args [source drain],
+      :id "switchedcircuit",
+      :interface "RMQ",
+      :pclass psw,
+@@ -122,9 +122,9 @@
+      :type :pclass-ctor},
+     :observable false}},
+   :meta
+-  {:depends {bulb "0.2.1", psw "0.2.1"},
++  {:depends {bulb "0.3.0", psw "0.3.0"},
+    :doc "An example circuit with a power switch and light bulb",
+-   :version "0.2.1"},
++   :version "0.3.0"},
+   :type :pclass},
+  lightvals
+  {:args [],
+@@ -136,20 +136,20 @@
+  psw
+  {:args [gnd pwr],
+   :fields
+-  {:TP1
++  {TP1
+    {:access :private,
+     :initial {:name gnd, :type :arg-reference},
+     :observable false},
+-   :TP2
++   TP2
+    {:access :private,
+     :initial {:name pwr, :type :arg-reference},
+     :observable false},
+-   :pwr
++   pwr
+    {:access :private,
+     :initial {:mode :none, :pclass pwrvals, :type :mode-reference},
+     :observable false}},
+   :meta
+-  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.2.1"},
++  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.3.0"},
+   :methods
+   {reset
+    [{:args [],
+@@ -194,12 +194,12 @@
+   {:fail {:type :literal, :value true},
+    :off
+    {:args
+-    [{:type :field-reference, :pclass this, :field :pwr}
++    [{:type :field-reference, :pclass this, :field pwr}
+      {:type :mode-reference, :pclass pwrvals, :mode :none}],
+     :type :equal},
+    :on
+    {:args
+-    [{:type :field-reference, :pclass this, :field :pwr}
++    [{:type :field-reference, :pclass this, :field pwr}
+      {:type :mode-reference, :pclass pwrvals, :mode :high}],
+     :type :equal}},
+   :transitions
+--- test/pamela/IR/coverage.ir.edn	2017-08-25 12:53:18.608636384 -0500
++++ target/parser/IR/coverage.ir.edn	2017-08-27 08:29:53.473037059 -0500
+@@ -1,11 +1,11 @@
+ {coverage-demo
+  {:args [],
+   :fields
+-  {:run
++  {run
+    {:access :private,
+     :initial {:args [sp1], :pclass coverage-test, :type :pclass-ctor},
+     :observable false},
+-   :sp1
++   sp1
+    {:access :private,
+     :initial
+     {:args [],
+--- test/pamela/IR/first.ir.edn	2017-08-25 12:53:18.608636384 -0500
++++ target/parser/IR/first.ir.edn	2017-08-27 08:29:55.545043024 -0500
+@@ -164,26 +164,25 @@
+  main
+  {:args [],
+   :fields
+-  {:plnt
++  {plnt
+    {:access :private,
+     :initial {:args [], :pclass plant, :type :pclass-ctor},
+     :observable false},
+-   :tpn
++   tpn
+    {:access :private,
+-    :initial {:args [:plnt], :pclass first-tpn, :type :pclass-ctor},
++    :initial {:args [plnt], :pclass first-tpn, :type :pclass-ctor},
+     :observable false}},
+   :type :pclass},
+  main-htn
+  {:args [],
+   :fields
+-  {:plnt
++  {plnt
+    {:access :private,
+     :initial {:args [], :pclass plant, :type :pclass-ctor},
+     :observable false},
+-   :tpn
++   tpn
+    {:access :private,
+-    :initial
+-    {:args [:plnt], :pclass first-tpn-htn, :type :pclass-ctor},
++    :initial {:args [plnt], :pclass first-tpn-htn, :type :pclass-ctor},
+     :observable false}},
+   :type :pclass},
+  plant
+--- test/pamela/IR/ir-test.ir.edn	2017-08-23 16:18:43.668581413 -0500
++++ target/parser/IR/ir-test.ir.edn	2017-08-27 08:29:58.213050705 -0500
+@@ -2,19 +2,19 @@
+  box
+  {:args [],
+   :fields
+-  {:ball-in-motion
++  {ball-in-motion
+    {:access :public,
+     :initial {:type :literal, :value false},
+     :observable true},
+-   :dummy
++   dummy
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false},
+-   :fred
++   fred
+    {:access :private,
+     :initial {:name "fred", :type :lvar},
+     :observable false},
+-   :pwr
++   pwr
+    {:access :private,
+     :initial {:mode :high, :pclass pwrvals, :type :mode-reference},
+     :observable false}},
+@@ -72,11 +72,11 @@
+     {:args
+      [{:type :equal,
+        :args
+-       [{:type :field-reference, :pclass this, :field :pwr}
++       [{:type :field-reference, :pclass this, :field pwr}
+         {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+       {:type :equal,
+        :args
+-       [{:type :field-reference, :pclass this, :field :fred}
++       [{:type :field-reference, :pclass this, :field fred}
+         {:type :literal, :value 123.456}]}
+       {:type :mode-reference, :pclass this, :mode :wacky}],
+      :type :and},
+@@ -92,11 +92,11 @@
+  cannon
+  {:args [],
+   :fields
+-  {:ammunitions
++  {ammunitions
+    {:access :private,
+     :initial {:type :literal, :value 5},
+     :observable true},
+-   :ready
++   ready
+    {:access :public,
+     :initial {:type :literal, :value false},
+     :observable true}},
+@@ -129,11 +129,11 @@
+  game
+  {:args [power],
+   :fields
+-  {:box-f
++  {box-f
+    {:access :private,
+     :initial {:args [], :pclass box, :type :pclass-ctor},
+     :observable false},
+-   :cannon-f
++   cannon-f
+    {:access :private,
+     :initial
+     {:args [],
+@@ -161,8 +161,8 @@
+           :args
+           [{:type :field-reference-field,
+             :pclass this,
+-            :field :box-f,
+-            :value :ball-in-motion}
++            :field box-f,
++            :value ball-in-motion}
+            {:type :literal, :value true}]},
+          :body
+          [{:type :tell,
+@@ -177,8 +177,8 @@
+           :args
+           [{:type :field-reference-field,
+             :pclass this,
+-            :field :cannon-f,
+-            :value :ready}
++            :field cannon-f,
++            :value ready}
+            {:type :literal, :value true}]},
+          :body
+          [{:type :unless,
+@@ -187,8 +187,8 @@
+             :args
+             [{:type :field-reference-field,
+               :pclass this,
+-              :field :cannon-f,
+-              :value :ammunitions}
++              :field cannon-f,
++              :value ammunitions}
+              {:type :literal, :value 0}]},
+            :body
+            [{:type :try,
+@@ -199,28 +199,24 @@
+                  :condition
+                  {:type :equal,
+                   :args
+-                  [{:type :field-reference,
+-                    :pclass this,
+-                    :field :box-f}
++                  [{:type :field-reference, :pclass this, :field box-f}
+                    {:type :mode-reference, :pclass box, :mode :open}]},
+                  :body nil}
+                 {:type :maintain,
+                  :condition
+                  {:type :equal,
+                   :args
+-                  [{:type :field-reference,
+-                    :pclass this,
+-                    :field :box-f}
++                  [{:type :field-reference, :pclass this, :field box-f}
+                    {:type :mode-reference, :pclass box, :mode :open}]},
+                  :body
+                  [{:type :sequence,
+                    :body
+                    [{:type :plant-fn-field,
+-                     :field :cannon-f,
+                      :method fire,
+                      :args [123.45 "456"],
+                      :temporal-constraints
+-                     [{:type :bounds, :value [1 7]}]}
++                     [{:type :bounds, :value [1 7]}],
++                     :field cannon-f}
+                     {:type :ask,
+                      :condition
+                      {:type :equal,
+@@ -236,9 +232,9 @@
+                    :cost<= 11,
+                    :reward>= 90}]}
+                 {:type :plant-fn-field,
+-                 :field :box-f,
+                  :method close-lid,
+-                 :args []}
++                 :args [],
++                 :field box-f}
+                 {:type :choose,
+                  :body
+                  [{:type :choice,
+@@ -256,7 +252,7 @@
+                     :args
+                     [{:type :field-reference,
+                       :pclass this,
+-                      :field :box-f}
++                      :field box-f}
+                      {:type :mode-reference,
+                       :pclass box,
+                       :mode :open}]}}],
+@@ -270,12 +266,12 @@
+                :body
+                [{:type :parallel,
+                  :body
+-                 [{:type :plant-fn-field,
+-                   :field :box-f,
++                 [{:type :plant-fn-symbol,
++                   :name box-f,
+                    :method reset,
+                    :args []}
+-                  {:type :plant-fn-field,
+-                   :field :cannon-f,
++                  {:type :plant-fn-symbol,
++                   :name cannon-f,
+                    :method reset,
+                    :args []}]}
+                 {:type :delay,
+@@ -291,17 +287,17 @@
+            [{:type :bounds, :value [0 :infinity]}],
+            :body nil}
+           {:type :plant-fn-field,
+-           :field :box-f,
+            :method reset,
+-           :args []}
++           :args [],
++           :field box-f}
+           {:type :delay,
+            :temporal-constraints
+            [{:type :bounds, :value [0 :infinity]}],
+            :body nil}
+           {:type :plant-fn-field,
+-           :field :cannon-f,
+            :method reset,
+-           :args []}
++           :args [],
++           :field cannon-f}
+           {:type :delay,
+            :temporal-constraints
+            [{:type :bounds, :value [0 :infinity]}],
+@@ -316,9 +312,9 @@
+              [{:type :bounds, :value [0 :infinity]}],
+              :body nil}
+             {:type :plant-fn-field,
+-             :field :box-f,
+              :method reset,
+-             :args []}
++             :args [],
++             :field box-f}
+             {:type :delay,
+              :temporal-constraints
+              [{:type :bounds, :value [0 :infinity]}],
+@@ -330,9 +326,9 @@
+              [{:type :bounds, :value [0 :infinity]}],
+              :body nil}
+             {:type :plant-fn-field,
+-             :field :cannon-f,
+              :method reset,
+-             :args []}
++             :args [],
++             :field cannon-f}
+             {:type :delay,
+              :temporal-constraints
+              [{:type :bounds, :value [0 :infinity]}],
+@@ -348,9 +344,9 @@
+           {:type :choice,
+            :body
+            [{:type :plant-fn-field,
+-             :field :cannon-f,
+              :method reset,
+-             :args []}]}],
++             :args [],
++             :field cannon-f}]}],
+          :label :optional}
+         {:type :sequence,
+          :body
+@@ -364,9 +360,9 @@
+             {:type :choice,
+              :body
+              [{:type :plant-fn-field,
+-               :field :box-f,
+                :method reset,
+-               :args []}]}]}
++               :args [],
++               :field box-f}]}]}
+           {:type :choose,
+            :body
+            [{:type :choice,
+@@ -377,9 +373,9 @@
+             {:type :choice,
+              :body
+              [{:type :plant-fn-field,
+-               :field :cannon-f,
+                :method reset,
+-               :args []}]}]}],
++               :args [],
++               :field cannon-f}]}]}],
+          :label :soft-sequence}
+         {:type :parallel,
+          :body
+@@ -393,9 +389,9 @@
+             {:type :choice,
+              :body
+              [{:type :plant-fn-field,
+-               :field :box-f,
+                :method reset,
+-               :args []}]}]}
++               :args [],
++               :field box-f}]}]}
+           {:type :choose,
+            :body
+            [{:type :choice,
+@@ -406,9 +402,9 @@
+             {:type :choice,
+              :body
+              [{:type :plant-fn-field,
+-               :field :cannon-f,
+                :method reset,
+-               :args []}]}]}],
++               :args [],
++               :field cannon-f}]}]}],
+          :label :soft-parallel}],
+        :temporal-constraints [{:type :bounds, :value [1 60]}]}],
+      :controllable false,
+@@ -441,8 +437,8 @@
+    {:args
+     [{:type :field-reference-field,
+       :pclass this,
+-      :field :cannon-f,
+-      :value :ammunitions}
++      :field cannon-f,
++      :value ammunitions}
+      {:type :literal, :value 5}],
+     :type :equal},
+    :wacky {:type :literal, :value true},
+@@ -452,8 +448,8 @@
+       :args
+       [{:type :field-reference-field,
+         :pclass this,
+-        :field :box-f,
+-        :value :pwr}
++        :field box-f,
++        :value pwr}
+        {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+      {:type :equal,
+       :args
+--- test/pamela/IR/issue-122.ir.edn	2017-08-23 16:18:43.672581426 -0500
++++ target/parser/IR/issue-122.ir.edn	2017-08-27 08:30:04.209067967 -0500
+@@ -1,7 +1,7 @@
+ {issue-122
+  {:args [],
+   :fields
+-  {:value
++  {value
+    {:access :private,
+     :initial {:type :literal, :value 122},
+     :observable false}},
+@@ -16,7 +16,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 100}]},
+          :body nil,
+          :temporal-constraints [{:type :bounds, :value [0 1]}]}
+@@ -24,7 +24,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 200}]},
+          :body nil,
+          :temporal-constraints [{:type :bounds, :value [2 3]}]}
+@@ -32,7 +32,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 300}]},
+          :body [{:type :delay, :body nil}],
+          :temporal-constraints [{:type :bounds, :value [4 5]}]}
+@@ -40,13 +40,13 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 400}]}}
+         {:type :unless,
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 500}]},
+          :body [{:type :delay, :body nil}],
+          :temporal-constraints [{:type :bounds, :value [6 7]}]}
+@@ -54,7 +54,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 600}]},
+          :body [{:type :delay, :body nil}],
+          :temporal-constraints [{:type :bounds, :value [8 9]}]}
+@@ -62,7 +62,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :value}
++          [{:type :field-reference, :pclass this, :field value}
+            {:type :literal, :value 700}]},
+          :body [{:type :delay, :body nil}],
+          :temporal-constraints [{:type :bounds, :value [10 11]}]}]}],
+--- test/pamela/IR/issue-98.ir.edn	2017-08-25 12:53:18.612636399 -0500
++++ target/parser/IR/issue-98.ir.edn	2017-08-27 08:30:05.921072896 -0500
+@@ -27,7 +27,7 @@
+  infeasible-sequence-demo
+  {:args [],
+   :fields
+-  {:p1
++  {p1
+    {:access :private,
+     :initial
+     {:args [],
+@@ -37,7 +37,7 @@
+      :plant-part "t1",
+      :type :pclass-ctor},
+     :observable false},
+-   :run
++   run
+    {:access :private,
+     :initial
+     {:args [p1], :pclass infeasible-sequence, :type :pclass-ctor},
+--- test/pamela/IR/lvar-examples.ir.edn	2017-08-25 12:53:18.612636399 -0500
++++ target/parser/IR/lvar-examples.ir.edn	2017-08-27 08:30:06.549074703 -0500
+@@ -65,7 +65,7 @@
+  example
+  {:args [camera],
+   :fields
+-  {:imager
++  {imager
+    {:access :private,
+     :initial {:args [], :pclass camera, :type :pclass-ctor},
+     :observable false}},
+--- test/pamela/IR/methods.ir.edn	2017-08-25 12:53:18.612636399 -0500
++++ target/parser/IR/methods.ir.edn	2017-08-27 08:30:07.325076938 -0500
+@@ -71,17 +71,17 @@
+  wrapper
+  {:args [],
+   :fields
+-  {:go
++  {go
+    {:access :private,
+     :initial
+     {:args [qc1 qc2], :pclass tpn-methods, :type :pclass-ctor},
+     :observable false},
+-   :qc1
++   qc1
+    {:access :private,
+     :initial
+     {:args [], :id "qc1", :pclass plant-methods, :type :pclass-ctor},
+     :observable false},
+-   :qc2
++   qc2
+    {:access :private,
+     :initial
+     {:args [], :id "qc2", :pclass plant-methods, :type :pclass-ctor},
+--- test/pamela/IR/qc-demo.ir.edn	2017-08-23 16:18:43.672581426 -0500
++++ target/parser/IR/qc-demo.ir.edn	2017-08-27 08:30:12.549091977 -0500
+@@ -1,12 +1,12 @@
+ {qc-demo
+  {:args [],
+   :fields
+-  {:qc-waypoints
++  {qc-waypoints
+    {:access :private,
+     :initial
+     {:args [qc1 qc2 qc3], :pclass qc-waypoints, :type :pclass-ctor},
+     :observable false},
+-   :qc1
++   qc1
+    {:access :private,
+     :initial
+     {:args [],
+@@ -15,7 +15,7 @@
+      :pclass qc,
+      :type :pclass-ctor},
+     :observable false},
+-   :qc2
++   qc2
+    {:access :private,
+     :initial
+     {:args [],
+@@ -24,7 +24,7 @@
+      :pclass qc,
+      :type :pclass-ctor},
+     :observable false},
+-   :qc3
++   qc3
+    {:access :private,
+     :initial {:args [], :id "qc3", :pclass qc, :type :pclass-ctor},
+     :observable false}},
+--- test/pamela/IR/quadcopter.ir.edn	2017-08-25 12:53:18.612636399 -0500
++++ target/parser/IR/quadcopter.ir.edn	2017-08-27 08:30:14.821098518 -0500
+@@ -88,7 +88,7 @@
+  qc-demo
+  {:args [],
+   :fields
+-  {:qc1
++  {qc1
+    {:access :private,
+     :initial
+     {:args [],
+@@ -98,7 +98,7 @@
+      :plant-part "pp1",
+      :type :pclass-ctor},
+     :observable false},
+-   :qc2
++   qc2
+    {:access :private,
+     :initial
+     {:args [],
+@@ -108,7 +108,7 @@
+      :plant-part "pp2",
+      :type :pclass-ctor},
+     :observable false},
+-   :qc3
++   qc3
+    {:access :private,
+     :initial
+     {:args [],
+--- test/pamela/IR/second.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/IR/second.ir.edn	2017-08-27 08:30:15.721101109 -0500
+@@ -185,26 +185,25 @@
+  main
+  {:args [],
+   :fields
+-  {:plnt
++  {plnt
+    {:access :private,
+     :initial {:args [], :pclass plant, :type :pclass-ctor},
+     :observable false},
+-   :tpn
++   tpn
+    {:access :private,
+-    :initial {:args [:plnt], :pclass first-tpn, :type :pclass-ctor},
++    :initial {:args [plnt], :pclass first-tpn, :type :pclass-ctor},
+     :observable false}},
+   :type :pclass},
+  main-htn
+  {:args [],
+   :fields
+-  {:plnt
++  {plnt
+    {:access :private,
+     :initial {:args [], :pclass plant, :type :pclass-ctor},
+     :observable false},
+-   :tpn
++   tpn
+    {:access :private,
+-    :initial
+-    {:args [:plnt], :pclass first-tpn-htn, :type :pclass-ctor},
++    :initial {:args [plnt], :pclass first-tpn-htn, :type :pclass-ctor},
+     :observable false}},
+   :type :pclass},
+  plant
+--- test/pamela/IR/sequence.feasible.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/IR/sequence.feasible.ir.edn	2017-08-27 08:30:16.477103285 -0500
+@@ -66,7 +66,7 @@
+  sequence-feasible
+  {:args [plnt],
+   :fields
+-  {:main
++  {main
+    {:access :private,
+     :initial {:args [], :pclass sequence-feasible, :type :pclass-ctor},
+     :observable false}},
+--- test/pamela/IR/statements.ir.edn	2017-08-23 16:18:43.672581426 -0500
++++ target/parser/IR/statements.ir.edn	2017-08-27 08:30:18.009107696 -0500
+@@ -4,7 +4,7 @@
+  main
+  {:args [],
+   :fields
+-  {:field1
++  {field1
+    {:access :private,
+     :initial
+     {:args ["black"], :pclass simple-pclass, :type :pclass-ctor},
+@@ -59,7 +59,8 @@
+        [{:type :plant-fn-symbol,
+          :name this,
+          :method one-arg-method,
+-         :args [:field1.:simple2]}
++         :args
++         [{:type :field-reference, :pclass field1, :field simple2}]}
+         {:type :assert,
+          :condition
+          {:type :equal,
+@@ -82,8 +83,8 @@
+           :args
+           [{:type :field-reference-field,
+             :pclass this,
+-            :field :field1,
+-            :value :simple2}
++            :field field1,
++            :value simple2}
+            {:type :literal, :value "white"}]},
+          :body nil,
+          :temporal-constraints [{:type :bounds, :value [4 7]}]}
+@@ -109,11 +110,11 @@
+  simple-pclass
+  {:args [simple2-initial],
+   :fields
+-  {:simple1
++  {simple1
+    {:access :private,
+     :initial {:type :literal, :value "white"},
+     :observable true},
+-   :simple2
++   simple2
+    {:access :private,
+     :initial {:name simple2-initial, :type :arg-reference},
+     :observable true}},
+--- test/pamela/regression/IR/ask-always.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/regression/IR/ask-always.ir.edn	2017-08-27 08:30:23.345123057 -0500
+@@ -1,7 +1,7 @@
+ {ask-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,13 +15,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body nil}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/ask-bounds.ir.edn	2017-08-23 16:18:49.504601821 -0500
++++ target/parser/regression/IR/ask-bounds.ir.edn	2017-08-27 08:30:24.009124969 -0500
+@@ -1,7 +1,7 @@
+ {ask-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body nil,
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/assert-always.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/regression/IR/assert-always.ir.edn	2017-08-27 08:30:24.625126743 -0500
+@@ -1,7 +1,7 @@
+ {assert-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,13 +15,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body nil}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/assert-bounds.ir.edn	2017-08-23 16:18:49.504601821 -0500
++++ target/parser/regression/IR/assert-bounds.ir.edn	2017-08-27 08:30:25.233128493 -0500
+@@ -1,7 +1,7 @@
+ {assert-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body nil,
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/choose-probability.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/regression/IR/choose-probability.ir.edn	2017-08-27 08:30:28.977139271 -0500
+@@ -1,7 +1,7 @@
+ {choose-probability
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -22,7 +22,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :a}
++          [{:type :field-reference, :pclass this, :field a}
+            {:type :literal, :value 1.0}]}}
+         {:type :choice,
+          :body [{:type :delay, :body nil}],
+--- test/pamela/regression/IR/choose-whenever.ir.edn	2017-08-25 12:53:18.616636413 -0500
++++ target/parser/regression/IR/choose-whenever.ir.edn	2017-08-27 08:30:31.013145132 -0500
+@@ -1,7 +1,7 @@
+ {choice-tpn1
+  {:args [plant],
+   :fields
+-  {:priority
++  {priority
+    {:access :private,
+     :initial {:name "plant-priority", :type :lvar},
+     :observable false}},
+@@ -22,7 +22,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 1}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -43,7 +43,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 2}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -64,7 +64,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 3}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -85,7 +85,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 4}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -109,7 +109,7 @@
+  choice-tpn2
+  {:args [plant],
+   :fields
+-  {:priority
++  {priority
+    {:access :private,
+     :initial {:type :literal, :value 4},
+     :observable false}},
+@@ -130,7 +130,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 1}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -146,7 +146,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 2}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -162,7 +162,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 3}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -178,7 +178,7 @@
+          :condition
+          {:type :equal,
+           :args
+-          [{:type :field-reference, :pclass this, :field :priority}
++          [{:type :field-reference, :pclass this, :field priority}
+            {:type :literal, :value 4}]},
+          :enter
+          {:type :plant-fn-symbol,
+@@ -201,7 +201,7 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :priority}
++        [{:type :field-reference, :pclass this, :field priority}
+          {:type :state-variable, :name new-priority}]},
+        :body nil}],
+      :controllable false,
+--- test/pamela/regression/IR/isr-htn.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/isr-htn.ir.edn	2017-08-27 08:30:31.937147793 -0500
+@@ -1,7 +1,7 @@
+ {isr-htn
+  {:args [sensor],
+   :fields
+-  {:sensor-f
++  {sensor-f
+    {:access :private,
+     :initial {:name sensor, :type :arg-reference},
+     :observable false}},
+@@ -13,10 +13,10 @@
+      :betweens [],
+      :body
+      [{:type :plant-fn-field,
+-       :field :sensor-f,
+        :method evidence,
+        :args [at],
+-       :temporal-constraints [{:type :bounds, :value [15 25]}]}],
++       :temporal-constraints [{:type :bounds, :value [15 25]}],
++       :field sensor-f}],
+      :controllable false,
+      :cost 0,
+      :display-name "Evidence",
+@@ -76,14 +76,14 @@
+      [{:type :sequence,
+        :body
+        [{:type :plant-fn-field,
+-         :field :sensor-f,
+          :method go-to,
+-         :args [loc]}
++         :args [loc],
++         :field sensor-f}
+         {:type :plant-fn-field,
+-         :field :sensor-f,
+          :method capture,
+          :args [loc],
+-         :temporal-constraints [{:type :bounds, :value [5 10]}]}]}],
++         :temporal-constraints [{:type :bounds, :value [5 10]}],
++         :field sensor-f}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Get Data At",
+@@ -101,25 +101,24 @@
+        [{:type :choice,
+          :body
+          [{:type :plant-fn-field,
+-           :field :sensor-f,
+            :method interpret1,
+            :args [place],
+-           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
++           :temporal-constraints [{:type :bounds, :value [15 25]}],
++           :field sensor-f}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-field,
+-           :field :sensor-f,
+            :method interpret2,
+            :args [place],
+-           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
++           :temporal-constraints [{:type :bounds, :value [15 25]}],
++           :field sensor-f}]}
+         {:type :choice,
+          :body
+          [{:type :plant-fn-field,
+-           :field :sensor-f,
+            :method interpret3,
+            :args [place],
+-           :temporal-constraints
+-           [{:type :bounds, :value [15 25]}]}]}]}],
++           :temporal-constraints [{:type :bounds, :value [15 25]}],
++           :field sensor-f}]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Interpret",
+@@ -166,11 +165,11 @@
+  isr-htn-demo
+  {:args [],
+   :fields
+-  {:htn
++  {htn
+    {:access :private,
+     :initial {:args [plant], :pclass isr-htn, :type :pclass-ctor},
+     :observable false},
+-   :plant
++   plant
+    {:access :private,
+     :initial
+     {:args [],
+--- test/pamela/regression/IR/maintain-always.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/maintain-always.ir.edn	2017-08-27 08:30:32.673149911 -0500
+@@ -1,7 +1,7 @@
+ {maintain-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -16,13 +16,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/maintain-bounds.ir.edn	2017-08-23 16:18:49.508601835 -0500
++++ target/parser/regression/IR/maintain-bounds.ir.edn	2017-08-27 08:30:33.253151581 -0500
+@@ -1,7 +1,7 @@
+ {maintain-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}],
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/simple-plant.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/simple-plant.ir.edn	2017-08-27 08:30:37.085162613 -0500
+@@ -53,11 +53,11 @@
+  simple-plant-demo
+  {:args [],
+   :fields
+-  {:run
++  {run
+    {:access :private,
+     :initial {:args [sp1], :pclass planttest, :type :pclass-ctor},
+     :observable false},
+-   :sp1
++   sp1
+    {:access :private,
+     :initial
+     {:args [],
+--- test/pamela/regression/IR/switch-bulb.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/switch-bulb.ir.edn	2017-08-27 08:30:37.805164686 -0500
+@@ -1,7 +1,7 @@
+ {main
+  {:args [],
+   :fields
+-  {:switchedpower
++  {switchedpower
+    {:access :private,
+     :initial
+     {:args [],
+@@ -73,7 +73,7 @@
+      [{:type :plant-fn-field,
+        :method turn_off,
+        :args [],
+-       :field :switchedpower}],
++       :field switchedpower}],
+      :controllable false,
+      :cost 0,
+      :display-name "Turn Off Switch",
+@@ -87,9 +87,9 @@
+      :betweens [],
+      :body
+      [{:type :plant-fn-field,
+-       :field :switchedpower,
+        :method turn_on,
+-       :args []}],
++       :args [],
++       :field switchedpower}],
+      :controllable false,
+      :cost 0,
+      :display-name "Turn On Switch",
+--- test/pamela/regression/IR/tell-example.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/tell-example.ir.edn	2017-08-27 08:30:38.433166494 -0500
+@@ -1,7 +1,7 @@
+ {tell-example
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,12 +15,12 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]}}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/test1.ir.edn	2017-08-25 12:53:18.620636429 -0500
++++ target/parser/regression/IR/test1.ir.edn	2017-08-27 08:30:39.109168440 -0500
+@@ -80,7 +80,7 @@
+  main
+  {:args [],
+   :fields
+-  {:e1h1
++  {e1h1
+    {:access :private,
+     :initial
+     {:args [],
+@@ -89,7 +89,7 @@
+      :plant-part "host0101",
+      :type :pclass-ctor},
+     :observable false},
+-   :e7h1
++   e7h1
+    {:access :private,
+     :initial
+     {:args [],
+@@ -126,12 +126,12 @@
+          :method file-transfer,
+          :args [server-host "100MB"],
+          :temporal-constraints [{:type :bounds, :value [1 7]}],
+-         :field :e7h1}
++         :field e7h1}
+         {:type :plant-fn-field,
+          :method video-session,
+          :args [client-host server-host "1"],
+          :temporal-constraints [{:type :bounds, :value [20 35]}],
+-         :field :e7h1}]}],
++         :field e7h1}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "test1",
+--- test/pamela/regression/IR/unless-always.ir.edn	2017-08-25 12:53:18.624636443 -0500
++++ target/parser/regression/IR/unless-always.ir.edn	2017-08-27 08:30:43.173180140 -0500
+@@ -1,7 +1,7 @@
+ {unless-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,13 +15,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/unless-bounds.ir.edn	2017-08-23 16:18:49.508601835 -0500
++++ target/parser/regression/IR/unless-bounds.ir.edn	2017-08-27 08:30:43.785181901 -0500
+@@ -1,7 +1,7 @@
+ {unless-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}],
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/when-always.ir.edn	2017-08-25 12:53:18.624636443 -0500
++++ target/parser/regression/IR/when-always.ir.edn	2017-08-27 08:30:44.401183674 -0500
+@@ -1,7 +1,7 @@
+ {when-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,13 +15,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/when-bounds.ir.edn	2017-08-23 16:18:49.508601835 -0500
++++ target/parser/regression/IR/when-bounds.ir.edn	2017-08-27 08:30:45.137185793 -0500
+@@ -1,7 +1,7 @@
+ {when-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}],
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/whenever-always.ir.edn	2017-08-25 12:53:18.624636443 -0500
++++ target/parser/regression/IR/whenever-always.ir.edn	2017-08-27 08:30:45.749187555 -0500
+@@ -1,7 +1,7 @@
+ {whenever-always
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -16,13 +16,13 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,
+--- test/pamela/regression/IR/whenever-bounds.ir.edn	2017-08-23 16:18:49.508601835 -0500
++++ target/parser/regression/IR/whenever-bounds.ir.edn	2017-08-27 08:30:46.361189317 -0500
+@@ -1,7 +1,7 @@
+ {whenever-bounds
+  {:args [],
+   :fields
+-  {:a
++  {a
+    {:access :private,
+     :initial {:name :gensym, :type :lvar},
+     :observable false}},
+@@ -15,14 +15,14 @@
+        :condition
+        {:type :equal,
+         :args
+-        [{:type :field-reference, :pclass this, :field :a}
++        [{:type :field-reference, :pclass this, :field a}
+          {:type :literal, :value 1.0}]},
+        :body [{:type :delay, :body nil}],
+        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+      :controllable false,
+      :cost 0,
+      :display-name "Always On",
+-     :doc "ensure field :a is always 1.0",
++     :doc "ensure field a is always 1.0",
+      :post {:type :literal, :value true},
+      :pre {:type :literal, :value true},
+      :primitive false,

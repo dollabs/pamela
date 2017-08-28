@@ -27,19 +27,9 @@
   (testing "testing-pamela-unparser"
     (let [excludes #{"biased-coin.pamela" ;; #127
                      "ir-test.pamela" ;; #127, note betweens OK
-                     "statements.pamela" ;; #122
                      ;; regression/ ------------------------------------
-                     "ask-bounds.pamela" ;; #122
-                     "assert-bounds.pamela" ;; #122
-                     "between-ends-example.pamela" ;; #128
-                     "between-example.pamela" ;; #128
-                     "between-starts-example.pamela" ;; #128
-                     "maintain-bounds.pamela" ;; #122
                      "switch-bulb.example" ;; #127
                      "tpn-slack.pamela" ;; #127
-                     "unless-bounds.pamela" ;; #122
-                     "when-bounds.pamela" ;; #122
-                     "whenever-bounds.pamela" ;; #122
                      }
           top (fs/file (:user-dir env))
           top-path (str (fs-get-path top) "/")

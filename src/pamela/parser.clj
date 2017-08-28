@@ -117,8 +117,10 @@
 (defn ir-float [v]
   (Double/parseDouble v))
 
+;; field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor |
+;;                mode-expr )
 (defn ir-field-type [v]
-  (if (map? v)
+  (if (map? v) ;; lvar-ctor, pclass-ctor, or mode-expr
     v
     (if (symbol? v)
       {:type :arg-reference
@@ -162,11 +164,14 @@
    :pclass pclass
    :mode mode})
 
-(defn ir-field-expr [field pclass]
+;; field-expr = <LP> <FIELD_OF> symbol symbol <RP> (* pclass field *)
+(defn ir-field-expr [pclass field]
   {:type :field-reference
    :pclass pclass
    :field field})
 
+;; field = symbol ( <LM> field-init+ <RM> | field-type )
+;; field-init = ( initial | access | observable )
 (defn ir-field [field & field-inits]
   (loop [field-map {:access :private :observable false}
          field-init (first field-inits) more (rest field-inits)]
@@ -289,21 +294,19 @@
                                (if (symbol? (second args))
                                  [(first args) (second args) 2] ;; remote method
                                  ['this (first args) 1]) ;; local method
-                               (let [[p m]
-                                     (string/split (name (first args)) #"\." 2)]
-                                 [(keyword p) (symbol m) 1]))
+                               (log/error "deprecated: plant-fn called with keyword"))
         [type pclass-type] (if (symbol? pclass)
                              [:plant-fn-symbol :name]
-                             [:plant-fn-field :field])
+                             (log/error "deprecated: plant-fn called with keyword"))
         args (nthrest args used)]
     (loop [plant-opts {} argvals [] a (first args) more (rest args)]
       (if-not a
         (merge
-        {:type type
-         pclass-type pclass
-         :method method
-         :args argvals}
-        plant-opts)
+          {:type type
+           pclass-type pclass
+           :method method
+           :args argvals}
+          plant-opts)
         (let [[opt-or-arg v] a]
           (if (= opt-or-arg :plant-opt)
             (recur (merge plant-opts v) argvals (first more) (rest more))
@@ -603,34 +606,25 @@
                 :whenever (partial ir-fn-cond :whenever)
                 })
 
-(def reference-types #{:mode-reference :field-reference :field-reference-mode
-                       :field-reference-field})
+(def reference-types #{:mode-reference :field-reference :field-reference-field})
 
 (def literal-ref-types (conj reference-types :literal))
 
-
-
-;; ;; :box-f , (:box-f this)
+;; (field-of this box-f)
 ;; {:type :field-reference
 ;;  :pclass this ;; or other class, or field reference
-;;  :field :box-f}
+;;  :field box-f}
 
 ;; ;; :close , (mode-of this :close)
 ;; {:type :mode-reference
 ;;  :pclass this ;; or other class
 ;;  :mode :close}
 
-;; ;; (whenever (= :cannon-f.:ready true)
-;; {:type :field-reference-mode
-;;  :pclass this ;; or other class
-;;  :field :cannon-f
-;;  :value :ready} ;; is a mode
-
-;; ;; (unless (= :cannon-f.:ammunitions 0)
+;; ;; (whenever (= (field-of cannon-f ready) true)
 ;; {:type :field-reference-field
 ;;  :pclass this ;; or other class
-;;  :field :cannon-f
-;;  :value :ammunitions} ;; is a field
+;;  :field cannon-f
+;;  :value ready} ;; is a mode
 
 ;; unknown (e.g. compared against the mode or field of a pclass arg)
 ;; NOTE: a warning will be logged
@@ -645,12 +639,17 @@
 ;; {:type :state-variable
 ;;  :name global-state}
 
-(defn validate-keyword  [ir state-vars pclass fields modes context kw]
-  (let [[m-or-f ref] (map keyword (string/split (name kw) #"\.:" 2))
+(defn validate-kw-or-sym [ir state-vars pclass fields modes context kw]
+  (let [[m-or-f ref] (if (symbol? kw)
+                       [kw nil]
+                       ;; NOTE the .: field-reference-field syntax is
+                       ;; no deprecated (remove in the future).
+                       (map symbol (string/split (name kw) #"\.:" 2)))
         field-ref (get fields m-or-f)
         field-pclass (if field-ref (get-in field-ref [:initial :pclass]))
-        mode-ref (get modes m-or-f)]
-    ;; (log/info "VALIDATE-KEYWORD context" context "m-or-f" m-or-f
+        mode-kw (keyword m-or-f)
+        mode-ref (get modes mode-kw)]
+    ;; (log/info "VALIDATE-KW-OR-SYM context" context "m-or-f" m-or-f
     ;;   "ref" ref "field-ref" field-ref "mode-ref" mode-ref)
     (if field-ref
       (if ref
@@ -660,8 +659,9 @@
            :pclass 'this
            :field m-or-f
            :value ref} ;; is a field
-          (if (get-in ir [field-pclass :modes ref])
+          (if (get-in ir [field-pclass :modes (keyword ref)])
             ;; ref is mode?
+
             {:type :field-reference-mode
              :pclass 'this
              :field m-or-f
@@ -677,7 +677,7 @@
            :msg (str "cannot reference the field of a mode: " kw)}
           {:type :mode-reference
            :pclass 'this
-           :mode m-or-f})
+           :mode mode-kw})
         (do
           ;; could look in context to see if we can get type hints
           ;; from other arguments
@@ -744,8 +744,9 @@
         method (if (= c0 :method) c1)
         method-args (if method (get-in ir [pclass :methods method c2 :args]))]
     (cond
-      (and (nil? type) (keyword? condition)) ;; bare keyword
-      (validate-keyword ir state-vars pclass fields modes context condition)
+      (and (nil? type)
+        (or (keyword? condition) (symbol? condition))) ;; bare keyword/symbol
+      (validate-kw-or-sym ir state-vars pclass fields modes context condition)
       (literal-ref-types type)
       condition
       (= type :equal)
@@ -753,11 +754,21 @@
         (if-not a
           (assoc vcond :args (mode-qualification ir pclass fields vargs))
           (cond
+            (and (map? a) (= (:type a) :field-reference)
+              (get fields (:pclass a))
+              (get-in (get fields (:pclass a)) [:initial :pclass])
+              (get-in ir [(get-in (get fields (:pclass a)) [:initial :pclass])
+                          :fields (:field a)]))
+            (recur vcond
+              (conj vargs {:type :field-reference-field :pclass 'this
+                           :field (:pclass a) :value (:field a)})
+              (first more) (rest more))
             (map? a) ;; already specified by instaparse
             (recur vcond (conj vargs a) (first more) (rest more))
-            (keyword? a) ;; must disambiguate here
+            (or (keyword? a) ;; must disambiguate here
+              (and (symbol? a) (get fields a))) ;; a is a field-reference
             (recur vcond
-              (conj vargs (validate-keyword ir state-vars pclass fields modes
+              (conj vargs (validate-kw-or-sym ir state-vars pclass fields modes
                             context a))
               (first more) (rest more))
             (symbol? a) ;; must resolve in scope here
@@ -844,15 +855,10 @@
                         ;; NOTE: at this point of building the IR we do not yet
                         ;; have a root-task and cannot check for arity match
                         [b nil]
-                        (or
-                          (and (= type :plant-fn-field)
-                            (some #(= field %) (keys fields)))
-                          (and (= type :plant-fn-symbol)
-                            (some #(= (keyword name) %) (keys fields))))
+                        (and (= type :plant-fn-symbol)
+                          (some #(= name %) (keys fields)))
                         ;; interpret name as a field reference
-                        (let [field (if (= type :plant-fn-field)
-                                      field
-                                      (keyword name))
+                        (let [field name
                               pclass-ctor_ (get-in fields [field :initial])
                               {:keys [type pclass]} pclass-ctor_
                               {:keys [error mdef]}
@@ -907,16 +913,15 @@
     (if (or (not a) (:error vargs))
       vargs
       (let [a (if (keyword? a)
-                (if (or (#{:id :interface :plant-part} a)
-                      (get fields a)) ;; this is a field
+                (if (#{:id :interface :plant-part} a)
                   a
                   {:error (str "Keyword argument to pclass constructor "
-                            a " is not a field in the pclass " scope-pclass)})
+                            a " is not a pclass-ctor-option in the pclass " scope-pclass)})
                 (if (symbol? a)
-                  ;; is it a formal arg to scope-pclass?
-                  (if (or (some #(= a %) (get-in ir [scope-pclass :args]))
-                        (and (get fields (keyword a))
-                          (not= (keyword a) field))) ;; this is another field
+                  ;; is it a field or a formal arg to scope-pclass?
+                  (if (or (and (get fields a)
+                            (not= a field)) ;; this is another field
+                        (some #(= a %) (get-in ir [scope-pclass :args])))
                     a
                     {:error (str "Symbol argument to pclass constructor "
                               a " is neither a formal argument to, "
@@ -945,8 +950,8 @@
                     args
                     (if (and (= type :arg-reference) (symbol? name))
                       (if (or (some #(= name %) (get-in ir [scope-pclass :args]))
-                            (and (get fields (keyword name))
-                              (not= (keyword name) field))) ;; another field
+                            (and (get fields name)
+                              (not= name field))) ;; another field
                         val
                         {:error (str "Symbol argument to " field " field initializer "
                               name " is neither a formal argument to, "

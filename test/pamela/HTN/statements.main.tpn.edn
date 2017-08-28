@@ -16,7 +16,8 @@
   :display-name "Assert",
   :end-node :node-20,
   :htn-node :hem-23,
-  :name "Assert((= foo :illuminated))",
+  :name
+  "Assert({:type :equal, :args [{:type :state-variable, :name foo} {:type :literal, :value :illuminated}]})",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-14},
@@ -38,7 +39,8 @@
   :display-name "Ask",
   :end-node :node-25,
   :htn-node :hem-23,
-  :name "Ask((= bar :dead))",
+  :name
+  "Ask({:type :equal, :args [{:type :state-variable, :name bar} {:type :literal, :value :dead}]})",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-19},
@@ -48,16 +50,16 @@
     :args
     [{:type :field-reference-field,
       :pclass this,
-      :field :field1,
-      :value :simple2}
+      :field field1,
+      :value simple2}
      {:type :literal, :value "white"}]}],
   :argsmap
   {"condition"
    {:args
     [{:type :field-reference-field,
       :pclass this,
-      :field :field1,
-      :value :simple2}
+      :field field1,
+      :value simple2}
      {:type :literal, :value "white"}],
     :type :equal}},
   :command "ask",
@@ -66,7 +68,8 @@
   :display-name "Ask",
   :end-node :node-29,
   :htn-node :hem-23,
-  :name "Ask((= :field1.:simple2 \"white\"))",
+  :name
+  "Ask({:type :equal, :args [{:type :field-reference-field, :pclass this, :field field1, :value simple2} {:type :literal, :value \"white\"}]})",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-24},
@@ -88,7 +91,8 @@
   :display-name "Tell",
   :end-node :node-33,
   :htn-node :hem-23,
-  :name "Tell((= door :open))",
+  :name
+  "Tell({:type :equal, :args [{:type :state-variable, :name door} {:type :literal, :value :open}]})",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-28},
@@ -107,8 +111,9 @@
   :tpn-type :activity,
   :uid :act-32},
  :act-9
- {:args [:field1.:simple2],
-  :argsmap {"x" :field1.:simple2},
+ {:args [{:type :field-reference, :pclass field1, :field simple2}],
+  :argsmap
+  {"x" {:field simple2, :pclass field1, :type :field-reference}},
   :command "one-arg-method",
   :constraints #{},
   :controllable false,
@@ -116,7 +121,8 @@
   :display-name "One Arg Method",
   :end-node :node-15,
   :htn-node :hem-23,
-  :name "One Arg Method(:field1.:simple2)",
+  :name
+  "One Arg Method({:type :field-reference, :pclass field1, :field simple2})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-9},

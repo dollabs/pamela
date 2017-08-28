@@ -56,7 +56,9 @@
 
 (defn cond-operand? [v]
   (or (literal? v) ;; literal
-    (#{:literal :field-reference :mode-reference :field-reference-field
+    (#{:literal :field-reference :mode-reference
+       :field-reference-field
+       ;; :field-reference-mode
        :state-variable}
       (:type v))))
 
@@ -145,18 +147,10 @@
       (symbol (str pclass "." field)))))
 
 (defmethod unparse-cond-operand :field-reference-field [cond-operand]
-  (let [{:keys [pclass field value]} cond-operand
-        ;; field (if (symbol? field)
-        ;;         field
-        ;;         (symbol (clojure.core/name field)))
-        ;; value (if (symbol? value)
-        ;;         value
-        ;;         (symbol (clojure.core/name value)))
-        value (clojure.core/name value)]
-    ;; (if (= pclass 'this)
-    ;;   field
-    ;;   (symbol (str pclass "." field)))
-    (symbol (str field ".:" value))))
+  (let [{:keys [pclass field value]} cond-operand]
+    (list 'field-of field value)))
+
+;; (defmethod unparse-cond-operand :field-reference-mode [cond-operand]
 
 (defmethod unparse-cond-operand :state-variable [cond-operand]
   (let [{:keys [name]} cond-operand]
@@ -166,7 +160,6 @@
   (let [{:keys [pclass mode]} cond-operand]
     (if (= pclass 'this)
       mode
-      ;; (symbol (str pclass "." mode)))))
       (list 'mode-of pclass mode))))
 
 ;; unparse-cond-expr -------------------------
@@ -271,6 +264,22 @@
               transitions (assoc transitions from-to trans-map-source)]
           (recur transitions (first more) (rest more)))))))
 
+(defn unparse-argvals [args]
+  (loop [argvals nil a (first args) more (rest args)]
+    (if-not a
+      (if-not (empty? argvals)
+        (vec (reverse argvals)))
+      (let [{:keys [type field param]} (if (map? a) a)
+            argval (cond
+                     (= type :field-reference)
+                     (list 'field-of (:pclass a) (:field a))
+                     (= type :pclass-ctor)
+                     param
+                     :else
+                     a)
+            argvals (cons argval argvals)]
+        (recur argvals (first more) (rest more))))))
+
 (defn unparse-fn [fn]
   (let [{:keys [type body probability name method args
                 condition field temporal-constraints
@@ -367,7 +376,7 @@
       (let [pclass-method (if (= name 'this)
                             method
                             (symbol (str name "." method)))
-            plant-src (if-not (empty? args) (seq args))
+            plant-src (unparse-argvals args)
             plant-src (if (nil? controllable)
                        plant-src
                        (cons :controllable (cons controllable plant-src)))
@@ -387,8 +396,8 @@
                          plant-src)]
         (cons pclass-method plant-src))
       (= type :plant-fn-field)
-      (let [field-method (keyword (str (clojure.core/name field) "." method))
-            plant-src (if-not (empty? args) (seq args))
+      (let [field-method (symbol (str field "." method))
+            plant-src (unparse-argvals args)
             plant-src (if (nil? controllable)
                        plant-src
                        (cons :controllable (cons controllable plant-src)))

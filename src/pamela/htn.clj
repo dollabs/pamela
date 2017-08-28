@@ -16,17 +16,20 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [clojure.pprint :as pp :refer [pprint]]
-            [avenir.utils :refer [concatv assoc-if keywordize vec-index-of as-keyword]]
+            [avenir.utils :refer [concatv assoc-if keywordize vec-index-of
+                                  as-keyword]]
             [clojure.tools.logging :as log]
             [environ.core :refer [env]]
             [camel-snake-kebab.core :as translate]
             [instaparse.core :as insta]
-            [pamela.utils :refer [stdout? output-file display-name-string dbg-println
-                                  clj19-boolean?]]
+            [pamela.utils :refer [stdout? output-file display-name-string
+                                  dbg-println clj19-boolean?]]
             [pamela.parser :as parser]
+            [pamela.unparser :as unparser]
             [pamela.tpn :as tpn]))
 
-; local implementation of gensym so that we get predictable uids in generated plans.
+;; local implementation of gensym so that we get predictable uids in
+;; generated plans.
 (defonce my-count (atom 0))
 
 (defn my-gensym [prefix]
@@ -154,45 +157,6 @@
   [method-type]
   (let [reserved-types (set (map as-keyword reserved-conditional-method-names))]
     (reserved-types method-type)))
-
-;;; If fully fleshed out, this should be in its own file
-;;; For now, this is only used to create user-readable arg lists
-(defn to-pamela [ir-snippet]
-  (cond
-    (map? ir-snippet)
-    (let [{:keys [type args name value condition field param]} ir-snippet]
-      (case type
-        :ask (list 'ask (to-pamela condition))
-        :tell (list 'tell (to-pamela condition))
-        :assert (list 'assert (to-pamela condition))
-        :state-variable name
-        :arg-reference name
-        :pclass-ctor param
-        :field-reference-field
-        (let [typefn (if (keyword? field) as-keyword symbol)]
-          (typefn (str (str field) "." (str value))))
-        :literal value
-        :equal (conj (map to-pamela args) '=)
-        :or (conj (map to-pamela args) 'or)
-        :and (conj (map to-pamela args) 'and)
-        (do
-          (log/warn "to-pamela: type" type "not handled")
-          ir-snippet)))
-
-    (seq? ir-snippet)
-    (map to-pamela ir-snippet)
-
-    (vector? ir-snippet)
-    (mapv to-pamela ir-snippet)
-
-    (some #(% ir-snippet) (list keyword? symbol? number? string? clj19-boolean?))
-    ir-snippet
-
-    :else
-    (do
-      (log/warn "to-pamela: ir-snippet" ir-snippet "not handled")
-      ir-snippet)))
-
 
 ;; HTN Object hierarchy ------------------------------------
 
@@ -1159,7 +1123,7 @@
           (let [[mi mdef] (match-method-arity (count rt-args)
                             (get-in ir [p :methods method]))]
             [p pa method mi])
-          (let [f-initial (get-in ir [p :fields (keyword f) :initial])
+          (let [f-initial (get-in ir [p :fields f :initial])
                 ;; _ (dbg-println :debug "F-INITIAL" f-initial) ;; DEBUG
                 f-type (:type f-initial)
                 p (:pclass f-initial)
@@ -1170,13 +1134,12 @@
                 deref-field-arg (fn [arg p-arg]
                                   ;; (dbg-println :debug "  DFA" arg "VF" valid-fields)
                                   (if (and
-                                       (or (keyword? arg)
-                                           (symbol? arg))
-                                       (valid-fields (keyword arg)))
+                                        (symbol? arg)
+                                       (valid-fields arg))
                                     ;; deref
                                     (assoc
                                      (get-in ir
-                                             [pclass :fields (keyword arg) :initial])
+                                             [pclass :fields arg :initial])
                                      :param p-arg) ;; remember formal param
                                     ;; normal arg
                                     arg))
@@ -1205,7 +1168,7 @@
           (if err
             {:error err}
             arg)
-          (let [f-initial (get-in ir [p :fields (keyword f) :initial])
+          (let [f-initial (get-in ir [p :fields f :initial])
                 f-type (:type f-initial)
                 p (:pclass f-initial)
                 err (if (not= f-type :pclass-ctor)
@@ -1490,7 +1453,9 @@
         ;; we are "guessing" at the positions of the arg values here:
         args (if (empty? argument-mappings)
                []
-               (vec (to-pamela (vals argument-mappings))))
+               ;; WAS (vec (to-pamela (vals argument-mappings)))
+               (unparser/unparse-argvals (vals argument-mappings))
+               )
         hem-map (assoc
                  (dissoc hem
                          :ancestry-path :expansion-method :argument-mappings :subtasks
@@ -1655,9 +1620,14 @@
                                                  (if plant-id (str plant-id "."))
                                                  interface))
                                  :display-name (str (:display-name details_)
-                                                    (if (= name 'delay)
+                                                 (if (or (= name 'delay)
+                                                       (empty? (:args details_)))
                                                       nil
-                                                      (seq (to-pamela (:args details_))))))
+                                                      ;; WAS (seq (to-pamela (:args details_)))
+                                                      ;; simple implementation
+                                                      ;; pending #139
+                                                      (pr-str (seq (:args details_)))
+                                                      )))
                          :command (:name details_)
                          :display-name (:display-name details_) ;; to be removed
                          ;; NOTE: labels go on activities if primitive
@@ -1935,7 +1905,7 @@
                                                                   (= (:pclass initial) mpclass))
                                                            (get (:args initial) arg-position))]
                                             (if ctor-arg
-                                              (get-in ir [pclass :fields (keyword ctor-arg) :initial :pclass])))
+                                              (get-in ir [pclass :fields ctor-arg :initial :pclass])))
                                          fields)))
                   pclasses (if (not (empty? pcs))
                              (concatv pclasses pcs)

@@ -1,7 +1,7 @@
 {main
  {:args [],
   :fields
-  {:switchedpower
+  {switchedpower
    {:access :private,
     :initial
     {:args [],
@@ -73,7 +73,7 @@
      [{:type :plant-fn-field,
        :method turn_off,
        :args [],
-       :field :switchedpower}],
+       :field switchedpower}],
      :controllable false,
      :cost 0,
      :display-name "Turn Off Switch",
@@ -87,9 +87,9 @@
      :betweens [],
      :body
      [{:type :plant-fn-field,
-       :field :switchedpower,
        :method turn_on,
-       :args []}],
+       :args [],
+       :field switchedpower}],
      :controllable false,
      :cost 0,
      :display-name "Turn On Switch",

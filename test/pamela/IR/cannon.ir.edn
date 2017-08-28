@@ -2,7 +2,7 @@
  box
  {:args [],
   :fields
-  {:ball-in-motion
+  {ball-in-motion
    {:access :public,
     :initial {:type :literal, :value false},
     :observable true}},
@@ -50,11 +50,11 @@
  cannon
  {:args [],
   :fields
-  {:ammunitions
+  {ammunitions
    {:access :private,
     :initial {:type :literal, :value 5},
     :observable true},
-   :ready
+   ready
    {:access :public,
     :initial {:type :literal, :value false},
     :observable true}},
@@ -87,11 +87,11 @@
  game
  {:args [],
   :fields
-  {:box-f
+  {box-f
    {:access :private,
     :initial {:args [], :pclass box, :type :pclass-ctor},
     :observable false},
-   :cannon-f
+   cannon-f
    {:access :private,
     :initial {:args [], :pclass cannon, :type :pclass-ctor},
     :observable false}},
@@ -108,8 +108,8 @@
           :args
           [{:type :field-reference-field,
             :pclass this,
-            :field :box-f,
-            :value :ball-in-motion}
+            :field box-f,
+            :value ball-in-motion}
            {:type :literal, :value true}]},
          :body
          [{:type :tell,
@@ -124,8 +124,8 @@
           :args
           [{:type :field-reference-field,
             :pclass this,
-            :field :cannon-f,
-            :value :ready}
+            :field cannon-f,
+            :value ready}
            {:type :literal, :value true}]},
          :body
          [{:type :unless,
@@ -134,8 +134,8 @@
             :args
             [{:type :field-reference-field,
               :pclass this,
-              :field :cannon-f,
-              :value :ammunitions}
+              :field cannon-f,
+              :value ammunitions}
              {:type :literal, :value 0}]},
            :body
            [{:type :try,
@@ -146,28 +146,24 @@
                  :condition
                  {:type :equal,
                   :args
-                  [{:type :field-reference,
-                    :pclass this,
-                    :field :box-f}
+                  [{:type :field-reference, :pclass this, :field box-f}
                    {:type :mode-reference, :pclass box, :mode :open}]},
                  :body nil}
                 {:type :maintain,
                  :condition
                  {:type :equal,
                   :args
-                  [{:type :field-reference,
-                    :pclass this,
-                    :field :box-f}
+                  [{:type :field-reference, :pclass this, :field box-f}
                    {:type :mode-reference, :pclass box, :mode :open}]},
                  :body
                  [{:type :sequence,
                    :body
                    [{:type :plant-fn-field,
-                     :field :cannon-f,
                      :method fire,
                      :args [123 "456"],
                      :temporal-constraints
-                     [{:type :bounds, :value [1 7]}]}
+                     [{:type :bounds, :value [1 7]}],
+                     :field cannon-f}
                     {:type :ask,
                      :condition
                      {:type :equal,
@@ -176,20 +172,20 @@
                        {:type :literal, :value true}]},
                      :body nil}]}]}
                 {:type :plant-fn-field,
-                 :field :box-f,
                  :method close-lid,
-                 :args []}]}],
+                 :args [],
+                 :field box-f}]}],
              :catch
              [{:type :sequence,
                :body
                [{:type :parallel,
                  :body
-                 [{:type :plant-fn-field,
-                   :field :box-f,
+                 [{:type :plant-fn-symbol,
+                   :name box-f,
                    :method reset,
                    :args []}
-                  {:type :plant-fn-field,
-                   :field :cannon-f,
+                  {:type :plant-fn-symbol,
+                   :name cannon-f,
                    :method reset,
                    :args []}]}
                 {:type :delay,

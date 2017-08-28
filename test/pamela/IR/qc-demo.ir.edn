@@ -1,12 +1,12 @@
 {qc-demo
  {:args [],
   :fields
-  {:qc-waypoints
+  {qc-waypoints
    {:access :private,
     :initial
     {:args [qc1 qc2 qc3], :pclass qc-waypoints, :type :pclass-ctor},
     :observable false},
-   :qc1
+   qc1
    {:access :private,
     :initial
     {:args [],
@@ -15,7 +15,7 @@
      :pclass qc,
      :type :pclass-ctor},
     :observable false},
-   :qc2
+   qc2
    {:access :private,
     :initial
     {:args [],
@@ -24,7 +24,7 @@
      :pclass qc,
      :type :pclass-ctor},
     :observable false},
-   :qc3
+   qc3
    {:access :private,
     :initial {:args [], :id "qc3", :pclass qc, :type :pclass-ctor},
     :observable false}},

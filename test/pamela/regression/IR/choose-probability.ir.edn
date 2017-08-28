@@ -1,7 +1,7 @@
 {choose-probability
  {:args [],
   :fields
-  {:a
+  {a
    {:access :private,
     :initial {:name :gensym, :type :lvar},
     :observable false}},
@@ -22,7 +22,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field :a}
+          [{:type :field-reference, :pclass this, :field a}
            {:type :literal, :value 1.0}]}}
         {:type :choice,
          :body [{:type :delay, :body nil}],

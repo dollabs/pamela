@@ -1,7 +1,7 @@
 {isr-htn
  {:args [sensor],
   :fields
-  {:sensor-f
+  {sensor-f
    {:access :private,
     :initial {:name sensor, :type :arg-reference},
     :observable false}},
@@ -13,10 +13,10 @@
      :betweens [],
      :body
      [{:type :plant-fn-field,
-       :field :sensor-f,
        :method evidence,
        :args [at],
-       :temporal-constraints [{:type :bounds, :value [15 25]}]}],
+       :temporal-constraints [{:type :bounds, :value [15 25]}],
+       :field sensor-f}],
      :controllable false,
      :cost 0,
      :display-name "Evidence",
@@ -76,14 +76,14 @@
      [{:type :sequence,
        :body
        [{:type :plant-fn-field,
-         :field :sensor-f,
          :method go-to,
-         :args [loc]}
+         :args [loc],
+         :field sensor-f}
         {:type :plant-fn-field,
-         :field :sensor-f,
          :method capture,
          :args [loc],
-         :temporal-constraints [{:type :bounds, :value [5 10]}]}]}],
+         :temporal-constraints [{:type :bounds, :value [5 10]}],
+         :field sensor-f}]}],
      :controllable false,
      :cost 0,
      :display-name "Get Data At",
@@ -101,25 +101,24 @@
        [{:type :choice,
          :body
          [{:type :plant-fn-field,
-           :field :sensor-f,
            :method interpret1,
            :args [place],
-           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
+           :temporal-constraints [{:type :bounds, :value [15 25]}],
+           :field sensor-f}]}
         {:type :choice,
          :body
          [{:type :plant-fn-field,
-           :field :sensor-f,
            :method interpret2,
            :args [place],
-           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
+           :temporal-constraints [{:type :bounds, :value [15 25]}],
+           :field sensor-f}]}
         {:type :choice,
          :body
          [{:type :plant-fn-field,
-           :field :sensor-f,
            :method interpret3,
            :args [place],
-           :temporal-constraints
-           [{:type :bounds, :value [15 25]}]}]}]}],
+           :temporal-constraints [{:type :bounds, :value [15 25]}],
+           :field sensor-f}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Interpret",
@@ -166,11 +165,11 @@
  isr-htn-demo
  {:args [],
   :fields
-  {:htn
+  {htn
    {:access :private,
     :initial {:args [plant], :pclass isr-htn, :type :pclass-ctor},
     :observable false},
-   :plant
+   plant
    {:access :private,
     :initial
     {:args [],

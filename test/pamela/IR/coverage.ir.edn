@@ -1,11 +1,11 @@
 {coverage-demo
  {:args [],
   :fields
-  {:run
+  {run
    {:access :private,
     :initial {:args [sp1], :pclass coverage-test, :type :pclass-ctor},
     :observable false},
-   :sp1
+   sp1
    {:access :private,
     :initial
     {:args [],

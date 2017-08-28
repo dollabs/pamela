@@ -27,7 +27,7 @@
  infeasible-sequence-demo
  {:args [],
   :fields
-  {:p1
+  {p1
    {:access :private,
     :initial
     {:args [],
@@ -37,7 +37,7 @@
      :plant-part "t1",
      :type :pclass-ctor},
     :observable false},
-   :run
+   run
    {:access :private,
     :initial
     {:args [p1], :pclass infeasible-sequence, :type :pclass-ctor},

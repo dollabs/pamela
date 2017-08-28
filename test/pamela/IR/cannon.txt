@@ -119,16 +119,18 @@
                 [:assert
                  [:cond-expr
                   [:equal-expr
+                   [:cond-operand [:symbol "box-f"]]
                    [:cond-operand
-                    [:mode-expr [:symbol "box-f"] [:keyword ":open"]]]
-                   [:cond-operand [:literal [:boolean [:TRUE]]]]]]]]
+                    [:mode-expr
+                     [:symbol "box"]
+                     [:keyword ":open"]]]]]]]
                [:fn
                 [:maintain
                  [:cond-expr
                   [:equal-expr
+                   [:cond-operand [:symbol "box-f"]]
                    [:cond-operand
-                    [:mode-expr [:symbol "box-f"] [:keyword ":open"]]]
-                   [:cond-operand [:literal [:boolean [:TRUE]]]]]]
+                    [:mode-expr [:symbol "box"] [:keyword ":open"]]]]]
                  [:fn
                   [:sequence
                    [:fn

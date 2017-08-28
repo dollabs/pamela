@@ -36,8 +36,9 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-15},
  :hpt-17
- {:args [:field1.:simple2],
-  :argsmap {"x" :field1.:simple2},
+ {:args [{:type :field-reference, :pclass field1, :field simple2}],
+  :argsmap
+  {"x" {:field simple2, :pclass field1, :type :field-reference}},
   :display-name "One Arg Method",
   :edges [:hedge-30],
   :incidence-set #{},
@@ -88,16 +89,16 @@
     :args
     [{:type :field-reference-field,
       :pclass this,
-      :field :field1,
-      :value :simple2}
+      :field field1,
+      :value simple2}
      {:type :literal, :value "white"}]}],
   :argsmap
   {"condition"
    {:args
     [{:type :field-reference-field,
       :pclass this,
-      :field :field1,
-      :value :simple2}
+      :field field1,
+      :value simple2}
      {:type :literal, :value "white"}],
     :type :equal}},
   :display-name "Ask",

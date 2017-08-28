@@ -185,26 +185,25 @@
  main
  {:args [],
   :fields
-  {:plnt
+  {plnt
    {:access :private,
     :initial {:args [], :pclass plant, :type :pclass-ctor},
     :observable false},
-   :tpn
+   tpn
    {:access :private,
-    :initial {:args [:plnt], :pclass first-tpn, :type :pclass-ctor},
+    :initial {:args [plnt], :pclass first-tpn, :type :pclass-ctor},
     :observable false}},
   :type :pclass},
  main-htn
  {:args [],
   :fields
-  {:plnt
+  {plnt
    {:access :private,
     :initial {:args [], :pclass plant, :type :pclass-ctor},
     :observable false},
-   :tpn
+   tpn
    {:access :private,
-    :initial
-    {:args [:plnt], :pclass first-tpn-htn, :type :pclass-ctor},
+    :initial {:args [plnt], :pclass first-tpn-htn, :type :pclass-ctor},
     :observable false}},
   :type :pclass},
  plant

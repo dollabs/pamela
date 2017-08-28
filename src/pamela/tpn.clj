@@ -21,7 +21,8 @@
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
             [pamela.utils :refer [output-file dbg-println]]))
 
-                                        ; local implementation of gensym so that we get predictable uids in generated plans.
+;; local implementation of gensym so that we get predictable uids in
+;; generated plans.
 (defonce my-count (atom 0))
 
 (defn my-gensym [prefix]
@@ -1120,7 +1121,7 @@
   (let [[demo-pclass tpn-field tpn-method] (if construct-tpn
                                              (string/split construct-tpn  #":"))
         demo-pclass (symbol demo-pclass)
-        tpn-field (keyword tpn-field)
+        tpn-field (symbol tpn-field)
         tpn-method (symbol tpn-method)
         tpn-pclass (if (= :pclass (get-in ir [demo-pclass :type]))
                      (get-in ir [demo-pclass :fields tpn-field :initial :pclass]))
@@ -1129,7 +1130,7 @@
         tpn-ks [tpn-pclass :methods tpn-method 0]
         tpn-method-def (get-in ir tpn-ks)
         field-def (fn [field-sym]
-                    (get-in ir [demo-pclass :fields (keyword field-sym)]))
+                    (get-in ir [demo-pclass :fields field-sym]))
         tpn-args (mapv field-def args)]
     (if-not tpn-method-def
       (do

@@ -84,7 +84,7 @@
   :methods [(defpmethod main
               [initial-state]
               (parallel :bounds [1 60]
-                (whenever (= (mode-of box-f :ball-in-motion) true)
+                (whenever (= (field-of box-f ball-in-motion) true)
                   (tell (= all-clear initial-state))) ;;all-clear is a state var
                 (whenever (= (field-of cannon-f ready) true)
                   (unless (= (field-of cannon-f ammunitions) 0)

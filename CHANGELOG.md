@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
+* _TBD_
+
+### [0.6.2] - 2017-08-28
+
+Changes
 * Fixed pamela launch script (Closes #72)
 * Changed default output to json (Closes #74)
 * Ensure that jenkins.sh will pass
@@ -45,6 +50,7 @@ Changes
 * Fix Temporal constraint not properly defined for some special cases (Closes #120)
 * Support defining a pclass without defpmethods (Closes #113)
 * Plant functions can begin with any of the reserved function symbols (Closes #121)
+* Convert all field references to symbols (Closes #136)
 
 ### [0.6.0] - 2017-03-08
 
@@ -206,5 +212,6 @@ Added
 [0.4.2]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.2
 [0.4.3]: https://github.com/dollabs/pamela/compare/0.4.1...0.4.3
 [0.5.0]: https://github.com/dollabs/pamela/compare/0.4.3...0.5.0
-[0.6.0]: https://github.com/dollabs/pamela/compare/0.5.0...0.6.0
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/dollabs/pamela/compare/0.5.0...pre-ir-updates-04-2017
+[0.6.2]: https://github.com/dollabs/pamela/compare/pre-ir-updates-04-2017...0.6.2
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.2...HEAD

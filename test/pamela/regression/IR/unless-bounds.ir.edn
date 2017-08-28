@@ -1,7 +1,7 @@
 {unless-bounds
  {:args [],
   :fields
-  {:a
+  {a
    {:access :private,
     :initial {:name :gensym, :type :lvar},
     :observable false}},
@@ -15,14 +15,14 @@
        :condition
        {:type :equal,
         :args
-        [{:type :field-reference, :pclass this, :field :a}
+        [{:type :field-reference, :pclass this, :field a}
          {:type :literal, :value 1.0}]},
        :body [{:type :delay, :body nil}],
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
      :controllable false,
      :cost 0,
      :display-name "Always On",
-     :doc "ensure field :a is always 1.0",
+     :doc "ensure field a is always 1.0",
      :post {:type :literal, :value true},
      :pre {:type :literal, :value true},
      :primitive false,

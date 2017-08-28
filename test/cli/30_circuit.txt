@@ -13,16 +13,16 @@
   [:args [:symbol "gnd"] [:symbol "pwr"]]
   [:option
    [:meta
-    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:version [:string "0.3.0"]]]
     [:meta-entry
      [:depends [:dep [:symbol "pwrvals"] [:string "0.2.0"]]]]
     [:meta-entry [:doc [:string "Power Switch"]]]]]
   [:option
    [:fields
-    [:field [:keyword ":TP1"] [:field-type [:symbol "gnd"]]]
-    [:field [:keyword ":TP2"] [:field-type [:symbol "pwr"]]]
+    [:field [:symbol "TP1"] [:field-type [:symbol "gnd"]]]
+    [:field [:symbol "TP2"] [:field-type [:symbol "pwr"]]]
     [:field
-     [:keyword ":pwr"]
+     [:symbol "pwr"]
      [:field-type
       [:mode-expr [:symbol "pwrvals"] [:keyword ":none"]]]]]]
   [:option
@@ -32,14 +32,14 @@
       [:keyword ":on"]
       [:cond-expr
        [:equal-expr
-        [:cond-operand [:literal [:keyword ":pwr"]]]
+        [:cond-operand [:symbol "pwr"]]
         [:cond-operand
          [:mode-expr [:symbol "pwrvals"] [:keyword ":high"]]]]]]
      [:mode-init
       [:keyword ":off"]
       [:cond-expr
        [:equal-expr
-        [:cond-operand [:literal [:keyword ":pwr"]]]
+        [:cond-operand [:symbol "pwr"]]
         [:cond-operand
          [:mode-expr [:symbol "pwrvals"] [:keyword ":none"]]]]]]
      [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
@@ -111,24 +111,24 @@
   [:args [:symbol "vcc"] [:symbol "vdd"]]
   [:option
    [:meta
-    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:version [:string "0.3.0"]]]
     [:meta-entry
      [:depends [:dep [:symbol "lightvals"] [:string "0.2.0"]]]]
     [:meta-entry [:doc [:string "A light bulb"]]]
     [:meta-entry [:icon [:string "bulb.svg"]]]]]
   [:option
    [:fields
-    [:field [:keyword ":anode"] [:field-type [:symbol "vcc"]]]
-    [:field [:keyword ":cathode"] [:field-type [:symbol "vdd"]]]
+    [:field [:symbol "anode"] [:field-type [:symbol "vcc"]]]
+    [:field [:symbol "cathode"] [:field-type [:symbol "vdd"]]]
     [:field
-     [:keyword ":illumination"]
+     [:symbol "illumination"]
      [:field-init
       [:initial
        [:field-type
         [:mode-expr [:symbol "lightvals"] [:keyword ":dark"]]]]]
      [:field-init [:access [:keyword ":public"]]]]
     [:field
-     [:keyword ":sensed-illumination"]
+     [:symbol "sensed-illumination"]
      [:field-init
       [:initial
        [:field-type
@@ -144,12 +144,12 @@
        [:and-expr
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:literal [:keyword ":illumination"]]]
+          [:cond-operand [:symbol "illumination"]]
           [:cond-operand
            [:mode-expr [:symbol "lightvals"] [:keyword ":bright"]]]]]
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:literal [:keyword ":sensed-illumination"]]]
+          [:cond-operand [:symbol "sensed-illumination"]]
           [:cond-operand
            [:mode-expr
             [:symbol "lightvals"]
@@ -160,12 +160,12 @@
        [:and-expr
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:literal [:keyword ":illumination"]]]
+          [:cond-operand [:symbol "illumination"]]
           [:cond-operand
            [:mode-expr [:symbol "lightvals"] [:keyword ":dark"]]]]]
         [:cond-expr
          [:equal-expr
-          [:cond-operand [:literal [:keyword ":sensed-illumination"]]]
+          [:cond-operand [:symbol "sensed-illumination"]]
           [:cond-operand
            [:mode-expr [:symbol "lightvals"] [:keyword ":dark"]]]]]]]]
      [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
@@ -181,13 +181,12 @@
           [:cond-operand [:literal [:keyword ":off"]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:literal [:keyword ":anode"]]]
+            [:cond-operand [:symbol "anode"]]
             [:cond-operand
              [:mode-expr [:symbol "pwrvals"] [:keyword ":high"]]]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand
-             [:literal [:keyword ":sensed-illumination"]]]
+            [:cond-operand [:symbol "sensed-illumination"]]
             [:cond-operand
              [:mode-expr
               [:symbol "lightvals"]
@@ -210,13 +209,12 @@
           [:cond-operand [:literal [:keyword ":on"]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:literal [:keyword ":anode"]]]
+            [:cond-operand [:symbol "anode"]]
             [:cond-operand
              [:mode-expr [:symbol "pwrvals"] [:keyword ":none"]]]]]
           [:cond-expr
            [:equal-expr
-            [:cond-operand
-             [:literal [:keyword ":sensed-illumination"]]]
+            [:cond-operand [:symbol "sensed-illumination"]]
             [:cond-operand
              [:mode-expr
               [:symbol "lightvals"]
@@ -240,11 +238,11 @@
   [:args]
   [:option
    [:meta
-    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:version [:string "0.3.0"]]]
     [:meta-entry
      [:depends
-      [:dep [:symbol "psw"] [:string "0.2.1"]]
-      [:dep [:symbol "bulb"] [:string "0.2.1"]]]]
+      [:dep [:symbol "psw"] [:string "0.3.0"]]
+      [:dep [:symbol "bulb"] [:string "0.3.0"]]]]
     [:meta-entry
      [:doc
       [:string
@@ -252,27 +250,27 @@
   [:option
    [:fields
     [:field
-     [:keyword ":source"]
+     [:symbol "source"]
      [:field-type [:lvar-ctor [:string "source"]]]]
     [:field
-     [:keyword ":drain"]
+     [:symbol "drain"]
      [:field-type [:lvar-ctor [:string "drain"]]]]
     [:field
-     [:keyword ":bulb1"]
+     [:symbol "bulb1"]
      [:field-type
       [:pclass-ctor
        [:symbol "bulb"]
-       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":source"]]]
-       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":drain"]]]
+       [:pclass-ctor-arg [:symbol "source"]]
+       [:pclass-ctor-arg [:symbol "drain"]]
        [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
        [:pclass-ctor-option [:plant-part [:string "Bulb1"]]]]]]
     [:field
-     [:keyword ":switchedpower"]
+     [:symbol "switchedpower"]
      [:field-type
       [:pclass-ctor
        [:symbol "psw"]
-       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":source"]]]
-       [:pclass-ctor-arg [:pclass-arg-keyword [:keyword ":drain"]]]
+       [:pclass-ctor-arg [:symbol "source"]]
+       [:pclass-ctor-arg [:symbol "drain"]]
        [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
        [:pclass-ctor-option [:plant-part [:string "PSW1"]]]
        [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]]]

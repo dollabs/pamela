@@ -197,9 +197,7 @@
          [:cond-expr
           [:equal-expr
            [:cond-operand
-            [:mode-expr
-             [:symbol "box-f"]
-             [:keyword ":ball-in-motion"]]]
+            [:field-expr [:symbol "box-f"] [:symbol "ball-in-motion"]]]
            [:cond-operand [:literal [:boolean [:TRUE]]]]]]
          [:fn
           [:tell

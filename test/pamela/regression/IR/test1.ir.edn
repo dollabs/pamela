@@ -80,7 +80,7 @@
  main
  {:args [],
   :fields
-  {:e1h1
+  {e1h1
    {:access :private,
     :initial
     {:args [],
@@ -89,7 +89,7 @@
      :plant-part "host0101",
      :type :pclass-ctor},
     :observable false},
-   :e7h1
+   e7h1
    {:access :private,
     :initial
     {:args [],
@@ -126,12 +126,12 @@
          :method file-transfer,
          :args [server-host "100MB"],
          :temporal-constraints [{:type :bounds, :value [1 7]}],
-         :field :e7h1}
+         :field e7h1}
         {:type :plant-fn-field,
          :method video-session,
          :args [client-host server-host "1"],
          :temporal-constraints [{:type :bounds, :value [20 35]}],
-         :field :e7h1}]}],
+         :field e7h1}]}],
      :controllable false,
      :cost 0,
      :display-name "test1",
