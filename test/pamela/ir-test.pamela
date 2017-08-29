@@ -76,18 +76,18 @@
            box-f    (box)}
 
   :modes {:wacky true
-          :bizarre (= (field-of cannon-f ammunitions) 5)
-          :weird (and (= (field-of box-f pwr) (mode-of pwrvals :high))
+          :bizarre (= cannon-f.ammunitions 5)
+          :weird (and (= box-f.pwr (mode-of pwrvals :high))
                    (= power (mode-of pwrvals :high))
                    (= global-state true))
           }
   :methods [(defpmethod main
               [initial-state]
               (parallel :bounds [1 60]
-                (whenever (= (field-of box-f ball-in-motion) true)
+                (whenever (= box-f.ball-in-motion true)
                   (tell (= all-clear initial-state))) ;;all-clear is a state var
-                (whenever (= (field-of cannon-f ready) true)
-                  (unless (= (field-of cannon-f ammunitions) 0)
+                (whenever (= cannon-f.ready true)
+                  (unless (= cannon-f.ammunitions) 0)
                     (try :bounds [2 20]
                          (sequence
                            (assert (= box-f (mode-of box :open)))

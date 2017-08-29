@@ -661,7 +661,6 @@
            :value ref} ;; is a field
           (if (get-in ir [field-pclass :modes (keyword ref)])
             ;; ref is mode?
-
             {:type :field-reference-mode
              :pclass 'this
              :field m-or-f

@@ -27,15 +27,13 @@ or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> cond-expr <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
-cond-operand = ( literal | symbol | field-expr | mode-expr )
-field-expr = <LP> <FIELD_OF> symbol symbol <RP> (* pclass field *)
-(* the symbol of mode-expr is either a pclass or a field with pclass instance*)
-mode-expr = <LP> <MODE_OF> symbol keyword <RP>
+cond-operand = ( literal | mode-expr | symbol-ref )
+mode-expr = <LP> <MODE_OF> symbol-ref keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = symbol ( <LM> field-init+ <RM> | field-type )
-field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor |
-               mode-expr )
+field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
+               mode-expr | symbol-ref )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type
@@ -83,8 +81,7 @@ try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
-plant-fn = <LP> ( symbol <'.'> symbol | symbol | keyword ) plant-opt*
-                  argval* <RP>
+plant-fn = <LP> symbol-ref plant-opt* argval* <RP>
 
 between-stmt = (between | between-ends | between-starts)
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
@@ -115,13 +112,13 @@ exactly = EXACTLY integer
 enter = <ENTER> fn
 leave = <LEAVE> fn
 
-number-ref = ( symbol | lvar-ctor | number )
+number-ref = ( number | lvar-ctor | symbol-ref )
 
 lvar-ctor = ( <LP> <LVAR> <RP> | <LP> <LVAR> string lvar-init? <RP> )
 lvar-init = literal | bounds-literal
 
 pclass-ctor = <LP> symbol pclass-ctor-arg* pclass-ctor-option* <RP>
-pclass-ctor-arg = ( boolean | string | number | symbol | pclass-arg-keyword )
+pclass-ctor-arg = ( string | number | pclass-arg-keyword | boolean | symbol-ref )
 pclass-ctor-option = ( id | plant-part | interface )
 pclass-arg-keyword = !reserved-pclass-ctor-keyword keyword
 reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> | <PLANT_PART> ) stop-token
@@ -132,12 +129,13 @@ interface = <INTERFACE> string
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
+symbol-ref = symbol ( '.' symbol )*
 symbol = !reserved-symbol #'[A-Za-z][A-Za-z0-9-_]*'
 reserved-symbol = reserved-string stop-token
 reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
                     <BETWEEN_STARTS> | <CATCH> | <CHOICE> | <CHOOSE> |
                     <CHOOSE_WHENEVER> | <DEFPCLASS> | <DEFPMETHOD> | <DELAY> |
-                    <DOTIMES> | <FALSE> | <FIELD_OF> |
+                    <DOTIMES> | <FALSE> |
                     <IMPLIES> | <LVAR> | <MAINTAIN> |
                     <MODE_OF> | <NOT> | <OPTIONAL> | <OR> | <PARALLEL> |
                     <SEQUENCE> | <SLACK_PARALLEL> | <SLACK_SEQUENCE> |
@@ -146,7 +144,7 @@ reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
 stop-token = (whitespace | '.' | LP | RP )
 
 literal = ( boolean | string | keyword | number )
-argval = ( symbol | boolean | string | number | safe-keyword | field-expr )
+argval = ( string | number | safe-keyword | boolean | symbol-ref )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
                    stop-token
@@ -185,7 +183,6 @@ EQUAL = <'='>
 EXACTLY = <':exactly'>
 FALSE = <'false'>
 FIELDS = <':fields'>
-FIELD_OF = <'field-of'>
 GUARD = <':guard'>
 ICON = <':icon'>
 ID = <':id'>

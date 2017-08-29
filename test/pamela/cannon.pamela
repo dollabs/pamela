@@ -47,10 +47,10 @@
   :methods [(defpmethod main
               []
               (parallel :bounds [1 60]
-                (whenever (= (field-of box-f ball-in-motion) true)
+                (whenever (= box-f.ball-in-motion true)
                   (tell (= all-clear true))) ;; all-clear is a state variable
-                (whenever (= (field-of cannon-f ready) true)
-                  (unless (= (field-of cannon-f ammunitions) 0)
+                (whenever (= cannon-f.ready true)
+                  (unless (= cannon-f.ammunitions 0)
                     (try :bounds [2 20]
                       (sequence
                         (assert (= box-f (mode-of box :open)))

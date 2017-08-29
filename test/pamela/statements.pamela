@@ -33,10 +33,10 @@
 
             (defpmethod test-of-various-statements []
               (sequence
-               (one-arg-method (field-of field1 simple2))
+               (one-arg-method field1.simple2)
                (assert (= foo :illuminated) :bounds [3 5])
                (ask (= bar :dead) :bounds [4 7])
-               (ask (= (field-of field1 simple2) "white") :bounds [4 7])
+               (ask (= field1.simple2 "white") :bounds [4 7])
                (tell (= door :open))
                (initialize)
                ;; These commented-out statements aren't yet supported for HTN/TPN generation
