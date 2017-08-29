@@ -17,6 +17,9 @@ Changes
 * Check method call arity in IR generation (if possible) (Closes #83)
 * Improved field arg validation (Closes #87)
 
+NOTE: this is a work-in-progress inheritance branch
+
+
 ### [0.6.0] - 2017-03-08
 
 Changes
