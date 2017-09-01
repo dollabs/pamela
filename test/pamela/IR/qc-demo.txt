@@ -37,6 +37,6 @@
      [:field-type
       [:pclass-ctor
        [:symbol "qc-waypoints"]
-       [:pclass-ctor-arg [:symbol "qc1"]]
-       [:pclass-ctor-arg [:symbol "qc2"]]
-       [:pclass-ctor-arg [:symbol "qc3"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc1"]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc2"]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc3"]]]]]]]]]]

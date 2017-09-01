@@ -9,7 +9,7 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "perform-activities"]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "perform-activities"]]]]
        [:fn
         [:delay
          [:delay-opt
@@ -20,29 +20,38 @@
               [:bounds-literal
                [:number [:integer "10"]]
                [:number [:integer "10"]]]]]]]]]]
-       [:fn [:plant-fn [:symbol "perform-activities"]]]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "perform-activities"]]]]]]]
     [:defpmethod
      [:symbol "perform-activities"]
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
-       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
-       [:fn [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]
        [:fn
-        [:plant-fn [:symbol "perform-15-minutes-of-activities"]]]]]]
+        [:plant-fn
+         [:symbol-ref [:symbol "perform-15-minutes-of-activities"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "perform-15-minutes-of-activities"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "perform-15-minutes-of-activities"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref
+          [:symbol "perform-15-minutes-of-activities"]]]]]]]
     [:defpmethod
      [:symbol "perform-15-minutes-of-activities"]
      [:args]
      [:fn
       [:parallel
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]
-       [:fn [:plant-fn [:symbol "something-simple"]]]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "something-simple"]]]]]]]
     [:defpmethod [:symbol "something-simple"] [:args]]]]]]

@@ -25,10 +25,10 @@
                [:number [:integer "15"]]]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
-         [:argval [:symbol "client-host"]]
-         [:argval [:symbol "server-host"]]
-         [:argval [:symbol "display"]]]]]]]
+         [:symbol-ref [:symbol "video"]]
+         [:argval [:symbol-ref [:symbol "client-host"]]]
+         [:argval [:symbol-ref [:symbol "server-host"]]]
+         [:argval [:symbol-ref [:symbol "display"]]]]]]]]
     [:defpmethod
      [:symbol "file-transfer"]
      [:cond-map [:cond [:display-name [:string "File Xfer"]]]]
@@ -37,9 +37,9 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "ftp"]
-         [:argval [:symbol "server-host"]]
-         [:argval [:symbol "size"]]]]]]]
+         [:symbol-ref [:symbol "ftp"]]
+         [:argval [:symbol-ref [:symbol "server-host"]]]
+         [:argval [:symbol-ref [:symbol "size"]]]]]]]]
     [:defpmethod
      [:symbol "ftp"]
      [:args [:symbol "server-host"] [:symbol "size"]]]
@@ -82,7 +82,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "main-internal"]
+       [:symbol-ref [:symbol "main-internal"]]
        [:argval [:string "host0101"]]
        [:argval [:string "host0701"]]]]]
     [:defpmethod
@@ -95,26 +95,24 @@
       [:parallel
        [:fn
         [:plant-fn
-         [:symbol "e7h1"]
-         [:symbol "file-transfer"]
+         [:symbol-ref [:symbol "e7h1"] [:symbol "file-transfer"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "7"]]]]]]
-         [:argval [:symbol "server-host"]]
+         [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:string "100MB"]]]]
        [:fn
         [:plant-fn
-         [:symbol "e7h1"]
-         [:symbol "video-session"]
+         [:symbol-ref [:symbol "e7h1"] [:symbol "video-session"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "20"]]
              [:number [:integer "35"]]]]]]
-         [:argval [:symbol "client-host"]]
-         [:argval [:symbol "server-host"]]
+         [:argval [:symbol-ref [:symbol "client-host"]]]
+         [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:string "1"]]]]]]]]]]]

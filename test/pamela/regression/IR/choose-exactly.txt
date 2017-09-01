@@ -26,10 +26,23 @@
      [:fn
       [:choose
        [:choose-opt [:exactly [:EXACTLY] [:integer "3"]]]
-       [:choice [:fn [:plant-fn [:symbol "plant"] [:symbol "one"]]]]
-       [:choice [:fn [:plant-fn [:symbol "plant"] [:symbol "two"]]]]
-       [:choice [:fn [:plant-fn [:symbol "plant"] [:symbol "three"]]]]
-       [:choice [:fn [:plant-fn [:symbol "plant"] [:symbol "four"]]]]
-       [:choice [:fn [:plant-fn [:symbol "plant"] [:symbol "five"]]]]
        [:choice
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "six"]]]]]]]]]]]
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+       [:choice
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+       [:choice
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
+       [:choice
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]
+       [:choice
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "five"]]]]]
+       [:choice
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "six"]]]]]]]]]]]]

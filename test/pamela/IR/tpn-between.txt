@@ -161,8 +161,7 @@
       [:parallel
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "track-elephant"]
+         [:symbol-ref [:symbol "plant"] [:symbol "track-elephant"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -180,13 +179,15 @@
               [:number [:integer "25"]]]]]]]
          [:fn
           [:plant-fn
-           [:symbol "plant"]
-           [:symbol "watch-right-hemisphere"]
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "watch-right-hemisphere"]]
            [:plant-opt [:label [:keyword ":watch-right"]]]]]
          [:fn
           [:plant-fn
-           [:symbol "plant"]
-           [:symbol "watch-left-hemisphere"]]]]]
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "watch-left-hemisphere"]]]]]]
        [:fn
         [:sequence
          [:fn-opt [:label [:keyword ":process"]]]
@@ -205,8 +206,9 @@
              [:sequence
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "take-high-res-images"]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "take-high-res-images"]]
                 [:plant-opt
                  [:opt-bounds
                   [:bounds
@@ -215,8 +217,9 @@
                     [:number [:integer "3"]]]]]]]]
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "move-high-res-images"]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "move-high-res-images"]]
                 [:plant-opt
                  [:opt-bounds
                   [:bounds
@@ -226,8 +229,9 @@
            [:choice
             [:fn
              [:plant-fn
-              [:symbol "plant"]
-              [:symbol "take-move-low-res-images"]
+              [:symbol-ref
+               [:symbol "plant"]
+               [:symbol "take-move-low-res-images"]]
               [:plant-opt
                [:opt-bounds
                 [:bounds
@@ -245,8 +249,9 @@
              [:sequence
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "take-medium-res-images"]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "take-medium-res-images"]]
                 [:plant-opt
                  [:opt-bounds
                   [:bounds
@@ -255,8 +260,9 @@
                     [:number [:integer "3"]]]]]]]]
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "move-medium-res-images"]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "move-medium-res-images"]]
                 [:plant-opt
                  [:opt-bounds
                   [:bounds
@@ -268,8 +274,9 @@
            [:fn-opt [:label [:keyword ":analyze"]]]
            [:fn
             [:plant-fn
-             [:symbol "plant"]
-             [:symbol "picture-analysis-type-1"]
+             [:symbol-ref
+              [:symbol "plant"]
+              [:symbol "picture-analysis-type-1"]]
              [:plant-opt
               [:opt-bounds
                [:bounds
@@ -290,13 +297,15 @@
               [:choice-opt [:label [:keyword ":slow-path"]]]
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "picture-analysis-type-2-slow"]]]]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "picture-analysis-type-2-slow"]]]]]
              [:choice
               [:fn
                [:plant-fn
-                [:symbol "plant"]
-                [:symbol "picture-analysis-type-2-fast"]
+                [:symbol-ref
+                 [:symbol "plant"]
+                 [:symbol "picture-analysis-type-2-fast"]]
                 [:plant-opt
                  [:opt-bounds
                   [:bounds
@@ -305,8 +314,9 @@
                     [:number [:integer "10"]]]]]]]]]]]
            [:fn
             [:plant-fn
-             [:symbol "plant"]
-             [:symbol "picture-analysis-type-3"]
+             [:symbol-ref
+              [:symbol "plant"]
+              [:symbol "picture-analysis-type-3"]]
              [:plant-opt [:label [:keyword ":phase-3"]]]
              [:plant-opt
               [:opt-bounds
@@ -316,8 +326,9 @@
                  [:number [:integer "7"]]]]]]]]]]
          [:fn
           [:plant-fn
-           [:symbol "plant"]
-           [:symbol "picture-distribution"]
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "picture-distribution"]]
            [:plant-opt
             [:opt-bounds
              [:bounds

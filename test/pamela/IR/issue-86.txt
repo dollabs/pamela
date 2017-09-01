@@ -11,15 +11,17 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn [:symbol "foo"] [:argval [:number [:integer "1"]]]]]
+        [:plant-fn
+         [:symbol-ref [:symbol "foo"]]
+         [:argval [:number [:integer "1"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "foo"]
+         [:symbol-ref [:symbol "foo"]]
          [:argval [:number [:integer "1"]]]
          [:argval [:number [:integer "2"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "foo"]
+         [:symbol-ref [:symbol "foo"]]
          [:argval [:number [:integer "1"]]]
          [:argval [:number [:integer "2"]]]
          [:argval [:number [:integer "3"]]]]]]]]

@@ -18,6 +18,6 @@
       [:when
        [:cond-expr
         [:equal-expr
-         [:cond-operand [:symbol "a"]]
+         [:cond-operand [:symbol-ref [:symbol "a"]]]
          [:cond-operand [:literal [:number [:float "1.0"]]]]]]
        [:fn [:delay]]]]]]]]]

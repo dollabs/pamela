@@ -30,15 +30,18 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
        [:fn [:delay]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "action1"]
+         [:symbol-ref [:symbol "plant"] [:symbol "action1"]]
          [:plant-opt [:controllable [:boolean [:TRUE]]]]]]
        [:fn [:delay [:delay-opt [:controllable [:boolean [:TRUE]]]]]]
-       [:fn [:plant-fn [:symbol "plant"] [:symbol "action2"]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]
        [:fn
         [:delay
          [:delay-opt
@@ -52,8 +55,7 @@
          [:delay-opt [:controllable [:boolean [:FALSE]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "action2"]
+         [:symbol-ref [:symbol "plant"] [:symbol "action2"]]
          [:plant-opt
           [:opt-bounds
            [:bounds

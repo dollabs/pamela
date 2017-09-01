@@ -28,7 +28,9 @@
      [:args]
      [:fn
       [:choose
-       [:choice [:fn [:plant-fn [:symbol "take-high-res-images"]]]]
+       [:choice
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "take-high-res-images"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
@@ -39,7 +41,9 @@
              [:bounds-literal
               [:number [:integer "3"]]
               [:number [:integer "6"]]]]]]]]
-        [:fn [:plant-fn [:symbol "take-medium-res-images"]]]]]]]]]]
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "take-medium-res-images"]]]]]]]]]]]
  [:defpclass
   [:symbol "example"]
   [:args [:symbol "camera"]]

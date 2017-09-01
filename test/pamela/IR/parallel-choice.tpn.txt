@@ -18,14 +18,21 @@
       [:sequence
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:choose
          [:choice
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:plant-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
          [:choice
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "unbounded"]]]]]]]]]]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "unbounded"]]]]]]]]]]]]]]

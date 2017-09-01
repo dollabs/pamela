@@ -33,8 +33,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "this"]
-       [:symbol "location"]
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445370"]]]
        [:argval [:number [:float "-71.227891"]]]
        [:argval [:number [:float "1.0"]]]
@@ -52,8 +51,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "this"]
-       [:symbol "location"]
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445435"]]]
        [:argval [:number [:float "-71.227843"]]]
        [:argval [:number [:float "2.0"]]]
@@ -71,8 +69,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "this"]
-       [:symbol "location"]
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445389"]]]
        [:argval [:number [:float "-71.227734"]]]
        [:argval [:number [:float "3.0"]]]
@@ -90,8 +87,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "this"]
-       [:symbol "location"]
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445327"]]]
        [:argval [:number [:float "-71.227788"]]]
        [:argval [:number [:float "4.0"]]]

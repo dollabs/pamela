@@ -18,7 +18,7 @@
         [:ask
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "100"]]]]]]
          [:opt-bounds
           [:bounds
@@ -29,7 +29,7 @@
         [:assert
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "200"]]]]]]
          [:opt-bounds
           [:bounds
@@ -40,7 +40,7 @@
         [:maintain
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "300"]]]]]]
          [:opt-bounds
           [:bounds
@@ -52,13 +52,13 @@
         [:tell
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "400"]]]]]]]]
        [:fn
         [:unless
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "500"]]]]]]
          [:opt-bounds
           [:bounds
@@ -70,7 +70,7 @@
         [:when
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "600"]]]]]]
          [:opt-bounds
           [:bounds
@@ -82,7 +82,7 @@
         [:whenever
          [:cond-expr
           [:equal-expr
-           [:cond-operand [:symbol "value"]]
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
            [:cond-operand [:literal [:number [:integer "700"]]]]]]
          [:opt-bounds
           [:bounds

@@ -30,8 +30,12 @@
      [:args]
      [:fn
       [:parallel
-       [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-       [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]
  [:defpclass
   [:symbol "sequence-parallel1-htn"]
   [:args [:symbol "plant"]]
@@ -42,12 +46,19 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
          [:fn
-          [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
  [:defpclass
   [:symbol "double-parallel-htn"]
   [:args [:symbol "plant"]]
@@ -60,13 +71,22 @@
       [:parallel
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
          [:fn
-          [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
  [:defpclass
   [:symbol "sequence-parallel2-htn"]
   [:args [:symbol "plant"]]
@@ -79,13 +99,22 @@
       [:sequence
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:parallel
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
          [:fn
-          [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
  [:defpclass
   [:symbol "parallel-sequence2-htn"]
   [:args [:symbol "plant"]]
@@ -98,13 +127,22 @@
       [:parallel
        [:fn
         [:sequence
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:sequence
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
          [:fn
-          [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
  [:defpclass
   [:symbol "sequence-choose-htn"]
   [:args [:symbol "plant"]]
@@ -118,18 +156,25 @@
        [:fn
         [:choose
          [:choice
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]]
-         [:choice
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]
-       [:fn
-        [:choose
-         [:choice
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:plant-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
          [:choice
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "unbounded"]]]]]]]]]]]]
+            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
+       [:fn
+        [:choose
+         [:choice
+          [:fn
+           [:plant-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
+         [:choice
+          [:fn
+           [:plant-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "unbounded"]]]]]]]]]]]]]
  [:defpclass
   [:symbol "choose-sequence-htn"]
   [:args [:symbol "plant"]]
@@ -143,13 +188,20 @@
        [:choice
         [:fn
          [:sequence
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "unbounded"]]]]]]
+          [:fn
+           [:plant-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:plant-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
        [:choice
         [:fn
          [:sequence
-          [:fn [:plant-fn [:symbol "plant"] [:symbol "bounded"]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "unbounded"]]]]]]]]]]]]]
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:plant-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "unbounded"]]]]]]]]]]]]]]

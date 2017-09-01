@@ -41,89 +41,87 @@
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "1"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "acquire"]
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "release"]
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "one"]]]]
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "2"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "acquire"]
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "release"]
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "two"]]]]
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "3"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "acquire"]
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "release"]
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "three"]]]]
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "4"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "acquire"]
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "release"]
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "four"]]]]]]]]]]
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]]]]
  [:defpclass
   [:symbol "choice-tpn2"]
   [:args [:symbol "plant"]]
@@ -149,57 +147,63 @@
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "1"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "set-priority"]
+            [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "1"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "one"]]]]
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "2"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "set-priority"]
+            [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "2"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "two"]]]]
+        [:fn
+         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "3"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "set-priority"]
+            [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "3"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "three"]]]]
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
        [:choice
         [:choice-opt
          [:guard
           [:cond-expr
            [:equal-expr
-            [:cond-operand [:symbol "priority"]]
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
             [:cond-operand [:literal [:number [:integer "4"]]]]]]]]
         [:choice-opt
          [:enter
           [:fn
            [:plant-fn
-            [:symbol "set-priority"]
+            [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "4"]]]]]]]
-        [:fn [:plant-fn [:symbol "plant"] [:symbol "four"]]]]]]]
+        [:fn
+         [:plant-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]
     [:defpmethod
      [:symbol "set-priority"]
      [:cond-map]
@@ -208,5 +212,5 @@
       [:assert
        [:cond-expr
         [:equal-expr
-         [:cond-operand [:symbol "priority"]]
-         [:cond-operand [:symbol "new-priority"]]]]]]]]]]]
+         [:cond-operand [:symbol-ref [:symbol "priority"]]]
+         [:cond-operand [:symbol-ref [:symbol "new-priority"]]]]]]]]]]]]

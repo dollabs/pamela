@@ -25,8 +25,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "this"]
-       [:symbol "primitive"]
+       [:symbol-ref [:symbol "this"] [:symbol "primitive"]]
        [:argval [:number [:float "42.445370"]]]
        [:argval [:number [:float "-71.227891"]]]]]]]]]
  [:defpclass
@@ -49,8 +48,7 @@
         [:sequence
          [:fn
           [:plant-fn
-           [:symbol "arg1"]
-           [:symbol "primitive"]
+           [:symbol-ref [:symbol "arg1"] [:symbol "primitive"]]
            [:plant-opt
             [:opt-bounds
              [:bounds
@@ -63,8 +61,9 @@
         [:sequence
          [:fn
           [:plant-fn
-           [:symbol "arg2"]
-           [:symbol "nonprimitive"]]]]]]]]]]]
+           [:symbol-ref
+            [:symbol "arg2"]
+            [:symbol "nonprimitive"]]]]]]]]]]]]
  [:defpclass
   [:symbol "wrapper"]
   [:args]
@@ -95,5 +94,5 @@
      [:field-type
       [:pclass-ctor
        [:symbol "tpn-methods"]
-       [:pclass-ctor-arg [:symbol "qc1"]]
-       [:pclass-ctor-arg [:symbol "qc2"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc1"]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc2"]]]]]]]]]]

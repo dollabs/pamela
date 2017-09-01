@@ -82,8 +82,7 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "hardwork"]
+         [:symbol-ref [:symbol "plant"] [:symbol "hardwork"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -93,8 +92,7 @@
          [:argval [:number [:integer "10"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "scp"]
+         [:symbol-ref [:symbol "plant"] [:symbol "scp"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -105,8 +103,7 @@
          [:argval [:string "me@192.168.11.100:~me/copyofbigfile"]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "cp"]
+         [:symbol-ref [:symbol "plant"] [:symbol "cp"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -117,8 +114,7 @@
          [:argval [:string "copyofbigfile"]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "shell"]
+         [:symbol-ref [:symbol "plant"] [:symbol "shell"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -131,8 +127,7 @@
          [:argval [:string "foo"]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "python"]
+         [:symbol-ref [:symbol "plant"] [:symbol "python"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -156,8 +151,7 @@
                [:number [:integer "3"]]]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plant"]
-         [:symbol "stop"]
+         [:symbol-ref [:symbol "plant"] [:symbol "stop"]]
          [:argval [:string "McDonalds"]]]]]]]]]]
  [:defpclass
   [:symbol "simple-plant-demo"]
@@ -177,4 +171,4 @@
      [:field-type
       [:pclass-ctor
        [:symbol "planttest"]
-       [:pclass-ctor-arg [:symbol "sp1"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "sp1"]]]]]]]]]]

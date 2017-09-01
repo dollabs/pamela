@@ -25,15 +25,15 @@
             [:number [:integer "20"]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "submethod"]
+         [:symbol-ref [:symbol "submethod"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "10"]]]]]]]]
-       [:fn [:plant-fn [:symbol "submethod"]]]
-       [:fn [:plant-fn [:symbol "submethod"]]]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "submethod"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "submethod"]]]]]]]
     [:defpmethod
      [:symbol "submethod"]
      [:cond-map
@@ -55,24 +55,25 @@
             [:number [:integer "9"]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "primitive-method"]
+         [:symbol-ref [:symbol "primitive-method"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "2"]]]]]]]]
-       [:fn [:plant-fn [:symbol "primitive-method"]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "primitive-method"]]]]
        [:fn
         [:plant-fn
-         [:symbol "primitive-method-b"]
+         [:symbol-ref [:symbol "primitive-method-b"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "3"]]]]]]]]
-       [:fn [:plant-fn [:symbol "primitive-method-b"]]]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "primitive-method-b"]]]]]]]
     [:defpmethod [:symbol "primitive-method"] [:args]]
     [:defpmethod
      [:symbol "primitive-method-b"]

@@ -41,7 +41,9 @@
        "This defines all of the HTN methods for this ISR domain"]]]]]
   [:option
    [:fields
-    [:field [:symbol "sensor-f"] [:field-type [:symbol "sensor"]]]]]
+    [:field
+     [:symbol "sensor-f"]
+     [:field-type [:symbol-ref [:symbol "sensor"]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -50,26 +52,28 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn [:symbol "get-data-at"] [:argval [:symbol "a"]]]]
+        [:plant-fn
+         [:symbol-ref [:symbol "get-data-at"]]
+         [:argval [:symbol-ref [:symbol "a"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "get-data-and-interpret"]
-         [:argval [:symbol "a"]]
-         [:argval [:symbol "b"]]]]
+         [:symbol-ref [:symbol "get-data-and-interpret"]]
+         [:argval [:symbol-ref [:symbol "a"]]]
+         [:argval [:symbol-ref [:symbol "b"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "get-data-and-interpret"]
-         [:argval [:symbol "b"]]
-         [:argval [:symbol "c"]]]]
+         [:symbol-ref [:symbol "get-data-and-interpret"]]
+         [:argval [:symbol-ref [:symbol "b"]]]
+         [:argval [:symbol-ref [:symbol "c"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "get-data-and-interpret"]
-         [:argval [:symbol "c"]]
-         [:argval [:symbol "d"]]]]
+         [:symbol-ref [:symbol "get-data-and-interpret"]]
+         [:argval [:symbol-ref [:symbol "c"]]]
+         [:argval [:symbol-ref [:symbol "d"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "evidence-and-interpret"]
-         [:argval [:symbol "d"]]]]]]]
+         [:symbol-ref [:symbol "evidence-and-interpret"]]
+         [:argval [:symbol-ref [:symbol "d"]]]]]]]]
     [:defpmethod
      [:symbol "get-data-at"]
      [:args [:symbol "loc"]]
@@ -77,20 +81,18 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "sensor-f"]
-         [:symbol "go-to"]
-         [:argval [:symbol "loc"]]]]
+         [:symbol-ref [:symbol "sensor-f"] [:symbol "go-to"]]
+         [:argval [:symbol-ref [:symbol "loc"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "sensor-f"]
-         [:symbol "capture"]
+         [:symbol-ref [:symbol "sensor-f"] [:symbol "capture"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "10"]]]]]]
-         [:argval [:symbol "loc"]]]]]]]
+         [:argval [:symbol-ref [:symbol "loc"]]]]]]]]
     [:defpmethod
      [:symbol "get-data-and-interpret"]
      [:args [:symbol "location1"] [:symbol "location2"]]
@@ -98,37 +100,38 @@
       [:parallel
        [:fn
         [:plant-fn
-         [:symbol "evidence-and-interpret"]
-         [:argval [:symbol "location1"]]]]
+         [:symbol-ref [:symbol "evidence-and-interpret"]]
+         [:argval [:symbol-ref [:symbol "location1"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "get-data-at"]
-         [:argval [:symbol "location2"]]]]]]]
+         [:symbol-ref [:symbol "get-data-at"]]
+         [:argval [:symbol-ref [:symbol "location2"]]]]]]]]
     [:defpmethod
      [:symbol "evidence-and-interpret"]
      [:args [:symbol "from"]]
      [:fn
       [:sequence
        [:fn
-        [:plant-fn [:symbol "evidence"] [:argval [:symbol "from"]]]]
+        [:plant-fn
+         [:symbol-ref [:symbol "evidence"]]
+         [:argval [:symbol-ref [:symbol "from"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "interpret"]
-         [:argval [:symbol "from"]]]]]]]
+         [:symbol-ref [:symbol "interpret"]]
+         [:argval [:symbol-ref [:symbol "from"]]]]]]]]
     [:defpmethod
      [:symbol "evidence"]
      [:args [:symbol "at"]]
      [:fn
       [:plant-fn
-       [:symbol "sensor-f"]
-       [:symbol "evidence"]
+       [:symbol-ref [:symbol "sensor-f"] [:symbol "evidence"]]
        [:plant-opt
         [:opt-bounds
          [:bounds
           [:bounds-literal
            [:number [:integer "15"]]
            [:number [:integer "25"]]]]]]
-       [:argval [:symbol "at"]]]]]
+       [:argval [:symbol-ref [:symbol "at"]]]]]]
     [:defpmethod
      [:symbol "interpret"]
      [:args [:symbol "place"]]
@@ -137,39 +140,36 @@
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "sensor-f"]
-          [:symbol "interpret1"]
+          [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret1"]]
           [:plant-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
               [:number [:integer "15"]]
               [:number [:integer "25"]]]]]]
-          [:argval [:symbol "place"]]]]]
+          [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "sensor-f"]
-          [:symbol "interpret2"]
+          [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret2"]]
           [:plant-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
               [:number [:integer "15"]]
               [:number [:integer "25"]]]]]]
-          [:argval [:symbol "place"]]]]]
+          [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "sensor-f"]
-          [:symbol "interpret3"]
+          [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret3"]]
           [:plant-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
               [:number [:integer "15"]]
               [:number [:integer "25"]]]]]]
-          [:argval [:symbol "place"]]]]]]]]]]]
+          [:argval [:symbol-ref [:symbol "place"]]]]]]]]]]]]
  [:defpclass
   [:symbol "isr-htn-demo"]
   [:args]
@@ -189,4 +189,4 @@
      [:field-type
       [:pclass-ctor
        [:symbol "isr-htn"]
-       [:pclass-ctor-arg [:symbol "plant"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plant"]]]]]]]]]]

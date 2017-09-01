@@ -24,8 +24,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "plant"]
-       [:symbol "action"]
+       [:symbol-ref [:symbol "plant"] [:symbol "action"]]
        [:plant-opt
         [:opt-bounds
          [:bounds

@@ -129,7 +129,7 @@ interface = <INTERFACE> string
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>
 
-symbol-ref = symbol ( '.' symbol )*
+symbol-ref = symbol ( <'.'> symbol )*
 symbol = !reserved-symbol #'[A-Za-z][A-Za-z0-9-_]*'
 reserved-symbol = reserved-string stop-token
 reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |

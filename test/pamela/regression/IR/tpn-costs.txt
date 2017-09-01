@@ -105,11 +105,11 @@
          [:fn-opt
           [:between-opt
            [:reward-ge [:number-ref [:number [:integer "2"]]]]]]
-         [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-a"]]]
+         [:fn
+          [:plant-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]]]
          [:fn
           [:plant-fn
-           [:symbol "plnt"]
-           [:symbol "do-b"]
+           [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]
            [:plant-opt [:label [:keyword ":b"]]]]]]]
        [:fn
         [:sequence
@@ -129,16 +129,14 @@
              [:sequence
               [:fn
                [:plant-fn
-                [:symbol "plnt"]
-                [:symbol "do-d"]
+                [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]
                 [:plant-opt
                  [:cost [:number-ref [:number [:integer "1"]]]]]
                 [:plant-opt
                  [:reward [:number-ref [:number [:integer "2"]]]]]]]
               [:fn
                [:plant-fn
-                [:symbol "plnt"]
-                [:symbol "do-e"]
+                [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]
                 [:plant-opt
                  [:cost [:number-ref [:number [:integer "2"]]]]]
                 [:plant-opt
@@ -148,19 +146,19 @@
              [:sequence
               [:fn
                [:plant-fn
-                [:symbol "plnt"]
-                [:symbol "do-f"]
+                [:symbol-ref [:symbol "plnt"] [:symbol "do-f"]]
                 [:plant-opt
                  [:cost [:number-ref [:number [:integer "3"]]]]]
                 [:plant-opt
                  [:reward [:number-ref [:number [:integer "1"]]]]]]]
               [:fn
                [:plant-fn
-                [:symbol "plnt"]
-                [:symbol "do-g"]
+                [:symbol-ref [:symbol "plnt"] [:symbol "do-g"]]
                 [:plant-opt
                  [:cost [:number-ref [:number [:integer "4"]]]]]]]]]]]]
-         [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-c"]]]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]]]]]]]
      [:between-stmt
       [:between
        [:keyword ":choice"]

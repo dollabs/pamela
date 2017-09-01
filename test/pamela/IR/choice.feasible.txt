@@ -27,7 +27,7 @@
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "option"]
+          [:symbol-ref [:symbol "option"]]
           [:plant-opt
            [:opt-bounds
             [:bounds
@@ -37,7 +37,7 @@
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "option"]
+          [:symbol-ref [:symbol "option"]]
           [:plant-opt
            [:opt-bounds
             [:bounds
@@ -47,7 +47,7 @@
        [:choice
         [:fn
          [:plant-fn
-          [:symbol "option"]
+          [:symbol-ref [:symbol "option"]]
           [:plant-opt
            [:opt-bounds
             [:bounds

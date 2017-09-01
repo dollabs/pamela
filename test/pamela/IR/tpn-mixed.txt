@@ -167,24 +167,27 @@
            [:reward [:number-ref [:number [:integer "10"]]]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "take-high-res-images"]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-high-res-images"]]]]]
          [:choice
           [:choice-opt [:cost [:number-ref [:number [:float "2.0"]]]]]
           [:choice-opt
            [:reward [:number-ref [:number [:integer "4"]]]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "take-medium-res-images"]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-medium-res-images"]]]]]
          [:choice
           [:choice-opt [:cost [:number-ref [:number [:float "1.0"]]]]]
           [:choice-opt
            [:reward [:number-ref [:number [:integer "1"]]]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "take-move-low-res-images"]]]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-move-low-res-images"]]]]]]]
        [:fn
         [:choose
          [:choice
@@ -192,12 +195,14 @@
            [:probability [:number-ref [:number [:float "0.66"]]]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "picture-analysis-type-2-slow"]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "picture-analysis-type-2-slow"]]]]]
          [:choice
           [:choice-opt
            [:probability [:number-ref [:number [:float "0.33"]]]]]
           [:fn
            [:plant-fn
-            [:symbol "plant"]
-            [:symbol "picture-analysis-type-2-fast"]]]]]]]]]]]]]
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "picture-analysis-type-2-fast"]]]]]]]]]]]]]]

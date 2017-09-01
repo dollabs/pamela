@@ -86,11 +86,17 @@
            [:bounds-literal
             [:number [:integer "10"]]
             [:number [:integer "30"]]]]]]]
-       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-a"]]]
-       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-b"]]]
-       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-c"]]]
-       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-d"]]]
-       [:fn [:plant-fn [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]]]
+       [:fn
+        [:plant-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]]
  [:defpclass
   [:symbol "infeasible-sequence-demo"]
   [:args]
@@ -109,4 +115,4 @@
      [:field-type
       [:pclass-ctor
        [:symbol "infeasible-sequence"]
-       [:pclass-ctor-arg [:symbol "p1"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "p1"]]]]]]]]]]

@@ -87,7 +87,7 @@
                 (whenever (= box-f.ball-in-motion true)
                   (tell (= all-clear initial-state))) ;;all-clear is a state var
                 (whenever (= cannon-f.ready true)
-                  (unless (= cannon-f.ammunitions) 0)
+                  (unless (= cannon-f.ammunitions 0)
                     (try :bounds [2 20]
                          (sequence
                            (assert (= box-f (mode-of box :open)))
@@ -129,9 +129,9 @@
                 (soft-parallel :label :soft-parallel
                   (box-f.reset)
                   (cannon-f.reset)))
-                (between :my :pickme :bounds [50 :infinity])
-                (between-starts :doit :aaa :cost<= 51)
-                (between-ends :chance :bbb :reward>= 17))
+              (between :my :pickme :bounds [50 :infinity])
+              (between-starts :doit :aaa :cost<= 51)
+              (between-ends :chance :bbb :reward>= 17))
 
             (defpmethod main-test {:doc "Unit test method entry point"} []
                         (main true))

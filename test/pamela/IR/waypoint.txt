@@ -80,9 +80,20 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp1"]]]
-       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp2"]]]
-       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp3"]]]
-       [:fn [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp4"]]]
        [:fn
-        [:plant-fn [:symbol "quadcopter-plant"] [:symbol "wp5"]]]]]]]]]]
+        [:plant-fn
+         [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp1"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp2"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp3"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp4"]]]]
+       [:fn
+        [:plant-fn
+         [:symbol-ref
+          [:symbol "quadcopter-plant"]
+          [:symbol "wp5"]]]]]]]]]]]

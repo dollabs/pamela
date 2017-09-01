@@ -25,7 +25,7 @@
             [:number [:integer "100"]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "option"]
+         [:symbol-ref [:symbol "option"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -34,7 +34,7 @@
              [:number [:integer "65"]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "option"]
+         [:symbol-ref [:symbol "option"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -43,7 +43,7 @@
              [:number [:integer "75"]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "option"]
+         [:symbol-ref [:symbol "option"]]
          [:plant-opt
           [:opt-bounds
            [:bounds

@@ -117,16 +117,13 @@
 (defn ir-float [v]
   (Double/parseDouble v))
 
-;; field-type = ( literal | symbol | lvar-ctor | !lvar-ctor pclass-ctor |
-;;                mode-expr )
+;; field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
+;;                mode-expr | symbol-ref )
 (defn ir-field-type [v]
-  (if (map? v) ;; lvar-ctor, pclass-ctor, or mode-expr
+  (if (map? v) ;; lvar-ctor, pclass-ctor, mode-expr, or symbol-ref
     v
-    (if (symbol? v)
-      {:type :arg-reference
-       :name v}
-      {:type :literal
-       :value v})))
+    {:type :literal
+     :value v}))
 
 (defn ir-lvar-ctor [& args]
   (let [[name lvar-init] args
@@ -159,16 +156,14 @@
             options (if (map? a) (merge options a) options)]
         (recur args options (first more) (rest more))))))
 
-(defn ir-mode-expr [pclass mode]
+(defn ir-mode-expr [symbol-ref mode]
   {:type :mode-reference
-   :pclass pclass
+   :names (:names symbol-ref)
    :mode mode})
 
-;; field-expr = <LP> <FIELD_OF> symbol symbol <RP> (* pclass field *)
-(defn ir-field-expr [pclass field]
-  {:type :field-reference
-   :pclass pclass
-   :field field})
+(defn ir-symbol-ref [% symbols]
+  {:type :symbol-ref
+   :names (vec symbols)})
 
 ;; field = symbol ( <LM> field-init+ <RM> | field-type )
 ;; field-init = ( initial | access | observable )
@@ -289,28 +284,19 @@
    [{:type :bounds
      :value bounds}]})
 
-(defn ir-plant-fn [& args]
-  (let [[pclass method used] (if (symbol? (first args))
-                               (if (symbol? (second args))
-                                 [(first args) (second args) 2] ;; remote method
-                                 ['this (first args) 1]) ;; local method
-                               (log/error "deprecated: plant-fn called with keyword"))
-        [type pclass-type] (if (symbol? pclass)
-                             [:plant-fn-symbol :name]
-                             (log/error "deprecated: plant-fn called with keyword"))
-        args (nthrest args used)]
-    (loop [plant-opts {} argvals [] a (first args) more (rest args)]
-      (if-not a
-        (merge
-          {:type type
-           pclass-type pclass
-           :method method
-           :args argvals}
-          plant-opts)
-        (let [[opt-or-arg v] a]
-          (if (= opt-or-arg :plant-opt)
-            (recur (merge plant-opts v) argvals (first more) (rest more))
-            (recur plant-opts (conj argvals v) (first more) (rest more))))))))
+;; plant-fn = <LP> symbol-ref plant-opt* argval* <RP>
+(defn ir-plant-fn [symbol-ref & args]
+  (loop [plant-opts {} argvals [] a (first args) more (rest args)]
+    (if-not a
+      (merge
+        {:type :plant-fn
+         :names (:names symbol-ref)
+         :args argvals}
+        plant-opts)
+      (let [[opt-or-arg v] a]
+        (if (= opt-or-arg :plant-opt)
+          (recur (merge plant-opts v) argvals (first more) (rest more))
+          (recur plant-opts (conj argvals v) (first more) (rest more)))))))
 
 ;; NOTE: due to the refactoring of *-opts in the grammar as
 ;;     between-opt = ( opt-bounds | cost-le | reward-ge )
@@ -527,7 +513,6 @@
                 :equal-expr (partial ir-cond-expr :equal)
                 :exactly ir-vec
                 :field ir-field
-                :field-expr ir-field-expr
                 ;; :field-init handled in ir-field
                 :field-type ir-field-type
                 :fields (partial ir-k-merge :fields)
@@ -581,9 +566,10 @@
                 :pre (partial ir-map-kv :pre)
                 :primitive (partial ir-map-kv :primitive)
                 :probability (partial ir-map-kv :probability)
-                ;; reserved-fn-symbol only for grammer disambiguation
-                ;; reserved-keyword only for grammer disambiguation
+                ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
+                ;; reserved-string only for grammer disambiguation
+                ;; reserved-symbol only for grammer disambiguation
                 :reward (partial ir-map-kv :reward)
                 :reward-ge (partial ir-map-kv :reward>=)
                 :safe-keyword identity
@@ -592,18 +578,21 @@
                 :slack-sequence (partial ir-slack-fn :slack-sequence)
                 :soft-parallel (partial ir-slack-fn :soft-parallel)
                 :soft-sequence (partial ir-slack-fn :soft-sequence)
+                ;; stop-token only for grammer disambiguation
                 :string identity
                 :symbol symbol
+                :symbol-ref ir-symbol-ref
                 :tell ir-tell
                 :trans identity
-                :trans-map ir-merge
                 :transition ir-map-kv
                 :transitions (partial ir-k-merge :transitions)
+                :trans-map ir-merge
                 :try ir-try
                 :unless (partial ir-fn-cond :unless)
                 :version (partial ir-map-kv :version)
                 :when (partial ir-fn-cond :when)
                 :whenever (partial ir-fn-cond :whenever)
+                ;; whitespace only for grammer disambiguation
                 })
 
 (def reference-types #{:mode-reference :field-reference :field-reference-field})

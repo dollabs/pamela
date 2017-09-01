@@ -96,8 +96,8 @@
            [:bounds-literal
             [:number [:integer "1"]]
             [:number [:integer "100"]]]]]]]
-       [:fn [:plant-fn [:symbol "do-a-and-b"]]]
-       [:fn [:plant-fn [:symbol "do-choice-and-c"]]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "do-a-and-b"]]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "do-choice-and-c"]]]]]]
      [:between-stmt
       [:between
        [:keyword ":choice"]
@@ -115,8 +115,7 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-a"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -125,8 +124,7 @@
              [:number [:integer "4"]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-b"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]
          [:plant-opt [:label [:keyword ":b"]]]
          [:plant-opt
           [:opt-bounds
@@ -139,11 +137,10 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol "do-choice"]]]
+       [:fn [:plant-fn [:symbol-ref [:symbol "do-choice"]]]]
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-c"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
@@ -156,8 +153,9 @@
      [:fn
       [:choose
        [:choose-opt [:fn-opt [:label [:keyword ":choice"]]]]
-       [:choice [:fn [:plant-fn [:symbol "do-d-and-e"]]]]
-       [:choice [:fn [:plant-fn [:symbol "do-f-and-g"]]]]]]]
+       [:choice [:fn [:plant-fn [:symbol-ref [:symbol "do-d-and-e"]]]]]
+       [:choice
+        [:fn [:plant-fn [:symbol-ref [:symbol "do-f-and-g"]]]]]]]]
     [:defpmethod
      [:symbol "do-d-and-e"]
      [:args]
@@ -165,8 +163,7 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-d"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]
          [:plant-opt [:cost [:number-ref [:number [:integer "1"]]]]]
          [:plant-opt [:reward [:number-ref [:number [:integer "2"]]]]]
          [:plant-opt
@@ -177,8 +174,7 @@
              [:number [:integer "7"]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-e"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]
          [:plant-opt [:cost [:number-ref [:number [:integer "2"]]]]]
          [:plant-opt [:reward [:number-ref [:number [:integer "1"]]]]]
          [:plant-opt
@@ -194,8 +190,7 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-f"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-f"]]
          [:plant-opt [:cost [:number-ref [:number [:integer "3"]]]]]
          [:plant-opt [:reward [:number-ref [:number [:integer "1"]]]]]
          [:plant-opt
@@ -206,8 +201,7 @@
              [:number [:integer "3"]]]]]]]]
        [:fn
         [:plant-fn
-         [:symbol "plnt"]
-         [:symbol "do-g"]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-g"]]
          [:plant-opt [:cost [:number-ref [:number [:integer "4"]]]]]
          [:plant-opt
           [:opt-bounds
@@ -228,7 +222,7 @@
      [:field-type
       [:pclass-ctor
        [:symbol "first-tpn"]
-       [:pclass-ctor-arg [:symbol "plnt"]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plnt"]]]]]]]]]
  [:defpclass
   [:symbol "main-htn"]
   [:args]
@@ -242,4 +236,4 @@
      [:field-type
       [:pclass-ctor
        [:symbol "first-tpn-htn"]
-       [:pclass-ctor-arg [:symbol "plnt"]]]]]]]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plnt"]]]]]]]]]]

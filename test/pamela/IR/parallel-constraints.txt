@@ -10,7 +10,7 @@
      [:args]
      [:fn
       [:plant-fn
-       [:symbol "top-level-sequence"]
+       [:symbol-ref [:symbol "top-level-sequence"]]
        [:argval [:string "host0101"]]
        [:argval [:string "host0301"]]
        [:argval [:string "host0501"]]
@@ -26,30 +26,30 @@
       [:sequence
        [:fn
         [:plant-fn
-         [:symbol "coordination1"]
+         [:symbol-ref [:symbol "coordination1"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "20"]]
              [:number [:integer "30"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc3"]]
-         [:argval [:symbol "loc4"]]]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "coordination2"]
+         [:symbol-ref [:symbol "coordination2"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "15"]]
              [:number [:integer "25"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc3"]]
-         [:argval [:symbol "loc4"]]]]]]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]]]]]]
     [:defpmethod
      [:symbol "coordination1"]
      [:args
@@ -61,70 +61,70 @@
       [:parallel
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "10"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc2"]]]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "11"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc3"]]]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "12"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc4"]]]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "13"]]]]]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc3"]]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "14"]]]]]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc4"]]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]]]
        [:fn
         [:plant-fn
-         [:symbol "video-flow"]
+         [:symbol-ref [:symbol "video-flow"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "15"]]]]]]
-         [:argval [:symbol "loc3"]]
-         [:argval [:symbol "loc4"]]]]]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]]]]]]
     [:defpmethod
      [:symbol "coordination2"]
      [:args
@@ -136,75 +136,75 @@
       [:parallel
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "10"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc2"]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:string "1"]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "11"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc3"]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:string "1"]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "12"]]]]]]
-         [:argval [:symbol "loc1"]]
-         [:argval [:symbol "loc4"]]
+         [:argval [:symbol-ref [:symbol "loc1"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "13"]]]]]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc3"]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:string "1"]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "14"]]]]]]
-         [:argval [:symbol "loc2"]]
-         [:argval [:symbol "loc4"]]
+         [:argval [:symbol-ref [:symbol "loc2"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]
        [:fn
         [:plant-fn
-         [:symbol "video"]
+         [:symbol-ref [:symbol "video"]]
          [:plant-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "5"]]
              [:number [:integer "15"]]]]]]
-         [:argval [:symbol "loc3"]]
-         [:argval [:symbol "loc4"]]
+         [:argval [:symbol-ref [:symbol "loc3"]]]
+         [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]]]]
     [:defpmethod
      [:symbol "video-flow"]
@@ -212,9 +212,9 @@
      [:args [:symbol "loc1"] [:symbol "loc2"]]
      [:fn
       [:plant-fn
-       [:symbol "video"]
-       [:argval [:symbol "loc1"]]
-       [:argval [:symbol "loc2"]]
+       [:symbol-ref [:symbol "video"]]
+       [:argval [:symbol-ref [:symbol "loc1"]]]
+       [:argval [:symbol-ref [:symbol "loc2"]]]
        [:argval [:string "1"]]]]]
     [:defpmethod
      [:symbol "video"]

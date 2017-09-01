@@ -31,25 +31,44 @@
        [:fn
         [:slack-sequence
          [:fn-opt [:label [:keyword ":slack-sequence"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action2"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
        [:fn
         [:slack-parallel
          [:fn-opt [:label [:keyword ":slack-parallel"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action2"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
        [:fn
         [:optional
          [:fn-opt [:label [:keyword ":optional"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]]]
        [:fn
         [:soft-sequence
          [:fn-opt [:label [:keyword ":soft-sequence"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action2"]]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
        [:fn
         [:soft-parallel
          [:fn-opt [:label [:keyword ":soft-parallel"]]]
-         [:fn [:plant-fn [:symbol "plant"] [:symbol "action1"]]]
          [:fn
-          [:plant-fn [:symbol "plant"] [:symbol "action2"]]]]]]]]]]]]
+          [:plant-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:plant-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "action2"]]]]]]]]]]]]]

@@ -7,5 +7,7 @@
     [:defpmethod
      [:symbol "main"]
      [:args]
-     [:fn [:parallel [:fn [:plant-fn [:symbol "tell-branch"]]]]]]
+     [:fn
+      [:parallel
+       [:fn [:plant-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
     [:defpmethod [:symbol "tell-branch"] [:args]]]]]]
