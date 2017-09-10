@@ -52,26 +52,26 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "get-data-at"]]
          [:argval [:symbol-ref [:symbol "a"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "get-data-and-interpret"]]
          [:argval [:symbol-ref [:symbol "a"]]]
          [:argval [:symbol-ref [:symbol "b"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "get-data-and-interpret"]]
          [:argval [:symbol-ref [:symbol "b"]]]
          [:argval [:symbol-ref [:symbol "c"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "get-data-and-interpret"]]
          [:argval [:symbol-ref [:symbol "c"]]]
          [:argval [:symbol-ref [:symbol "d"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "evidence-and-interpret"]]
          [:argval [:symbol-ref [:symbol "d"]]]]]]]]
     [:defpmethod
@@ -80,13 +80,13 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "sensor-f"] [:symbol "go-to"]]
          [:argval [:symbol-ref [:symbol "loc"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "sensor-f"] [:symbol "capture"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -99,11 +99,11 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "evidence-and-interpret"]]
          [:argval [:symbol-ref [:symbol "location1"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "get-data-at"]]
          [:argval [:symbol-ref [:symbol "location2"]]]]]]]]
     [:defpmethod
@@ -112,20 +112,20 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "evidence"]]
          [:argval [:symbol-ref [:symbol "from"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "interpret"]]
          [:argval [:symbol-ref [:symbol "from"]]]]]]]]
     [:defpmethod
      [:symbol "evidence"]
      [:args [:symbol "at"]]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "sensor-f"] [:symbol "evidence"]]
-       [:plant-opt
+       [:method-opt
         [:opt-bounds
          [:bounds
           [:bounds-literal
@@ -139,9 +139,9 @@
       [:choose
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret1"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -150,9 +150,9 @@
           [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret2"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -161,9 +161,9 @@
           [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "sensor-f"] [:symbol "interpret3"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal

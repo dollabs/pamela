@@ -96,8 +96,8 @@
            [:bounds-literal
             [:number [:integer "1"]]
             [:number [:integer "100"]]]]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "do-a-and-b"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "do-choice-and-c"]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "do-a-and-b"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "do-choice-and-c"]]]]]]
      [:between-stmt
       [:between
        [:keyword ":choice"]
@@ -114,19 +114,19 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "2"]]
              [:number [:integer "4"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]
-         [:plant-opt [:label [:keyword ":b"]]]
-         [:plant-opt
+         [:method-opt [:label [:keyword ":b"]]]
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -137,11 +137,11 @@
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol-ref [:symbol "do-choice"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "do-choice"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -153,31 +153,32 @@
      [:fn
       [:choose
        [:choose-opt [:fn-opt [:label [:keyword ":choice"]]]]
-       [:choice [:fn [:plant-fn [:symbol-ref [:symbol "do-d-and-e"]]]]]
        [:choice
-        [:fn [:plant-fn [:symbol-ref [:symbol "do-f-and-g"]]]]]]]]
+        [:fn [:method-fn [:symbol-ref [:symbol "do-d-and-e"]]]]]
+       [:choice
+        [:fn [:method-fn [:symbol-ref [:symbol "do-f-and-g"]]]]]]]]
     [:defpmethod
      [:symbol "do-d-and-e"]
      [:args]
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]
-         [:plant-opt [:cost [:number-ref [:number [:integer "1"]]]]]
-         [:plant-opt [:reward [:number-ref [:number [:integer "2"]]]]]
-         [:plant-opt
+         [:method-opt [:cost [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "2"]]]]]
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "7"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]
-         [:plant-opt [:cost [:number-ref [:number [:integer "2"]]]]]
-         [:plant-opt [:reward [:number-ref [:number [:integer "1"]]]]]
-         [:plant-opt
+         [:method-opt [:cost [:number-ref [:number [:integer "2"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -189,21 +190,21 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-f"]]
-         [:plant-opt [:cost [:number-ref [:number [:integer "3"]]]]]
-         [:plant-opt [:reward [:number-ref [:number [:integer "1"]]]]]
-         [:plant-opt
+         [:method-opt [:cost [:number-ref [:number [:integer "3"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "3"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-g"]]
-         [:plant-opt [:cost [:number-ref [:number [:integer "4"]]]]]
-         [:plant-opt
+         [:method-opt [:cost [:number-ref [:number [:integer "4"]]]]]
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal

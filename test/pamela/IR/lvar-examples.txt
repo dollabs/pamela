@@ -30,7 +30,7 @@
       [:choose
        [:choice
         [:fn
-         [:plant-fn [:symbol-ref [:symbol "take-high-res-images"]]]]]
+         [:method-fn [:symbol-ref [:symbol "take-high-res-images"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
@@ -42,7 +42,7 @@
               [:number [:integer "3"]]
               [:number [:integer "6"]]]]]]]]
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "take-medium-res-images"]]]]]]]]]]]
  [:defpclass
   [:symbol "example"]

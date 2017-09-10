@@ -46,17 +46,17 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
         [:fn
-         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
        [:choice
         [:choice-opt
          [:guard
@@ -67,17 +67,17 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
         [:fn
-         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
        [:choice
         [:choice-opt
          [:guard
@@ -88,17 +88,17 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
        [:choice
         [:choice-opt
@@ -110,17 +110,17 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
             [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
         [:choice-opt
          [:leave
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "release"]]
             [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]]]]
  [:defpclass
   [:symbol "choice-tpn2"]
@@ -152,11 +152,11 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "1"]]]]]]]
         [:fn
-         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
        [:choice
         [:choice-opt
          [:guard
@@ -167,11 +167,11 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "2"]]]]]]]
         [:fn
-         [:plant-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
        [:choice
         [:choice-opt
          [:guard
@@ -182,11 +182,11 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "3"]]]]]]]
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
        [:choice
         [:choice-opt
@@ -198,11 +198,11 @@
         [:choice-opt
          [:enter
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "set-priority"]]
             [:argval [:number [:integer "4"]]]]]]]
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]
     [:defpmethod
      [:symbol "set-priority"]

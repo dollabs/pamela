@@ -36,7 +36,7 @@
      [:symbol "main"]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "my-method"]]
        [:argval [:symbol-ref [:symbol "pclass-arg"]]]
        [:argval [:symbol-ref [:symbol "field1"]]]
@@ -93,7 +93,15 @@
    [:methods
     [:defpmethod
      [:symbol "method2"]
-     [:args [:symbol "x"] [:symbol "y"]]]]]]
+     [:args [:symbol "x"] [:symbol "y"]]]
+    [:defpmethod
+     [:symbol "method3"]
+     [:args [:symbol "a"] [:symbol "b"] [:symbol "c"]]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "p-arg2"] [:symbol "method1"]]
+       [:argval [:symbol-ref [:symbol "a"]]]
+       [:argval [:symbol-ref [:symbol "b"]]]]]]]]]
  [:defpclass
   [:symbol "main"]
   [:args]
@@ -128,6 +136,8 @@
        [:symbol "pclass2"]
        [:pclass-ctor-arg [:symbol-ref [:symbol "pclass1-44"]]]]]]]]
   [:option
+   [:modes [:mode-enum [:keyword ":running"] [:keyword ":stopped"]]]]
+  [:option
    [:methods
     [:defpmethod
      [:symbol "main"]
@@ -135,7 +145,7 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "reference-tests"]]
          [:argval [:symbol-ref [:symbol "field1"]]]
          [:argval [:number [:integer "42"]]]]]]]]
@@ -195,35 +205,35 @@
            [:cond-operand [:symbol-ref [:symbol "method-arg"]]]
            [:cond-operand [:literal [:number [:integer "101"]]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "simple-method"]]
            [:argval [:number [:integer "101"]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval [:symbol-ref [:symbol "method-arg"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval [:symbol-ref [:symbol "state-var"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval [:symbol-ref [:symbol "field3"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval
           [:symbol-ref [:symbol "field2"] [:symbol "field1-1"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval
           [:symbol-ref
            [:symbol "pclass-instance-arg"]
            [:symbol "field1-1"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval
           [:symbol-ref
@@ -231,12 +241,12 @@
            [:symbol "field2-1"]
            [:symbol "field1-1"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "field2"] [:symbol "method1"]]
          [:argval [:number [:integer "1"]]]
          [:argval [:number [:integer "2"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref
           [:symbol "field4"]
           [:symbol "field2-1"]
@@ -244,10 +254,34 @@
          [:argval [:number [:integer "1"]]]
          [:argval [:number [:integer "2"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref
           [:symbol "pclass-instance-arg"]
           [:symbol "method1"]]
          [:argval [:number [:integer "1"]]]
-         [:argval [:number [:integer "2"]]]]]]]]
+         [:argval [:number [:integer "2"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval [:safe-keyword [:keyword ":running"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval
+          [:mode-ref
+           [:symbol-ref [:symbol "this"]]
+           [:keyword ":stopped"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval
+          [:mode-ref
+           [:symbol-ref [:symbol "locations"]]
+           [:keyword ":sea"]]]]]]]]
     [:defpmethod [:symbol "simple-method"] [:args [:symbol "arg"]]]]]]]

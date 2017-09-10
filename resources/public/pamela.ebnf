@@ -27,13 +27,13 @@ or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> cond-expr <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
-cond-operand = ( literal | mode-expr | symbol-ref )
-mode-expr = <LP> <MODE_OF> symbol-ref keyword <RP>
+cond-operand = ( literal | mode-ref | symbol-ref )
+mode-ref = <LP> <MODE_OF> symbol-ref keyword <RP>
 
 fields = <FIELDS> <LM> field+ <RM>
 field = symbol ( <LM> field-init+ <RM> | field-type )
 field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
-               mode-expr | symbol-ref )
+               mode-ref | symbol-ref )
 field-init = ( initial | access | observable )
 
 initial = <INITIAL> field-type
@@ -59,7 +59,7 @@ display-name = <DISPLAY_NAME> string
 fn = ( ask | assert | choose | choose-whenever | delay | dotimes | maintain |
        optional | parallel | sequence | slack-parallel | slack-sequence |
        soft-parallel | soft-sequence | tell | try | unless | when | whenever |
-       plant-fn )
+       method-fn )
 
 ask = <LP> <ASK> cond-expr opt-bounds? <RP>
 assert = <LP> <ASSERT> cond-expr opt-bounds? <RP>
@@ -81,7 +81,7 @@ try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
-plant-fn = <LP> symbol-ref plant-opt* argval* <RP>
+method-fn = <LP> symbol-ref method-opt* argval* <RP>
 
 between-stmt = (between | between-ends | between-starts)
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
@@ -92,7 +92,7 @@ between-opt = ( opt-bounds | cost-le | reward-ge )
 fn-opt = ( between-opt | label )
 choose-opt = ( fn-opt | exactly | min | max )
 delay-opt = ( fn-opt | controllable )
-plant-opt = ( opt-bounds | label | cost | reward | controllable )
+method-opt = ( opt-bounds | label | cost | reward | controllable )
 choice-opt = ( opt-bounds | label | cost | reward | probability | guard |
                enter | leave )
 
@@ -135,16 +135,15 @@ reserved-symbol = reserved-string stop-token
 reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
                     <BETWEEN_STARTS> | <CATCH> | <CHOICE> | <CHOOSE> |
                     <CHOOSE_WHENEVER> | <DEFPCLASS> | <DEFPMETHOD> | <DELAY> |
-                    <DOTIMES> | <FALSE> |
-                    <IMPLIES> | <LVAR> | <MAINTAIN> |
+                    <DOTIMES> | <FALSE> | <IMPLIES> | <LVAR> | <MAINTAIN> |
                     <MODE_OF> | <NOT> | <OPTIONAL> | <OR> | <PARALLEL> |
                     <SEQUENCE> | <SLACK_PARALLEL> | <SLACK_SEQUENCE> |
-                    <SOFT_PARALLEL> | <SOFT_SEQUENCE> | <TELL> | <TRUE> |
-                    <TRY> | <UNLESS> | <WHEN> | <WHENEVER> )
+                    <SOFT_PARALLEL> | <SOFT_SEQUENCE> | <TELL> |
+                    <TRUE> | <TRY> | <UNLESS> | <WHEN> | <WHENEVER> )
 stop-token = (whitespace | '.' | LP | RP )
 
 literal = ( boolean | string | keyword | number )
-argval = ( string | number | safe-keyword | boolean | symbol-ref )
+argval = ( string | number | safe-keyword | boolean | mode-ref | symbol-ref )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
                    stop-token

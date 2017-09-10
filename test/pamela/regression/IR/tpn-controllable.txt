@@ -31,16 +31,16 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
        [:fn [:delay]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "action1"]]
-         [:plant-opt [:controllable [:boolean [:TRUE]]]]]]
+         [:method-opt [:controllable [:boolean [:TRUE]]]]]]
        [:fn [:delay [:delay-opt [:controllable [:boolean [:TRUE]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]
        [:fn
         [:delay
@@ -54,12 +54,12 @@
                [:number [:integer "8"]]]]]]]]
          [:delay-opt [:controllable [:boolean [:FALSE]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "action2"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "1"]]
              [:number [:integer "10"]]]]]]
-         [:plant-opt [:controllable [:boolean [:FALSE]]]]]]]]]]]]]
+         [:method-opt [:controllable [:boolean [:FALSE]]]]]]]]]]]]]

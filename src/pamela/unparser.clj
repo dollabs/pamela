@@ -19,7 +19,7 @@
    [clojure.tools.logging :as log]
    [avenir.utils :refer [assoc-if concatv]]
    [pamela.parser :refer [true-type default-bounds-type
-                          default-bounds default-mdef]]))
+                          default-bounds default-mdef literal?]]))
 
 (defn dissoc-default
   "Dissoc k from m if the current value is equal to default"
@@ -45,14 +45,6 @@
             lvar (if name (cons name lvar) lvar)]
         (cons 'lvar lvar))
       number-ref)))
-
-(defn literal? [v]
-  (or (number? v) ;; literal
-    (true? v) ;; (boolean? v) ;; literal
-    (false? v) ;; (boolean? v) ;; literal
-    (string? v) ;; literal
-    (keyword? v) ;; literal
-    (symbol? v))) ;; symbol
 
 (defn cond-operand? [v]
   (or (literal? v) ;; literal

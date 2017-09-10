@@ -26,9 +26,9 @@
              [:number [:integer "100"]]]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "option"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -36,9 +36,9 @@
               [:number [:integer "65"]]]]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "option"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -46,9 +46,9 @@
               [:number [:integer "75"]]]]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "option"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal

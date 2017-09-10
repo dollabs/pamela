@@ -7,16 +7,16 @@
     [:defpmethod
      [:symbol "main"]
      [:args]
-     [:fn [:plant-fn [:symbol-ref [:symbol "top-level"]]]]]
+     [:fn [:method-fn [:symbol-ref [:symbol "top-level"]]]]]
     [:defpmethod
      [:symbol "top-level"]
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol-ref [:symbol "ex-choose-1"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "ex-choose-2"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "ex-parallel"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "ex-sequence"]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "ex-choose-1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "ex-choose-2"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "ex-parallel"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "ex-sequence"]]]]]]]
     [:defpmethod
      [:symbol "ex-choose-1"]
      [:args]
@@ -24,9 +24,9 @@
       [:choose
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "action"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -34,9 +34,9 @@
               [:number [:integer "10"]]]]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "action"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -44,9 +44,9 @@
               [:number [:integer "20"]]]]]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "action"]]
-          [:plant-opt
+          [:method-opt
            [:opt-bounds
             [:bounds
              [:bounds-literal
@@ -64,7 +64,7 @@
            [:bounds-literal
             [:number [:integer "2"]]
             [:number [:integer "10"]]]]]]
-        [:fn [:plant-fn [:symbol-ref [:symbol "action"]]]]]
+        [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
@@ -72,7 +72,7 @@
            [:bounds-literal
             [:number [:integer "2"]]
             [:number [:integer "20"]]]]]]
-        [:fn [:plant-fn [:symbol-ref [:symbol "action"]]]]]
+        [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
@@ -80,34 +80,34 @@
            [:bounds-literal
             [:number [:integer "2"]]
             [:number [:integer "30"]]]]]]
-        [:fn [:plant-fn [:symbol-ref [:symbol "action"]]]]]]]]
+        [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]]]]
     [:defpmethod
      [:symbol "ex-parallel"]
      [:args]
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "3"]]
              [:number [:integer "10"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "3"]]
              [:number [:integer "20"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -119,27 +119,27 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "4"]]
              [:number [:integer "10"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
              [:number [:integer "3"]]
              [:number [:integer "20"]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "action"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal

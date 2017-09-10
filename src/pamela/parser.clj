@@ -57,6 +57,13 @@
   ([m0 m1 & more]
    (apply merge-keys (merge-keys m0 m1) more)))
 
+(defn literal? [v]
+  (or (number? v) ;; literal
+    (true? v) ;; (boolean? v) ;; literal
+    (false? v) ;; (boolean? v) ;; literal
+    (string? v) ;; literal
+    (keyword? v) ;; literal
+    ))
 
 ;; When a magic file is read in the lvar "name" is assigned a value
 ;;   in pamela-lvars
@@ -106,6 +113,12 @@
 
 ;; IR helper functions
 
+(defn mode-ref? [m]
+  (and (map? m) (= :mode-ref (:type m))))
+
+(defn symbol-ref? [m]
+  (and (map? m) (= :symbol-ref (:type m))))
+
 (defn ir-boolean [v]
   (if (and (vector? v) (= (first v) :TRUE))
     true
@@ -118,12 +131,24 @@
   (Double/parseDouble v))
 
 ;; field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
-;;                mode-expr | symbol-ref )
+;;                mode-ref | symbol-ref )
 (defn ir-field-type [v]
-  (if (map? v) ;; lvar-ctor, pclass-ctor, mode-expr, or symbol-ref
+  (if (map? v) ;; lvar-ctor, pclass-ctor, mode-ref, or symbol-ref
     v
     {:type :literal
      :value v}))
+
+;; The only rationale for not simply using identity is that we
+;; may want to, at some point, change the IR to express every
+;; literal as {:type :literal ...} and perhaps even encode the type
+;; {:type :literal-string ...}
+(defn ir-argval [v]
+  v
+  ;; (if (map? v) ;; already handled
+  ;;   v
+  ;;   {:type :literal
+  ;;    :value v})
+  )
 
 (defn ir-lvar-ctor [& args]
   (let [[name lvar-init] args
@@ -145,6 +170,7 @@
   {:interface interface})
 
 (defn ir-pclass-ctor [name & args-opts]
+  (dbg-println :trace "ir-pclass-ctor" name "ARGS-OPTS" args-opts)
   (loop [args [] options {} a (first args-opts) more (rest args-opts)]
     (if-not a
       (merge
@@ -152,16 +178,18 @@
          :pclass name
          :args args}
         options)
-      (let [args (if (map? a) args (conj args a))
-            options (if (map? a) (merge options a) options)]
+      (let [arg? (or (not (map? a)) (symbol-ref? a))
+            args (if arg? (conj args a) args)
+            options (if arg? options (merge options a))]
+        (dbg-println :trace "  arg?" arg? "A" a)
         (recur args options (first more) (rest more))))))
 
-(defn ir-mode-expr [symbol-ref mode]
-  {:type :mode-reference
-   :names (:names symbol-ref)
+(defn ir-mode-ref [symbol-ref mode]
+  {:type :mode-ref
+   :mode-ref symbol-ref
    :mode mode})
 
-(defn ir-symbol-ref [% symbols]
+(defn ir-symbol-ref [& symbols]
   {:type :symbol-ref
    :names (vec symbols)})
 
@@ -182,10 +210,10 @@
                             (= :initial (first fi)))
                         (second fi)))
             access (if (and (vector? fi)
-                            (= :access (first fi)))
-                         (second fi))
+                         (= :access (first fi)))
+                     (second fi))
             observable (if (and (vector? fi)
-                            (= :observable (first fi)))
+                             (= :observable (first fi)))
                          (second fi))
             field-map (assoc-if
                         (if (or initial (false? initial))
@@ -226,9 +254,6 @@
         expr))
     {:type op
      :args (vec operands)}))
-
-(defn ir-map-kv [k v]
-  {k v})
 
 (defn ir-vec [& vs]
   (if (empty? vs)
@@ -284,19 +309,20 @@
    [{:type :bounds
      :value bounds}]})
 
-;; plant-fn = <LP> symbol-ref plant-opt* argval* <RP>
-(defn ir-plant-fn [symbol-ref & args]
-  (loop [plant-opts {} argvals [] a (first args) more (rest args)]
+;; method-fn = <LP> symbol-ref method-opt* argval* <RP>
+(defn ir-method-fn [symbol-ref & args]
+  (dbg-println :trace "ir-method-fn symbol-ref" symbol-ref "ARGS" args)
+  (loop [method-opts {} argvals [] a (first args) more (rest args)]
     (if-not a
       (merge
-        {:type :plant-fn
-         :names (:names symbol-ref)
+        {:type :method-fn
+         :method-ref symbol-ref
          :args argvals}
-        plant-opts)
-      (let [[opt-or-arg v] a]
-        (if (= opt-or-arg :plant-opt)
-          (recur (merge plant-opts v) argvals (first more) (rest more))
-          (recur plant-opts (conj argvals v) (first more) (rest more)))))))
+        method-opts)
+      (let [[opt-or-arg v] (if (vector? a) a [nil a])]
+        (if (= opt-or-arg :method-opt)
+          (recur (merge method-opts v) argvals (first more) (rest more))
+          (recur method-opts (conj argvals v) (first more) (rest more)))))))
 
 ;; NOTE: due to the refactoring of *-opts in the grammar as
 ;;     between-opt = ( opt-bounds | cost-le | reward-ge )
@@ -477,7 +503,7 @@
                 ;; :access handled in ir-field
                 :and-expr (partial ir-cond-expr :and)
                 :args ir-vec
-                ;; :argval handled in ir-plant-fn
+                :argval ir-argval
                 :ask (partial ir-fn-cond :ask)
                 :assert (partial ir-fn-cond :assert)
                 :between (partial ir-between :between)
@@ -497,17 +523,17 @@
                 :cond-expr (partial ir-cond-expr :COND-EXPR)
                 :cond-map ir-merge
                 :cond-operand identity
-                :controllable (partial ir-map-kv :controllable)
-                :cost (partial ir-map-kv :cost)
-                :cost-le (partial ir-map-kv :cost<=)
+                :controllable (partial hash-map :controllable)
+                :cost (partial hash-map :cost)
+                :cost-le (partial hash-map :cost<=)
                 :defpclass ir-defpclass
                 :defpmethod ir-defpmethod
                 :delay (partial ir-fn :delay)
                 ;; :delay-opt handled in ir-fn
-                :dep ir-map-kv
+                :dep hash-map
                 :depends (partial ir-k-merge :depends)
-                :display-name (partial ir-map-kv :display-name)
-                :doc (partial ir-map-kv :doc)
+                :display-name (partial hash-map :display-name)
+                :doc (partial hash-map :doc)
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
@@ -520,7 +546,7 @@
                 :fn identity
                 ;; :fn-opt handled in ir-fn
                 ;; :guard handled in ir-choice
-                :icon (partial ir-map-kv :icon)
+                :icon (partial hash-map :icon)
                 :id ir-id
                 :implies-expr (partial ir-cond-expr :implies)
                 :inherit ir-inherit
@@ -528,7 +554,7 @@
                 :integer ir-integer
                 :interface ir-interface
                 :keyword #(keyword (subs % 1))
-                :label (partial ir-map-kv :label)
+                :label (partial hash-map :label)
                 ;; :leave handled by ir-choice
                 :literal identity
                 :lvar-ctor ir-lvar-ctor
@@ -540,10 +566,10 @@
                 :methods ir-methods
                 :min ir-vec
                 :mode-enum ir-mode-enum
-                :mode-expr ir-mode-expr
+                :mode-ref ir-mode-ref
                 :mode-init ir-mode-init
                 :mode-map ir-merge
-                :modes (partial ir-map-kv :modes)
+                :modes (partial hash-map :modes)
                 :natural ir-integer
                 :not-expr (partial ir-cond-expr :not)
                 :number identity
@@ -559,19 +585,19 @@
                 :pclass-ctor ir-pclass-ctor
                 :pclass-ctor-arg identity
                 :pclass-ctor-option identity
-                :plant-fn ir-plant-fn
-                ;; :plant-opt handled in ir-plant-fn
+                :method-fn ir-method-fn
+                ;; :method-opt handled in ir-method-fn
                 :plant-part ir-plant-part
-                :post (partial ir-map-kv :post)
-                :pre (partial ir-map-kv :pre)
-                :primitive (partial ir-map-kv :primitive)
-                :probability (partial ir-map-kv :probability)
+                :post (partial hash-map :post)
+                :pre (partial hash-map :pre)
+                :primitive (partial hash-map :primitive)
+                :probability (partial hash-map :probability)
                 ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
                 ;; reserved-string only for grammer disambiguation
                 ;; reserved-symbol only for grammer disambiguation
-                :reward (partial ir-map-kv :reward)
-                :reward-ge (partial ir-map-kv :reward>=)
+                :reward (partial hash-map :reward)
+                :reward-ge (partial hash-map :reward>=)
                 :safe-keyword identity
                 :sequence (partial ir-fn :sequence)
                 :slack-parallel (partial ir-slack-fn :slack-parallel)
@@ -584,303 +610,290 @@
                 :symbol-ref ir-symbol-ref
                 :tell ir-tell
                 :trans identity
-                :transition ir-map-kv
+                :transition hash-map
                 :transitions (partial ir-k-merge :transitions)
                 :trans-map ir-merge
                 :try ir-try
                 :unless (partial ir-fn-cond :unless)
-                :version (partial ir-map-kv :version)
+                :version (partial hash-map :version)
                 :when (partial ir-fn-cond :when)
                 :whenever (partial ir-fn-cond :whenever)
                 ;; whitespace only for grammer disambiguation
                 })
 
-(def reference-types #{:mode-reference :field-reference :field-reference-field})
-
-(def literal-ref-types (conj reference-types :literal))
-
-;; (field-of this box-f)
-;; {:type :field-reference
-;;  :pclass this ;; or other class, or field reference
-;;  :field box-f}
-
-;; ;; :close , (mode-of this :close)
-;; {:type :mode-reference
-;;  :pclass this ;; or other class
-;;  :mode :close}
-
-;; ;; (whenever (= (field-of cannon-f ready) true)
-;; {:type :field-reference-field
-;;  :pclass this ;; or other class
-;;  :field cannon-f
-;;  :value ready} ;; is a mode
-
-;; unknown (e.g. compared against the mode or field of a pclass arg)
-;; NOTE: a warning will be logged
-;;  {:type :literal
-;;   :value :high}
-
-;; pclass arguments
-;; {:type :arg-reference
-;;  :name power}
-
-;; state variables
-;; {:type :state-variable
-;;  :name global-state}
-
-(defn validate-kw-or-sym [ir state-vars pclass fields modes context kw]
-  (let [[m-or-f ref] (if (symbol? kw)
-                       [kw nil]
-                       ;; NOTE the .: field-reference-field syntax is
-                       ;; no deprecated (remove in the future).
-                       (map symbol (string/split (name kw) #"\.:" 2)))
-        field-ref (get fields m-or-f)
-        field-pclass (if field-ref (get-in field-ref [:initial :pclass]))
-        mode-kw (keyword m-or-f)
-        mode-ref (get modes mode-kw)]
-    ;; (log/info "VALIDATE-KW-OR-SYM context" context "m-or-f" m-or-f
-    ;;   "ref" ref "field-ref" field-ref "mode-ref" mode-ref)
-    (if field-ref
-      (if ref
-        (if (get-in ir [field-pclass :fields ref])
-          ;; ref is field?
-          {:type :field-reference-field
-           :pclass 'this
-           :field m-or-f
-           :value ref} ;; is a field
-          (if (get-in ir [field-pclass :modes (keyword ref)])
-            ;; ref is mode?
-            {:type :field-reference-mode
-             :pclass 'this
-             :field m-or-f
-             :value ref} ;; is a mode
-            {:type :error
-             :msg (str "field reference invalid: " kw)}))
-        {:type :field-reference
-         :pclass 'this
-         :field m-or-f})
-      (if mode-ref
-        (if ref
-          {:type :error
-           :msg (str "cannot reference the field of a mode: " kw)}
-          {:type :mode-reference
-           :pclass 'this
-           :mode mode-kw})
+;; operand may be a keyword (mode), mode-ref or symbol-ref
+;; NOTE must do mode-qualification too
+;; return Validated condition or {:error "message"}
+(defn validate-cond-operand [ir state-vars pclass fields modes context
+                             pclass-args method-args operand]
+  (dbg-println :debug  "VALIDATE-COND-OPERAND context" context
+    "pclass-args" pclass-args "method-args" method-args
+    "operand" operand)
+  (cond
+    ;; Do NOT error here: we may want to have literal keywords which
+    ;; are not modes.
+    ;; (and (keyword? operand) (not (get modes operand))) ;; local mode
+    ;; {:error (str "mode " operand " is not defined in pclass " pclass)}
+    (keyword? operand)
+    (if (not (get modes operand))
+      (do
+        (log/warn (str "mode " operand " is not defined in pclass " pclass))
+        operand)
+      {:type :mode-ref
+       :mode-ref {:type :symbol-ref :names ['this]}
+       :mode operand})
+    (and (mode-ref? operand)
+      (= (get-in operand [:mode-ref :names]) '[this])
+      (not (get modes (:mode operand))))
+    {:error (str "mode " (:mode operand) " is not defined in pclass " pclass)}
+    (mode-ref? operand)
+    (let [{:keys [mode-ref]} operand
+          {:keys [names]} mode-ref
+          [n0 & more] names
+          [n0 more vnames] (if (= 'this n0)
+                             [(first more) (rest more) (vec (rest names))]
+                             [n0 more names])
+          vmode-ref (cond
+                      (and (nil? n0) (not (empty? more)))
+                      {:error (str "cannot use 'this except in the first position: " names)}
+                      (nil? n0)
+                      {:type :symbol-ref :names ['this]}
+                      (or (= n0 'this) (some #(= 'this %) more))
+                      {:error (str "cannot use 'this except in the first position: " names)}
+                      (get fields n0)
+                      {:type :field-ref :names vnames}
+                      (and method-args (some #(= % n0) method-args))
+                      {:type :method-arg-ref :names names}
+                      (some #(= % n0) pclass-args)
+                      {:type :pclass-arg-ref :names names}
+                      ;; NOTE a mode-ref could refer to pclass
+                      (= :pclass (get-in ir [n0 :type]))
+                      {:type :symbol-ref :names [n0]}
+                      :else
+                      {:error
+                       (str "a state variable (undefined symbol) cannot be a mode: "
+                         operand)})]
+      (if (:error vmode-ref)
+        vmode-ref
+        (assoc operand :mode-ref vmode-ref)))
+    (symbol-ref? operand)
+    (let [{:keys [names]} operand
+          [n0 & more] names
+          [n0 more vnames] (if (= 'this n0)
+                             [(first more) (rest more) (vec (rest names))]
+                             [n0 more names])]
+      (cond
+        (or (= n0 'this) (some #(= 'this %) more))
+        {:error (str "cannot use 'this except in the first position: " names)}
+        (get fields n0)
+        {:type :field-ref :names vnames}
+        (and method-args (some #(= % n0) method-args))
+        {:type :method-arg-ref :names names}
+        (some #(= % n0) pclass-args)
+        {:type :pclass-arg-ref :names names}
+        (not (empty? more))
+        {:error
+         (str "cannot derefence a state variable (undefined symbol): "
+           operand)}
+        :else
         (do
-          ;; could look in context to see if we can get type hints
-          ;; from other arguments
-          (log/warn "unable to determine if this keyword"
-            "value is valid in pclass" pclass kw)
-          {:type :literal
-           :value kw})))))
+          (swap! state-vars assoc n0 {:type :state-variable})
+          {:type :state-variable :name n0})))
+    :else
+    {:error (str "unknown conditional operand: " operand)}
+    ))
 
-;; if one arg is
-;;   {:type :field-reference, :pclass this, :field :pwr}
-;; and we know
-;;   :initial {:type :mode-reference, :pclass pwrvals, :mode :none}
-;; then we can determine
-;;   (keys (get-in ir [pwrvals :modes])) ==> #{:high :none}
-;; such that when we see another arg
-;;   {:type :literal, :value :high}
-;; THEN we can convert it
-;;   :high ==> {:type :mode-reference, :pclass pwrvals, :mode :high}
-;; ALSO handle :field-reference-field
-(defn mode-qualification [ir dpclass fields args]
-  (loop [vargs [] a (first args) more (rest args)]
-    (if-not a
-      vargs
-      (let [{:keys [type value]} a
-            a (if (= type :literal)
-                (loop [va a b (first args) moar (rest args)]
-                  (if-not b
-                    va
-                    (if (= b a)
-                      (recur va (first moar) (rest moar))
-                      (let [a-value value
-                            {:keys [type pclass field value]} b
-                            pclass (if (= pclass 'this) dpclass pclass)
-                            fpclass (if (#{:field-reference
-                                           :field-reference-field} type)
-                                      (get-in ir [pclass :fields
-                                                  field :initial :pclass]))
-                            fpclass (if (and fpclass
-                                          (= type :field-reference-field))
-                                      (get-in ir [fpclass :fields
-                                                  value :initial :pclass])
-                                      fpclass)
-                            values (if fpclass
-                                     (set (keys (get-in ir [fpclass :modes]))))
-                            va (if (and (set? values) (values a-value))
-                                 {:type :mode-reference,
-                                  :pclass fpclass,
-                                  :mode a-value}
-                                 va)]
-                        (recur va (first moar) (rest moar))))))
-                a)]
-        (recur (conj vargs a) (first more) (rest more))))))
+;; returns a validated method-ref map
+;; or an {:error msg}
+(defn validate-method-fn-method-ref [ir state-vars in-pclass
+                               fields modes methods
+                               context method-ref args]
+  (dbg-println :trace  "VALIDATE-METHOD-FN-METHOD-REF" in-pclass
+    "CONTEXT" context "\n METHOD-REF" method-ref
+    "\n  CALLER ARITY" (count args) "ARGS" args)
+  (let [pclass-args (get-in ir [in-pclass :args])
+        [c-pclass c-methods c-method c-mi] context
+        method (if (= c-methods :methods) c-method)
+        method-args (if method
+                      (get-in ir [in-pclass :methods method c-mi :args]))
+        {:keys [names]} method-ref
+        [n0 & more] names
+        [n0 more vnames] (if (= 'this n0)
+                           [(first more) (rest more) (vec (rest names))]
+                           [n0 more names])]
+    (cond
+      (nil? n0)
+      {:error "this : method not defined"}
+      (or (= n0 'this) (some #(= 'this %) more))
+      {:error (str "cannot use 'this except in the first position: " names)}
+      (empty? more) ;; local method
+      (let [caller-arity (count args)
+            caller-arg-str (if (= 1 caller-arity) " arg" " args")
+            candidate-mdefs (get methods n0)
+            mdefs (filter #(= (count (:args %)) caller-arity) candidate-mdefs)]
+        (if (= 1 (count mdefs))
+          ;; found match to method with the correct arity
+          (assoc method-ref :names ['this n0]) ;; match is (first mdefs)
+          (let [msg (str "Call from " in-pclass "." c-method
+                      " to " n0)]
+            ;; consider adding the args signature to the msg to
+            ;; take advantage of c-mi and clarify which method signature
+            (if (empty? candidate-mdefs)
+              {:error (str msg " : method not defined")}
+              (if (= 1 (count candidate-mdefs))
+                (let [arity (-> candidate-mdefs first :args count)]
+                  {:error
+                   (str msg " has " caller-arity caller-arg-str
+                    ", but expects " arity " arg"
+                    (if (= 1 arity) "" "s"))})
+                {:error
+                 (apply str msg " has " caller-arity caller-arg-str
+                   ", which does not match any of the available arities: "
+                   (interpose ", "
+                     (map #(count (:args %)) candidate-mdefs)))})))))
+      (get fields n0)
+      {:type :field-ref :names vnames}
+      (and method-args (some #(= % n0) method-args))
+      {:type :method-arg-ref :names names}
+      (some #(= % n0) pclass-args)
+      {:type :pclass-arg-ref :names names}
+      :else
+      {:error
+       (str "a state variable (undefined symbol) cannot be a method-fn: "
+        names)})))
+
+;; returns a vector of args
+;; or an {:error msg}
+(defn validate-method-fn-args [ir state-vars in-pclass
+                              fields modes methods
+                              context names args]
+  (dbg-println :trace  "VALIDATE-METHOD-FN-ARGS" in-pclass
+    "CONTEXT" context "CALLER ARITY" (count args) "ARGS" args)
+  (let [pclass-args (get-in ir [in-pclass :args])
+        [c-pclass c-methods c-method c-mi] context
+        method (if (= c-methods :methods) c-method)
+        method-args (if method
+                      (get-in ir [in-pclass :methods method c-mi :args]))]
+    (loop [vargs [] a (first args) more (rest args)]
+      (if (or (not a) (:error vargs))
+        vargs
+        (let [va (cond
+                   (literal? a)
+                   a
+                   (mode-ref? a)
+                   (validate-cond-operand ir state-vars in-pclass
+                     fields modes context
+                     pclass-args method-args a)
+                   (symbol-ref? a)
+                   (let [a-names (:names a)
+                         [n0 & more] a-names
+                         [n0 more vnames] (if (= 'this n0)
+                                            [(first more) (rest more)
+                                             (vec (rest a-names))]
+                                            [n0 more a-names])]
+                     (cond
+                       (or (= n0 'this) (some #(= 'this %) more))
+                       {:error (str "cannot use 'this except in the first position: " names)}
+                       (get fields n0)
+                       {:type :field-ref :names vnames}
+                       (and method-args (some #(= % n0) method-args))
+                       {:type :method-arg-ref :names a-names}
+                       (some #(= % n0) pclass-args)
+                       {:type :pclass-arg-ref :names a-names}
+                       (not (empty? more))
+                       {:error (str "cannot derefence a state variable (undefined symbol): " a)}
+                       :else
+                       (do
+                         (swap! state-vars assoc n0 {:type :state-variable})
+                         {:type :state-variable :name n0})))
+                   :else
+                   {:error (str "unknown argument type: " a)})
+              vargs (if (:error va) va (conj vargs va))]
+          (recur vargs (first more) (rest more)))))))
 
 ;; return Validated condition or {:error "message"}
 (defn validate-condition [ir state-vars pclass fields modes context condition]
-  ;; (dbg-println :debug  "VALIDATE-CONDITION for" pclass
-  ;;   "\nfields:" (keys fields)
-  ;;   "\nmodes:" (keys modes)
-  ;;   "\ncontext:" context
-  ;;   "\ncondition:" condition)
+  (dbg-println :debug  "VALIDATE-CONDITION for" pclass
+    "\nfields:" (keys fields)
+    "\nmodes:" (keys modes)
+    "\ncontext:" context
+    "\ncondition:" condition)
   (let [{:keys [type args]} condition
         pclass-args (get-in ir [pclass :args])
-        [c0 c1 c2 c3] context
-        method (if (= c0 :method) c1)
-        method-args (if method (get-in ir [pclass :methods method c2 :args]))]
+        [c-pclass c-methods c-method c-mi] context
+        method (if (= c-methods :methods) c-method)
+        method-args (if method
+                      (get-in ir [pclass :methods method c-mi :args]))]
     (cond
-      (and (nil? type)
-        (or (keyword? condition) (symbol? condition))) ;; bare keyword/symbol
-      (validate-kw-or-sym ir state-vars pclass fields modes context condition)
-      (literal-ref-types type)
-      condition
+      (or (nil? type) (symbol-ref? condition) (mode-ref? condition))
+      (validate-cond-operand ir state-vars pclass fields modes context
+        pclass-args method-args condition)
+      (= type :literal)
+      condition ;; literal boolean condition
       (= type :equal)
       (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
         (if-not a
-          (assoc vcond :args (mode-qualification ir pclass fields vargs))
+          (assoc-if vcond :args vargs)
           (cond
-            (and (map? a) (= (:type a) :field-reference)
-              (get fields (:pclass a))
-              (get-in (get fields (:pclass a)) [:initial :pclass])
-              (get-in ir [(get-in (get fields (:pclass a)) [:initial :pclass])
-                          :fields (:field a)]))
-            (recur vcond
-              (conj vargs {:type :field-reference-field :pclass 'this
-                           :field (:pclass a) :value (:field a)})
-              (first more) (rest more))
+            (or (keyword? a) (symbol-ref? a) (mode-ref? a))
+            (let [va (validate-cond-operand ir state-vars pclass fields modes
+                       context pclass-args method-args a)
+                  vcond (if (:error va) va vcond)
+                  vargs (if (:error va) nil (conj vargs va))]
+              (recur vcond vargs (first more) (rest more)))
             (map? a) ;; already specified by instaparse
             (recur vcond (conj vargs a) (first more) (rest more))
-            (or (keyword? a) ;; must disambiguate here
-              (and (symbol? a) (get fields a))) ;; a is a field-reference
-            (recur vcond
-              (conj vargs (validate-kw-or-sym ir state-vars pclass fields modes
-                            context a))
-              (first more) (rest more))
-            (symbol? a) ;; must resolve in scope here
-            (recur vcond (conj vargs
-                           (if (and method-args
-                                 (some #(= % a) method-args))
-                             {:type :method-arg-reference
-                              :name a}
-                             (if (some #(= % a) pclass-args)
-                               {:type :arg-reference
-                                :name a}
-                               (do
-                                 (swap! state-vars assoc a
-                                   {:type :state-variable})
-                                 {:type :state-variable
-                                  :name a}))))
-              (first more) (rest more))
             :else ;; must be a literal
             (recur vcond (conj vargs {:type :literal :value a})
-              (first more) (rest more))
-            )))
+              (first more) (rest more)))))
       :else ;; :and :or :not :implies => recurse on args
-      (do
-        {:type type
-         :args (mapv
-                 (partial validate-condition ir state-vars
-                   pclass fields modes
-                   (conj context type))
-                 args)}))))
-
-;; returns
-;; {:error "msg"} if an arity match is NOT found
-;; or {:mdef {}) method definition matching arity of caller-args
-(defn validate-arity [in-pclass in-method in-mi
-                      pclass methods method caller-args]
-  (dbg-println :trace  "VALIDATE-ARITY" in-pclass in-method
-    "TO" pclass method "WITH" caller-args)
-  (let [caller-arity (count caller-args)
-        caller-arg-str (if (= 1 caller-arity) " arg" " args")
-        candidate-mdefs (get methods method)
-        mdefs (filter #(= (count (:args %)) caller-arity) candidate-mdefs)]
-    (if (= 1 (count mdefs))
-      {:mdef (first mdefs)}
-      (let [msg (str "Call from " in-pclass "." in-method
-                  " to " pclass "." method)]
-        ;; consider adding the args signature to the msg to
-        ;; take advantage of in-mi and clarify which method signature
-        (if (empty? candidate-mdefs)
-          {:error (str msg ": method not defined")}
-          (if (= 1 (count candidate-mdefs))
-            (let [arity (-> candidate-mdefs first :args count)]
-              {:error (str msg " has " caller-arity caller-arg-str
-                        ", but expects " arity " arg"
-                        (if (= 1 arity) "" "s"))})
-            {:error
-             (apply str msg " has " caller-arity caller-arg-str
-               ", which does not match any of the available arities: "
-               (interpose ", "
-                 (map #(count (:args %)) candidate-mdefs)))}))))))
+      (let [vargs (mapv
+                    (partial validate-condition ir state-vars
+                      pclass fields modes (conj context type))
+                    args)
+            error (first (filter #(:error %) vargs))]
+        (if error
+          error
+          {:type type
+           :args vargs})))))
 
 ;; return Validated body or {:error "message"}
 (defn validate-body [ir state-vars in-pclass
-                     fields modes methods in-method in-mi mbody]
+                     fields modes methods in-method in-mi mbody & [context]]
   (loop [vmbody []
+         bi 0
          b (if (vector? mbody) (first mbody) mbody)
          more (if (vector? mbody) (rest mbody))]
     (if (or (:error vmbody) (not b))
       vmbody
-      (let [{:keys [type field name method args condition body]} b
+      (let [{:keys [type field name method-ref method args condition body]} b
+            context (or context [in-pclass :methods in-method in-mi :body])
+            context (conj context bi)
+            _ (dbg-println :trace "VALIDATE-BODY CONTEXT" context)
             [b error] (cond
-                        (and (= type :plant-fn-symbol) (= name 'this))
-                        (let [{:keys [error mdef]}
-                              (validate-arity in-pclass in-method in-mi
-                                in-pclass methods method args)]
-                          (if error
-                            [nil error]
-                            [b nil]))
-                        (and (= type :plant-fn-symbol)
-                          (or
-                            (some #(= name %)
-                              (get-in methods [in-method in-mi :args]))
-                            (some #(= name %)
-                              (get-in ir [in-pclass :args]))))
-                        ;; NOTE: at this point of building the IR we do not yet
-                        ;; have a root-task and cannot check for arity match
-                        [b nil]
-                        (and (= type :plant-fn-symbol)
-                          (some #(= name %) (keys fields)))
-                        ;; interpret name as a field reference
-                        (let [field name
-                              pclass-ctor_ (get-in fields [field :initial])
-                              {:keys [type pclass]} pclass-ctor_
-                              {:keys [error mdef]}
-                              (if (= type :pclass-ctor)
-                                (validate-arity in-pclass in-method in-mi
-                                  pclass (get-in ir [pclass :methods])
-                                  method args)
-                                ;; NOTE: in the past we just gave up on
-                                ;; checking arity here for fields that
-                                ;; are initialized from pclass args.
-                                ;; Now we will *assume* the arity is fine
-                                ;; and will catch it once we evaluate
-                                ;; an actual root-task
-                                ;; {:error "non :pclass-ctor check unsupported"}
-                                ;; NOTE below is simply an arbitrary value
-                                ;; to set mdef instead of error
-                                {:mdef "arity not checked at build time"})]
-                          (if error
-                            [nil error]
-                            [(assoc (dissoc b :name)
-                               :type :plant-fn-field
-                               :field field)
-                             nil]))
-                        (= type :plant-fn-symbol)
-                        [nil (str "plant " name " used in method " in-method
-                               " is not defined in the pclass " in-pclass)]
+                        (= type :method-fn)
+                        (let [vmethod-ref (validate-method-fn-method-ref
+                                            ir state-vars in-pclass
+                                            fields modes methods
+                                            context method-ref args)
+                              vargs (validate-method-fn-args
+                                      ir state-vars in-pclass
+                                      fields modes methods
+                                      context vmethod-ref args)]
+                          (if (:error vmethod-ref)
+                            [nil vmethod-ref]
+                            (if (:error vargs)
+                              [nil vargs]
+                              [(assoc b :method-ref vmethod-ref :args vargs)
+                               nil])))
                         :else
                         [b nil])
             condition (if (and (not error) condition)
-                        (validate-condition ir state-vars in-pclass fields modes
-                          [:method method :body] condition))
+                        (validate-condition ir state-vars in-pclass fields
+                          modes context condition))
             body (if (and (not error) (not (:error condition)) body)
-                   (validate-body ir state-vars in-pclass fields modes methods
-                     in-method in-mi body))
+                   (validate-body ir state-vars in-pclass fields
+                     modes methods in-method in-mi body (conj context :body)))
             vb (assoc-if b
                  :condition condition
                  :body body)
@@ -893,7 +906,7 @@
                      body
                      :else
                      (conj vmbody vb))]
-        (recur vmbody (first more) (rest more))))))
+        (recur vmbody (inc bi) (first more) (rest more))))))
 
 ;; return Validated args or {:error "message"}
 (defn validate-pclass-ctor-args [ir scope-pclass field fields pclass args]
@@ -920,7 +933,7 @@
                     (conj vargs a))]
         (recur vargs (first more) (rest more))))))
 
-  ;; return Validated fields or {:error "message"}
+;; return Validated fields or {:error "message"}
 (defn validate-fields [ir state-vars pclass fields]
   (let [field-vals (seq fields)]
     (loop [vfields {} field-val (first field-vals) more (rest field-vals)]
@@ -936,18 +949,18 @@
                      args)
               val (if (and (map? args) (:error args))
                     args
-                    (if (and (= type :arg-reference) (symbol? name))
+                    (if (and (= type :pclass-arg-ref) (symbol? name))
                       (if (or (some #(= name %) (get-in ir [scope-pclass :args]))
                             (and (get fields name)
                               (not= name field))) ;; another field
                         val
                         {:error (str "Symbol argument to " field " field initializer "
-                              name " is neither a formal argument to, "
-                              "nor another field of the pclass " scope-pclass)})
+                                  name " is neither a formal argument to, "
+                                  "nor another field of the pclass " scope-pclass)})
                       val))
               vfields (if (and (map? val) (:error val))
-                       val
-                       (assoc vfields field val))]
+                        val
+                        (assoc vfields field val))]
           (recur vfields (first more) (rest more)))))))
 
 ;; return Validated modes or {:error "message"}
@@ -958,7 +971,7 @@
         vmodes
         (let [[mode cond] mode-cond
               cond (validate-condition ir state-vars pclass fields modes
-                     [:mode mode] cond)
+                     [pclass :mode mode] cond)
               vmodes (if (:error cond)
                        cond
                        (assoc vmodes mode cond))]
@@ -978,10 +991,10 @@
               {:keys [pre post]} transition
               pre (if pre
                     (validate-condition ir state-vars pclass fields modes
-                      [:transition from-to :pre] pre))
+                      [pclass :transition from-to :pre] pre))
               post (if post
                      (validate-condition ir state-vars pclass fields modes
-                       [:transition from-to :post] post))
+                       [pclass :transition from-to :post] post))
               transition (assoc-if transition
                            :pre pre
                            :post post)
@@ -996,9 +1009,7 @@
 
 ;; return Validated methods or {:error "message"}
 (defn validate-methods [ir state-vars pclass fields modes methods]
-  ;; (log/warn "VALIDATE-METHODS" pclass
-  ;;   ;; "METHODS" methods
-  ;;   )
+  (dbg-println :trace "VALIDATE-METHODS" pclass)
   (let [method-mdefss (seq methods)]
     (loop [vmethods {}
            method-mdefs (first method-mdefss)
@@ -1011,15 +1022,17 @@
                      mi 0
                      mdef (first mdefs)
                      moar (rest mdefs)]
+                (dbg-println :trace "  VALIDATE-METHOD" method
+                  "MDEF" (dissoc mdef :body))
                 (if (or (and (map? vmdefs) (:error vmdefs)) (not mdef))
                   vmdefs
                   (let [{:keys [pre post args body]} mdef
                         pre (if pre
                               (validate-condition ir state-vars pclass fields
-                                modes [:method method mi :pre] pre))
+                                modes [pclass :methods method mi :pre] pre))
                         post (if post
                                (validate-condition ir state-vars pclass fields
-                                 modes [:method method mi :post] post))
+                                 modes [pclass :methods method mi :post] post))
                         body (if-not (empty? body)
                                (validate-body ir state-vars pclass
                                  fields modes methods method mi body))
@@ -1058,7 +1071,7 @@
               {:keys [type args fields modes transitions methods]} val
               pclass? (= type :pclass)
               fields (if (and pclass? fields)
-                      (validate-fields ir state-vars sym fields))
+                       (validate-fields ir state-vars sym fields))
               modes (if (and pclass? (not (:error fields)) modes)
                       (validate-modes ir state-vars sym fields modes))
               transitions (if (and pclass? transitions
@@ -1069,8 +1082,8 @@
                             (not (:error fields))
                             (not (:error modes))
                             (not (:error transitions)))
-                            (validate-methods ir state-vars
-                              sym fields modes methods))
+                        (validate-methods ir state-vars
+                          sym fields modes methods))
               val (assoc-if val
                     :modes modes
                     :transitions transitions

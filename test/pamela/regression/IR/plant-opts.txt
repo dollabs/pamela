@@ -23,16 +23,16 @@
      [:cond-map [:cond [:doc [:string "Demo method"]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "plant"] [:symbol "action"]]
-       [:plant-opt
+       [:method-opt
         [:opt-bounds
          [:bounds
           [:bounds-literal
            [:number [:integer "0"]]
            [:number [:integer "1"]]]]]]
-       [:plant-opt [:label [:keyword ":demo"]]]
-       [:plant-opt [:cost [:number-ref [:number [:integer "2"]]]]]
-       [:plant-opt [:reward [:number-ref [:number [:integer "3"]]]]]
+       [:method-opt [:label [:keyword ":demo"]]]
+       [:method-opt [:cost [:number-ref [:number [:integer "2"]]]]]
+       [:method-opt [:reward [:number-ref [:number [:integer "3"]]]]]
        [:argval [:safe-keyword [:keyword ":foo"]]]
        [:argval [:number [:integer "4"]]]]]]]]]]

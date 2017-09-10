@@ -31,10 +31,10 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]
  [:defpclass
   [:symbol "sequence-parallel1-htn"]
@@ -47,15 +47,15 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
        [:fn
         [:parallel
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "unbounded"]]]]]]]]]]]]
@@ -72,18 +72,18 @@
        [:fn
         [:parallel
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:parallel
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "unbounded"]]]]]]]]]]]]
@@ -100,18 +100,18 @@
        [:fn
         [:parallel
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:parallel
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "unbounded"]]]]]]]]]]]]
@@ -128,18 +128,18 @@
        [:fn
         [:sequence
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
        [:fn
         [:sequence
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "unbounded"]]]]]]]]]]]]
@@ -157,21 +157,21 @@
         [:choose
          [:choice
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
          [:choice
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
        [:fn
         [:choose
          [:choice
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
          [:choice
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref
              [:symbol "plant"]
              [:symbol "unbounded"]]]]]]]]]]]]]
@@ -189,19 +189,19 @@
         [:fn
          [:sequence
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
        [:choice
         [:fn
          [:sequence
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
           [:fn
-           [:plant-fn
+           [:method-fn
             [:symbol-ref
              [:symbol "plant"]
              [:symbol "unbounded"]]]]]]]]]]]]]]

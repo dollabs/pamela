@@ -32,7 +32,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445370"]]]
        [:argval [:number [:float "-71.227891"]]]
@@ -50,7 +50,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445435"]]]
        [:argval [:number [:float "-71.227843"]]]
@@ -68,7 +68,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445389"]]]
        [:argval [:number [:float "-71.227734"]]]
@@ -86,7 +86,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "this"] [:symbol "location"]]
        [:argval [:number [:float "42.445327"]]]
        [:argval [:number [:float "-71.227788"]]]

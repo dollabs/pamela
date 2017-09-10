@@ -36,11 +36,11 @@
       [:choose
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
        [:choice
         [:fn
-         [:plant-fn
+         [:method-fn
           [:symbol-ref
            [:symbol "plant"]
            [:symbol "unbounded"]]]]]]]]]]]]

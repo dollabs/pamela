@@ -18,9 +18,9 @@
        [:fn
         [:sequence
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -31,9 +31,9 @@
            [:argval [:number [:float "1.0"]]]
            [:argval [:number [:integer "80"]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -44,9 +44,9 @@
            [:argval [:number [:float "2.0"]]]
            [:argval [:number [:integer "170"]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -57,9 +57,9 @@
            [:argval [:number [:float "3.0"]]]
            [:argval [:number [:integer "260"]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -70,9 +70,9 @@
            [:argval [:number [:float "4.0"]]]
            [:argval [:number [:integer "350"]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -85,27 +85,27 @@
        [:fn
         [:sequence
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp3"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp3"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp4"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp4"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp1"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp1"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]]]
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]]]
        [:fn
         [:sequence
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp4"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp4"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp1"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp1"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp2"]]]]
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp2"]]]]
          [:fn
-          [:plant-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]]]
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]]]
        [:fn
         [:choose [:choice [:fn [:delay]]] [:choice [:fn [:delay]]]]]
        [:fn [:parallel [:fn [:delay]] [:fn [:delay]]]]]]]]]]]

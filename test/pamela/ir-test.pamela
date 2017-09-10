@@ -35,7 +35,7 @@
                 :close:open {:pre :close
                              :post (and (= pwr (mode-of pwrvals :high))
                                      (= fred 123.456)
-                                     (mode-of this :wacky))
+                                     (mode-of this :open))
                              :doc "lid opens"
                              :bounds [12 34]
                              :cost 10

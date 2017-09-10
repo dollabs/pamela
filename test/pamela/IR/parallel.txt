@@ -36,8 +36,8 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]

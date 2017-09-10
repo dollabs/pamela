@@ -160,9 +160,9 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "track-elephant"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -178,13 +178,13 @@
               [:number [:integer "20"]]
               [:number [:integer "25"]]]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "watch-right-hemisphere"]]
-           [:plant-opt [:label [:keyword ":watch-right"]]]]]
+           [:method-opt [:label [:keyword ":watch-right"]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "watch-left-hemisphere"]]]]]]
@@ -205,22 +205,22 @@
             [:fn
              [:sequence
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "take-high-res-images"]]
-                [:plant-opt
+                [:method-opt
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
                     [:number [:integer "0"]]
                     [:number [:integer "3"]]]]]]]]
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "move-high-res-images"]]
-                [:plant-opt
+                [:method-opt
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
@@ -228,11 +228,11 @@
                     [:number [:integer "4"]]]]]]]]]]]
            [:choice
             [:fn
-             [:plant-fn
+             [:method-fn
               [:symbol-ref
                [:symbol "plant"]
                [:symbol "take-move-low-res-images"]]
-              [:plant-opt
+              [:method-opt
                [:opt-bounds
                 [:bounds
                  [:bounds-literal
@@ -248,22 +248,22 @@
             [:fn
              [:sequence
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "take-medium-res-images"]]
-                [:plant-opt
+                [:method-opt
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
                     [:number [:integer "0"]]
                     [:number [:integer "3"]]]]]]]]
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "move-medium-res-images"]]
-                [:plant-opt
+                [:method-opt
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
@@ -273,11 +273,11 @@
           [:parallel
            [:fn-opt [:label [:keyword ":analyze"]]]
            [:fn
-            [:plant-fn
+            [:method-fn
              [:symbol-ref
               [:symbol "plant"]
               [:symbol "picture-analysis-type-1"]]
-             [:plant-opt
+             [:method-opt
               [:opt-bounds
                [:bounds
                 [:bounds-literal
@@ -296,40 +296,40 @@
              [:choice
               [:choice-opt [:label [:keyword ":slow-path"]]]
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "picture-analysis-type-2-slow"]]]]]
              [:choice
               [:fn
-               [:plant-fn
+               [:method-fn
                 [:symbol-ref
                  [:symbol "plant"]
                  [:symbol "picture-analysis-type-2-fast"]]
-                [:plant-opt
+                [:method-opt
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
                     [:number [:integer "0"]]
                     [:number [:integer "10"]]]]]]]]]]]
            [:fn
-            [:plant-fn
+            [:method-fn
              [:symbol-ref
               [:symbol "plant"]
               [:symbol "picture-analysis-type-3"]]
-             [:plant-opt [:label [:keyword ":phase-3"]]]
-             [:plant-opt
+             [:method-opt [:label [:keyword ":phase-3"]]]
+             [:method-opt
               [:opt-bounds
                [:bounds
                 [:bounds-literal
                  [:number [:integer "0"]]
                  [:number [:integer "7"]]]]]]]]]]
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "plant"]
             [:symbol "picture-distribution"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal

@@ -18,39 +18,41 @@
 ;;   B+ field, method (previous symbol is a pclass instance)
 
 ;; symbol-ref could reference a
-;;   pclass-arg(1) :arg-reference
-;;   method-arg(1) :method-arg-reference
+;;   pclass-arg(1) :pclass-arg-ref
+;;   method-arg(1) :method-arg-ref
 ;;             (1) :state-variable
-;;   field(1+)     :field-reference
-;;   method(1+)    :plant-fn (should be method reference)
+;;   field(1+)     :field-ref
+;;   method(1+)    :method-fn (should be method reference)
 
-;; cond-operand = ( literal | mode-expr | symbol-ref )
-;;   :arg-reference :method-arg-reference :state-variable :field-reference
+;; cond-operand = ( literal | mode-ref | symbol-ref )
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
 
-;; mode-expr = <LP> <MODE_OF> symbol-ref keyword <RP>
-;;   symbol-ref could be...
-;;   :arg-reference :method-arg-reference :state-variable :field-reference
+;; mode-ref = <LP> <MODE_OF> symbol-ref keyword <RP>
+;;   symbol-ref could be...   CALLED :mode-ref
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
+;;   :symbol-ref [this-or-pclass]
 ;;
 ;; field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
-;;                mode-expr | symbol-ref )
+;;                mode-ref | symbol-ref )
 ;;   symbol-ref could be...
-;;   :arg-reference :state-variable
+;;   :pclass-arg-ref :state-variable
 
-;; plant-fn = <LP> symbol-ref plant-opt* argval* <RP>
-;;   symbol-ref could be...
-;;   :plant-fn
+;; method-fn = <LP> symbol-ref method-opt* argval* <RP>
+;;   symbol-ref could be... CALLED :method-ref
+;;   :pclass-arg-ref :method-arg-ref :field-ref
+;;   :symbol-ref [this local-method]
 
 ;; number-ref = ( number | lvar-ctor | symbol-ref )
 ;;   symbol-ref could be...
-;;   :arg-reference :method-arg-reference :state-variable :field-reference
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
 
 ;; pclass-ctor-arg = ( string | number | pclass-arg-keyword | boolean | symbol-ref )
 ;;   symbol-ref could be...
-;;   :arg-reference :state-variable :field-reference
+;;   :pclass-arg-ref :field-ref :state-variable
 
 ;; argval = ( string | number | safe-keyword | boolean | symbol-ref )
 ;;   symbol-ref could be...
-;;   :arg-reference :method-arg-reference :state-variable :field-reference
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
 
 (defpclass simple-pclass [simple2-initial]
   :fields {simple1 {:observable true :initial "white"}
@@ -82,7 +84,12 @@
 (defpclass pclass2 [p-arg2]
   :meta {:doc "Within this example, field2-1 is an instance of pclass1"}
   :fields {field2-1 {:initial p-arg2}}
-  :methods [(defpmethod method2 [x y])])
+  :methods [(defpmethod method2 [x y])
+            (defpmethod method3 [a b c]
+              ;; c is not used
+              ;; below is an example of :method-ref as :pclass-arg-ref
+              (p-arg2.method1 a b))
+            ])
 
 (defpclass main []
   :fields {field1 (pclass1 42)
@@ -92,6 +99,7 @@
            ;; field4 (pclass2 (pclass1 44))}
            pclass1-44 (pclass1 44)
            field4 (pclass2 pclass1-44)}
+  :modes [:running :stopped]
   :methods [(defpmethod main []
               (sequence
                (reference-tests field1 42)))
@@ -122,6 +130,9 @@
                (field2.method1 1 2)
                (field4.field2-1.method1 1 2)
                (pclass-instance-arg.method1 1 2)
+               (field4.method3 4 5 :running)
+               (field4.method3 4 5 (mode-of this :stopped))
+               (field4.method3 4 5 (mode-of locations :sea))
                ))
 
             (defpmethod simple-method [arg])

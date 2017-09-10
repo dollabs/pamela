@@ -30,20 +30,20 @@
      [:symbol "turn-on-switch"]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "switchedpower"] [:symbol "turn_on"]]]]]
     [:defpmethod
      [:symbol "turn-off-switch"]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "switchedpower"] [:symbol "turn_off"]]]]]
     [:defpmethod
      [:symbol "toggle-switch"]
      [:args]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol-ref [:symbol "turn-on-switch"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "turn-on-switch"]]]]
        [:fn
         [:delay
          [:delay-opt
@@ -54,7 +54,7 @@
               [:bounds-literal
                [:number [:integer "10"]]
                [:number [:integer "10"]]]]]]]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "turn-off-switch"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "turn-off-switch"]]]]
        [:fn
         [:delay
          [:delay-opt
@@ -71,4 +71,4 @@
      [:fn
       [:dotimes
        [:natural "3"]
-       [:fn [:plant-fn [:symbol-ref [:symbol "toggle-switch"]]]]]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "toggle-switch"]]]]]]]]]]]

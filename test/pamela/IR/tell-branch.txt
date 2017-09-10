@@ -9,5 +9,5 @@
      [:args]
      [:fn
       [:parallel
-       [:fn [:plant-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
     [:defpmethod [:symbol "tell-branch"] [:args]]]]]]

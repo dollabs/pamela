@@ -33,7 +33,7 @@
      [:symbol "main"]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "test-of-various-statements"]]]]]
     [:defpmethod [:symbol "initialize"] [:args]]
     [:defpmethod [:symbol "one-arg-method"] [:args [:symbol "x"]]]
@@ -43,7 +43,7 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "one-arg-method"]]
          [:argval
           [:symbol-ref [:symbol "field1"] [:symbol "simple2"]]]]]
@@ -87,4 +87,4 @@
           [:equal-expr
            [:cond-operand [:symbol-ref [:symbol "door"]]]
            [:cond-operand [:literal [:keyword ":open"]]]]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "initialize"]]]]]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "initialize"]]]]]]]]]]]

@@ -121,7 +121,7 @@
                   [:equal-expr
                    [:cond-operand [:symbol-ref [:symbol "box-f"]]]
                    [:cond-operand
-                    [:mode-expr
+                    [:mode-ref
                      [:symbol-ref [:symbol "box"]]
                      [:keyword ":open"]]]]]]]
                [:fn
@@ -130,17 +130,17 @@
                   [:equal-expr
                    [:cond-operand [:symbol-ref [:symbol "box-f"]]]
                    [:cond-operand
-                    [:mode-expr
+                    [:mode-ref
                      [:symbol-ref [:symbol "box"]]
                      [:keyword ":open"]]]]]
                  [:fn
                   [:sequence
                    [:fn
-                    [:plant-fn
+                    [:method-fn
                      [:symbol-ref
                       [:symbol "cannon-f"]
                       [:symbol "fire"]]
-                     [:plant-opt
+                     [:method-opt
                       [:opt-bounds
                        [:bounds
                         [:bounds-literal
@@ -157,7 +157,7 @@
                        [:cond-operand
                         [:literal [:boolean [:TRUE]]]]]]]]]]]]
                [:fn
-                [:plant-fn
+                [:method-fn
                  [:symbol-ref
                   [:symbol "box-f"]
                   [:symbol "close-lid"]]]]]]
@@ -167,10 +167,10 @@
                [:fn
                 [:parallel
                  [:fn
-                  [:plant-fn
+                  [:method-fn
                    [:symbol-ref [:symbol "box-f"] [:symbol "reset"]]]]
                  [:fn
-                  [:plant-fn
+                  [:method-fn
                    [:symbol-ref
                     [:symbol "cannon-f"]
                     [:symbol "reset"]]]]]]

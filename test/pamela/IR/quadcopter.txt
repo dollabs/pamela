@@ -32,7 +32,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "location"]]
        [:argval [:number [:float "42.445370"]]]
        [:argval [:number [:float "-71.227891"]]]
@@ -50,7 +50,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "location"]]
        [:argval [:number [:float "42.445435"]]]
        [:argval [:number [:float "-71.227842"]]]
@@ -68,7 +68,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "location"]]
        [:argval [:number [:float "42.445389"]]]
        [:argval [:number [:float "-71.227733"]]]
@@ -86,7 +86,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "location"]]
        [:argval [:number [:float "42.445327"]]]
        [:argval [:number [:float "-71.227784"]]]
@@ -108,9 +108,9 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "q"] [:symbol "location"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -121,9 +121,9 @@
          [:argval [:number [:float "1.0"]]]
          [:argval [:number [:integer "80"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "q"] [:symbol "location"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -134,9 +134,9 @@
          [:argval [:number [:float "2.0"]]]
          [:argval [:number [:integer "170"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "q"] [:symbol "location"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -147,9 +147,9 @@
          [:argval [:number [:float "3.0"]]]
          [:argval [:number [:integer "260"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "q"] [:symbol "location"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -160,9 +160,9 @@
          [:argval [:number [:float "4.0"]]]
          [:argval [:number [:integer "350"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "q"] [:symbol "location"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -178,22 +178,24 @@
      [:args [:symbol "q"]]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]]]]
     [:defpmethod
      [:symbol "circuit-three"]
      [:cond-map [:cond [:doc [:string "Third quadcopter circuit"]]]]
      [:args [:symbol "q"]]
      [:fn
       [:sequence
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
-       [:fn [:plant-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]]]]
     [:defpmethod
      [:symbol "waypoints"]
      [:cond-map
@@ -202,15 +204,15 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "circuit-one"]]
          [:argval [:symbol-ref [:symbol "qc1"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "circuit-two"]]
          [:argval [:symbol-ref [:symbol "qc2"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "circuit-three"]]
          [:argval [:symbol-ref [:symbol "qc3"]]]]]]]]]]]
  [:defpclass

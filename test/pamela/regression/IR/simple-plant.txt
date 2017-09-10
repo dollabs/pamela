@@ -81,9 +81,9 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "hardwork"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -91,9 +91,9 @@
              [:number [:integer "20"]]]]]]
          [:argval [:number [:integer "10"]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "scp"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -102,9 +102,9 @@
          [:argval [:string "bigfile"]]
          [:argval [:string "me@192.168.11.100:~me/copyofbigfile"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "cp"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -113,9 +113,9 @@
          [:argval [:string "bigfile"]]
          [:argval [:string "copyofbigfile"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "shell"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -126,9 +126,9 @@
          [:argval [:string ">"]]
          [:argval [:string "foo"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "python"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -150,7 +150,7 @@
                [:number [:integer "3"]]
                [:number [:integer "3"]]]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "stop"]]
          [:argval [:string "McDonalds"]]]]]]]]]]
  [:defpclass

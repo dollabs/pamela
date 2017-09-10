@@ -28,7 +28,7 @@
     [:field
      [:symbol "pwr"]
      [:field-type
-      [:mode-expr
+      [:mode-ref
        [:symbol-ref [:symbol "pwrvals"]]
        [:keyword ":none"]]]]]]
   [:option
@@ -40,7 +40,7 @@
        [:equal-expr
         [:cond-operand [:symbol-ref [:symbol "pwr"]]]
         [:cond-operand
-         [:mode-expr
+         [:mode-ref
           [:symbol-ref [:symbol "pwrvals"]]
           [:keyword ":high"]]]]]]
      [:mode-init
@@ -49,7 +49,7 @@
        [:equal-expr
         [:cond-operand [:symbol-ref [:symbol "pwr"]]]
         [:cond-operand
-         [:mode-expr
+         [:mode-ref
           [:symbol-ref [:symbol "pwrvals"]]
           [:keyword ":none"]]]]]]
      [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
@@ -139,7 +139,7 @@
      [:field-init
       [:initial
        [:field-type
-        [:mode-expr
+        [:mode-ref
          [:symbol-ref [:symbol "lightvals"]]
          [:keyword ":dark"]]]]]
      [:field-init [:access [:keyword ":public"]]]]
@@ -148,7 +148,7 @@
      [:field-init
       [:initial
        [:field-type
-        [:mode-expr
+        [:mode-ref
          [:symbol-ref [:symbol "lightvals"]]
          [:keyword ":dark"]]]]]
      [:field-init [:access [:keyword ":public"]]]
@@ -164,14 +164,14 @@
          [:equal-expr
           [:cond-operand [:symbol-ref [:symbol "illumination"]]]
           [:cond-operand
-           [:mode-expr
+           [:mode-ref
             [:symbol-ref [:symbol "lightvals"]]
             [:keyword ":bright"]]]]]
         [:cond-expr
          [:equal-expr
           [:cond-operand [:symbol-ref [:symbol "sensed-illumination"]]]
           [:cond-operand
-           [:mode-expr
+           [:mode-ref
             [:symbol-ref [:symbol "lightvals"]]
             [:keyword ":bright"]]]]]]]]
      [:mode-init
@@ -182,14 +182,14 @@
          [:equal-expr
           [:cond-operand [:symbol-ref [:symbol "illumination"]]]
           [:cond-operand
-           [:mode-expr
+           [:mode-ref
             [:symbol-ref [:symbol "lightvals"]]
             [:keyword ":dark"]]]]]
         [:cond-expr
          [:equal-expr
           [:cond-operand [:symbol-ref [:symbol "sensed-illumination"]]]
           [:cond-operand
-           [:mode-expr
+           [:mode-ref
             [:symbol-ref [:symbol "lightvals"]]
             [:keyword ":dark"]]]]]]]]
      [:mode-init [:keyword ":fail"] [:cond-expr [:TRUE]]]]]]
@@ -207,7 +207,7 @@
            [:equal-expr
             [:cond-operand [:symbol-ref [:symbol "anode"]]]
             [:cond-operand
-             [:mode-expr
+             [:mode-ref
               [:symbol-ref [:symbol "pwrvals"]]
               [:keyword ":high"]]]]]
           [:cond-expr
@@ -215,7 +215,7 @@
             [:cond-operand
              [:symbol-ref [:symbol "sensed-illumination"]]]
             [:cond-operand
-             [:mode-expr
+             [:mode-ref
               [:symbol-ref [:symbol "lightvals"]]
               [:keyword ":bright"]]]]]]]]]
       [:trans [:post [:keyword ":on"]]]
@@ -238,7 +238,7 @@
            [:equal-expr
             [:cond-operand [:symbol-ref [:symbol "anode"]]]
             [:cond-operand
-             [:mode-expr
+             [:mode-ref
               [:symbol-ref [:symbol "pwrvals"]]
               [:keyword ":none"]]]]]
           [:cond-expr
@@ -246,7 +246,7 @@
             [:cond-operand
              [:symbol-ref [:symbol "sensed-illumination"]]]
             [:cond-operand
-             [:mode-expr
+             [:mode-ref
               [:symbol-ref [:symbol "lightvals"]]
               [:keyword ":dark"]]]]]]]]]
       [:trans [:post [:keyword ":off"]]]

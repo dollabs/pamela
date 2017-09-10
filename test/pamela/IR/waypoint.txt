@@ -81,19 +81,19 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp1"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp2"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp3"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "quadcopter-plant"] [:symbol "wp4"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref
           [:symbol "quadcopter-plant"]
           [:symbol "wp5"]]]]]]]]]]]

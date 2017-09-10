@@ -14,8 +14,14 @@
      :controllable false,
      :cost 0,
      :display-name "Close Lid",
-     :post {:type :mode-reference, :pclass this, :mode :close},
-     :pre {:type :mode-reference, :pclass this, :mode :open},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :close},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :open},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -26,8 +32,14 @@
      :controllable false,
      :cost 0,
      :display-name "Open Lid",
-     :post {:type :mode-reference, :pclass this, :mode :open},
-     :pre {:type :mode-reference, :pclass this, :mode :close},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :open},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :close},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -38,7 +50,10 @@
      :controllable false,
      :cost 0,
      :display-name "Reset",
-     :post {:type :mode-reference, :pclass this, :mode :open},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :open},
      :pre {:type :literal, :value true},
      :primitive true,
      :reward 0,
@@ -106,10 +121,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference-field,
-            :pclass this,
-            :field box-f,
-            :value ball-in-motion}
+          [{:type :field-ref, :names [box-f ball-in-motion]}
            {:type :literal, :value true}]},
          :body
          [{:type :tell,
@@ -122,20 +134,14 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference-field,
-            :pclass this,
-            :field cannon-f,
-            :value ready}
+          [{:type :field-ref, :names [cannon-f ready]}
            {:type :literal, :value true}]},
          :body
          [{:type :unless,
            :condition
            {:type :equal,
             :args
-            [{:type :field-reference-field,
-              :pclass this,
-              :field cannon-f,
-              :value ammunitions}
+            [{:type :field-ref, :names [cannon-f ammunitions]}
              {:type :literal, :value 0}]},
            :body
            [{:type :try,
@@ -146,24 +152,28 @@
                  :condition
                  {:type :equal,
                   :args
-                  [{:type :field-reference, :pclass this, :field box-f}
-                   {:type :mode-reference, :pclass box, :mode :open}]},
+                  [{:type :field-ref, :names [box-f]}
+                   {:type :mode-ref,
+                    :mode-ref {:type :symbol-ref, :names [box]},
+                    :mode :open}]},
                  :body nil}
                 {:type :maintain,
                  :condition
                  {:type :equal,
                   :args
-                  [{:type :field-reference, :pclass this, :field box-f}
-                   {:type :mode-reference, :pclass box, :mode :open}]},
+                  [{:type :field-ref, :names [box-f]}
+                   {:type :mode-ref,
+                    :mode-ref {:type :symbol-ref, :names [box]},
+                    :mode :open}]},
                  :body
                  [{:type :sequence,
                    :body
-                   [{:type :plant-fn-field,
-                     :method fire,
+                   [{:type :method-fn,
+                     :method-ref
+                     {:type :field-ref, :names [cannon-f fire]},
                      :args [123 "456"],
                      :temporal-constraints
-                     [{:type :bounds, :value [1 7]}],
-                     :field cannon-f}
+                     [{:type :bounds, :value [1 7]}]}
                     {:type :ask,
                      :condition
                      {:type :equal,
@@ -171,22 +181,22 @@
                       [{:type :state-variable, :name all-clear}
                        {:type :literal, :value true}]},
                      :body nil}]}]}
-                {:type :plant-fn-field,
-                 :method close-lid,
-                 :args [],
-                 :field box-f}]}],
+                {:type :method-fn,
+                 :method-ref
+                 {:type :field-ref, :names [box-f close-lid]},
+                 :args []}]}],
              :catch
              [{:type :sequence,
                :body
                [{:type :parallel,
                  :body
-                 [{:type :plant-fn-symbol,
-                   :name box-f,
-                   :method reset,
+                 [{:type :method-fn,
+                   :method-ref
+                   {:type :symbol-ref, :names [box-f reset]},
                    :args []}
-                  {:type :plant-fn-symbol,
-                   :name cannon-f,
-                   :method reset,
+                  {:type :method-fn,
+                   :method-ref
+                   {:type :symbol-ref, :names [cannon-f reset]},
                    :args []}]}
                 {:type :delay,
                  :body nil,

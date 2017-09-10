@@ -24,7 +24,7 @@
                [:number [:integer "15"]]
                [:number [:integer "15"]]]]]]]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "video"]]
          [:argval [:symbol-ref [:symbol "client-host"]]]
          [:argval [:symbol-ref [:symbol "server-host"]]]
@@ -36,7 +36,7 @@
      [:fn
       [:sequence
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "ftp"]]
          [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:symbol-ref [:symbol "size"]]]]]]]]
@@ -81,7 +81,7 @@
      [:cond-map [:cond [:display-name [:string "Main Activity"]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "main-internal"]]
        [:argval [:string "host0101"]]
        [:argval [:string "host0701"]]]]]
@@ -94,9 +94,9 @@
      [:fn
       [:parallel
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "e7h1"] [:symbol "file-transfer"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal
@@ -105,9 +105,9 @@
          [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:string "100MB"]]]]
        [:fn
-        [:plant-fn
+        [:method-fn
          [:symbol-ref [:symbol "e7h1"] [:symbol "video-session"]]
-         [:plant-opt
+         [:method-opt
           [:opt-bounds
            [:bounds
             [:bounds-literal

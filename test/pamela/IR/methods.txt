@@ -24,7 +24,7 @@
           [:number [:integer "50"]]]]]]]
      [:args]
      [:fn
-      [:plant-fn
+      [:method-fn
        [:symbol-ref [:symbol "this"] [:symbol "primitive"]]
        [:argval [:number [:float "42.445370"]]]
        [:argval [:number [:float "-71.227891"]]]]]]]]]
@@ -47,9 +47,9 @@
        [:fn
         [:sequence
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref [:symbol "arg1"] [:symbol "primitive"]]
-           [:plant-opt
+           [:method-opt
             [:opt-bounds
              [:bounds
               [:bounds-literal
@@ -60,7 +60,7 @@
        [:fn
         [:sequence
          [:fn
-          [:plant-fn
+          [:method-fn
            [:symbol-ref
             [:symbol "arg2"]
             [:symbol "nonprimitive"]]]]]]]]]]]]
