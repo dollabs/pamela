@@ -3,7 +3,7 @@
   :fields
   {sensor-f
    {:access :private,
-    :initial {:name sensor, :type :arg-reference},
+    :initial {:names [sensor], :type :symbol-ref},
     :observable false}},
   :meta
   {:doc "This defines all of the HTN methods for this ISR domain"},
@@ -12,11 +12,10 @@
    [{:args [at],
      :betweens [],
      :body
-     [{:type :plant-fn-field,
-       :method evidence,
-       :args [at],
-       :temporal-constraints [{:type :bounds, :value [15 25]}],
-       :field sensor-f}],
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [sensor-f evidence]},
+       :args [{:type :method-arg-ref, :names [at]}],
+       :temporal-constraints [{:type :bounds, :value [15 25]}]}],
      :controllable false,
      :cost 0,
      :display-name "Evidence",
@@ -31,14 +30,12 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method evidence,
-         :args [from]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method interpret,
-         :args [from]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this evidence]},
+         :args [{:type :method-arg-ref, :names [from]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this interpret]},
+         :args [{:type :method-arg-ref, :names [from]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Evidence And Interpret",
@@ -53,14 +50,13 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method evidence-and-interpret,
-         :args [location1]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-at,
-         :args [location2]}]}],
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this evidence-and-interpret]},
+         :args [{:type :method-arg-ref, :names [location1]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this get-data-at]},
+         :args [{:type :method-arg-ref, :names [location2]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Get Data And Interpret",
@@ -75,15 +71,13 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field,
-         :method go-to,
-         :args [loc],
-         :field sensor-f}
-        {:type :plant-fn-field,
-         :method capture,
-         :args [loc],
-         :temporal-constraints [{:type :bounds, :value [5 10]}],
-         :field sensor-f}]}],
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [sensor-f go-to]},
+         :args [{:type :method-arg-ref, :names [loc]}]}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [sensor-f capture]},
+         :args [{:type :method-arg-ref, :names [loc]}],
+         :temporal-constraints [{:type :bounds, :value [5 10]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Get Data At",
@@ -100,25 +94,26 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :method interpret1,
-           :args [place],
-           :temporal-constraints [{:type :bounds, :value [15 25]}],
-           :field sensor-f}]}
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret1]},
+           :args [{:type :method-arg-ref, :names [place]}],
+           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :method interpret2,
-           :args [place],
-           :temporal-constraints [{:type :bounds, :value [15 25]}],
-           :field sensor-f}]}
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret2]},
+           :args [{:type :method-arg-ref, :names [place]}],
+           :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :method interpret3,
-           :args [place],
-           :temporal-constraints [{:type :bounds, :value [15 25]}],
-           :field sensor-f}]}]}],
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret3]},
+           :args [{:type :method-arg-ref, :names [place]}],
+           :temporal-constraints
+           [{:type :bounds, :value [15 25]}]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Interpret",
@@ -133,26 +128,31 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method get-data-at,
-         :args [a]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [a b]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [b c]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [c d]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method evidence-and-interpret,
-         :args [d]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this get-data-at]},
+         :args [{:type :method-arg-ref, :names [a]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [a]}
+          {:type :method-arg-ref, :names [b]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [b]}
+          {:type :method-arg-ref, :names [c]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [c]}
+          {:type :method-arg-ref, :names [d]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this evidence-and-interpret]},
+         :args [{:type :method-arg-ref, :names [d]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Main",
@@ -167,7 +167,10 @@
   :fields
   {htn
    {:access :private,
-    :initial {:args [plant], :pclass isr-htn, :type :pclass-ctor},
+    :initial
+    {:args [{:type :symbol-ref, :names [plant]}],
+     :pclass isr-htn,
+     :type :pclass-ctor},
     :observable false},
    plant
    {:access :private,

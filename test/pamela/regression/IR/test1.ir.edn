@@ -7,10 +7,11 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method ftp,
-         :args [server-host size]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ftp]},
+         :args
+         [{:type :method-arg-ref, :names [server-host]}
+          {:type :method-arg-ref, :names [size]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "File Xfer",
@@ -64,10 +65,12 @@
        [{:type :delay,
          :body nil,
          :temporal-constraints [{:type :bounds, :value [15 15]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [client-host server-host display]}]}],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [client-host]}
+          {:type :method-arg-ref, :names [server-host]}
+          {:type :method-arg-ref, :names [display]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Video Session",
@@ -104,9 +107,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method main-internal,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this main-internal]},
        :args ["host0101" "host0701"]}],
      :controllable false,
      :cost 0,
@@ -122,16 +124,17 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-field,
-         :method file-transfer,
-         :args [server-host "100MB"],
-         :temporal-constraints [{:type :bounds, :value [1 7]}],
-         :field e7h1}
-        {:type :plant-fn-field,
-         :method video-session,
-         :args [client-host server-host "1"],
-         :temporal-constraints [{:type :bounds, :value [20 35]}],
-         :field e7h1}]}],
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [e7h1 file-transfer]},
+         :args [{:type :method-arg-ref, :names [server-host]} "100MB"],
+         :temporal-constraints [{:type :bounds, :value [1 7]}]}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [e7h1 video-session]},
+         :args
+         [{:type :method-arg-ref, :names [client-host]}
+          {:type :method-arg-ref, :names [server-host]}
+          "1"],
+         :temporal-constraints [{:type :bounds, :value [20 35]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "test1",

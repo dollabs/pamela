@@ -211,141 +211,121 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method and-method,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this and-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method ask-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ask-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method assert-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this assert-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method between-ends-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this between-ends-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method between-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this between-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method between-starts-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this between-starts-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method catch-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this catch-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method choice-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this choice-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method choose-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this choose-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method choose-whenever-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this choose-whenever-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method defpclass-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this defpclass-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method defpmethod-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this defpmethod-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method delay-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this delay-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method dotimes-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this dotimes-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method false-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this false-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method implies-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this implies-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method lvar-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this lvar-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method maintain-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this maintain-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method mode-of-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this mode-of-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method not-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this not-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method optional-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this optional-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method or-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this or-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method parallel-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this parallel-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method sequence-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this sequence-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method slack-parallel-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this slack-parallel-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method slack-sequence-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this slack-sequence-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method soft-parallel-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this soft-parallel-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method soft-sequence-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this soft-sequence-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method tell-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this tell-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method true-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this true-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method try-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this try-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method unless-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this unless-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method when-method,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this when-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method whenever-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this whenever-method]},
          :args []}]}],
      :controllable false,
      :cost 0,

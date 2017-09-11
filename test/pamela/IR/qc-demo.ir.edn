@@ -4,7 +4,12 @@
   {qc-waypoints
    {:access :private,
     :initial
-    {:args [qc1 qc2 qc3], :pclass qc-waypoints, :type :pclass-ctor},
+    {:args
+     [{:type :symbol-ref, :names [qc1]}
+      {:type :symbol-ref, :names [qc2]}
+      {:type :symbol-ref, :names [qc3]}],
+     :pclass qc-waypoints,
+     :type :pclass-ctor},
     :observable false},
    qc1
    {:access :private,

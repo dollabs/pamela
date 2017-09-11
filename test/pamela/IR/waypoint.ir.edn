@@ -81,25 +81,25 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name quadcopter-plant,
-         :method wp1,
+       [{:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [quadcopter-plant wp1]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name quadcopter-plant,
-         :method wp2,
+        {:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [quadcopter-plant wp2]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name quadcopter-plant,
-         :method wp3,
+        {:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [quadcopter-plant wp3]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name quadcopter-plant,
-         :method wp4,
+        {:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [quadcopter-plant wp4]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name quadcopter-plant,
-         :method wp5,
+        {:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [quadcopter-plant wp5]},
          :args []}]}],
      :controllable false,
      :cost 0,

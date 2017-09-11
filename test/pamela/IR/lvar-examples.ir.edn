@@ -9,15 +9,15 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method take-high-res-images,
+         [{:type :method-fn,
+           :method-ref
+           {:type :symbol-ref, :names [this take-high-res-images]},
            :args []}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method take-medium-res-images,
+         [{:type :method-fn,
+           :method-ref
+           {:type :symbol-ref, :names [this take-medium-res-images]},
            :args []}],
          :temporal-constraints
          [{:type :bounds,

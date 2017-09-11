@@ -20,9 +20,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method location,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
        :args [42.44537 -71.227891 1.0 80]}],
      :controllable false,
      :cost 0,
@@ -37,9 +36,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method location,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
        :args [42.445435 -71.227842 2.0 170]}],
      :controllable false,
      :cost 0,
@@ -54,9 +52,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method location,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
        :args [42.445389 -71.227733 3.0 260]}],
      :controllable false,
      :cost 0,
@@ -71,9 +68,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method location,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
        :args [42.445327 -71.227784 4.0 350]}],
      :controllable false,
      :cost 0,
@@ -132,29 +128,24 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name q,
-         :method location,
+       [{:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q location]},
          :args [42.44537 -71.227895 1.0 80],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
-        {:type :plant-fn-symbol,
-         :name q,
-         :method location,
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q location]},
          :args [42.445435 -71.227846 2.0 170],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
-        {:type :plant-fn-symbol,
-         :name q,
-         :method location,
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q location]},
          :args [42.445389 -71.227737 3.0 260],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
-        {:type :plant-fn-symbol,
-         :name q,
-         :method location,
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q location]},
          :args [42.445327 -71.227788 4.0 350],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
-        {:type :plant-fn-symbol,
-         :name q,
-         :method location,
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q location]},
          :args [42.44537 -71.227899 1.0 80],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}]}],
      :controllable false,
@@ -172,11 +163,21 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol, :name q, :method wp3, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp4, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp1, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp2, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp3, :args []}]}],
+       [{:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp3]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp4]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp2]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp3]},
+         :args []}]}],
      :controllable false,
      :cost 0,
      :display-name "Circuit Three",
@@ -192,11 +193,21 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol, :name q, :method wp2, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp3, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp4, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp1, :args []}
-        {:type :plant-fn-symbol, :name q, :method wp2, :args []}]}],
+       [{:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp2]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp3]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp4]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [q wp2]},
+         :args []}]}],
      :controllable false,
      :cost 0,
      :display-name "Circuit Two",
@@ -212,18 +223,15 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method circuit-one,
-         :args [qc1]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method circuit-two,
-         :args [qc2]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method circuit-three,
-         :args [qc3]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this circuit-one]},
+         :args [{:type :method-arg-ref, :names [qc1]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this circuit-two]},
+         :args [{:type :method-arg-ref, :names [qc2]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this circuit-three]},
+         :args [{:type :method-arg-ref, :names [qc3]}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Waypoints",

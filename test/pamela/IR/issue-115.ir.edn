@@ -7,16 +7,16 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method perform-activities,
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this perform-activities]},
          :args []}
         {:type :delay,
          :body nil,
          :temporal-constraints [{:type :bounds, :value [10 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method perform-activities,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this perform-activities]},
          :args []}]}],
      :controllable false,
      :cost 0,
@@ -32,41 +32,41 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method something-simple,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this something-simple]},
          :args []}]}],
      :controllable false,
      :cost 0,
@@ -82,21 +82,25 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method perform-15-minutes-of-activities,
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref,
+          :names [this perform-15-minutes-of-activities]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method perform-15-minutes-of-activities,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref,
+          :names [this perform-15-minutes-of-activities]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method perform-15-minutes-of-activities,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref,
+          :names [this perform-15-minutes-of-activities]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method perform-15-minutes-of-activities,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref,
+          :names [this perform-15-minutes-of-activities]},
          :args []}]}],
      :controllable false,
      :cost 0,

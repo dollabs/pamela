@@ -131,7 +131,11 @@
                (field4.field2-1.method1 1 2)
                (pclass-instance-arg.method1 1 2)
                (field4.method3 4 5 :running)
-               (field4.method3 4 5 (mode-of this :stopped))
+               ;; NOTE the following is legal and works, BUT
+               ;; unparse has to pick ONE of these two forms...
+               ;; so we'll use the shorter one:
+               ;; (field4.method3 4 5 (mode-of this :stopped))
+               (field4.method3 4 5 :stopped)
                (field4.method3 4 5 (mode-of locations :sea))
                ))
 

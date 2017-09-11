@@ -21,23 +21,20 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [1 10]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [1 20]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args [],
            :temporal-constraints
            [{:type :bounds, :value [1 30]}]}]}]}],
@@ -57,23 +54,20 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args []}],
          :temporal-constraints [{:type :bounds, :value [2 10]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args []}],
          :temporal-constraints [{:type :bounds, :value [2 20]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method action,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this action]},
            :args []}],
          :temporal-constraints [{:type :bounds, :value [2 30]}]}]}],
      :controllable false,
@@ -90,19 +84,16 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method action,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [3 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method action,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [3 20]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method action,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [3 30]}]}]}],
      :controllable false,
@@ -119,19 +110,16 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method action,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [4 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method action,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [3 20]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method action,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this action]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [4 30]}]}]}],
      :controllable false,
@@ -146,9 +134,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method top-level,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this top-level]},
        :args []}],
      :controllable false,
      :cost 0,
@@ -164,21 +151,17 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method ex-choose-1,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ex-choose-1]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method ex-choose-2,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ex-choose-2]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method ex-parallel,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ex-parallel]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method ex-sequence,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ex-sequence]},
          :args []}]}],
      :controllable false,
      :cost 0,

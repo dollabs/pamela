@@ -7,18 +7,15 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method submethod,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this submethod]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [1 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method submethod,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this submethod]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method submethod,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this submethod]},
          :args []}],
        :temporal-constraints [{:type :bounds, :value [2 20]}]}],
      :controllable false,
@@ -59,23 +56,23 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method primitive-method,
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this primitive-method]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [1 2]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method primitive-method,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this primitive-method]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method primitive-method-b,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this primitive-method-b]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [1 3]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method primitive-method-b,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this primitive-method-b]},
          :args []}],
        :temporal-constraints [{:type :bounds, :value [2 9]}]}],
      :controllable false,

@@ -22,7 +22,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field a}
+          [{:type :field-ref, :names [a]}
            {:type :literal, :value 1.0}]}}
         {:type :choice,
          :body [{:type :delay, :body nil}],

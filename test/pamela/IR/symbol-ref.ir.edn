@@ -185,12 +185,7 @@
          :args [4 5 :running]}
         {:type :method-fn,
          :method-ref {:type :field-ref, :names [field4 method3]},
-         :args
-         [4
-          5
-          {:type :mode-ref,
-           :mode-ref {:type :symbol-ref, :names [this]},
-           :mode :stopped}]}
+         :args [4 5 :stopped]}
         {:type :method-fn,
          :method-ref {:type :field-ref, :names [field4 method3]},
          :args

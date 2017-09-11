@@ -10,15 +10,14 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+         [{:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,

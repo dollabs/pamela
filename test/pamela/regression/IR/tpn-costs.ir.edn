@@ -105,10 +105,11 @@
        :body
        [{:type :sequence,
          :body
-         [{:type :plant-fn-symbol, :name plnt, :method do-a, :args []}
-          {:type :plant-fn-symbol,
-           :name plnt,
-           :method do-b,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plnt do-a]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plnt do-b]},
            :args [],
            :label :b}],
          :cost<= 4,
@@ -121,15 +122,15 @@
              :body
              [{:type :sequence,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plnt,
-                 :method do-d,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref, :names [plnt do-d]},
                  :args [],
                  :cost 1,
                  :reward 2}
-                {:type :plant-fn-symbol,
-                 :name plnt,
-                 :method do-e,
+                {:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref, :names [plnt do-e]},
                  :args [],
                  :cost 2,
                  :reward 1}]}]}
@@ -137,23 +138,22 @@
              :body
              [{:type :sequence,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plnt,
-                 :method do-f,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref, :names [plnt do-f]},
                  :args [],
                  :cost 3,
                  :reward 1}
-                {:type :plant-fn-symbol,
-                 :name plnt,
-                 :method do-g,
+                {:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref, :names [plnt do-g]},
                  :args [],
                  :cost 4}]}]}],
            :label :choice,
            :cost<= 10,
            :reward>= 5}
-          {:type :plant-fn-symbol,
-           :name plnt,
-           :method do-c,
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plnt do-c]},
            :args []}]}],
        :temporal-constraints [{:type :bounds, :value [1 100]}],
        :cost<= 11,

@@ -8,15 +8,13 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name plnt,
-         :method do-a,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-a]},
          :args [],
          :label :a,
          :temporal-constraints [{:type :bounds, :value [2 4]}]}
-        {:type :plant-fn-symbol,
-         :name plnt,
-         :method do-b,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-b]},
          :args [],
          :label :b,
          :temporal-constraints [{:type :bounds, :value [3 6]}]}],
@@ -37,15 +35,13 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method do-d-and-e,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this do-d-and-e]},
            :args []}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method do-f-and-g,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this do-f-and-g]},
            :args []}]}],
        :label :do-choice}],
      :controllable false,
@@ -62,13 +58,11 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method do-choice,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this do-choice]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name plnt,
-         :method do-c,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-c]},
          :args [],
          :label :c,
          :temporal-constraints [{:type :bounds, :value [85 90]}]}],
@@ -87,17 +81,15 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name plnt,
-         :method do-d,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-d]},
          :args [],
          :label :d,
          :cost 1,
          :reward 2,
          :temporal-constraints [{:type :bounds, :value [1 7]}]}
-        {:type :plant-fn-symbol,
-         :name plnt,
-         :method do-e,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-e]},
          :args [],
          :label :e,
          :cost 2,
@@ -118,17 +110,15 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name plnt,
-         :method do-f,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-f]},
          :args [],
          :label :f,
          :cost 3,
          :reward 1,
          :temporal-constraints [{:type :bounds, :value [1 3]}]}
-        {:type :plant-fn-symbol,
-         :name plnt,
-         :method do-g,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plnt do-g]},
          :args [],
          :label :g,
          :cost 4,
@@ -162,13 +152,12 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method do-a-and-b,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this do-a-and-b]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method do-choice-and-c,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this do-choice-and-c]},
          :args []}],
        :label :start,
        :temporal-constraints [{:type :bounds, :value [1 100]}]}],
@@ -191,7 +180,10 @@
     :observable false},
    tpn
    {:access :private,
-    :initial {:args [plnt], :pclass first-tpn, :type :pclass-ctor},
+    :initial
+    {:args [{:type :symbol-ref, :names [plnt]}],
+     :pclass first-tpn,
+     :type :pclass-ctor},
     :observable false}},
   :type :pclass},
  main-htn
@@ -203,7 +195,10 @@
     :observable false},
    tpn
    {:access :private,
-    :initial {:args [plnt], :pclass first-tpn-htn, :type :pclass-ctor},
+    :initial
+    {:args [{:type :symbol-ref, :names [plnt]}],
+     :pclass first-tpn-htn,
+     :type :pclass-ctor},
     :observable false}},
   :type :pclass},
  plant

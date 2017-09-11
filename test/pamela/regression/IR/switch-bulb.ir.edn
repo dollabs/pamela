@@ -18,17 +18,14 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this toggle-switch]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this toggle-switch]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method toggle-switch,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this toggle-switch]},
          :args []}]}],
      :controllable false,
      :cost 0,
@@ -44,16 +41,15 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method turn-on-switch,
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this turn-on-switch]},
          :args []}
         {:type :delay,
          :body nil,
          :temporal-constraints [{:type :bounds, :value [10 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method turn-off-switch,
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this turn-off-switch]},
          :args []}
         {:type :delay,
          :body nil,
@@ -70,10 +66,9 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-field,
-       :method turn_off,
-       :args [],
-       :field switchedpower}],
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [switchedpower turn_off]},
+       :args []}],
      :controllable false,
      :cost 0,
      :display-name "Turn Off Switch",
@@ -86,10 +81,9 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-field,
-       :method turn_on,
-       :args [],
-       :field switchedpower}],
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [switchedpower turn_on]},
+       :args []}],
      :controllable false,
      :cost 0,
      :display-name "Turn On Switch",

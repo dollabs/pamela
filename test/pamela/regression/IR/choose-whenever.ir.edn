@@ -15,87 +15,75 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method one,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant one]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 1}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:foo]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:foo]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method two,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant two]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 2}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:bar]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:bar]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method three,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant three]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 3}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:baz]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:baz]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method four,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant four]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 4}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:xyzzy]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:xyzzy]}}]}],
      :controllable false,
      :cost 0,
@@ -123,67 +111,59 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method one,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant one]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 1}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [1]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method two,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant two]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 2}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [2]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method three,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant three]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 3}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [3]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method four,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant four]},
            :args []}],
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field priority}
+          [{:type :field-ref, :names [priority]}
            {:type :literal, :value 4}]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [4]}}]}],
      :controllable false,
      :cost 0,
@@ -201,8 +181,8 @@
        :condition
        {:type :equal,
         :args
-        [{:type :field-reference, :pclass this, :field priority}
-         {:type :state-variable, :name new-priority}]},
+        [{:type :field-ref, :names [priority]}
+         {:type :method-arg-ref, :names [new-priority]}]},
        :body nil}],
      :controllable false,
      :cost 0,
@@ -213,7 +193,6 @@
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
- new-priority {:type :state-variable},
  plant
  {:args [],
   :meta {:doc "The Plant API"},

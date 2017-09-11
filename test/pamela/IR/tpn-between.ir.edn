@@ -198,21 +198,23 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method track-elephant,
+       [{:type :method-fn,
+         :method-ref
+         {:type :pclass-arg-ref, :names [plant track-elephant]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [160 170]}]}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method watch-right-hemisphere,
+         [{:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref,
+            :names [plant watch-right-hemisphere]},
            :args [],
            :label :watch-right}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method watch-left-hemisphere,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref,
+            :names [plant watch-left-hemisphere]},
            :args []}],
          :temporal-constraints [{:type :bounds, :value [20 25]}]}
         {:type :sequence,
@@ -223,36 +225,41 @@
              :body
              [{:type :sequence,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plant,
-                 :method take-high-res-images,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant take-high-res-images]},
                  :args [],
                  :temporal-constraints [{:type :bounds, :value [0 3]}]}
-                {:type :plant-fn-symbol,
-                 :name plant,
-                 :method move-high-res-images,
+                {:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant move-high-res-images]},
                  :args [],
                  :temporal-constraints
                  [{:type :bounds, :value [0 4]}]}]}]}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name plant,
-               :method take-move-low-res-images,
+             [{:type :method-fn,
+               :method-ref
+               {:type :pclass-arg-ref,
+                :names [plant take-move-low-res-images]},
                :args [],
                :temporal-constraints [{:type :bounds, :value [0 3]}]}]}
             {:type :choice,
              :body
              [{:type :sequence,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plant,
-                 :method take-medium-res-images,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant take-medium-res-images]},
                  :args [],
                  :temporal-constraints [{:type :bounds, :value [0 3]}]}
-                {:type :plant-fn-symbol,
-                 :name plant,
-                 :method move-medium-res-images,
+                {:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant move-medium-res-images]},
                  :args [],
                  :temporal-constraints
                  [{:type :bounds, :value [0 4]}]}]}],
@@ -260,39 +267,44 @@
            :label :acquire}
           {:type :parallel,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method picture-analysis-type-1,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref,
+              :names [plant picture-analysis-type-1]},
              :args [],
              :temporal-constraints [{:type :bounds, :value [0 6]}]}
             {:type :choose,
              :body
              [{:type :choice,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plant,
-                 :method picture-analysis-type-2-slow,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant picture-analysis-type-2-slow]},
                  :args []}],
                :label :slow-path}
               {:type :choice,
                :body
-               [{:type :plant-fn-symbol,
-                 :name plant,
-                 :method picture-analysis-type-2-fast,
+               [{:type :method-fn,
+                 :method-ref
+                 {:type :pclass-arg-ref,
+                  :names [plant picture-analysis-type-2-fast]},
                  :args [],
                  :temporal-constraints
                  [{:type :bounds, :value [0 10]}]}]}],
              :temporal-constraints [{:type :bounds, :value [0 15]}]}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method picture-analysis-type-3,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref,
+              :names [plant picture-analysis-type-3]},
              :args [],
              :label :phase-3,
              :temporal-constraints [{:type :bounds, :value [0 7]}]}],
            :label :analyze}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method picture-distribution,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref,
+            :names [plant picture-distribution]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [0 5]}]}],
          :label :process,

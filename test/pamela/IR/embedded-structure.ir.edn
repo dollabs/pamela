@@ -11,25 +11,25 @@
          :body
          [{:type :sequence,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}
         {:type :choice,
          :body
          [{:type :sequence,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}]}],
      :controllable false,
      :cost 0,
@@ -51,23 +51,21 @@
        :body
        [{:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
@@ -89,23 +87,21 @@
        :body
        [{:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
@@ -160,29 +156,29 @@
          :body
          [{:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}]}
           {:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}
         {:type :choose,
          :body
          [{:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}]}
           {:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}]}],
      :controllable false,
      :cost 0,
@@ -202,19 +198,17 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method bounded,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
          :args []}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
@@ -236,23 +230,21 @@
        :body
        [{:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
@@ -272,13 +264,11 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method bounded,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name plant,
-         :method unbounded,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant unbounded]},
          :args []}]}],
      :controllable false,
      :cost 0,

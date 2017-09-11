@@ -16,7 +16,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 100}]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [0 1]}]}
@@ -24,7 +24,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 200}]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [2 3]}]}
@@ -32,7 +32,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 300}]},
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [4 5]}]}
@@ -40,13 +40,13 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 400}]}}
         {:type :unless,
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 500}]},
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [6 7]}]}
@@ -54,7 +54,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 600}]},
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [8 9]}]}
@@ -62,7 +62,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-reference, :pclass this, :field value}
+          [{:type :field-ref, :names [value]}
            {:type :literal, :value 700}]},
          :body [{:type :delay, :body nil}],
          :temporal-constraints [{:type :bounds, :value [10 11]}]}]}],

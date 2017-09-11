@@ -16,8 +16,7 @@
        :condition
        {:type :equal,
         :args
-        [{:type :field-reference, :pclass this, :field a}
-         {:type :literal, :value 1.0}]},
+        [{:type :field-ref, :names [a]} {:type :literal, :value 1.0}]},
        :body [{:type :delay, :body nil}]}],
      :controllable false,
      :cost 0,

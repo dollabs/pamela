@@ -3,7 +3,10 @@
   :fields
   {run
    {:access :private,
-    :initial {:args [sp1], :pclass coverage-test, :type :pclass-ctor},
+    :initial
+    {:args [{:type :symbol-ref, :names [sp1]}],
+     :pclass coverage-test,
+     :type :pclass-ctor},
     :observable false},
    sp1
    {:access :private,
@@ -28,21 +31,21 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method scp,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant scp]},
            :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"]}],
          :probability 0.66,
          :condition
          {:type :equal,
           :args
-          [{:type :mode-reference, :pclass this, :mode :networked}
+          [{:type :mode-ref,
+            :mode-ref {:type :symbol-ref, :names [this]},
+            :mode :networked}
            {:type :literal, :value true}]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method cp,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant cp]},
            :args ["bigfile" "copyofbigfile"],
            :cost 5,
            :reward 1}],
@@ -50,7 +53,9 @@
          :condition
          {:type :equal,
           :args
-          [{:type :mode-reference, :pclass this, :mode :local}
+          [{:type :mode-ref,
+            :mode-ref {:type :symbol-ref, :names [this]},
+            :mode :local}
            {:type :literal, :value true}]}}]}],
      :controllable false,
      :cost 0,
@@ -79,21 +84,18 @@
          :controllable false,
          :cost<= 2,
          :reward>= 1}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method transfer,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this transfer]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [0 30]}],
          :label :xfer}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method work,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this work]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [10 40]}],
          :label :work}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method copy,
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this copy]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [20 50]}],
          :label :copy}],
@@ -117,27 +119,24 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method scp,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant scp]},
            :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
            :temporal-constraints [{:type :bounds, :value [0 9]}]}],
          :cost 2.0,
          :reward 4}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method cp,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant cp]},
            :args ["bigfile" "copyofbigfile"],
            :temporal-constraints [{:type :bounds, :value [10 19]}]}],
          :cost 1.0,
          :reward 1}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method shell,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant shell]},
            :args ["ls" "-lart" ">" "foo"],
            :temporal-constraints [{:type :bounds, :value [20 29]}]}],
          :cost 3.0,
@@ -168,15 +167,13 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method hardwork,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant hardwork]},
          :args [10],
          :temporal-constraints [{:type :bounds, :value [10 20]}],
          :label :hardwork}
-        {:type :plant-fn-symbol,
-         :name plant,
-         :method python,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant python]},
          :args ["myscript.py" "2" "3" "4" "5"],
          :temporal-constraints [{:type :bounds, :value [0 99]}],
          :label :python}],

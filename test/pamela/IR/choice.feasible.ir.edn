@@ -10,23 +10,20 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method option,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [55 65]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method option,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [65 75]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method option,
+         [{:type :method-fn,
+           :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
            :temporal-constraints [{:type :bounds, :value [75 85]}]}]}],
        :temporal-constraints [{:type :bounds, :value [50 100]}]}],

@@ -6,9 +6,8 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method primitive,
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this primitive]},
        :args [42.44537 -71.227891]}],
      :controllable false,
      :cost 0,
@@ -47,16 +46,16 @@
        :body
        [{:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name arg1,
-           :method primitive,
+         [{:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [arg1 primitive]},
            :args [42.44537 -71.227891],
            :temporal-constraints [{:type :bounds, :value [5 20]}]}]}
         {:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name arg2,
-           :method nonprimitive,
+         [{:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [arg2 nonprimitive]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
@@ -74,7 +73,11 @@
   {go
    {:access :private,
     :initial
-    {:args [qc1 qc2], :pclass tpn-methods, :type :pclass-ctor},
+    {:args
+     [{:type :symbol-ref, :names [qc1]}
+      {:type :symbol-ref, :names [qc2]}],
+     :pclass tpn-methods,
+     :type :pclass-ctor},
     :observable false},
    qc1
    {:access :private,
