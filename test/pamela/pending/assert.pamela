@@ -30,6 +30,11 @@
               {:pre (= door "open")} []
               )
 
+            ;;This non-primitive method might be a better option to satisfy the assert
+            (defpmethod satisfy-postcondition []
+              {:post (= door "open")}
+              (open-the-door))
+
             (defpmethod open-the-door
               {:post (= door "open")} []
               )
