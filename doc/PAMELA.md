@@ -1,6 +1,6 @@
-# Pamela language manual
+# Pamela Language Manual
 
-This document is the reference manual for the Pamela language (Probabalistic Advanced Modeling and Execution Learning Architecture).
+This document is the reference manual for the Pamela language (Probabilistic Advanced Modeling and Execution Learning Architecture).
 
 For background information on Pamela please see the primary
 [README](../README.md)
@@ -127,7 +127,7 @@ Options to a *pclass* constructor may include:
 
 Each *pclass* instance is always in one of a set of enumerated modes.
 
-The modes for a *pclass* can be specifed in one of two ways:
+The modes for a *pclass* can be specified in one of two ways:
 
 * A vector of keywords
 * A map with a keyword entry for each mode and a value representing the *mode condition*.
@@ -240,19 +240,39 @@ conditional expressions inside defpmethod's
 # <a name="builtins"></a>Pamela Built-In Methods
 The following is the set of the built-in methods defined in Pamela. All of these are supported by the Pamela parser (i.e., via the `build` operation).  However methods marked with *"[Not yet supported]"* are not supported for the Pamela `htn` operation in the current Pamela release.
 
+Note that the *Execution* sections describe how the Pamela execution environment deals with the Pamela statement.  There are logically 4 separate components of the Pamela execution environment:
+
+1. *Dispatcher Manager*: Given a new HTN/TPN, the *Dispatcher Manager* creates a *Dispatcher* instance to execute that HTN/TPN.  (Note that the TPN is what is actually executed.  The HTN may have been used to generate the TPN, and may be used by Planviz to display the HTN and its execution status).
+1. *Dispatcher*: This orchestrates the elements of the TPN in the proper order, sending activities to the *Belief State Manager* (BSM) and the multiple *Plant* instances.  The *Dispatcher* will dereference any symbolic references contained in the arguments (using the BSM), before sending a command statement to a Plant instance.  However, statements containing conditions will be sent to BSM in their entirety.
+2. *Belief State Manager* (BSM): Based on the initial declarations in the Pamela files, along with the observations obtained during the execution of the plan, the *BSM* maintains the state of each of the: 1) global states, 2) the mode of each *Plant* instance, and 3) the fields of each *Plant* instance.  Initiated by requests from a *Dispatcher*, this information is used in 2 different ways:
+	1. To dereference any symbolic references (e.g., field name) contained in the arguments of a Pamela statement.  The value of the symbolic reference is returned to the requesting *Dispatcher* as either a literal or as an error (i.e., when the reference is an invalid field name) (error representation TBD).
+	1. To determine the truth value of any condition contained in a Pamela statement. The value of a condition is one of 3 values: `true`, `false`, or an error (error representation TBD).
+3. *Planner*: A component of the BSM, it generates a new plan (HTN/TPN) to satisfy a condition, generally as specified by an `assert` statement.
+4. *Plant*: There are one or more *Plant*s that receive and execute commands from the *Dispatcher*.
+
 ## **ask**
- * *Description*: Wait until the condition is true, and then proceed. Often `ask` is used in conjuction with a `tell` that is running in a parallel execution thread.  If the invocation takes longer than the (optionally) specifed upper temporal bound, the statement will be considered to have failed.
+ * *Description*: Wait until the condition is true, and then proceed. Often `ask` is used in conjunction with a `tell` that is running in a parallel execution thread.  If the invocation takes longer than the (optionally) specified upper temporal bound, the statement will be considered to have failed.
  * *Syntax*: `'(' 'ask' cond-expr opt-bounds? ')'`
  * *Example*: `(ask (= door "open") :bounds [0 10])`
+ * *Execution*:
+  * The *Dispatcher* sends the `ask` statement (which includes the condition) to BSM.
+  * BSM replies to *Dispatcher* with a finished status (either success or failure)
+  * **TBD**: error handling (e.g., for invalid operands to conditions)
 
 ## **assert**
- * *Description*: Instruct the execution environment to make the condition true (if it isn't already true), and then proceed. Usually, a call to `assert` will cause the planner to dynamically generate a new subplan (i.e., HTN and TPN) whose post condition will satisfy the asserted condition.  If the invocation takes longer than the (optionally) specifed upper temporal bound, the statement will be considered to have failed.
+ * *Description*: Instruct the execution environment to make the condition true (if it isn't already true), and then proceed. Usually, a call to `assert` will cause the planner to dynamically generate a new subplan (i.e., HTN and TPN) whose post condition will satisfy the asserted condition.  If the invocation takes longer than the (optionally) specified upper temporal bound, the statement will be considered to have failed.
  * *Syntax*: `'(' 'assert' cond-expr opt-bounds? ')'`
  * *Example*: `(assert (= door "open") :bounds [0 10])`
-
+ * *Execution*:
+	 * The current *Dispatcher* (*Dispatcher-1*) sends the `assert` statement (which includes the condition) to BSM.
+	 * BSM uses the *Planner* to generate a new plan (HTN/TPN) that satisfies this condition.
+	 * BSM sends this new plan to the *Dispatcher Manager* which launches a new *Dispatcher* (*Dispatcher-2*) with that plan.
+	 * *Dispatcher-2* then executes that plan, starting with the first activity(ies)
+	 * When the plan has completed, the *Dispatcher-2* sends the status to BSM.  (There is little advantage of sending this status back to BSM via the *Dispatcher Manager*, but that alternative would be possible).
+	 * BSM replies to *Dispatcher-1* with finished status of the `assert` (either success or failure).
 
 ## **choose**
- * *Description*: Select and execute one or more of the specified choices.  Syntactically, this is the same form as `choose-whenever`; the one exception is that when a choice is selected in a `choose`, that choice will never be cancelled and an alternative choice selected.  By default, one of the choices is selected, but the use of `:exactly`, `:min`, and `:max` will require more than one choice to be selected.  If N choices are chosen, and any of those choices should fail, the execution environment may select an alternative choice.
+ * *Description*: Select and execute one or more of the specified choices.  Syntactically, this is the same form as `choose-whenever`; the one exception is that when a choice is selected in a `choose`, that choice will never be canceled and an alternative choice selected.  By default, one of the choices is selected, but the use of `:exactly`, `:min`, and `:max` will require more than one choice to be selected.  If N choices are chosen, and any of those choices should fail, the execution environment may select an alternative choice.
  * Guard conditions may be specified to indicate the condition for which a choice is to be considered.
  * Probability may be given to indicate the non-deterministic preference
     for a choice. If some choice conditions have guards that are not satisfied
@@ -288,8 +308,8 @@ The following is the set of the built-in methods defined in Pamela. All of these
 ```
 
 ## **choose-whenever**
- * *Description*: Select and execute one or more of the specified choices.  Syntactically, this is the same form as `choose`; the one exception is that when a choice is selected in a `choose`, that choice will never be cancelled and an alternative choice selected.  For `choose-whenever`, the execution environment may cancel execution of a choice at any time, and begin execution of an alternative choice. By default, one of the choices is selected, but the use of `:exactly`, `:min`, and `:max` will require more than one choice to be selected.  If N choices are chosen, and any of those choices should fail, the execution environment may select an alternative choice.
- * Note: The execution environment will often rely on information contained in the `choice-opt` declarations to guide when and which choices should be cancelled and selected.
+ * *Description*: Select and execute one or more of the specified choices.  Syntactically, this is the same form as `choose`; the one exception is that when a choice is selected in a `choose`, that choice will never be canceled and an alternative choice selected.  For `choose-whenever`, the execution environment may cancel execution of a choice at any time, and begin execution of an alternative choice. By default, one of the choices is selected, but the use of `:exactly`, `:min`, and `:max` will require more than one choice to be selected.  If N choices are chosen, and any of those choices should fail, the execution environment may select an alternative choice.
+ * Note: The execution environment will often rely on information contained in the `choice-opt` declarations to guide when and which choices should be canceled and selected.
  * *Syntax*:
  * `choose-whenever   ::= '(' 'choose-whenever' choose-opt* choice+ ')'`
  * `choice   ::= '(' 'choice' choice-opt* fn ')'`
@@ -414,9 +434,13 @@ The following is the set of the built-in methods defined in Pamela. All of these
 
 
 ## **tell**
- * *Description*: Instruct the execution environment that the specified condition is true, and then proceed. Often `ask` is used in conjuction with a `tell` that is running in a parallel execution thread.
+ * *Description*: Instruct the execution environment that the specified condition is true, and then proceed. Often `ask` is used in conjunction with a `tell` that is running in a parallel execution thread.
  * *Syntax*: `'(' 'tell' cond-expr ')'`
  * *Example*: `(tell (= door "open"))`
+ * *Execution*:
+  * The *Dispatcher* sends the `tell` statement (which includes the condition) to BSM.
+  * BSM replies to *Dispatcher* with a finished status (either success or failure)
+  * **TBD**: error handling (e.g., for invalid operands to conditions)
 
 ## **try** [Not yet supported]
  * *Description*: Attempt to execute the initial `fn` within the specified temporal bounds.  If that `fn` invocation fails (because of an explicit failure of the `fn`, or because of a violation of the temporal bounds), then the `catch` `fn` is executed.
@@ -428,7 +452,12 @@ The following is the set of the built-in methods defined in Pamela. All of these
      (initialize)
      (catch (reset-and-initialize)))
 ```
-
+ * *Execution*:
+  * As with any Pamela statement, the *Dispatcher* executes the initial `fn` within the specified temporal bounds.
+  * If a failure or error occurs, the *Dispatcher* executes the `catch` `fn`
+  * If the initial `fn` was executed successfully, the `try` statement is considered to have executed successfully.
+  * If the `catch` `fn` was executed successfully, the `try` statement is considered to have executed successfully.
+  * Otherwise, the `try` statement is considered to have executed unsuccessfully (i.e., failed).
 
 ## **unless** [Not yet supported]
  * *Description*: If the condition is not true, execute the statement `fn` one time.  The condition is checked only once. The `:bounds`, if specified, applies to the duration of the entire statement.
@@ -440,7 +469,16 @@ The following is the set of the built-in methods defined in Pamela. All of these
 (unless (= door "open") :bounds [2 3]
      (open-door))
 ```
-
+* *Execution*:
+  * The current *Dispatcher* (*Dispatcher-1*) sends the `unless` statement (which includes the condition and activity) to BSM.
+  * BSM does a one-time evaluation of the condition.
+  * If the condition is:
+      * **true**: BSM replies to *Dispatcher-1* with finished status of success.
+      * **false**:
+         * BSM sends the activity to the *Dispatcher Manager* as an activity, which launches a new *Dispatcher* (*Dispatcher-2*) with that plan.
+         * *Dispatcher-2* then executes that plan, starting with the first activity.
+         * When the plan has completed, the *Dispatcher-2* sends the status to BSM.  (There is little advantage of sending this status back to BSM via the *Dispatcher Manager*, but that alternative would be possible).
+         * BSM replies to *Dispatcher-1* with finished status of the activity (either success or failure).
 
 
 ## **when** [Not yet supported]
@@ -453,9 +491,20 @@ The following is the set of the built-in methods defined in Pamela. All of these
 (when (not (= door "open")) :bounds [2 3]
      (open-door))
 ```
+* *Execution*:
+  * The current *Dispatcher* (*Dispatcher-1*) sends the `when` statement (which includes the condition and activity) to BSM.
+  * BSM does an evaluation of the condition.
+  * If the condition is:
+      * **false**: BSM continues check the condition, until it becomes true (or the temporal duration (`:bounds`) has been exceeded).
+      * **true**:
+         * BSM sends the activity to the *Dispatcher Manager* as an activity, which launches a new *Dispatcher* (*Dispatcher-2*) with that plan.
+         * *Dispatcher-2* then executes that plan, starting with the first activity.
+         * When the plan has completed, the *Dispatcher-2* sends the status to BSM.  (There is little advantage of sending this status back to BSM via the *Dispatcher Manager*, but that alternative would be possible).
+         * BSM replies to *Dispatcher-1* with finished status of the activity (either success or failure).
 
 ## **whenever** [Not yet supported]
  * *Description*: During the temporal scope specified by `:bounds`, every time the condition is true, execute the statement `fn` one time.  This assumes that once execution of the `fn` has begun, the `cond-expr` won't be revisited until execution of the `fn` has completed.
+ * **TBD**: How is the success of the `whenever` determined?  Proposal: The ``whenever`` is successful unless **any** of the attempted executions of the statement `fn` fails.
  * Note the distinction of the duration and frequency in which the condition is checked among the `unless`, `when`, `whenever`, and `maintain` statements.
  * Note: as in all of Pamela, the default value for an unspecified `:bounds` is `[0 :infinity]`.  So, a `whenever` statement with an unspecified bounds should be part of a `parallel` statement.
  * *Syntax*: `'(' 'whenever' cond-expr opt-bounds? fn ')'`
@@ -465,6 +514,18 @@ The following is the set of the built-in methods defined in Pamela. All of these
 (whenever (not (= door "open")) :bounds [2 30]
      (open-door))
 ```
+* *Execution*:
+  1. The current *Dispatcher* (*Dispatcher-1*) sends the `whenever` statement (which includes the condition and activity) to BSM.
+  2. BSM does an evaluation of the condition.
+  3. If the condition is:
+      * **false**: BSM continues check the condition, until it becomes true (or the temporal duration (`:bounds`) has been exceeded).
+      * **true**:
+         * BSM sends the activity to the *Dispatcher Manager* as an activity, which launches a new *Dispatcher* (*Dispatcher-2*) with that plan.
+         * *Dispatcher-2* then executes that plan, starting with the first activity.
+         * When the plan has completed, the *Dispatcher-2* sends the status to BSM.  (There is little advantage of sending this status back to BSM via the *Dispatcher Manager*, but that alternative would be possible).
+         * BSM then repeats an evaluation of the condition (Step 2, above).
+  4. BSM replies to *Dispatcher-1* with finished status of the activities (success if all successful, else failure).
+
 
 ## **maintain** [Not yet supported]
  * *Description*: Execute the statement `fn` one time.  However, while doing so, the condition `cond-expr` **can** **never** be violated.
@@ -476,6 +537,9 @@ The following is the set of the built-in methods defined in Pamela. All of these
 (maintain (= door "open") :bounds [2 30]
      (do-lots-of-stuff-possibly-involving-the-door))
 ```
+* *Execution*: **TBD**: A straightforward implementation of this it to monitor the condition, returning a failure if the condition is ever violated.  However, this leaves the condition in a violated state (not the intention).  A better option would be to check the `:post` condition for every statement execution to ensure compliance. However, this has two problems:
+	* This assumes that all commands have correct and comprehensive `:post` conditions
+	* This requires that the condition is maintained across *Dispatcher* instances (which is quite possible, since there is only one BSM instance running).
 
 ## **soft-maintain** [Not yet supported] [Not yet supported by parser and IR]
  * *Description*: Execute the statement `fn` one time.  While doing so, the condition `cond-expr` **can** be violated.  However, at the completion of executing the statement `fn`, the condition `cond-expr` must be true.
@@ -498,4 +562,3 @@ The following is the set of the built-in methods defined in Pamela. All of these
  (open-door)
  (open-door)
  (open-door))`
-
