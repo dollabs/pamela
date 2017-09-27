@@ -1,177 +1,177 @@
 {plant
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "The Plant API"},
   :methods
   {action1
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Action 1",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body nil,
-    :doc "Take action 1"},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Action 1",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Take action 1"}],
    action2
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive true,
-    :betweens [],
-    :display-name "Action 2",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body nil,
-    :doc "Take action 2"}}},
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Action 2",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Take action 2"}]},
+  :type :pclass},
  slack
- {:type :pclass,
-  :args [plant],
+ {:args [plant],
   :meta {:doc "An example of using slack operations."},
   :methods
   {start
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Start",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :parallel,
-      :body
-      [{:type :sequence,
-        :body
-        [{:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method action1,
-          :args []}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method action2,
-          :args []}
-         {:type :delay,
-          :temporal-constraints
-          [{:type :bounds, :value [0 :infinity]}],
-          :body nil}],
-        :label :slack-sequence}
-       {:type :parallel,
-        :body
-        [{:type :sequence,
-          :body
-          [{:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}
-           {:type :plant-fn-symbol,
-            :name plant,
-            :method action1,
-            :args []}
-           {:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}]}
-         {:type :sequence,
-          :body
-          [{:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}
-           {:type :plant-fn-symbol,
-            :name plant,
-            :method action2,
-            :args []}
-           {:type :delay,
-            :temporal-constraints
-            [{:type :bounds, :value [0 :infinity]}],
-            :body nil}]}],
-        :label :slack-parallel}
-       {:type :choose,
-        :body
-        [{:type :choice,
-          :body
-          [{:type :delay,
-            :temporal-constraints [{:type :bounds, :value [0 0]}],
-            :body nil}]}
-         {:type :choice,
-          :body
-          [{:type :plant-fn-symbol,
-            :name plant,
-            :method action1,
-            :args []}]}],
-        :label :optional}
-       {:type :sequence,
-        :body
-        [{:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-symbol,
-              :name plant,
-              :method action1,
-              :args []}]}]}
-         {:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-symbol,
-              :name plant,
-              :method action2,
-              :args []}]}]}],
-        :label :soft-sequence}
-       {:type :parallel,
-        :body
-        [{:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-symbol,
-              :name plant,
-              :method action1,
-              :args []}]}]}
-         {:type :choose,
-          :body
-          [{:type :choice,
-            :body
-            [{:type :delay,
-              :temporal-constraints [{:type :bounds, :value [0 0]}],
-              :body nil}]}
-           {:type :choice,
-            :body
-            [{:type :plant-fn-symbol,
-              :name plant,
-              :method action2,
-              :args []}]}]}],
-        :label :soft-parallel}]}],
-    :doc "Demo method"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Start",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :sequence,
+         :body
+         [{:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}
+          {:type :plant-fn-symbol,
+           :name plant,
+           :method action1,
+           :args []}
+          {:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}
+          {:type :plant-fn-symbol,
+           :name plant,
+           :method action2,
+           :args []}
+          {:type :delay,
+           :temporal-constraints
+           [{:type :bounds, :value [0 :infinity]}],
+           :body nil}],
+         :label :slack-sequence}
+        {:type :parallel,
+         :body
+         [{:type :sequence,
+           :body
+           [{:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}
+            {:type :plant-fn-symbol,
+             :name plant,
+             :method action1,
+             :args []}
+            {:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}]}
+          {:type :sequence,
+           :body
+           [{:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}
+            {:type :plant-fn-symbol,
+             :name plant,
+             :method action2,
+             :args []}
+            {:type :delay,
+             :temporal-constraints
+             [{:type :bounds, :value [0 :infinity]}],
+             :body nil}]}],
+         :label :slack-parallel}
+        {:type :choose,
+         :body
+         [{:type :choice,
+           :body
+           [{:type :delay,
+             :temporal-constraints [{:type :bounds, :value [0 0]}],
+             :body nil}]}
+          {:type :choice,
+           :body
+           [{:type :plant-fn-symbol,
+             :name plant,
+             :method action1,
+             :args []}]}],
+         :label :optional}
+        {:type :sequence,
+         :body
+         [{:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-symbol,
+               :name plant,
+               :method action1,
+               :args []}]}]}
+          {:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-symbol,
+               :name plant,
+               :method action2,
+               :args []}]}]}],
+         :label :soft-sequence}
+        {:type :parallel,
+         :body
+         [{:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-symbol,
+               :name plant,
+               :method action1,
+               :args []}]}]}
+          {:type :choose,
+           :body
+           [{:type :choice,
+             :body
+             [{:type :delay,
+               :temporal-constraints [{:type :bounds, :value [0 0]}],
+               :body nil}]}
+            {:type :choice,
+             :body
+             [{:type :plant-fn-symbol,
+               :name plant,
+               :method action2,
+               :args []}]}]}],
+         :label :soft-parallel}]}],
+     :doc "Demo method"}]},
+  :type :pclass}}

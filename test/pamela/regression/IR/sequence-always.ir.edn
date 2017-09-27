@@ -1,25 +1,25 @@
 {sequence-always
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta
-  {:version "0.2.0", :doc "sequence example with no time bounds"},
+  {:doc "sequence example with no time bounds", :version "0.2.0"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :sequence,
-      :body
-      [{:type :delay, :body nil}
-       {:type :delay, :body nil}
-       {:type :delay, :body nil}
-       {:type :delay, :body nil}]}],
-    :doc "sequence example"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :delay, :body nil}
+        {:type :delay, :body nil}
+        {:type :delay, :body nil}
+        {:type :delay, :body nil}]}],
+     :doc "sequence example"}]},
+  :type :pclass}}

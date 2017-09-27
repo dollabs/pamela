@@ -16,6 +16,22 @@ Changes
 * Avoid recursive resolve-plant-class call at the end of the ancestry-path (Closes #82)
 * Check method call arity in IR generation (if possible) (Closes #83)
 * Improved field arg validation (Closes #87)
+* Support multiple arities for methods of the same name (Closes #86)
+* Ensure CLI returns same integer exit code whenever calling
+  pamela.cli/pamela.
+* Added cli.clj test coverage for the above.
+* Add HTN/TPN support for ask, tell, and assert Pamela statements (Closes #94)
+* Ensure state :end-node's are updated properly in remove-superflous (Closes #103)
+* Support for plan-schema 0.3.2
+* In HTN generation only state nodes which begin a sequence have
+  an :end-node slot (Closes #105)
+* In HTN generation handle between constraints (Closes #102)
+* Adjustment of :args in HTN expanded methods (Closes #109)
+* Fix using default bounds for TPN's generated with HTN method
+  * (Closes #108)
+* Consistently throw exceptions in HTN generation using fatal-error
+* Ensure metadata in TPN's flows from method definitions when generated with the HTN method (Closes #98)
+* Updated plan-schema to leverage the match-eval-out-err macro in testing
 
 NOTE: this is a work-in-progress inheritance branch
 

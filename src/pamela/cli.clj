@@ -67,7 +67,7 @@
   "Load model(s) and build intermediate representation (IR)"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [input output]} options
+  (let [{:keys [input output source]} options
         ir (parser/parse options)]
     (if (:error ir)
       (do
@@ -75,6 +75,8 @@
         1)
       (do
         (output-file output "edn" ir)
+        (when source
+          (output-file source "raw" (parser/unparse ir)))
         0))))
 
 (defn parse-model
@@ -147,17 +149,21 @@
 (def #^{:added "0.2.0"}
   cli-options
   "Command line options"
-  [["-h" "--help" "Print usage"]
-   ["-V" "--version" "Print PAMELA version"]
-   ["-v" "--verbose" "Increase verbosity"
-    :default 0
-    :assoc-fn (fn [m k _] (update-in m [k] inc))]
+  [["-V" "--version" "Print PAMELA version"]
+   ["-a" "--magic MAGIC" "Magic lvar initializtions"
+    :default nil
+    :parse-fn #(input-file %)
+    :validate [#(or (nil? %) (fs/exists? %))
+               "MAGIC file does not exist"]]
+   ["-b" "--output-magic OUTPUT-MAGIC" "Output magic file"
+    :default nil]
    ["-c" "--construct-tpn CFM " "Construct TPN using class C field F method M (as C:F:M)"]
    ["-f" "--file-format FORMAT" "Output file format [json]"
     :default "json"
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
+   ["-h" "--help" "Print usage"]
    ["-i" "--input INPUT" "Input file(s) (or - for STDIN)"
     :default ["-"]
     :parse-fn #(input-file %)
@@ -176,14 +182,11 @@
                                        log-levels)))))]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
     :default "-"]
-   ["-a" "--magic MAGIC" "Magic lvar initializtions"
-    :default nil
-    :parse-fn #(input-file %)
-    :validate [#(or (nil? %) (fs/exists? %))
-               "MAGIC file does not exist"]]
-   ["-b" "--output-magic OUTPUT-MAGIC" "Output magic file"
-    :default nil]
+   ["-s" "--source PAMELA" "source as reconstructed from IR"]
    ["-t" "--root-task ROOTTASK" "Label for HTN root-task [main]"]
+   ["-v" "--verbose" "Increase verbosity"
+    :default 0
+    :assoc-fn (fn [m k _] (update-in m [k] inc))]
    ])
 
 (defn usage
@@ -214,11 +217,11 @@
       (log/error \newline (string/join \newline msgs))))
   (flush) ;; ensure all pending output has been flushed
   (if (or (repl?) test-mode)
-    (log/warn "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
+    (log/info "exit" status "pamela in DEV MODE. Not exiting" "repl?" (repl?) "test-mode" test-mode)
     (do (log/info "exiting with status" status)
       (shutdown-agents)
         (System/exit status)))
-  true)
+  status)
 
 (defn base-64-decode [b64]
   ;; The following requires JDK 8
@@ -233,7 +236,7 @@
 (defn pamela
   "PAMELA command line processor. (see usage for help)."
   {:added "0.2.0"
-   :version "0.6.0"}
+   :version "0.6.1-SNAPSHOT"}
   [& args]
   (when (and (:pamela-version env)
           (not= (:pamela-version env) (:version (meta #'pamela))))
@@ -244,7 +247,7 @@
         (parse-opts args cli-options)
         {:keys [help version verbose construct-tpn
                 file-format input log-level output root-task
-                magic output-magic]} options
+                source magic output-magic]} options
         log-level (keyword (or log-level "warn"))
         _ (plog/initialize log-level (apply pr-str args))
         cmd (first arguments)
@@ -277,21 +280,22 @@
       (println "file-format:" file-format)
       (println "input:" input)
       (println "output:" output)
+      (println "source:" source)
       (println "magic:" magic)
       (println "output-magic:" output-magic)
       (println "root-task:" root-task)
       (println "cmd:" cmd (if action "(valid)" "(invalid)")))
-    (if-not action
-      (if-not exit?
+    (if (or exit? (not action))
+      (if-not action
         (exit 1 (str "Unknown action: \"" cmd "\". Must be one of " (keys actions)))
-        (usage summary))
+        1 ;; just return exit code instead of repeating (usage summary)
+        )
       (if (> verbose 1) ;; throw full exception with stack trace when -v -v
         (exit (action options))
         (try
           (exit (action options))
           (catch Throwable e
-            (exit 1 "ERROR caught exception:" (.getMessage e))))))
-    (exit 0)))
+            (exit 1 "ERROR caught exception:" (.getMessage e))))))))
 
 (defn reset-gensym-generator
   "Resets gensym generators in htn and tpn.

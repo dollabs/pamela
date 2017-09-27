@@ -1,4 +1,4 @@
-<;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
@@ -19,13 +19,8 @@
             [avenir.utils :refer [and-fn]]
             [pamela.parser :refer :all]
             [pamela.cli :refer [reset-gensym-generator]]
-            [pamela.utils :refer [output-file]]))
-
-(defn fs-get-path [file & [prefix]]
-  (let [path (.getPath file)]
-    (if prefix
-      (string/replace path prefix "")
-      path)))
+            [pamela.utils :refer [output-file]]
+            [plan-schema.utils :refer [fs-get-path fs-basename]]))
 
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
@@ -34,10 +29,14 @@
           top-path (str (fs-get-path top) "/")
           pamela (fs/file top "test" "pamela")
           regression (fs/file pamela "regression")
-          examples (filter #(string/ends-with? (fs-file-name %) ".pamela")
+          errors (fs/file pamela "errors")
+          errors-ir (fs/file errors "IR")
+          examples (filter #(string/ends-with? (fs-basename %) ".pamela")
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
+          neg-examples (filter #(string/ends-with? (fs-basename %) ".pamela")
+                         (sort-by fs/base-name (fs/list-dir errors-ir)))
           pamela-ir (fs/file top "target" "parser" "IR")
           regression-ir (fs/file top "target" "parser" "regression" "IR")]
       (if-not (fs/exists? pamela-ir)
@@ -46,7 +45,7 @@
         (fs/mkdirs regression-ir))
       (doseq [example examples]
         (reset-gensym-generator)
-        (let [example-name (fs-file-name example)
+        (let [example-name (fs-basename example)
               example-path (fs-get-path example)
               regression? (string/includes? example-path "/regression/")
               example-ir-name (string/replace example-name
@@ -70,4 +69,14 @@
                                       specimen-ir-path)})]
           ;; (println "BUILD" example-name "\n  RUBRIQUE" example-ir-path
           ;;   "\n  SPECIMEN" specimen-ir-path)
-          (is (= example-ir specimen-ir)))))))
+          (is (= example-ir specimen-ir))))
+      ;; Negative examples that are *expected* to FAIL
+      (doseq [neg-example neg-examples]
+        (reset-gensym-generator)
+        (let [neg-example-name (fs-basename neg-example)
+              neg-example-path (fs-get-path neg-example)
+              options {:input [neg-example-path]}
+              specimen-ir (parse options)]
+          ;; (println "BUILD" neg-example-name)
+          (is (not (nil? (:error specimen-ir))))))
+      )))

@@ -1,0 +1,78 @@
+{a
+ {:args [],
+  :fields
+  {:breathing
+   {:access :private,
+    :initial {:type :literal, :value true},
+    :observable false}},
+  :modes
+  {:alive
+   {:args
+    [{:type :field-reference, :pclass this, :field :breathing}
+     {:type :literal, :value true}],
+    :type :equal},
+   :dead
+   {:args
+    [{:type :field-reference, :pclass this, :field :breathing}
+     {:type :literal, :value false}],
+    :type :equal}},
+  :type :pclass},
+ b
+ {:args [],
+  :fields
+  {:temperature
+   {:access :private,
+    :initial {:type :literal, :value 25},
+    :observable false}},
+  :modes
+  {:alive
+   {:args
+    [{:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :temperature}
+       {:type :literal, :value 0}]}],
+    :type :not},
+   :dead
+   {:args
+    [{:type :field-reference, :pclass this, :field :temperature}
+     {:type :literal, :value 0}],
+    :type :equal}},
+  :type :pclass},
+ c
+ {:args [],
+  :fields
+  {:breathing
+   {:access :private,
+    :initial {:type :literal, :value true},
+    :observable false},
+   :temperature
+   {:access :private,
+    :initial {:type :literal, :value 25},
+    :observable false}},
+  :inherit [a b],
+  :modes
+  {:alive
+   {:args
+    [{:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :breathing}
+       {:type :literal, :value true}]}
+     {:type :not,
+      :args
+      [{:type :equal,
+        :args
+        [{:type :field-reference, :pclass this, :field :temperature}
+         {:type :literal, :value 0}]}]}],
+    :type :or},
+   :dead
+   {:args
+    [{:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :breathing}
+       {:type :literal, :value false}]}
+     {:type :equal,
+      :args
+      [{:type :field-reference, :pclass this, :field :temperature}
+       {:type :literal, :value 0}]}],
+    :type :or}},
+  :type :pclass}}

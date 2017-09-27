@@ -1,0 +1,177 @@
+{:act-13
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name foo}
+     {:type :literal, :value :illuminated}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :state-variable, :name foo}
+     {:type :literal, :value :illuminated}],
+    :type :equal}},
+  :command "assert",
+  :constraints #{},
+  :controllable false,
+  :display-name "Assert",
+  :end-node :node-18,
+  :htn-node :hem-23,
+  :name "Assert((= foo :illuminated))",
+  :plantid "bsm1",
+  :tpn-type :activity,
+  :uid :act-13},
+ :act-17
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name bar}
+     {:type :literal, :value :dead}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :state-variable, :name bar}
+     {:type :literal, :value :dead}],
+    :type :equal}},
+  :command "ask",
+  :constraints #{},
+  :controllable false,
+  :display-name "Ask",
+  :end-node :node-22,
+  :htn-node :hem-23,
+  :name "Ask((= bar :dead))",
+  :plantid "bsm1",
+  :tpn-type :activity,
+  :uid :act-17},
+ :act-21
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :field-reference-field,
+      :pclass this,
+      :field :field1,
+      :value :simple2}
+     {:type :literal, :value "white"}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :field-reference-field,
+      :pclass this,
+      :field :field1,
+      :value :simple2}
+     {:type :literal, :value "white"}],
+    :type :equal}},
+  :command "ask",
+  :constraints #{},
+  :controllable false,
+  :display-name "Ask",
+  :end-node :node-26,
+  :htn-node :hem-23,
+  :name "Ask((= :field1.:simple2 \"white\"))",
+  :plantid "bsm1",
+  :tpn-type :activity,
+  :uid :act-21},
+ :act-25
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name door}
+     {:type :literal, :value :open}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :state-variable, :name door}
+     {:type :literal, :value :open}],
+    :type :equal}},
+  :command "tell",
+  :constraints #{},
+  :controllable false,
+  :display-name "Tell",
+  :end-node :node-30,
+  :htn-node :hem-23,
+  :name "Tell((= door :open))",
+  :plantid "bsm1",
+  :tpn-type :activity,
+  :uid :act-25},
+ :act-29
+ {:args [],
+  :argsmap {},
+  :command "initialize",
+  :constraints #{},
+  :controllable false,
+  :cost 0,
+  :display-name "Initialize",
+  :end-node :node-1,
+  :htn-node :hem-23,
+  :name "Initialize",
+  :reward 0,
+  :tpn-type :activity,
+  :uid :act-29},
+ :act-9
+ {:args [:field1.:simple2],
+  :argsmap {"x" :field1.:simple2},
+  :command "one-arg-method",
+  :constraints #{},
+  :controllable false,
+  :cost 0,
+  :display-name "One Arg Method",
+  :end-node :node-14,
+  :htn-node :hem-23,
+  :name "One Arg Method(:field1.:simple2)",
+  :reward 0,
+  :tpn-type :activity,
+  :uid :act-9},
+ :net-3
+ {:begin-node :node-10,
+  :end-node :node-1,
+  :tpn-type :network,
+  :uid :net-3},
+ :network-id :net-3,
+ :node-1
+ {:activities #{},
+  :constraints #{},
+  :incidence-set #{:act-29},
+  :tpn-type :state,
+  :uid :node-1},
+ :node-10
+ {:activities #{:act-9},
+  :constraints #{},
+  :end-node :node-1,
+  :htn-node :hem-16,
+  :incidence-set #{},
+  :tpn-type :state,
+  :uid :node-10},
+ :node-14
+ {:activities #{:act-13},
+  :constraints #{},
+  :htn-node :hem-23,
+  :incidence-set #{:act-9},
+  :tpn-type :state,
+  :uid :node-14},
+ :node-18
+ {:activities #{:act-17},
+  :constraints #{},
+  :htn-node :hem-23,
+  :incidence-set #{:act-13},
+  :tpn-type :state,
+  :uid :node-18},
+ :node-22
+ {:activities #{:act-21},
+  :constraints #{},
+  :htn-node :hem-23,
+  :incidence-set #{:act-17},
+  :tpn-type :state,
+  :uid :node-22},
+ :node-26
+ {:activities #{:act-25},
+  :constraints #{},
+  :htn-node :hem-23,
+  :incidence-set #{:act-21},
+  :tpn-type :state,
+  :uid :node-26},
+ :node-30
+ {:activities #{:act-29},
+  :constraints #{},
+  :htn-node :hem-23,
+  :incidence-set #{:act-25},
+  :tpn-type :state,
+  :uid :node-30}}

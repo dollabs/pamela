@@ -1,68 +1,68 @@
 {qc-waypoints
- {:type :pclass,
-  :args [qc1 qc2 qc3],
-  :meta {:version "0.2.1", :doc "Quadcopter test waypoints"},
+ {:args [qc1 qc2 qc3],
+  :meta {:doc "Quadcopter test waypoints", :version "0.2.1"},
   :methods
   {waypoints
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Waypoints",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :parallel,
-      :body
-      [{:type :sequence,
-        :body
-        [{:type :plant-fn-symbol,
-          :name qc1,
-          :method location,
-          :args [42.44537 -71.227891 1.0 80],
-          :temporal-constraints [{:type :bounds, :value [5 20]}]}
-         {:type :plant-fn-symbol,
-          :name qc1,
-          :method location,
-          :args [42.445435 -71.227843 2.0 170],
-          :temporal-constraints [{:type :bounds, :value [6 20]}]}
-         {:type :plant-fn-symbol,
-          :name qc1,
-          :method location,
-          :args [42.445389 -71.227734 3.0 260],
-          :temporal-constraints [{:type :bounds, :value [7 20]}]}
-         {:type :plant-fn-symbol,
-          :name qc1,
-          :method location,
-          :args [42.445327 -71.227788 4.0 350],
-          :temporal-constraints [{:type :bounds, :value [8 20]}]}
-         {:type :plant-fn-symbol,
-          :name qc1,
-          :method location,
-          :args [42.44537 -71.227891 1.0 80],
-          :temporal-constraints [{:type :bounds, :value [9 20]}]}]}
-       {:type :sequence,
-        :body
-        [{:type :plant-fn-symbol, :name qc2, :method wp2, :args []}
-         {:type :plant-fn-symbol, :name qc2, :method wp3, :args []}
-         {:type :plant-fn-symbol, :name qc2, :method wp4, :args []}
-         {:type :plant-fn-symbol, :name qc2, :method wp1, :args []}
-         {:type :plant-fn-symbol, :name qc2, :method wp2, :args []}]}
-       {:type :sequence,
-        :body
-        [{:type :plant-fn-symbol, :name qc3, :method wp3, :args []}
-         {:type :plant-fn-symbol, :name qc3, :method wp4, :args []}
-         {:type :plant-fn-symbol, :name qc3, :method wp1, :args []}
-         {:type :plant-fn-symbol, :name qc3, :method wp2, :args []}
-         {:type :plant-fn-symbol, :name qc3, :method wp3, :args []}]}
-       {:type :choose,
-        :body
-        [{:type :choice, :body [{:type :delay, :body nil}]}
-         {:type :choice, :body [{:type :delay, :body nil}]}]}
-       {:type :parallel,
-        :body
-        [{:type :delay, :body nil} {:type :delay, :body nil}]}]}],
-    :doc "QC waypoints for 3 quad copters"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Waypoints",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :sequence,
+         :body
+         [{:type :plant-fn-symbol,
+           :name qc1,
+           :method location,
+           :args [42.44537 -71.227891 1.0 80],
+           :temporal-constraints [{:type :bounds, :value [5 20]}]}
+          {:type :plant-fn-symbol,
+           :name qc1,
+           :method location,
+           :args [42.445435 -71.227843 2.0 170],
+           :temporal-constraints [{:type :bounds, :value [6 20]}]}
+          {:type :plant-fn-symbol,
+           :name qc1,
+           :method location,
+           :args [42.445389 -71.227734 3.0 260],
+           :temporal-constraints [{:type :bounds, :value [7 20]}]}
+          {:type :plant-fn-symbol,
+           :name qc1,
+           :method location,
+           :args [42.445327 -71.227788 4.0 350],
+           :temporal-constraints [{:type :bounds, :value [8 20]}]}
+          {:type :plant-fn-symbol,
+           :name qc1,
+           :method location,
+           :args [42.44537 -71.227891 1.0 80],
+           :temporal-constraints [{:type :bounds, :value [9 20]}]}]}
+        {:type :sequence,
+         :body
+         [{:type :plant-fn-symbol, :name qc2, :method wp2, :args []}
+          {:type :plant-fn-symbol, :name qc2, :method wp3, :args []}
+          {:type :plant-fn-symbol, :name qc2, :method wp4, :args []}
+          {:type :plant-fn-symbol, :name qc2, :method wp1, :args []}
+          {:type :plant-fn-symbol, :name qc2, :method wp2, :args []}]}
+        {:type :sequence,
+         :body
+         [{:type :plant-fn-symbol, :name qc3, :method wp3, :args []}
+          {:type :plant-fn-symbol, :name qc3, :method wp4, :args []}
+          {:type :plant-fn-symbol, :name qc3, :method wp1, :args []}
+          {:type :plant-fn-symbol, :name qc3, :method wp2, :args []}
+          {:type :plant-fn-symbol, :name qc3, :method wp3, :args []}]}
+        {:type :choose,
+         :body
+         [{:type :choice, :body [{:type :delay, :body nil}]}
+          {:type :choice, :body [{:type :delay, :body nil}]}]}
+        {:type :parallel,
+         :body
+         [{:type :delay, :body nil} {:type :delay, :body nil}]}]}],
+     :doc "QC waypoints for 3 quad copters"}]},
+  :type :pclass}}

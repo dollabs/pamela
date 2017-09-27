@@ -18,22 +18,31 @@
             [environ.core :refer [env]]
             [me.raynes.fs :as fs]
             [clojure.test :refer :all]
+            [pamela.log :as plog]
             [pamela.htn :refer :all]
             [pamela.cli :refer [reset-gensym-generator htn]]
-            [pamela.parser :refer [fs-file-name]]
-            [testing.pamela.parser :refer [fs-get-path]]))
+            [plan-schema.utils :refer [fs-get-path fs-basename
+                                       match-eval-out-err stderr-no-errors
+                                       stdout-ignore stderr-ignore
+                                       stdout-empty stderr-empty]]))
 
 (deftest testing-pamela-htn
   (testing "testing-pamela-htn"
+    (plog/initialize :warn ["*test*"])
     (is (= true (htn-isa? :htn-primitive-task :htn-task)))
     (let [top (fs/file (:user-dir env))
           top-path (str (fs-get-path top) "/")
-          pamela (fs/file top "test" "pamela" "HTN")
-          regression (fs/file top "test" "pamela" "regression" "HTN")
-          examples (filter #(string/ends-with? (fs-file-name %) ".root-task")
+          test-pamela (fs/file top "test" "pamela")
+          pamela (fs/file test-pamela "HTN")
+          regression (fs/file test-pamela "regression" "HTN")
+          errors (fs/file test-pamela "errors")
+          errors-htn (fs/file errors "HTN")
+          examples (filter #(string/ends-with? (fs-basename %) ".root-task")
                      (concat
                        (sort-by fs/base-name (fs/list-dir pamela))
                        (sort-by fs/base-name (fs/list-dir regression))))
+          neg-examples (filter #(string/ends-with? (fs-basename %) ".root-task")
+                         (sort-by fs/base-name (fs/list-dir errors-htn)))
           pamela-htn (fs/file top "target" "parser" "HTN")
           regression-htn (fs/file top "target" "parser" "regression" "HTN")]
       (if-not (fs/exists? pamela-htn)
@@ -42,7 +51,7 @@
         (fs/mkdirs regression-htn))
       (doseq [example examples]
         (reset-gensym-generator)
-        (let [example-name (fs-file-name example)
+        (let [example-name (fs-basename example)
               example-path (fs-get-path example top-path)
               regression? (string/includes? example-path "/regression/")
               root-task (slurp example-path)
@@ -113,4 +122,26 @@
           ;; (is (= nil specimen-htn-only))
           ;; (is (= nil example-tpn-only))
           ;; (is (= nil specimen-tpn-only))
-          )))))
+          ))
+      ;; Negative examples that are *expected* to FAIL
+      ;; NOTE: negative HTN examples currently do not use TAGs
+      (doseq [neg-example neg-examples]
+        (reset-gensym-generator)
+        (let [neg-example-name (fs-basename neg-example)
+              neg-example-path (fs-get-path neg-example)
+              root-task (slurp neg-example-path)
+              _ (println "Negative HTN" neg-example-name)
+              base-name (string/replace neg-example-name #"\.root-task$" "")
+              pamela-src-name (str base-name ".pamela")
+              pamela-src-file (fs/file (fs/parent neg-example) pamela-src-name)
+              pamela-src-path (fs-get-path pamela-src-file top-path)
+              file-format "edn"
+              output (fs-get-path (fs/file pamela-htn base-name) top-path)
+              options {:input [pamela-src-path] :output output
+                       :file-format file-format :root-task root-task}]
+          (is (= [nil true true]
+                (match-eval-out-err nil #"Embedding a :parallel is not supported within a defpmethod when used for HTN generation"
+                  (htn options)
+                  )))
+          ))
+      )))

@@ -1,0 +1,15 @@
+;; PAMELA source generated from IR
+
+(defpclass a []
+  :fields {:breathing true}
+  :modes {:alive (= :breathing true), :dead (= :breathing false)})
+
+(defpclass b []
+  :fields {:temperature 25}
+  :modes {:alive (not (= :temperature 0)), :dead (= :temperature 0)})
+
+(defpclass c []
+  :inherit [a b]
+  :fields {:breathing true, :temperature 25}
+  :modes {:alive (or (= :breathing true) (not (= :temperature 0))),
+          :dead (or (= :breathing false) (= :temperature 0))})

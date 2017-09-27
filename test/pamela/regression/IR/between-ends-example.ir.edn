@@ -1,22 +1,22 @@
 {between-ends-example
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "between-ends example"},
+ {:args [],
+  :meta {:doc "between-ends example", :version "0.2.0"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :between-ends,
-      :from :a,
-      :to :b,
-      :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-    :doc "between-ends example"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :between-ends,
+       :from :a,
+       :to :b,
+       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+     :doc "between-ends example"}]},
+  :type :pclass}}

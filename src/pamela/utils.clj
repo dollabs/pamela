@@ -24,7 +24,8 @@
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as translate]
             [avenir.utils :refer [str-append]]
-            [clojure.tools.logging :as log])
+            [clojure.tools.logging :as log]
+            [plan-schema.utils :refer [sort-map]])
   (:import [java.net
             URL]))
 
@@ -57,7 +58,7 @@
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
           data (if (map? data)
-                 (into (sorted-map) data)
+                 (sort-map data)
                  data)
           out (cond
                 (= file-format "edn")
@@ -161,3 +162,8 @@
                            (inc (.indexOf dbg-println-levels level)))]
                `(if (<= ~level *dbg-println-level*)
                   (println ~@more)))))
+
+;; Placeholder, until we move to Clojure 1.9
+(defn clj19-boolean?
+  "Return true if x is a Boolean"
+  [x] (instance? Boolean x))

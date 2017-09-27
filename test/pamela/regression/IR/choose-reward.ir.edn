@@ -1,26 +1,30 @@
 {choose-reward
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "choose example with rewards"},
+ {:args [],
+  :meta {:doc "choose example with rewards", :version "0.2.0"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :choose,
-      :body
-      [{:type :choice, :body [{:type :delay, :body nil}], :reward 1000}
-       {:type :choice, :body [{:type :delay, :body nil}], :reward 2000}
-       {:type :choice,
-        :body [{:type :delay, :body nil}],
-        :reward {:type :lvar, :name "payoff"}}]}],
-    :doc "choose based on rewards"}}},
- pamela/lvars {:type :lvars, :lvars {"payoff" :unset}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :choose,
+       :body
+       [{:type :choice,
+         :body [{:type :delay, :body nil}],
+         :reward 1000}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :reward 2000}
+        {:type :choice,
+         :body [{:type :delay, :body nil}],
+         :reward {:type :lvar, :name "payoff"}}]}],
+     :doc "choose based on rewards"}]},
+  :type :pclass},
+ pamela/lvars {:lvars {"payoff" :unset}, :type :lvars}}

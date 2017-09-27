@@ -21,7 +21,7 @@ A nice explanation of the DCO has been provided by
 in his excellent book [Producing Open Source Software](http://producingoss.com/en/contributor-agreements.html#developer-certificate-of-origin).
 
 An explanation of the "sign-off" procedure is given by
-[Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in [Linux](https://github.com/torvalds/linux/blob/master/Documentation/SubmittingPatches#L409).
+[Linus Torvalds](https://en.wikipedia.org/wiki/Linus_Torvalds) in [Linux](https://github.com/torvalds/linux/blob/master/Documentation/process/submitting-patches.rst#11-sign-your-work--the-developers-certificate-of-origin).
 
 ## Contribution Workflow
 

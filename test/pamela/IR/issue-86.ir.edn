@@ -1,0 +1,62 @@
+{simpleplant
+ {:args [],
+  :methods
+  {foo
+   [{:args [a],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Foo",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "foo with 1 arg"}
+    {:args [a b],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Foo",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "foo with 2 args"}
+    {:args [a b c],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Foo",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "foo with 3 args"}],
+   main
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-symbol, :name this, :method foo, :args [1]}
+        {:type :plant-fn-symbol, :name this, :method foo, :args [1 2]}
+        {:type :plant-fn-symbol,
+         :name this,
+         :method foo,
+         :args [1 2 3]}]}],
+     :doc "call all the foos"}]},
+  :type :pclass}}

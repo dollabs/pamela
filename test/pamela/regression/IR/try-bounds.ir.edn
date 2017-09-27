@@ -1,22 +1,22 @@
 {try-bounds
- {:type :pclass,
-  :args [],
-  :meta {:version "0.2.0", :doc "try example with time bounds"},
+ {:args [],
+  :meta {:doc "try example with time bounds", :version "0.2.0"},
   :methods
   {example
-   {:args [],
-    :pre {:type :literal, :value true},
-    :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
-    :reward 0,
-    :controllable false,
-    :primitive false,
-    :betweens [],
-    :display-name "Example",
-    :post {:type :literal, :value true},
-    :cost 0,
-    :body
-    [{:type :try,
-      :body [{:type :delay, :body nil}],
-      :catch [{:type :delay, :body nil}],
-      :temporal-constraints [{:type :bounds, :value [1 100]}]}],
-    :doc "try example"}}}}
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Example",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :try,
+       :body [{:type :delay, :body nil}],
+       :catch [{:type :delay, :body nil}],
+       :temporal-constraints [{:type :bounds, :value [1 100]}]}],
+     :doc "try example"}]},
+  :type :pclass}}

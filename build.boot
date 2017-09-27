@@ -35,9 +35,9 @@
                     [avenir                    "0.2.2"]
                     [me.raynes/fs              "1.4.6"]
                     [camel-snake-kebab         "0.4.0"]
+                    [dollabs/plan-schema       "0.3.5"]
                     ;; testing
-                    [adzerk/boot-test          "1.1.2" :scope "test"]
-                    [dollabs/plan-schema       "0.2.18" :scope "test"]])
+                    [adzerk/boot-test          "1.1.2" :scope "test"]])
 
 (require
   '[adzerk.boot-test :refer [test]])
@@ -105,11 +105,11 @@
 ;; This task is commented out here for users that have not copied
 ;; a profile.boot file to ~/.boot/ which defines the cider task:
 ;;
-;; (deftask cider-boot
-;;   "Cider boot params task"
-;;   []
-;;   ;; (cider))
-;;   (comp
-;;     (cider)
-;;     (repl :server true)
-;;     (wait)))
+(deftask cider-boot
+  "Cider boot params task"
+  []
+  ;; (cider))
+  (comp
+    (cider)
+    (repl :server true)
+    (wait)))

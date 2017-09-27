@@ -1,0 +1,50 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
+;;; Test of various Pamela functions
+
+(defpclass simple-pclass [simple2-initial]
+  :fields {:simple1 {:observable true :initial "white"}
+           :simple2 {:observable true :initial simple2-initial}}
+  :methods [(defpmethod simple-method []
+              )]
+  )
+
+(defpclass main []
+  :fields {:field1 (simple-pclass "black")}
+  :methods [(defpmethod main []
+              (test-of-various-statements))
+
+            (defpmethod initialize []
+              )
+
+            (defpmethod one-arg-method [x]
+              )
+
+            (defpmethod test-of-various-statements []
+              (sequence
+               (one-arg-method :field1.:simple2) ;;Field reference syntax will change soon
+               (assert (= foo :illuminated) :bounds [3 5])
+               (ask (= bar :dead) :bounds [4 7])
+               (ask (= :field1.:simple2 "white") :bounds [4 7])
+               (tell (= door :open))
+               (initialize)
+               ;; These commented-out statements aren't yet supported for HTN/TPN generation
+               ;; (try :bounds [2 3] (initialize) (catch (initialize)))
+               ;; (unless (= baz :quux) :bounds [3 4] (initialize))
+               ;; (when (= baz :quux) :bounds [3 4] (initialize))
+               ;; (whenever (= baz :quux) :bounds [3 4] (initialize))
+               ;; (maintain (= door :closed) :bounds [3 5] (initialize))
+               )
+               )
+            ])

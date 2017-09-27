@@ -1,0 +1,164 @@
+{coverage-demo
+ {:type :pclass,
+  :args [],
+  :fields
+  {:sp1
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass simpleplant,
+     :args [],
+     :id "sp1",
+     :plant-part "mypart",
+     :interface "RMQ"}},
+   :sp2
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor,
+     :pclass simpleplant,
+     :args [],
+     :id "sp2",
+     :plant-part "mypart2",
+     :interface "RMQ"}},
+   :run
+   {:access :private,
+    :observable false,
+    :initial
+    {:type :pclass-ctor, :pclass coverage-test, :args [sp1 sp2]}}}},
+ coverage-test
+ {:type :pclass,
+  :args [plant1 plant2],
+  :meta {:doc "Coverage Test"},
+  :fields
+  {:p1
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name plant1}},
+   :p2
+   {:access :private,
+    :observable false,
+    :initial {:type :arg-reference, :name plant2}}},
+  :methods
+  {main
+   [{:args [],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive false,
+     :betweens [],
+     :display-name "Main",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :plant-fn-field,
+         :method scp,
+         :args [:p2_data1 :p2_data2],
+         :field :p2}]}],
+     :doc "The HTN"}]}},
+ simpleplant
+ {:type :pclass,
+  :args [],
+  :fields
+  {:data1
+   {:access :private,
+    :observable false,
+    :initial {:type :literal, :value 123}},
+   :data2
+   {:access :private,
+    :observable false,
+    :initial {:type :literal, :value "fred"}}},
+  :modes
+  {:bykw
+   {:type :equal,
+    :args
+    [{:type :field-reference, :pclass this, :field :data1}
+     {:type :literal, :value 123}]},
+   :bysym
+   {:type :equal,
+    :args
+    [{:type :field-reference, :pclass this, :field :data2}
+     {:type :literal, :value "fred"}]}},
+  :methods
+  {hardwork
+   [{:args [time],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [1 20]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Hardwork",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Simulated work with a simulated failure"}],
+   scp
+   [{:args [fromfile tofile],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [10 20]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Scp",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Secure network file copy"}],
+   cp
+   [{:args [fromfile tofile],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Copy",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "local file copy"}],
+   shell
+   [{:args [cmd arg1 arg2 arg3],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 3]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Shell",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Runs a command-line program"}],
+   python
+   [{:args [script options arg1 arg2 arg3],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}],
+     :reward 0,
+     :controllable false,
+     :primitive true,
+     :betweens [],
+     :display-name "Python",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Runs a python script"}],
+   stop
+   [{:args [area],
+     :pre {:type :literal, :value true},
+     :temporal-constraints [{:type :bounds, :value [0 1]}],
+     :reward 0,
+     :controllable true,
+     :primitive true,
+     :betweens [],
+     :display-name "Stop",
+     :post {:type :literal, :value true},
+     :cost 0,
+     :body nil,
+     :doc "Stops the plant"}]}}}
