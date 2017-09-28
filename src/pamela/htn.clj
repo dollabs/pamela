@@ -580,8 +580,8 @@
             )
           (let [{:keys [nonprimitive-task]} method
                 compatible? (fn [[task-arg method-arg]]
-                              (or (variable? task-arg)
-                                  (variable? method-arg)
+                              (or (symbol? task-arg)
+                                  (symbol? method-arg)
                                   (= task-arg method-arg)))
                 match? (and (= name (:name nonprimitive-task))
                             (= (count arguments) (count (:arguments nonprimitive-task)))
