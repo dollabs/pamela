@@ -181,7 +181,7 @@
    tpn
    {:access :private,
     :initial
-    {:args [{:type :symbol-ref, :names [plnt]}],
+    {:args [{:type :field-ref, :names [plnt]}],
      :pclass first-tpn,
      :type :pclass-ctor},
     :observable false}},
@@ -196,7 +196,7 @@
    tpn
    {:access :private,
     :initial
-    {:args [{:type :symbol-ref, :names [plnt]}],
+    {:args [{:type :field-ref, :names [plnt]}],
      :pclass first-tpn-htn,
      :type :pclass-ctor},
     :observable false}},

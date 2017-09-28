@@ -109,7 +109,9 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this main-internal]},
-       :args ["host0101" "host0701"]}],
+       :args
+       [{:type :literal, :value "host0101"}
+        {:type :literal, :value "host0701"}]}],
      :controllable false,
      :cost 0,
      :display-name "Main Activity",
@@ -126,14 +128,16 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :field-ref, :names [e7h1 file-transfer]},
-         :args [{:type :method-arg-ref, :names [server-host]} "100MB"],
+         :args
+         [{:type :method-arg-ref, :names [server-host]}
+          {:type :literal, :value "100MB"}],
          :temporal-constraints [{:type :bounds, :value [1 7]}]}
         {:type :method-fn,
          :method-ref {:type :field-ref, :names [e7h1 video-session]},
          :args
          [{:type :method-arg-ref, :names [client-host]}
           {:type :method-arg-ref, :names [server-host]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [20 35]}]}]}],
      :controllable false,
      :cost 0,

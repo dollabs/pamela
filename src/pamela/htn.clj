@@ -53,7 +53,6 @@
 
 ;; vars -------------------------------------------------------
 
-;;
 (def ^:dynamic *belief-state-manager-plant-id* "bsm1")
 
 (def ^:dynamic *debug-ir* (atom {}))
@@ -70,7 +69,6 @@
 (defn add-htn-method [method]
   (let [{:keys [pclass name]} method]
     (when (and pclass name)
-      ;; (dbg-println :debug "ADDING HTN-METHOD" pclass name) ;; DEBUG
       (swap! *htn-methods* assoc-in [pclass name] method))))
 
 (defn find-htn-method [pclass name & [error-if-not-found?]]
@@ -137,12 +135,6 @@
   "Make network-flows for PAC2MAN (TBD)"
   [name flow-characteristics arguments]
   {})
-
-(defn variable?
-  "non-NIL if the argument is a variable, i.e., if it's a symbol."
-  [argument]
-  (symbol? argument))
-
 (def reserved-conditional-method-names
   "Pamela statements that include a condition but no body"
   '#{ask tell assert})
@@ -214,7 +206,7 @@
   (let [{:keys [pclass name arguments]} object]
     (str pclass)
     ;; (add-newlines-if-needed
-    ;;   (apply str "NWA-" ;; DEBUG
+    ;;   (apply str "NWA-"
     ;;     pclass ;; use pclass for top HTN node instead of name
     ;;     (if name-with-args-include-args?
     ;;       (map #(if (map? %) (:param %) %)
@@ -228,7 +220,6 @@
         method-name (str name)
         {:keys [name arguments]} nonprimitive-task]
     (str
-      ;; "NWAM-" ;; DEBUG
       (add-newlines-if-needed
         method-name
         (or max-line-length name-with-args-max-line-length))
@@ -250,44 +241,66 @@
                           dyn-arg)))
         argvals (apply str (interpose "," (map get-dyn-arg arguments)))]
     (add-newlines-if-needed
-      ;; DEBUG
       (str
-        ;; "NWAH- " ;; DEBUG
         method-name
         (if name-with-args-include-args? "(")
         (if name-with-args-include-args? argvals)
         (if name-with-args-include-args? ")"))
       (or max-line-length name-with-args-max-line-length))))
 
+(defn unparse-arg-kv
+  ([kv]
+   (let [[k v] kv]
+     (unparse-arg-kv k v)))
+  ([k v]
+   (let [rv (cond
+              (symbol? v)
+              v
+              (and (map? v) (= :pclass-ctor (:type v)) (symbol? k))
+              k
+              :else
+              (unparser/unparse-cond-expr v))]
+     (dbg-println :trace "  unparse-arg-kv" k v "=>" rv)
+     rv)))
 
-
-(defn resolve-arguments [arguments ancestry-path pargs]
-  (let [hem (get-htn-object (first ancestry-path))
-        {:keys [argument-mappings]} hem
-        resolve-arg (fn [arg]
-                      (if (variable? arg)
-                        (get argument-mappings arg)
-                        arg))
-        _ (dbg-println :trace "RA (before)" arguments)
-        arguments (map resolve-arg arguments)
-        _ (dbg-println :trace "RA (after)" arguments)
-        unresolved (count (filter variable? arguments))
-        get-dyn-arg (fn [dyn-arg]
-                      (if (map? dyn-arg)
-                        (:param dyn-arg)
-                        dyn-arg))
-        argvals (if (pos? unresolved)
-                  (resolve-arguments arguments (nthrest ancestry-path 2) pargs)
-                  (mapv get-dyn-arg arguments))]
-    (dbg-println :trace "RA UNRESOLVED" unresolved "ARGVALS" argvals)
-    argvals))
+(defn unparse-arg-v [v]
+  (unparse-arg-kv nil v))
 
 ;; The younger cousin to resolve-arguments
-(defn resolve-argument [argument argument-mapping]
-  (if (variable? argument)
-    (get argument-mapping argument :unresolved-argument)
-    argument))
+(defn resolve-argument [arg arg-map]
+  (let [new-arg (cond
+                  (symbol? arg)
+                  arg
+                  (and (map? arg)
+                    (#{:method-arg-ref :pclass-arg-ref :field-ref} (:type arg)))
+                  (-> arg :names first)
+                  (and (map? arg) (:param arg))
+                  (:param arg)
+                  (and (map? arg) (:type arg) (not (:param arg)))
+                  (unparse-arg-v arg)
+                  :else
+                  arg)
+        new-arg (if (symbol? new-arg)
+                  (get arg-map new-arg new-arg)
+                  new-arg)]
+    (dbg-println :trace "  RA argument" arg "=>" new-arg)
+    new-arg))
 
+(defn resolve-arguments [arguments argument-mapping ancestry-path & [prev-args]]
+  (let [arg-map (or argument-mapping
+                  (-> ancestry-path first get-htn-object :argument-mappings))
+        _ (dbg-println :trace "RA (before)" arguments "ARG-MAP" arg-map)
+        args (mapv resolve-argument arguments (repeat arg-map))
+        _ (dbg-println :trace "RA (after)" args)
+        args (if (not= args prev-args)
+               (resolve-arguments
+                 args
+                 argument-mapping
+                 (if ancestry-path (nthrest ancestry-path 2))
+                 args)
+               args)]
+    (dbg-println :trace "RA final" args)
+    args))
 
 ;; returns pclass_ctor_ map
 ;; (defn resolve-plant-class [ir hem-pclass pargs pclass method
@@ -297,7 +310,6 @@
         task-type type
         hem (get-htn-object (first ancestry-path))
         {:keys [argument-mappings]} hem
-        ;; DEBUG
         _ (dbg-println :debug "  RPC0" pclass "METHOD" name "IRKS" irks
             "\n    RPCHEM" (pr-str (dissoc hem :subtasks :ancestry-path
                                  :expansion-method :subtask-constraints))
@@ -311,125 +323,115 @@
             (dbg-println :debug "  RPC HENPT" (dissoc henpt :subtasks :ancestry-path
                                      :expansion-method :subtask-constraints
                                      :task-expansions)))
-        plant-fn_ (get-in ir irks)
-        _ (dbg-println :debug "plant-fn_" plant-fn_ "argument-mappings"
+        method-fn_ (get-in ir irks)
+        _ (dbg-println :debug "method-fn_" method-fn_ "argument-mappings"
             (pr-str argument-mappings))
-        {:keys [type name field method args]} plant-fn_
+        {:keys [type method-ref]} method-fn_
+        mtype type
+        {:keys [type names args]} method-ref
         pclass-ctor_ (cond
-                       (= type :plant-fn-field)
-                       (let [initial_ (get-in ir [hem-pclass :fields field :initial])
-                             {:keys [type name]} initial_]
-                         (case type
-                           :pclass-ctor initial_
-                           :arg-reference (first (filter #(= (:param %) name) pargs))
-                           {:error :unresolved-field}))
-
-                       (= type :plant-fn-symbol)
-                       (let [method-arg (get argument-mappings name)
-                             pclass-arg (if-not method-arg
-                                          (first (filter #(= (:param %) name) pargs)))
+                       (and (= mtype :method-fn) (= type :field-ref))
+                       ;; FIXME single deref only for the moment
+                       (let [n0 (first names)
+                             initial_ (get-in ir
+                                        [hem-pclass :fields n0 :initial])
+                             {:keys [type names]} initial_]
+                         (dbg-println :debug "  n0" n0" initial_" initial_)
+                         (cond
+                           (= :pclass-ctor type)
+                           initial_
+                           (= :field-ref type)
+                           ;; This means method-ref is a reference to n0
+                           ;; in hem-pclass.
+                           (let [initial2_ (get-in ir
+                                             [hem-pclass :fields n0 :initial])]
+                             (dbg-println :debug "  initial2_" initial2_)
+                             ;; only handle one dereference for now
+                             (if (= :pclass-ctor (:type initial2_))
+                               initial2_
+                               (fatal-error "not implemented yet: :pclass-ctor :field-ref" initial2_)))
+                           (= :pclass-arg-ref type)
+                           (let [param (-> initial_ :names first)
+                                 parg (first (filter #(= param (:param %)) pargs))]
+                             (if (= :pclass-ctor (:type parg))
+                               parg
+                               (fatal-error "pclass argument" param "is not a pamela class constructor" )))
+                           :else
+                           (fatal-error "not implemented yet: non :pclass-ctor field-ref type:" type)))
+                       (and (= mtype :method-fn) (= type :symbol-ref))
+                       ;; expect this to be a local method
+                       (let [_ (assert (= 'this (first names))
+                                 ":symbol-ref in :method-fn does not refer to this pclass")
+                             method (second names)
                              henpt-irks (:irks henpt)
-                             caller_ (get-in ir henpt-irks)
-                             caller-pclass (first henpt-irks)
                              ;; following used for this.method dereferencing
                              [_ parent-subtask_ parent-hem parent-henpt] ancestry-path
                              parent-hem-pclass (get-in parent-hem [:irks 0])]
-                         (dbg-println :trace "RPC name" name
-                           "method-arg" method-arg
-                           "pclass-arg" pclass-arg
-                           ;; "caller_" caller_
-                           "henpt-irks" henpt-irks
-                           "IR pclass :args" (get-in ir [pclass :args]))
-                         (or method-arg pclass-arg
-                             (if (= (:type caller_) :plant-fn-field)
-                               (get-in ir [caller-pclass :fields (:field caller_) :initial]))
-                             (if (= name 'this)
-                               (if (and (empty? (get-in ir [pclass :args]))
-                                     (or (nil? parent-hem-pclass)
-                                       (not henpt-irks)))
-                                 ;; here we assume we need to initialize this
-                                 ;; zero argument plant
-                                 {:type :pclass-ctor,
-                                  :pclass pclass,
-                                  :args []}
-                                 ;; else use the ancestry-path to
-                                 ;; resolve the pclass of the caller
-                                 (let [_ (dbg-println :debug "RPC Recursing on ancestry-path"
-                                           (mapv #(list (:uid %) (or (:display-name %) (:name %)))
-                                             ancestry-path))
-                                       _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
-                                       pc_ (resolve-plant-class
-                                             ir parent-hem-pclass pargs parent-henpt parent-subtask_)]
-                                   ;; (dbg-println :debug "RPC this"
-                                   ;;              (with-out-str (pprint ancestry-path)))
-                                   ;; (dbg-println :debug "RPC parent-hem"
-                                   ;;              (with-out-str (pprint parent-hem))
-                                   ;;              "\nparent-henpt"
-                                   ;;              (with-out-str (pprint parent-henpt)))
-                                   _ (dbg-println :debug "RPC Recursion result" pc_)
-                                   pc_
-                                   )))
-                             {:error (str "unresolved pclass-ctor for ("
-                                       name "." method " ...)")}))
+                         (if (and (empty? (get-in ir [pclass :args]))
+                               (or (nil? parent-hem-pclass)
+                                 (not henpt-irks)))
+                           ;; here we assume we need to initialize this
+                           ;; zero argument plant
+                           {:type :pclass-ctor,
+                            :pclass pclass,
+                            :args []}
+                           ;; else use the ancestry-path to
+                           ;; resolve the pclass of the caller
+                           (let [_ (dbg-println :debug "RPC Recursing on ancestry-path"
+                                     (mapv #(list (:uid %) (or (:display-name %) (:name %)))
+                                       ancestry-path))
+                                 _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
+                                 pc_ (resolve-plant-class
+                                       ir parent-hem-pclass pargs parent-henpt parent-subtask_)]
+                             (dbg-println :debug "RPC Recursion result" pc_)
+                             pc_)))
+                       (and (= mtype :method-fn) (= type :method-arg-ref))
+                       ;; FIXME only handle one level of derefencing now
+                       (let [marg (first names)
+                             mval (get argument-mappings marg)]
+                         (if (= :pclass-ctor (:type mval))
+                           (do
+                             (dbg-println :debug "CALLER result" mval)
+                             mval)
+                           (let [arg (-> mval :names first)
+                                 _ (dbg-println :debug "MARG" marg "MVAL" mval "ARG" arg)
+                                 caller-subtask (second ancestry-path)
+                                 caller-ancestry-path (:ancestry-path caller-subtask)
+                                 caller-hem (get-htn-object (first caller-ancestry-path))
+                                 caller-argument-mappings (:argument-mappings caller-hem)
+                                 _ (dbg-println :trace "CALLER-ARGUMENT-MAPPINGS" caller-argument-mappings)
+                                 pc_ (get caller-argument-mappings (or arg mval))
+                                 ]
+                             (dbg-println :debug "CALLER result" pc_)
+                             pc_)))
 
-                       (= type :delay)
+                       (and (= mtype :method-fn) (= type :pclass-arg-ref))
+                       ;; FIXME only handle one level of derefencing now
+                       (let [param (first names)
+                             parg (first (filter #(= param (:param %)) pargs))]
+                         (dbg-println :debug "  parg=" parg)
+                         (if (= :pclass-ctor (:type parg))
+                           parg
+                           (fatal-error "pclass argument" param "is not a pamela class constructor" )))
+
+                       ;; FIXME - other cases
+                       (= mtype :method-fn)
+                       (fatal-error "not implemented yet method-ref type:" type
+                         "method-ref" method-ref)
+
+                       (= mtype :delay)
                        {}
 
-                       (reserved-conditional-method-type? type)
+                       (reserved-conditional-method-type? mtype)
                        {} ;;TODO: Update this
 
                        :else
-                       {:error (str "ERROR, not currently supported plant-fn type=" type)})]
+                       {:error (str "ERROR, not currently supported method-fn type=" mtype)})
+        ]
     (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
     (when (:error pclass-ctor_)
       (fatal-error "Failure to find pclass constructor: " (:error pclass-ctor_)))
     pclass-ctor_))
-
-;; name-with-argvals multi-methods --------------------------------------
-
-;; (defn name-with-argvals-dispatch [object]
-;;   (:type object))
-
-;; (defmulti name-with-argvals
-;;   "Dispatch based on object type"
-;;   #'name-with-argvals-dispatch
-;;   :default :htn-object
-;;   :hierarchy #'htn-hierarchy)
-
-;; (defmethod name-with-argvals :htn-object
-;;   [object]
-;;   (str (:uid object)))
-
-
-;; ;;Commented out since we've change the signature for resolve-arguments
-;; ;; (defmethod name-with-argvals :htn-task
-;; ;;   [object]
-;; ;;   (let [{:keys [name arguments ancestry-path]} object
-;; ;;         arguments (or arguments [])
-;; ;;         unresolved (count (filter variable? arguments))
-;; ;;         argvals (if (pos? unresolved)
-;; ;;                   (resolve-arguments arguments ancestry-path)
-;; ;;                   arguments)]
-;; ;;     (apply str name (conj (vec (conj (interpose ", " argvals) "(")) ")"))))
-
-;; (defmethod name-with-argvals :htn-method
-;;   [object]
-;;   (let [{:keys [name nonprimitive-task]} object
-;;         method-name (str name)
-;;         {:keys [name arguments]} nonprimitive-task]
-;;     (str
-;;       method-name
-;;       (str name (or (seq arguments) '())))))
-
-;; (defmethod name-with-argvals :htn-expanded-method
-;;   [object]
-;;   (let [{:keys [expansion-method argument-mappings]} object
-;;         {:keys [name nonprimitive-task]} expansion-method
-;;         method-name (str name)
-;;         {:keys [name arguments]} nonprimitive-task
-;;         argvals (apply str (interpose " " (map #(get argument-mappings %) arguments)))]
-;;     (str method-name "(" argvals ")")))
-
 
 ;; print-object multi-methods --------------------------------------
 
@@ -495,9 +497,9 @@
 
 ;; helpers for plan-htn-task --------------------------------------
 
-    ;; IF all-methods empty
-    ;; AND this is found to be a non-primitive method in another (plant) pclass
-    ;; THEN consider for a match
+;; IF all-methods empty
+;; AND this is found to be a non-primitive method in another (plant) pclass
+;; THEN consider for a match
 
 (defn pprint-htn-methods []
   (let [htn-methods @*htn-methods*
@@ -515,7 +517,6 @@
         all-pclasses (set (keys ir))
         other-pclasses (set/difference all-pclasses
                          (conj (set pclasses) 'pamela/lvars))]
-    ;; DEBUG
     (dbg-println :debug "FCM PCLASS" pclass "NAME" name "PCLASSES" pclasses "OTHER-PCLASSES" other-pclasses)
     (loop [in-pclass [] ;; methods inside pclass
            out-pclass [] ;; methods outside of pclass
@@ -528,16 +529,14 @@
             (if-not (empty? out-pclass)
               out-pclass
               (do
-                (dbg-println :debug "NO CANDIDATES!") ;; DEBUG
-                []
-                )
-              )))
+                (dbg-println :debug "NO CANDIDATES!")
+                []))))
         (let [pc-methods (get htn-methods pc)
               ms (keys pc-methods)
-              _ (dbg-println :debug "  FCM PC" pc) ;; DEBUG
+              _ (dbg-println :debug "  FCM PC" pc)
               matches
               (loop [matches [] m (first ms) moar (rest ms)]
-                (dbg-println :debug "    FCM METHOD" m) ;; DEBUG
+                (dbg-println :debug "    FCM METHOD" m)
                 (if-not m
                   matches
                   (let [method (get pc-methods m)
@@ -570,13 +569,13 @@
                       (do (dbg-println :error "FMTET pclass is nil!!!") [])
                       (if (htn-isa? type :htn-nonprimitive-task)
                         (find-candidate-methods ir pclass name)))]
-    (dbg-println :debug "FMTET" name "TYPE" type ;; DEBUG
+    (dbg-println :debug "FMTET" name "TYPE" type
              "PCLASS" pclass "ALL" (map first all-methods))
     (when-not (empty? all-methods)
       (loop [methods [] [mname method] (first all-methods) more (rest all-methods)]
         (if-not mname
           (do
-            (dbg-println :debug "  FMTETMETHODS" (map :name methods)) ;; DEBUG
+            (dbg-println :debug "  FMTETMETHODS" (map :name methods))
             methods
             )
           (let [{:keys [nonprimitive-task]} method
@@ -588,7 +587,6 @@
                             (= (count arguments) (count (:arguments nonprimitive-task)))
                             (every? compatible?
                                     (map vector arguments (:arguments nonprimitive-task))))
-                ;; DEBUG
                 _ (dbg-println :debug "  FM NAME" name "NPT-NAME" (:name nonprimitive-task)
                            "ARGS" arguments "NTARGS" (:arguments nonprimitive-task)
                            "match?" match?)
@@ -600,8 +598,8 @@
   (let [static-task-args (get-in method [:nonprimitive-task :arguments])
         dynamic-task-args (:arguments task)]
     (dbg-println :debug "AMFTAM" (:uid method) "name" (:name method))
-    (dbg-println :debug "STATIC-TASK-ARGS" (pr-str static-task-args)) ;; DEBUG
-    (dbg-println :debug "DYNAMIC-TASK-ARGS" (pr-str dynamic-task-args)) ;; DEBUG
+    (dbg-println :debug "STATIC-TASK-ARGS" (pr-str static-task-args))
+    (dbg-println :debug "DYNAMIC-TASK-ARGS" (pr-str dynamic-task-args))
     (if (or (not (vector? static-task-args))
             (not (vector? dynamic-task-args))
             (not= (count static-task-args) (count dynamic-task-args)))
@@ -619,7 +617,7 @@
 (defn make-expanded-task
   "Make an expanded task"
   [original-task & [argument-mapping]]
-  (dbg-println :debug "MET" original-task "args:" (pr-str argument-mapping)) ;; DEBUG
+  (dbg-println :debug "MET" original-task "args:" (pr-str argument-mapping))
   (let [task-type (:type original-task)
         skeleton-task (dissoc original-task :uid :display-name)
         task (if (= task-type :htn-primitive-task)
@@ -628,9 +626,15 @@
         {:keys [temporal-constraints arguments]} task
         new-arguments (if argument-mapping
                         ;;(mapv #(get argument-mapping %) arguments)
-                        (mapv #(resolve-argument % argument-mapping) arguments)
+                        ;; (mapv #(resolve-argument % argument-mapping) arguments)
+                        (mapv (fn [arg]
+                                (if (and (map? arg) (:param arg))
+                                  (:param arg)
+                                  arg))
+                          (resolve-arguments arguments argument-mapping nil)
+                          )
                         arguments)]
-    (dbg-println :debug "  MET TASK" task "NEW-ARGUMENTS" new-arguments) ;; DEBUG
+    (dbg-println :debug "  MET TASK" task "NEW-ARGUMENTS" new-arguments)
     (update-htn-object!
      (assoc-if task
                :arguments new-arguments
@@ -662,11 +666,10 @@
   (let [task object
         methods (find-methods-that-expand-task ir task)]
     (dbg-println :debug "PHT-TASK" (with-out-str (pprint task)))
-    ;; (dbg-println :debug "PHT-TASK" (:uid task) (:type task)) ;; DEBUG
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
       (doseq [method methods]
         (dbg-println :debug "PHT METHOD" (:name method)
-                 "ANCESTRY" (mapv :uid *htn-plan-ancestry*)) ;; DEBUG
+                 "ANCESTRY" (mapv :uid *htn-plan-ancestry*))
         (let [{:keys [pclass name subtasks irks]} method
               arg-mappings (arg-mappings-for-task-and-method task method)
               expanded-subtasks (mapv #(make-expanded-task % arg-mappings)
@@ -681,7 +684,7 @@
               task-expansions (conj (:task-expansions (get-htn-object task))
                                     expanded-method)
               task (assoc task :task-expansions task-expansions)]
-          (dbg-println :debug "PHT PCLASS" pclass "NAME" name ;; DEBUG
+          (dbg-println :debug "PHT PCLASS" pclass "NAME" name
                    "METHOD" (dissoc method :subtasks))
           (update-htn-object! task)))
       (doseq [expanded-method (:task-expansions (get-htn-object task))]
@@ -714,7 +717,7 @@
               (let [{:keys [ancestry-path]} subtask
                     subtask (assoc subtask
                                    :ancestry-path *htn-plan-ancestry*)]
-                (dbg-println :debug "about to PHT" (:name subtask)) ;; DEBUG
+                (dbg-println :debug "about to PHT" (:name subtask))
                 (plan-htn-task ir (update-htn-object! subtask))))))))))
 
 ;; pprint-htn-object multi-methods --------------------------------------
@@ -1061,8 +1064,7 @@
     [a b]
     (vec (cons a b))))
 
-(def root-task-ir {
-                   :argval identity
+(def root-task-ir {:argval identity
                    :boolean parser/ir-boolean
                    :float parser/ir-float
                    :integer parser/ir-integer
@@ -1073,8 +1075,7 @@
                    :safe-keyword identity
                    :string identity
                    :symbol symbol
-                   :symbols ir-symbols
-                   })
+                   :symbols ir-symbols})
 
 ;; expects the caller-artity to match the method which should
 ;;   be one of the method definitions (mdefs) provided
@@ -1118,31 +1119,36 @@
     (if-not pclass-def
       [(str "invalid root-task: pclass " pclass " does not exist") method]
       (loop [p pclass pa [] f (first fields) more (rest fields)]
-        ;; (dbg-println :debug "LOOP P" p "F" f) ;; DEBUG
+        (dbg-println :trace "LOOP P" p "F" f)
         (if-not f
           (let [[mi mdef] (match-method-arity (count rt-args)
                             (get-in ir [p :methods method]))]
             [p pa method mi])
           (let [f-initial (get-in ir [p :fields f :initial])
-                ;; _ (dbg-println :debug "F-INITIAL" f-initial) ;; DEBUG
+                _ (dbg-println :trace "F-INITIAL" f-initial)
                 f-type (:type f-initial)
                 p (:pclass f-initial)
                 p-args (get-in ir [p :args])
-                ;; _ (dbg-println :debug "P-ARGS" p-args) ;; DEBUG
+                _ (dbg-println :trace "P-ARGS" p-args)
                 f-args (:args f-initial)
-                ;; _ (dbg-println :debug "F-ARGS" f-args) ;; DEBUG
+                 _ (dbg-println :trace "F-ARGS" f-args)
                 deref-field-arg (fn [arg p-arg]
-                                  ;; (dbg-println :debug "  DFA" arg "VF" valid-fields)
-                                  (if (and
-                                        (symbol? arg)
-                                       (valid-fields arg))
-                                    ;; deref
-                                    (assoc
-                                     (get-in ir
-                                             [pclass :fields arg :initial])
-                                     :param p-arg) ;; remember formal param
-                                    ;; normal arg
-                                    arg))
+                                  (let [{:keys [type names]}
+                                        (if (map? arg) arg)
+                                        n0 (first names)]
+                                    (dbg-println :trace "  DFA" arg
+                                      "VF" valid-fields)
+                                    (cond
+                                      (and (= :field-ref type)
+                                        (valid-fields n0))
+                                      (assoc
+                                        (get-in ir [pclass :fields n0 :initial])
+                                        :param p-arg) ;; remember formal param
+                                      type
+                                      (fatal-error "not yet implemented: arg type"
+                                        type)
+                                      :else ;; normal arg
+                                      arg)))
                 pa (if (vector? f-args)
                      ;; expand reference to other fields to field-init
                      (mapv deref-field-arg f-args p-args)
@@ -1156,7 +1162,7 @@
 ;; return the value of the utimate field
 ;;   or {:error msg}
 (defn root-task-arg [ir arg]
-  ;; (dbg-println :debug "RTA in" arg) ;; DEBUG
+  ;; (dbg-println :debug "RTA in" arg)
   (let [pclass (first arg)
         pclass-def (get ir pclass)
         fields (rest arg)]
@@ -1192,7 +1198,7 @@
       (let [rtarg (if (vector? arg)
                     (root-task-arg ir arg)
                     arg)
-            ;; _ (dbg-println :debug "RTA out" rtarg) ;; DEBUG
+            ;; _ (dbg-println :debug "RTA out" rtarg)
             rtargs (if (and (map? rtarg) (:error rtarg))
                      (:error rtarg)
                      (conj rtargs rtarg))]
@@ -1224,7 +1230,7 @@
           :else
           (insta/transform root-task-ir (first tree)))
         ir-syms (keys ir)]
-    ;; (dbg-println :debug "IR" (with-out-str (pprint ir))) ;; DEBUG
+    ;; (dbg-println :debug "IR" (with-out-str (pprint ir)))
     (if (and rir (= (first rir) :error))
       (fatal-error (second rir))
       (if rir ;; verify
@@ -1385,13 +1391,10 @@
             plantid (if (reserved-conditional-method-name? name)
                       *belief-state-manager-plant-id*
                       id)
-            _ (dbg-println :debug "PD ARGS" arguments)
             arguments (or arguments [])
-            unresolved (count (filter variable? arguments))
-            _ (dbg-println :trace "PD UNRESOLVED" unresolved "ARGUMENTS" arguments)
-            args (if (pos? unresolved)
-                   (resolve-arguments arguments ancestry-path pargs)
-                   arguments)
+            _ (dbg-println :trace "PD args before" arguments)
+            args (resolve-arguments arguments nil ancestry-path)
+            _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
             _ (dbg-println :debug "PD get-in" pclass name)
             [mi mdef] (if (reserved-conditional-method-name? name)
@@ -1424,7 +1427,7 @@
                               labels all-betweens choice-begin-end]
   (let [{:keys [uid display-name subtasks subtask-constraints edges
                 ancestry-path argument-mappings irks]} hem
-        ;; DEBUG
+
         _ (dbg-println :debug "CHPM PARGS" pargs)
         _ (dbg-println :debug "CHPM HEM" (pr-str
                                (dissoc hem :subtasks :ancestry-path
@@ -1454,8 +1457,8 @@
         args (if (empty? argument-mappings)
                []
                ;; WAS (vec (to-pamela (vals argument-mappings)))
-               (unparser/unparse-argvals (vals argument-mappings))
-               )
+               (mapv unparse-arg-kv (seq argument-mappings)))
+        _ (dbg-println :debug "CHPM 2.2 args" args)
         hem-map (assoc
                  (dissoc hem
                          :ancestry-path :expansion-method :argument-mappings :subtasks
@@ -1557,7 +1560,7 @@
                      (irks->bounds ir irks))
             bounds (tpn/merge-bounds choice-bounds bounds)
             m-task-expansions (count task-expansions)
-            ;; DEBUG
+
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
                        "type" type "pclass" pclass "name" name
                        "m-task-expansions" m-task-expansions
@@ -1571,7 +1574,7 @@
             bounds (if (and (not bounds) primitive?)
                      nil ;; look up default
                      bounds)
-            ;; DEBUG
+
             _ (dbg-println :debug "SUBTASK primitive?" primitive?
                        "type" type
                        "parallel?" parallel?
@@ -1759,14 +1762,6 @@
           (tpn/update-tpn-plan-map!
            (update-in se [:activities] conj
              (:uid (tpn/tpn-null-activity {:end-node (:uid end)})))))
-        ;; OLD
-        ;; (when (and (not parallel?) (pos? i))
-        ;;   ;; choice or sequence, interstitial na
-        ;;   (tpn/update-tpn-plan-map!
-        ;;    (update-in @prev-end [:activities] conj
-        ;;               (:uid (tpn/tpn-null-activity {:end-node (:uid begin)})))))
-        ;; (reset! prev-end end)
-        ;; WAIT
         (when (and (not parallel?) (pos? i))
           ;; choice or sequence, interstitial na
           (let [na (tpn/tpn-null-activity {:end-node (:uid begin)})
@@ -1777,7 +1772,6 @@
               (assoc (tpn/get-tpn-plan-map @first-begin-uid)
                 :sequence-end (:uid end)))))
         (reset! prev-end end)
-        ;; WAIT ============================
         ;; recurse down hem graph
         (doseq [j (range m-task-expansions)]
           (let [task-expansion (get task-expansions j)
@@ -1813,11 +1807,11 @@
 (defn construct-htn-plan-map [ir expanded-root-task]
   ;;(dbg-println :debug expanded-root-task)
   (let [{:keys [uid display-name pargs]} expanded-root-task
-        ;; _ (dbg-println :debug "ERT PARGS" pargs) ;; DEBUG
+        ;; _ (dbg-println :debug "ERT PARGS" pargs)
         net (htn-network {:display-name display-name :rootnodes #{uid}})
         {:keys [task-expansions irks]} expanded-root-task
         betweens (get-in ir (conj irks :betweens))
-        _ (dbg-println :debug "ROOT CHPM IRKS" irks "betweens" betweens) ;; DEBUG
+        _ (dbg-println :debug "ROOT CHPM IRKS" irks "betweens" betweens)
         ert (assoc
              (dissoc expanded-root-task :pclass :pargs :arguments
                      :task-expansions :name
@@ -1873,12 +1867,6 @@
     (tpn/optimize-tpn-map)
     @*htn-plan-map*))
 
-;; rt {:type :root-task
-;;         :pclass pclass
-;;         :method method
-;;         :args args}]
-;; (assoc ir 'root-task rt)))
-
 (defn get-pclass-for-field [ir mpclass field]
   ;;If the :initial map is an :arg-reference, then there is
   ;;no :pclass available and plant-class will be nil.  However, at
@@ -1915,7 +1903,117 @@
               (recur pclasses pc more)))))
       :unknown-pclass)))
 
-
+;; returns [plant-class method non-primitive?]
+(defn get-method-for-task [ir mpclass caller-arity method-ref]
+  (dbg-println :trace "GMFT method-ref" method-ref)
+  (let [{:keys [type names]} method-ref
+        rv (case type
+             :field-ref
+             ;; assume field has a pclass-ctor
+             ;; FIXME single deref only for the moment
+             (let [[field method] names
+                   initial (get-in ir [mpclass :fields field :initial])
+                   _ (dbg-println :trace "  INITIAL" initial "METHOD" method)
+                   pclass (if (= :pclass-ctor (:type initial))
+                            (:pclass initial))
+                   _ (dbg-println :trace "  PCLASS" pclass)
+                   pclasses-with-method (if-not pclass
+                                          (match-pclasses-method-arity
+                                            ir method caller-arity))
+                   _ (dbg-println :trace "  PWM0" pclasses-with-method)
+                   ;; assume the method is NOT in this class if there is
+                   ;; more than one
+                   pclasses-with-method (if (= 2 (count pclasses-with-method))
+                                          (remove #(= % mpclass)
+                                            pclasses-with-method)
+                                          pclasses-with-method)
+                   _ (dbg-println :trace "  PWM1" pclasses-with-method)
+                   pclass (if pclass
+                            pclass
+                            (if (= (count pclasses-with-method) 1)
+                              (first pclasses-with-method)
+                              ;;If more than one, the method is ambigious!
+                              (fatal-error "cannot disambiguate method-ref"
+                                method-ref "for arity" caller-arity)))
+                   _ (dbg-println :trace "  in mpclass" mpclass "field" field
+                       "initial" initial
+                       "pclass" pclass "method" method)
+                   [mi mdef] (match-method-arity
+                               caller-arity
+                               (get-in ir [pclass :methods method]))
+                   non-primitive? (not
+                                    (get-in ir
+                                      [pclass :methods method mi :primitive]))]
+               [pclass method non-primitive?])
+             :symbol-ref ;; expect this to be a local method
+             (let [_ (assert (= 'this (first names))
+                       ":symbol-ref in :method-fn does not refer to this pclass")
+                   method (second names)
+                   [mi mdef] (match-method-arity
+                               caller-arity
+                               (get-in ir [mpclass :methods method]))
+                   non-primitive? (not
+                                    (get-in ir
+                                      [mpclass :methods method mi :primitive]))]
+               [mpclass method non-primitive?])
+             :method-arg-ref
+             ;; At this point in constructing the HTN we do not have the real
+             ;; call graph so we must simply match based on method name
+             ;; and arity (very weak).
+             (let [[marg method] names
+                   pclasses-with-method (match-pclasses-method-arity
+                                          ir method caller-arity)
+                   ;; assume the method is NOT in this class if there is
+                   ;; more than one
+                   pclasses-with-method (if (= 2 (count pclasses-with-method))
+                                          (remove #(= % mpclass)
+                                            pclasses-with-method)
+                                          pclasses-with-method)
+                   pclass (if (= (count pclasses-with-method) 1)
+                            (first pclasses-with-method)
+                            ;;If more than one, the method is ambigious!
+                            (fatal-error "cannot disambiguate method-ref"
+                              method-ref "for arity" caller-arity))
+                   [mi mdef] (match-method-arity
+                               caller-arity
+                               (get-in ir [pclass :methods method]))
+                   non-primitive? (not
+                                    (get-in ir
+                                      [pclass :methods method mi :primitive]))]
+               [pclass method non-primitive?])
+             :pclass-arg-ref
+             ;; At this point in constructing the HTN we do not have the real
+             ;; call graph so we must simply match based on method name
+             ;; and arity (very weak).
+             (let [[parg method] names
+                   pclasses-with-method (match-pclasses-method-arity
+                                          ir method caller-arity)
+                   ;; assume the method is NOT in this class if there is
+                   ;; more than one
+                   _ (dbg-println :trace "  pclasses-with-method"
+                       pclasses-with-method)
+                   pclasses-with-method (if (= 2 (count pclasses-with-method))
+                                          (remove #(= % mpclass)
+                                            pclasses-with-method)
+                                          pclasses-with-method)
+                   pclass (if (= (count pclasses-with-method) 1)
+                            (first pclasses-with-method)
+                            ;;If more than one, the method is ambigious!
+                            (fatal-error "cannot disambiguate method-ref"
+                              method-ref "for arity" caller-arity))
+                   [mi mdef] (match-method-arity
+                               caller-arity
+                               (get-in ir [pclass :methods method]))
+                   non-primitive? (not
+                                    (get-in ir
+                                      [pclass :methods method mi :primitive]))]
+               [pclass method non-primitive?])
+             ;; FIXME - other cases
+             (fatal-error "not implemented yet method-ref type:" type
+               "method-ref" method-ref)
+             )]
+    (dbg-println :trace "  rv=>" rv)
+    rv))
 
 ;; will return subtasks, if any
 ;; irks are the ks to get-in the ir for the method in question (initially nil)
@@ -1933,12 +2031,12 @@
                     [])]
         (let [subtask-definition (get sub-body i)
               irks-i (conj irks i)
-              {:keys [type name field method args condition
+              {:keys [type name field method-ref args condition
                       primitive body temporal-constraints]} subtask-definition
               caller-arity (count args)
-              ;; DEBUG
+
               _ (dbg-println :debug "GET-HTN-METHOD-SUBTASKS" i "TYPE" type
-                         "NAME" name "FIELD" field "METHOD" method
+                         "NAME" name "FIELD" field "METHOD-REF" method-ref
                          "\nMPCLASS" mpclass "MNAME" mname "NAME" name
                          "PRIMITIVE" primitive
                          "\nMARGS" margs "ARGS" args
@@ -1947,76 +2045,23 @@
 
               subtask
               (cond
-                (#{:plant-fn-symbol :plant-fn-field} type)
+                (= :method-fn type)
                 ;; if the value of plant-fn-primitive? is nil we know
                 ;; we have the wrong plant-class (because the IR always
                 ;; has true or false)
-                (let [plant-class (if (= :plant-fn-symbol type)
-                                    (if (= name 'this)
-                                      mpclass
-                                      ;;name might (coincidentally) be a pclass, but probably not
-                                      ;;Let's see if there in one (and only one) method amongst all pclasses
-                                      (let [pclasses-with-method
-                                            (match-pclasses-method-arity
-                                              ir method caller-arity)]
-                                        (if (= (count pclasses-with-method) 1)
-                                          (first pclasses-with-method)
-                                          ;;If more than one, the method is ambigious!
-                                          (do (dbg-println :warn "GHMS Can't resolve name" name "to a pclass")
-                                              name))))
-                                    ;;else :plant-fn-field
-                                    ;;(get-in ir [mpclass :fields field :initial :pclass])
-                                    (get-pclass-for-field ir mpclass field)
-                                    )
-                      ;; here we have to pick the method index 'pi which matches
-                      ;; the arity of args
-                      [pi pmdef] (match-method-arity
-                                   (count args)
-                                   (get-in ir [plant-class :methods method]))
-                      plant-fn-primitive?
-                      (get-in ir [plant-class :methods method pi :primitive])
-                      _ (dbg-println :debug "plant-class" plant-class "plant-fn-primitive?" plant-fn-primitive?)
-                      ;;Special handling for plant-fn-primitive? = nil
-                      [plant-class non-primitive?]
-                      (if (nil? plant-fn-primitive?)
-                        (let [plant-class (:pclass
-                                           (first
-                                             (filter #(= (:param %) name) pargs)))
-                              [pi pmdef] (match-method-arity
-                                           (count args)
-                                           (get-in ir [plant-class :methods method]))
-                              primitive? (:primitive pmdef)]
-                          [plant-class (not primitive?)])
-                        [plant-class (not plant-fn-primitive?)])
-                      ;; The following would help expand non local plant
-                      ;; functions, but the HEM logic does not support it.
-                      ;; make-htn-method? (or (symbol? mname)
-                      ;;                    (nil? plant-fn-primitive?))
-                      ;; NOTE: We will make an htn-method, if (not plant-fn-primitive?)
-                      ;;make-htn-method? (symbol? mname)
-                      ;; DEBUG
-                      ;; _ (dbg-println :debug "  make-htn-method?" make-htn-method?
-                      ;;     "plant-class" plant-class
-                      ;;     "plant-fn-primitive?" plant-fn-primitive?
-                      ;;     "non-primitive?" non-primitive?)
-                      ;; task-args (if plant-fn-primitive?
-                      ;;             margs
-                      ;;             (or args margs))
-                      _ (assert args "ARGS is nil")
-                      task-args (or args margs)
-                      _ (dbg-println :debug "TASK-ARGS" task-args
-                                     "PLANT-FN-PRIMITIVE?" plant-fn-primitive?)
-                      ;;This is the subtask that will be returned (and added to the method)
-                      task ((if non-primitive?
-                              htn-nonprimitive-task
-                              htn-primitive-task)
-                            {:pclass plant-class
-                             :name method
-                             :arguments task-args
-                             :temporal-constraints temporal-constraints
-                             :irks irks-i})
-                      ]
-                  task)
+                (let [_ (assert args "ARGS is nil")
+                      [plant-class method non-primitive?]
+                      (get-method-for-task ir mpclass caller-arity method-ref)]
+                  ;; This is the subtask that will be returned
+                  ;; (and added to the method)
+                  ((if non-primitive?
+                     htn-nonprimitive-task
+                     htn-primitive-task)
+                   {:pclass plant-class
+                    :name method
+                    :arguments args
+                    :temporal-constraints temporal-constraints
+                    :irks irks-i}))
 
                 (reserved-conditional-method-type? type)
                 (htn-primitive-task
@@ -2072,7 +2117,7 @@
 
           methods
           (cond ;;returns a vector of methods
-            (#{:plant-fn-symbol :plant-fn-field :delay} first-task-type)
+            (#{:method-fn :delay} first-task-type)
             (let [[subtasks subtask-constraints]
                   (get-htn-method-subtasks ir pargs first-task-type
                     mpclass mname mi
@@ -2138,8 +2183,6 @@
       (dbg-println :trace "HTN-METHODS " (with-out-str (pprint methods)))
       methods)))
 
-
-
 ;; Creates an htn data structure in Clojure (optionally converted to JSON in cli.clj)
 ;; NOTE: root-task is a string (or nil)!!!
 ;; Examples
@@ -2148,7 +2191,7 @@
 (defn plan-htn
   "Weaves a 'plan' from the root task, using the HTN methods."
   [ir root-task file-format output]
-  (reset! *debug-ir* ir) ;; DEBUG
+  (reset! *debug-ir* ir)
   (reinitialize-htn-method-table)
   (reinitialize-htn-object-table)
   (reinitialize-htn-plan-map)
@@ -2168,7 +2211,7 @@
         htn-filename (if is-stdout? "-" (str output-prefix ".htn." file-format))
         tpn-filename (if is-stdout? "-" (str output-prefix ".tpn." file-format))
         _ (plan-htn-task ir expanded-root-task)
-        ;; _ (pprint-htn-methods) ;; DEBUG
+        ;; _ (pprint-htn-methods)
         htn (construct-htn-plan-map ir (get-htn-object expanded-root-task))
         tpn @tpn/*tpn-plan-map*]
     (log/info "Saving HTN to" htn-filename "and TPN to" tpn-filename)

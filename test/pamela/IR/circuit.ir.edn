@@ -3,11 +3,11 @@
   :fields
   {anode
    {:access :private,
-    :initial {:names [vcc], :type :symbol-ref},
+    :initial {:names [vcc], :type :pclass-arg-ref},
     :observable false},
    cathode
    {:access :private,
-    :initial {:names [vdd], :type :symbol-ref},
+    :initial {:names [vdd], :type :pclass-arg-ref},
     :observable false},
    illumination
    {:access :public,
@@ -122,8 +122,8 @@
    {:access :private,
     :initial
     {:args
-     [{:type :symbol-ref, :names [source]}
-      {:type :symbol-ref, :names [drain]}],
+     [{:type :field-ref, :names [source]}
+      {:type :field-ref, :names [drain]}],
      :id "switchedcircuit",
      :pclass bulb,
      :plant-part "Bulb1",
@@ -141,8 +141,8 @@
    {:access :private,
     :initial
     {:args
-     [{:type :symbol-ref, :names [source]}
-      {:type :symbol-ref, :names [drain]}],
+     [{:type :field-ref, :names [source]}
+      {:type :field-ref, :names [drain]}],
      :id "switchedcircuit",
      :interface "RMQ",
      :pclass psw,
@@ -166,11 +166,11 @@
   :fields
   {TP1
    {:access :private,
-    :initial {:names [gnd], :type :symbol-ref},
+    :initial {:names [gnd], :type :pclass-arg-ref},
     :observable false},
    TP2
    {:access :private,
-    :initial {:names [pwr], :type :symbol-ref},
+    :initial {:names [pwr], :type :pclass-arg-ref},
     :observable false},
    pwr
    {:access :private,

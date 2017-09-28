@@ -22,7 +22,11 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args [42.44537 -71.227891 1.0 80]}],
+       :args
+       [{:type :literal, :value 42.44537}
+        {:type :literal, :value -71.227891}
+        {:type :literal, :value 1.0}
+        {:type :literal, :value 80}]}],
      :controllable false,
      :cost 0,
      :display-name "Wp 1",
@@ -38,7 +42,11 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args [42.445435 -71.227842 2.0 170]}],
+       :args
+       [{:type :literal, :value 42.445435}
+        {:type :literal, :value -71.227842}
+        {:type :literal, :value 2.0}
+        {:type :literal, :value 170}]}],
      :controllable false,
      :cost 0,
      :display-name "Wp 2",
@@ -54,7 +62,11 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args [42.445389 -71.227733 3.0 260]}],
+       :args
+       [{:type :literal, :value 42.445389}
+        {:type :literal, :value -71.227733}
+        {:type :literal, :value 3.0}
+        {:type :literal, :value 260}]}],
      :controllable false,
      :cost 0,
      :display-name "Wp 3",
@@ -70,7 +82,11 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args [42.445327 -71.227784 4.0 350]}],
+       :args
+       [{:type :literal, :value 42.445327}
+        {:type :literal, :value -71.227784}
+        {:type :literal, :value 4.0}
+        {:type :literal, :value 350}]}],
      :controllable false,
      :cost 0,
      :display-name "Wp 4",
@@ -130,23 +146,43 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args [42.44537 -71.227895 1.0 80],
+         :args
+         [{:type :literal, :value 42.44537}
+          {:type :literal, :value -71.227895}
+          {:type :literal, :value 1.0}
+          {:type :literal, :value 80}],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args [42.445435 -71.227846 2.0 170],
+         :args
+         [{:type :literal, :value 42.445435}
+          {:type :literal, :value -71.227846}
+          {:type :literal, :value 2.0}
+          {:type :literal, :value 170}],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args [42.445389 -71.227737 3.0 260],
+         :args
+         [{:type :literal, :value 42.445389}
+          {:type :literal, :value -71.227737}
+          {:type :literal, :value 3.0}
+          {:type :literal, :value 260}],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args [42.445327 -71.227788 4.0 350],
+         :args
+         [{:type :literal, :value 42.445327}
+          {:type :literal, :value -71.227788}
+          {:type :literal, :value 4.0}
+          {:type :literal, :value 350}],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args [42.44537 -71.227899 1.0 80],
+         :args
+         [{:type :literal, :value 42.44537}
+          {:type :literal, :value -71.227899}
+          {:type :literal, :value 1.0}
+          {:type :literal, :value 80}],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}]}],
      :controllable false,
      :cost 0,

@@ -5,9 +5,9 @@
    {:access :private,
     :initial
     {:args
-     [{:type :symbol-ref, :names [qc1]}
-      {:type :symbol-ref, :names [qc2]}
-      {:type :symbol-ref, :names [qc3]}],
+     [{:type :field-ref, :names [qc1]}
+      {:type :field-ref, :names [qc2]}
+      {:type :field-ref, :names [qc3]}],
      :pclass qc-waypoints,
      :type :pclass-ctor},
     :observable false},

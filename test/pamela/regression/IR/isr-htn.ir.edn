@@ -3,7 +3,7 @@
   :fields
   {sensor-f
    {:access :private,
-    :initial {:names [sensor], :type :symbol-ref},
+    :initial {:names [sensor], :type :pclass-arg-ref},
     :observable false}},
   :meta
   {:doc "This defines all of the HTN methods for this ISR domain"},
@@ -168,7 +168,7 @@
   {htn
    {:access :private,
     :initial
-    {:args [{:type :symbol-ref, :names [plant]}],
+    {:args [{:type :field-ref, :names [plant]}],
      :pclass isr-htn,
      :type :pclass-ctor},
     :observable false},

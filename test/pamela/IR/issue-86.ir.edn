@@ -46,13 +46,16 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args [1]}
+         :args [{:type :literal, :value 1}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args [1 2]}
+         :args [{:type :literal, :value 1} {:type :literal, :value 2}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args [1 2 3]}]}],
+         :args
+         [{:type :literal, :value 1}
+          {:type :literal, :value 2}
+          {:type :literal, :value 3}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Main",

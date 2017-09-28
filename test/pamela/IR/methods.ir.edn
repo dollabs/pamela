@@ -8,7 +8,9 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this primitive]},
-       :args [42.44537 -71.227891]}],
+       :args
+       [{:type :literal, :value 42.44537}
+        {:type :literal, :value -71.227891}]}],
      :controllable false,
      :cost 0,
      :display-name "Nonprimitive",
@@ -49,7 +51,9 @@
          [{:type :method-fn,
            :method-ref
            {:type :pclass-arg-ref, :names [arg1 primitive]},
-           :args [42.44537 -71.227891],
+           :args
+           [{:type :literal, :value 42.44537}
+            {:type :literal, :value -71.227891}],
            :temporal-constraints [{:type :bounds, :value [5 20]}]}]}
         {:type :sequence,
          :body
@@ -74,8 +78,8 @@
    {:access :private,
     :initial
     {:args
-     [{:type :symbol-ref, :names [qc1]}
-      {:type :symbol-ref, :names [qc2]}],
+     [{:type :field-ref, :names [qc1]}
+      {:type :field-ref, :names [qc2]}],
      :pclass tpn-methods,
      :type :pclass-ctor},
     :observable false},

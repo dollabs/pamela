@@ -19,7 +19,8 @@
    [clojure.tools.logging :as log]
    [avenir.utils :refer [assoc-if concatv]]
    [pamela.parser :refer [true-type default-bounds-type
-                          default-bounds default-mdef literal?]]))
+                          default-bounds default-mdef literal?]]
+   [pamela.utils :refer [dbg-println]]))
 
 (defn dissoc-default
   "Dissoc k from m if the current value is equal to default"
@@ -67,33 +68,10 @@
                          symbol)]
     symbol-ref-src))
 
-(defn unparse-argvals [args]
-  (loop [argvals nil a (first args) more (rest args)]
-    (if-not a
-      (if-not (empty? argvals)
-        (vec (reverse argvals)))
-      (let [{:keys [type mode-ref mode name param]} (if (map? a) a)
-            {:keys [names]} mode-ref
-            argval (cond
-                     (= type :mode-ref)
-                     (if (= names ['this])
-                       mode
-                       (list 'mode-of (unparse-symbol-ref mode-ref) mode))
-                     (#{:symbol-ref :field-ref :method-arg-ref :pclass-arg-ref}
-                       type)
-                     (unparse-symbol-ref a)
-                     (= type :state-variable)
-                     name
-                     (= type :pclass-ctor)
-                     param
-                     :else
-                     a)
-            argvals (cons argval argvals)]
-        (recur argvals (first more) (rest more))))))
-
 ;; unparse-field-type -------------------------
 
 (defn unparse-field-type-dispatch [field-type]
+  (dbg-println :trace "    UFT DISPATCH" field-type)
   (:type field-type))
 
 (defmulti unparse-field-type
@@ -115,6 +93,17 @@
 
 (defmethod unparse-field-type :symbol-ref [field-type]
   (unparse-symbol-ref field-type))
+
+(defmethod unparse-field-type :pclass-arg-ref [field-type]
+  (let [_ (dbg-println :trace "  UFT PAR before" field-type)
+        rv (unparse-symbol-ref field-type)]
+    (dbg-println :trace "  UFT PAR after" rv)
+    rv))
+
+(defmethod unparse-field-type :method-arg-ref [field-type]
+  (unparse-symbol-ref field-type))
+
+(declare  unparse-argvals)
 
 (defmethod unparse-field-type :pclass-ctor [field-type]
   (let [{:keys [pclass args id interface plant-part]} field-type
@@ -142,10 +131,6 @@
                     (cons name lvar-ctor)
                     lvar-ctor)]
     (cons 'lvar lvar-ctor)))
-
-(defmethod unparse-field-type :pclass-arg-ref [field-type]
-  (let [{:keys [name]} field-type]
-    name))
 
 ;; unparse-temporal-constraints -------------------------
 
@@ -210,6 +195,33 @@
           (map unparse-cond-expr args))))
     true-type)) ;; assume default is the constant true (if-not cond-expr)
 
+;; -------------------------
+
+(defn unparse-argvals [args]
+  (mapv unparse-cond-expr args))
+  ;; (loop [argvals nil a (first args) more (rest args)]
+  ;;   (if-not a
+  ;;     (if-not (empty? argvals)
+  ;;       (vec (reverse argvals)))
+  ;;     (let [{:keys [type mode-ref mode name param]} (if (map? a) a)
+  ;;           {:keys [names]} mode-ref
+  ;;           argval (cond
+  ;;                    (= type :mode-ref)
+  ;;                    (if (= names ['this])
+  ;;                      mode
+  ;;                      (list 'mode-of (unparse-symbol-ref mode-ref) mode))
+  ;;                    (#{:symbol-ref :field-ref :method-arg-ref :pclass-arg-ref}
+  ;;                      type)
+  ;;                    (unparse-symbol-ref a)
+  ;;                    (= type :state-variable)
+  ;;                    name
+  ;;                    (= type :pclass-ctor)
+  ;;                    param
+  ;;                    :else
+  ;;                    a)
+  ;;           argvals (cons argval argvals)]
+  ;;       (recur argvals (first more) (rest more))))))
+
 ;; unparse-option -------------------------
 
 (defn unparse-option-dispatch [option def]
@@ -258,7 +270,9 @@
         (pprint-option option fields)
         (let [field-init (get def field)
               {:keys [access observable initial]} field-init
+              _ (dbg-println :trace "INITIAL before" initial)
               initial-src (unparse-field-type initial)
+              _ (dbg-println :trace "INITIAL-SRC" initial-src)
               field-type-src (if (and (= access :private) (false? observable))
                                initial-src
                                (->

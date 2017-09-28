@@ -62,13 +62,17 @@
         {:type :assert,
          :condition
          {:type :equal,
-          :args [{:type :state-variable, :name foo} :illuminated]},
+          :args
+          [{:type :state-variable, :name foo}
+           {:type :literal, :value :illuminated}]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [3 5]}]}
         {:type :ask,
          :condition
          {:type :equal,
-          :args [{:type :state-variable, :name bar} :dead]},
+          :args
+          [{:type :state-variable, :name bar}
+           {:type :literal, :value :dead}]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [4 7]}]}
         {:type :ask,
@@ -82,7 +86,9 @@
         {:type :tell,
          :condition
          {:type :equal,
-          :args [{:type :state-variable, :name door} :open]}}
+          :args
+          [{:type :state-variable, :name door}
+           {:type :literal, :value :open}]}}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this initialize]},
          :args []}]}],
@@ -104,7 +110,7 @@
     :observable true},
    simple2
    {:access :private,
-    :initial {:names [simple2-initial], :type :symbol-ref},
+    :initial {:names [simple2-initial], :type :pclass-arg-ref},
     :observable true}},
   :methods
   {simple-method

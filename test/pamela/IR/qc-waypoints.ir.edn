@@ -12,23 +12,43 @@
          :body
          [{:type :method-fn,
            :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
-           :args [42.44537 -71.227891 1.0 80],
+           :args
+           [{:type :literal, :value 42.44537}
+            {:type :literal, :value -71.227891}
+            {:type :literal, :value 1.0}
+            {:type :literal, :value 80}],
            :temporal-constraints [{:type :bounds, :value [5 20]}]}
           {:type :method-fn,
            :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
-           :args [42.445435 -71.227843 2.0 170],
+           :args
+           [{:type :literal, :value 42.445435}
+            {:type :literal, :value -71.227843}
+            {:type :literal, :value 2.0}
+            {:type :literal, :value 170}],
            :temporal-constraints [{:type :bounds, :value [6 20]}]}
           {:type :method-fn,
            :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
-           :args [42.445389 -71.227734 3.0 260],
+           :args
+           [{:type :literal, :value 42.445389}
+            {:type :literal, :value -71.227734}
+            {:type :literal, :value 3.0}
+            {:type :literal, :value 260}],
            :temporal-constraints [{:type :bounds, :value [7 20]}]}
           {:type :method-fn,
            :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
-           :args [42.445327 -71.227788 4.0 350],
+           :args
+           [{:type :literal, :value 42.445327}
+            {:type :literal, :value -71.227788}
+            {:type :literal, :value 4.0}
+            {:type :literal, :value 350}],
            :temporal-constraints [{:type :bounds, :value [8 20]}]}
           {:type :method-fn,
            :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
-           :args [42.44537 -71.227891 1.0 80],
+           :args
+           [{:type :literal, :value 42.44537}
+            {:type :literal, :value -71.227891}
+            {:type :literal, :value 1.0}
+            {:type :literal, :value 80}],
            :temporal-constraints [{:type :bounds, :value [9 20]}]}]}
         {:type :sequence,
          :body

@@ -171,7 +171,9 @@
                    [{:type :method-fn,
                      :method-ref
                      {:type :field-ref, :names [cannon-f fire]},
-                     :args [123 "456"],
+                     :args
+                     [{:type :literal, :value 123}
+                      {:type :literal, :value "456"}],
                      :temporal-constraints
                      [{:type :bounds, :value [1 7]}]}
                     {:type :ask,

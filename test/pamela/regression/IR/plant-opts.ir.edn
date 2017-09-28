@@ -26,7 +26,8 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :pclass-arg-ref, :names [plant action]},
-       :args [:foo 4],
+       :args
+       [{:type :literal, :value :foo} {:type :literal, :value 4}],
        :temporal-constraints [{:type :bounds, :value [0 1]}],
        :label :demo,
        :cost 2,

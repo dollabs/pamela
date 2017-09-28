@@ -10,30 +10,44 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant hardwork]},
-         :args [10],
+         :args [{:type :literal, :value 10}],
          :temporal-constraints [{:type :bounds, :value [10 20]}]}
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant scp]},
-         :args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+         :args
+         [{:type :literal, :value "bigfile"}
+          {:type :literal,
+           :value "me@192.168.11.100:~me/copyofbigfile"}],
          :temporal-constraints [{:type :bounds, :value [0 99]}]}
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant cp]},
-         :args ["bigfile" "copyofbigfile"],
+         :args
+         [{:type :literal, :value "bigfile"}
+          {:type :literal, :value "copyofbigfile"}],
          :temporal-constraints [{:type :bounds, :value [0 99]}]}
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant shell]},
-         :args ["ls" "-lart" ">" "foo"],
+         :args
+         [{:type :literal, :value "ls"}
+          {:type :literal, :value "-lart"}
+          {:type :literal, :value ">"}
+          {:type :literal, :value "foo"}],
          :temporal-constraints [{:type :bounds, :value [0 99]}]}
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant python]},
-         :args ["myscript.py" "2" "3" "4" "5"],
+         :args
+         [{:type :literal, :value "myscript.py"}
+          {:type :literal, :value "2"}
+          {:type :literal, :value "3"}
+          {:type :literal, :value "4"}
+          {:type :literal, :value "5"}],
          :temporal-constraints [{:type :bounds, :value [0 99]}]}
         {:type :delay,
          :body nil,
          :temporal-constraints [{:type :bounds, :value [3 3]}]}
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plant stop]},
-         :args ["McDonalds"]}]}],
+         :args [{:type :literal, :value "McDonalds"}]}]}],
      :controllable false,
      :cost 0,
      :display-name "Main",
@@ -50,7 +64,7 @@
   {run
    {:access :private,
     :initial
-    {:args [{:type :symbol-ref, :names [sp1]}],
+    {:args [{:type :field-ref, :names [sp1]}],
      :pclass planttest,
      :type :pclass-ctor},
     :observable false},

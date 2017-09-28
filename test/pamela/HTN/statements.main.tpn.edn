@@ -1,98 +1,52 @@
 {:act-14
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}],
-    :type :equal}},
+ {:args [(= foo :illuminated)],
+  :argsmap {"condition" (= foo :illuminated)},
   :command "assert",
   :constraints #{:tc-13},
   :controllable false,
   :display-name "Assert",
   :end-node :node-20,
   :htn-node :hem-23,
-  :name
-  "Assert({:type :equal, :args [{:type :state-variable, :name foo} {:type :literal, :value :illuminated}]})",
+  :name "Assert((= foo :illuminated))",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-14},
  :act-19
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}],
-    :type :equal}},
+ {:args [(= bar :dead)],
+  :argsmap {"condition" (= bar :dead)},
   :command "ask",
   :constraints #{:tc-18},
   :controllable false,
   :display-name "Ask",
   :end-node :node-25,
   :htn-node :hem-23,
-  :name
-  "Ask({:type :equal, :args [{:type :state-variable, :name bar} {:type :literal, :value :dead}]})",
+  :name "Ask((= bar :dead))",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-19},
  :act-24
- {:args
-  [{:type :equal,
-    :args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field field1,
-      :value simple2}
-     {:type :literal, :value "white"}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field field1,
-      :value simple2}
-     {:type :literal, :value "white"}],
-    :type :equal}},
+ {:args [(= field1.simple2 "white")],
+  :argsmap {"condition" (= field1.simple2 "white")},
   :command "ask",
   :constraints #{:tc-23},
   :controllable false,
   :display-name "Ask",
   :end-node :node-29,
   :htn-node :hem-23,
-  :name
-  "Ask({:type :equal, :args [{:type :field-reference-field, :pclass this, :field field1, :value simple2} {:type :literal, :value \"white\"}]})",
+  :name "Ask((= field1.simple2 \"white\"))",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-24},
  :act-28
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}],
-    :type :equal}},
+ {:args [(= door :open)],
+  :argsmap {"condition" (= door :open)},
   :command "tell",
   :constraints #{},
   :controllable false,
   :display-name "Tell",
   :end-node :node-33,
   :htn-node :hem-23,
-  :name
-  "Tell({:type :equal, :args [{:type :state-variable, :name door} {:type :literal, :value :open}]})",
+  :name "Tell((= door :open))",
   :plantid "bsm1",
   :tpn-type :activity,
   :uid :act-28},
@@ -111,9 +65,8 @@
   :tpn-type :activity,
   :uid :act-32},
  :act-9
- {:args [{:type :field-reference, :pclass field1, :field simple2}],
-  :argsmap
-  {"x" {:field simple2, :pclass field1, :type :field-reference}},
+ {:args [field1],
+  :argsmap {"x" field1},
   :command "one-arg-method",
   :constraints #{},
   :controllable false,
@@ -121,8 +74,7 @@
   :display-name "One Arg Method",
   :end-node :node-15,
   :htn-node :hem-23,
-  :name
-  "One Arg Method({:type :field-reference, :pclass field1, :field simple2})",
+  :name "One Arg Method(field1)",
   :reward 0,
   :tpn-type :activity,
   :uid :act-9},

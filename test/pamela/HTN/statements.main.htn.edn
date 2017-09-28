@@ -36,9 +36,8 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-15},
  :hpt-17
- {:args [{:type :field-reference, :pclass field1, :field simple2}],
-  :argsmap
-  {"x" {:field simple2, :pclass field1, :type :field-reference}},
+ {:args [field1],
+  :argsmap {"x" field1},
   :display-name "One Arg Method",
   :edges [:hedge-30],
   :incidence-set #{},
@@ -46,17 +45,8 @@
   :type :htn-primitive-task,
   :uid :hpt-17},
  :hpt-18
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}],
-    :type :equal}},
+ {:args [(= foo :illuminated)],
+  :argsmap {"condition" (= foo :illuminated)},
   :display-name "Assert",
   :edges [:hedge-31],
   :incidence-set #{:hedge-30},
@@ -65,17 +55,8 @@
   :type :htn-primitive-task,
   :uid :hpt-18},
  :hpt-19
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}],
-    :type :equal}},
+ {:args [(= bar :dead)],
+  :argsmap {"condition" (= bar :dead)},
   :display-name "Ask",
   :edges [:hedge-32],
   :incidence-set #{:hedge-31},
@@ -84,23 +65,8 @@
   :type :htn-primitive-task,
   :uid :hpt-19},
  :hpt-20
- {:args
-  [{:type :equal,
-    :args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field field1,
-      :value simple2}
-     {:type :literal, :value "white"}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field field1,
-      :value simple2}
-     {:type :literal, :value "white"}],
-    :type :equal}},
+ {:args [(= field1.simple2 "white")],
+  :argsmap {"condition" (= field1.simple2 "white")},
   :display-name "Ask",
   :edges [:hedge-33],
   :incidence-set #{:hedge-32},
@@ -109,17 +75,8 @@
   :type :htn-primitive-task,
   :uid :hpt-20},
  :hpt-21
- {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}]}],
-  :argsmap
-  {"condition"
-   {:args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}],
-    :type :equal}},
+ {:args [(= door :open)],
+  :argsmap {"condition" (= door :open)},
   :display-name "Tell",
   :edges [:hedge-34],
   :incidence-set #{:hedge-33},

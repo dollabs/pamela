@@ -50,7 +50,7 @@
    run
    {:access :private,
     :initial
-    {:args [{:type :symbol-ref, :names [p1]}],
+    {:args [{:type :field-ref, :names [p1]}],
      :pclass infeasible-sequence,
      :type :pclass-ctor},
     :observable false}},

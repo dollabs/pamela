@@ -62,42 +62,42 @@
          :args
          [{:type :method-arg-ref, :names [loc1]}
           {:type :method-arg-ref, :names [loc2]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 10]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this video]},
          :args
          [{:type :method-arg-ref, :names [loc1]}
           {:type :method-arg-ref, :names [loc3]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 11]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this video]},
          :args
          [{:type :method-arg-ref, :names [loc1]}
           {:type :method-arg-ref, :names [loc4]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 12]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this video]},
          :args
          [{:type :method-arg-ref, :names [loc2]}
           {:type :method-arg-ref, :names [loc3]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 13]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this video]},
          :args
          [{:type :method-arg-ref, :names [loc2]}
           {:type :method-arg-ref, :names [loc4]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 14]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this video]},
          :args
          [{:type :method-arg-ref, :names [loc3]}
           {:type :method-arg-ref, :names [loc4]}
-          "1"],
+          {:type :literal, :value "1"}],
          :temporal-constraints [{:type :bounds, :value [5 15]}]}]}],
      :controllable false,
      :cost 0,
@@ -114,7 +114,11 @@
      [{:type :method-fn,
        :method-ref
        {:type :symbol-ref, :names [this top-level-sequence]},
-       :args ["host0101" "host0301" "host0501" "host0701"]}],
+       :args
+       [{:type :literal, :value "host0101"}
+        {:type :literal, :value "host0301"}
+        {:type :literal, :value "host0501"}
+        {:type :literal, :value "host0701"}]}],
      :controllable false,
      :cost 0,
      :display-name "Top-Level Activity",
@@ -174,7 +178,7 @@
        :args
        [{:type :method-arg-ref, :names [loc1]}
         {:type :method-arg-ref, :names [loc2]}
-        "1"]}],
+        {:type :literal, :value "1"}]}],
      :controllable false,
      :cost 0,
      :display-name "Video",

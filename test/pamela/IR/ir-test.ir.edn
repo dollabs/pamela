@@ -240,7 +240,9 @@
                    [{:type :method-fn,
                      :method-ref
                      {:type :field-ref, :names [cannon-f fire]},
-                     :args [123.45 "456"],
+                     :args
+                     [{:type :literal, :value 123.45}
+                      {:type :literal, :value "456"}],
                      :temporal-constraints
                      [{:type :bounds, :value [1 7]}]}
                     {:type :ask,
@@ -436,7 +438,7 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this main]},
-       :args [true]}],
+       :args [{:type :literal, :value true}]}],
      :controllable false,
      :cost 0,
      :display-name "Main Test",
