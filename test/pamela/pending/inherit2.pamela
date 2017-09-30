@@ -14,27 +14,27 @@
 ;; inheritance example: inheriting modes
 
 (defpclass a []
-  :fields {:breathing true}
-  :modes {:alive (= :breathing true)
-          :dead (= :breathing false)}
+           :fields {:breathing "true"}
+           :modes {:alive (= :breathing true)
+                   :dead  (= :breathing false)})
 
 (defpclass b []
-  :fields {:temperature 25}
-  ;; NOTE the grammar currently doesn't have comparison ops like < or >
-  ;;  {:alive (> :temperature 0)}
-  :modes {:alive (not (= :temperature 0))
-          :dead (= :temperature 0)}
+           :fields {:temperature 25}
+           ;; NOTE the grammar currently doesn't have comparison ops like < or >
+           ;;  {:alive (> :temperature 0)}
+           :modes {:alive (not (= :temperature 0))
+                   :dead  (= :temperature 0)})
 
 (defpclass c []
-  :inherit [a b]
+           :inherit [a b]
 
-  ;; inherited fields
-  ;; :fields {:breathing true
-  ;;          :temperature 25}
+           ;; inherited fields
+           ;; :fields {:breathing true
+           ;;          :temperature 25}
 
-  ;; inherited modes
-  ;; :modes {:alive (or (= :breathing true) (> :temperature 0))
-  ;;   NOTE: for :alive (and ...) may be better, but how could we tell
-  ;;   automatically?
-  ;;         :dead (or (= :breathing false) (= :temperature 0))}
-  )
+           ;; inherited modes
+           ;; :modes {:alive (or (= :breathing true) (> :temperature 0))
+           ;;   NOTE: for :alive (and ...) may be better, but how could we tell
+           ;;   automatically?
+           ;;         :dead (or (= :breathing false) (= :temperature 0))}
+           )
