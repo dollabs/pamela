@@ -49,6 +49,9 @@
                          :doc "turning on"}
                 :on:off {:pre :on :post :off
                          :doc "turning off"}
-                :*:fail {:probability (+ (lvar "pfa") (lvar "pfb"))
+                ; Even though logically correct and perhaps a desirable feature, our pamela language syntax does not support.
+                ; TODO Resolve if we wish to support this feature.
+                ;:*:fail {:probability (+ (lvar "pfa") (lvar "pfb"))
+                :*:fail {:probability (lvar "pfc")
                          :doc "spontaneous failure"}}
   )
