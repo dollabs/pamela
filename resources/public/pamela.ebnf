@@ -140,7 +140,7 @@ reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
                     <SEQUENCE> | <SLACK_PARALLEL> | <SLACK_SEQUENCE> |
                     <SOFT_PARALLEL> | <SOFT_SEQUENCE> | <TELL> |
                     <TRUE> | <TRY> | <UNLESS> | <WHEN> | <WHENEVER> )
-stop-token = (whitespace | '.' | LP | RP )
+stop-token = (whitespace | '.' | LP | RP | LB | RB | LM | RM )
 
 literal = ( boolean | string | keyword | number )
 argval = ( string | number | safe-keyword | boolean | mode-ref | symbol-ref )
