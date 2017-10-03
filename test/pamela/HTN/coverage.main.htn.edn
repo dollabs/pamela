@@ -125,10 +125,13 @@
   :type :htn-primitive-task,
   :uid :hpt-26},
  :hpt-32
- {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}],
   :argsmap
-  {"fromfile" "bigfile",
-   "tofile" "me@192.168.11.100:~me/copyofbigfile"},
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile"
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}},
   :display-name "Scp",
   :edges [],
   :incidence-set #{},
@@ -139,8 +142,12 @@
   :type :htn-primitive-task,
   :uid :hpt-32},
  :hpt-34
- {:args ["bigfile" "copyofbigfile"],
-  :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "copyofbigfile"}],
+  :argsmap
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile" {:type :literal, :value "copyofbigfile"}},
   :display-name "Copy",
   :edges [],
   :incidence-set #{},
@@ -151,8 +158,16 @@
   :type :htn-primitive-task,
   :uid :hpt-34},
  :hpt-36
- {:args ["ls" "-lart" ">" "foo"],
-  :argsmap {"arg1" "-lart", "arg2" ">", "arg3" "foo", "cmd" "ls"},
+ {:args
+  [{:type :literal, :value "ls"}
+   {:type :literal, :value "-lart"}
+   {:type :literal, :value ">"}
+   {:type :literal, :value "foo"}],
+  :argsmap
+  {"arg1" {:type :literal, :value "-lart"},
+   "arg2" {:type :literal, :value ">"},
+   "arg3" {:type :literal, :value "foo"},
+   "cmd" {:type :literal, :value "ls"}},
   :display-name "Shell",
   :edges [],
   :incidence-set #{},
@@ -163,8 +178,8 @@
   :type :htn-primitive-task,
   :uid :hpt-36},
  :hpt-38
- {:args [10],
-  :argsmap {"time" 10},
+ {:args [{:type :literal, :value 10}],
+  :argsmap {"time" {:type :literal, :value 10}},
   :display-name "Hardwork",
   :edges [],
   :incidence-set #{},
@@ -175,13 +190,18 @@
   :type :htn-primitive-task,
   :uid :hpt-38},
  :hpt-39
- {:args ["myscript.py" "2" "3" "4" "5"],
+ {:args
+  [{:type :literal, :value "myscript.py"}
+   {:type :literal, :value "2"}
+   {:type :literal, :value "3"}
+   {:type :literal, :value "4"}
+   {:type :literal, :value "5"}],
   :argsmap
-  {"arg1" "3",
-   "arg2" "4",
-   "arg3" "5",
-   "options" "2",
-   "script" "myscript.py"},
+  {"arg1" {:type :literal, :value "3"},
+   "arg2" {:type :literal, :value "4"},
+   "arg3" {:type :literal, :value "5"},
+   "options" {:type :literal, :value "2"},
+   "script" {:type :literal, :value "myscript.py"}},
   :display-name "Python",
   :edges [],
   :incidence-set #{},
@@ -192,10 +212,13 @@
   :type :htn-primitive-task,
   :uid :hpt-39},
  :hpt-41
- {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}],
   :argsmap
-  {"fromfile" "bigfile",
-   "tofile" "me@192.168.11.100:~me/copyofbigfile"},
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile"
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}},
   :display-name "Scp",
   :edges [],
   :incidence-set #{},
@@ -206,8 +229,12 @@
   :type :htn-primitive-task,
   :uid :hpt-41},
  :hpt-43
- {:args ["bigfile" "copyofbigfile"],
-  :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "copyofbigfile"}],
+  :argsmap
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile" {:type :literal, :value "copyofbigfile"}},
   :display-name "Copy",
   :edges [],
   :incidence-set #{},

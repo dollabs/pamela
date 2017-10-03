@@ -1,6 +1,12 @@
 {:act-104
- {:args ["host0301" "host0501" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :command "video",
   :constraints #{:tc-103},
   :controllable false,
@@ -8,13 +14,20 @@
   :display-name "Video",
   :end-node :node-102,
   :htn-node :hem-61,
-  :name "Video(\"host0301\" \"host0501\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0301\"} {:type :literal, :value \"host0501\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-104},
  :act-110
- {:args ["host0301" "host0701" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-109},
   :controllable false,
@@ -22,13 +35,20 @@
   :display-name "Video",
   :end-node :node-108,
   :htn-node :hem-61,
-  :name "Video(\"host0301\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0301\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-110},
  :act-116
- {:args ["host0501" "host0701" "1"],
-  :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0501"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-115},
   :controllable false,
@@ -36,13 +56,20 @@
   :display-name "Video",
   :end-node :node-114,
   :htn-node :hem-61,
-  :name "Video(\"host0501\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0501\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-116},
  :act-21
- {:args ["host0101" "host0301" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0301"}},
   :command "video",
   :constraints #{:tc-13},
   :controllable false,
@@ -50,13 +77,20 @@
   :display-name "Video",
   :end-node :node-12,
   :htn-node :hem-44,
-  :name "Video(\"host0101\" \"host0301\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0301\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-21},
  :act-31
- {:args ["host0101" "host0501" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :command "video",
   :constraints #{:tc-26},
   :controllable false,
@@ -64,13 +98,20 @@
   :display-name "Video",
   :end-node :node-25,
   :htn-node :hem-46,
-  :name "Video(\"host0101\" \"host0501\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0501\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-31},
  :act-41
- {:args ["host0101" "host0701" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-36},
   :controllable false,
@@ -78,13 +119,20 @@
   :display-name "Video",
   :end-node :node-35,
   :htn-node :hem-48,
-  :name "Video(\"host0101\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-41},
  :act-51
- {:args ["host0301" "host0501" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :command "video",
   :constraints #{:tc-46},
   :controllable false,
@@ -92,13 +140,20 @@
   :display-name "Video",
   :end-node :node-45,
   :htn-node :hem-50,
-  :name "Video(\"host0301\" \"host0501\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0301\"} {:type :literal, :value \"host0501\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-51},
  :act-61
- {:args ["host0301" "host0701" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-56},
   :controllable false,
@@ -106,13 +161,20 @@
   :display-name "Video",
   :end-node :node-55,
   :htn-node :hem-52,
-  :name "Video(\"host0301\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0301\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-61},
  :act-72
- {:args ["host0501" "host0701" "1"],
-  :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0501"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-66},
   :controllable false,
@@ -120,13 +182,20 @@
   :display-name "Video",
   :end-node :node-65,
   :htn-node :hem-54,
-  :name "Video(\"host0501\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0501\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-72},
  :act-83
- {:args ["host0101" "host0301" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0301"}},
   :command "video",
   :constraints #{:tc-82},
   :controllable false,
@@ -134,13 +203,20 @@
   :display-name "Video",
   :end-node :node-81,
   :htn-node :hem-61,
-  :name "Video(\"host0101\" \"host0301\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0301\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-83},
  :act-92
- {:args ["host0101" "host0501" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :command "video",
   :constraints #{:tc-91},
   :controllable false,
@@ -148,13 +224,20 @@
   :display-name "Video",
   :end-node :node-90,
   :htn-node :hem-61,
-  :name "Video(\"host0101\" \"host0501\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0501\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-92},
  :act-98
- {:args ["host0101" "host0701" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :command "video",
   :constraints #{:tc-97},
   :controllable false,
@@ -162,7 +245,8 @@
   :display-name "Video",
   :end-node :node-96,
   :htn-node :hem-61,
-  :name "Video(\"host0101\" \"host0701\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0101\"} {:type :literal, :value \"host0701\"} {:type :literal, :value \"1\"})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-98},

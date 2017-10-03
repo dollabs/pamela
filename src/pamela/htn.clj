@@ -259,7 +259,9 @@
               (and (map? v) (= :pclass-ctor (:type v)) (symbol? k))
               k
               :else
-              (unparser/unparse-cond-expr v))]
+              ;; (unparser/unparse-cond-expr v)
+              v
+              )]
      (dbg-println :trace "  unparse-arg-kv" k v "=>" rv)
      rv)))
 
@@ -272,8 +274,11 @@
                   (symbol? arg)
                   arg
                   (and (map? arg)
-                    (#{:method-arg-ref :pclass-arg-ref :field-ref} (:type arg)))
+                    (#{:method-arg-ref :pclass-arg-ref} (:type arg)))
                   (-> arg :names first)
+                  (and (map? arg)
+                    (= :field-ref (:type arg)))
+                  (unparser/unparse-symbol-ref arg)
                   (and (map? arg) (:param arg))
                   (:param arg)
                   (and (map? arg) (:type arg) (not (:param arg)))

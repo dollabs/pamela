@@ -244,8 +244,16 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-76},
  :hpt-48
- {:args [42.44537 -71.227895 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227895, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227895}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227895},
+   "yaw" {:type :literal, :value 80}},
   :display-name "Location",
   :edges [:hedge-94],
   :incidence-set #{},
@@ -256,8 +264,16 @@
   :type :htn-primitive-task,
   :uid :hpt-48},
  :hpt-49
- {:args [42.445435 -71.227846 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227846, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227846}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227846},
+   "yaw" {:type :literal, :value 170}},
   :display-name "Location",
   :edges [:hedge-95],
   :incidence-set #{:hedge-94},
@@ -268,8 +284,16 @@
   :type :htn-primitive-task,
   :uid :hpt-49},
  :hpt-50
- {:args [42.445389 -71.227737 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227737, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227737}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227737},
+   "yaw" {:type :literal, :value 260}},
   :display-name "Location",
   :edges [:hedge-96],
   :incidence-set #{:hedge-95},
@@ -280,8 +304,16 @@
   :type :htn-primitive-task,
   :uid :hpt-50},
  :hpt-51
- {:args [42.445327 -71.227788 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227788, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227788}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227788},
+   "yaw" {:type :literal, :value 350}},
   :display-name "Location",
   :edges [:hedge-97],
   :incidence-set #{:hedge-96},
@@ -292,8 +324,16 @@
   :type :htn-primitive-task,
   :uid :hpt-51},
  :hpt-52
- {:args [42.44537 -71.227899 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227899, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227899}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227899},
+   "yaw" {:type :literal, :value 80}},
   :display-name "Location",
   :edges [],
   :incidence-set #{:hedge-97},
@@ -304,8 +344,16 @@
   :type :htn-primitive-task,
   :uid :hpt-52},
  :hpt-62
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -316,8 +364,16 @@
   :type :htn-primitive-task,
   :uid :hpt-62},
  :hpt-64
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -328,8 +384,16 @@
   :type :htn-primitive-task,
   :uid :hpt-64},
  :hpt-66
- {:args [42.445327 -71.227784 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227784}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227784},
+   "yaw" {:type :literal, :value 350}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -340,8 +404,16 @@
   :type :htn-primitive-task,
   :uid :hpt-66},
  :hpt-68
- {:args [42.44537 -71.227891 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227891}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227891},
+   "yaw" {:type :literal, :value 80}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -352,8 +424,16 @@
   :type :htn-primitive-task,
   :uid :hpt-68},
  :hpt-70
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -364,8 +444,16 @@
   :type :htn-primitive-task,
   :uid :hpt-70},
  :hpt-79
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -375,8 +463,16 @@
   :type :htn-primitive-task,
   :uid :hpt-79},
  :hpt-81
- {:args [42.445327 -71.227784 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227784}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227784},
+   "yaw" {:type :literal, :value 350}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -386,8 +482,16 @@
   :type :htn-primitive-task,
   :uid :hpt-81},
  :hpt-83
- {:args [42.44537 -71.227891 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227891}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227891},
+   "yaw" {:type :literal, :value 80}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -397,8 +501,16 @@
   :type :htn-primitive-task,
   :uid :hpt-83},
  :hpt-85
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},
@@ -408,8 +520,16 @@
   :type :htn-primitive-task,
   :uid :hpt-85},
  :hpt-87
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :display-name "Location",
   :edges [],
   :incidence-set #{},

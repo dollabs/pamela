@@ -21,7 +21,11 @@
   :type :htn-expanded-method,
   :uid :hem-31},
  :hem-34
- {:args ["host0101" "host0301" "host0501" "host0701"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}],
   :display-name "Top Level Sequence",
   :edges [:hedge-67 :hedge-82],
   :incidence-set #{},
@@ -29,7 +33,11 @@
   :type :htn-expanded-method,
   :uid :hem-34},
  :hem-42
- {:args ["host0101" "host0301" "host0501" "host0701"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}],
   :display-name "Coordination 1",
   :edges [:hedge-69 :hedge-71 :hedge-73 :hedge-75 :hedge-77 :hedge-79],
   :incidence-set #{},
@@ -37,7 +45,9 @@
   :type :htn-expanded-method,
   :uid :hem-42},
  :hem-44
- {:args ["host0101" "host0301"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -45,7 +55,9 @@
   :type :htn-expanded-method,
   :uid :hem-44},
  :hem-46
- {:args ["host0101" "host0501"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0501"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -53,7 +65,9 @@
   :type :htn-expanded-method,
   :uid :hem-46},
  :hem-48
- {:args ["host0101" "host0701"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -61,7 +75,9 @@
   :type :htn-expanded-method,
   :uid :hem-48},
  :hem-50
- {:args ["host0301" "host0501"],
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -69,7 +85,9 @@
   :type :htn-expanded-method,
   :uid :hem-50},
  :hem-52
- {:args ["host0301" "host0701"],
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0701"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -77,7 +95,9 @@
   :type :htn-expanded-method,
   :uid :hem-52},
  :hem-54
- {:args ["host0501" "host0701"],
+ {:args
+  [{:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -85,7 +105,11 @@
   :type :htn-expanded-method,
   :uid :hem-54},
  :hem-61
- {:args ["host0101" "host0301" "host0501" "host0701"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}],
   :display-name "Coordination 2",
   :edges [],
   :incidence-set #{},
@@ -162,8 +186,14 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-41},
  :hpt-43
- {:args ["host0101" "host0301" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0301"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -171,8 +201,14 @@
   :type :htn-primitive-task,
   :uid :hpt-43},
  :hpt-45
- {:args ["host0101" "host0501" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -180,8 +216,14 @@
   :type :htn-primitive-task,
   :uid :hpt-45},
  :hpt-47
- {:args ["host0101" "host0701" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -189,8 +231,14 @@
   :type :htn-primitive-task,
   :uid :hpt-47},
  :hpt-49
- {:args ["host0301" "host0501" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -198,8 +246,14 @@
   :type :htn-primitive-task,
   :uid :hpt-49},
  :hpt-51
- {:args ["host0301" "host0701" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -207,8 +261,14 @@
   :type :htn-primitive-task,
   :uid :hpt-51},
  :hpt-53
- {:args ["host0501" "host0701" "1"],
-  :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0501"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -216,8 +276,14 @@
   :type :htn-primitive-task,
   :uid :hpt-53},
  :hpt-55
- {:args ["host0101" "host0301" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0301"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0301"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -225,8 +291,14 @@
   :type :htn-primitive-task,
   :uid :hpt-55},
  :hpt-56
- {:args ["host0101" "host0501" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -234,8 +306,14 @@
   :type :htn-primitive-task,
   :uid :hpt-56},
  :hpt-57
- {:args ["host0101" "host0701" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0101"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -243,8 +321,14 @@
   :type :htn-primitive-task,
   :uid :hpt-57},
  :hpt-58
- {:args ["host0301" "host0501" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0501"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0501"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -252,8 +336,14 @@
   :type :htn-primitive-task,
   :uid :hpt-58},
  :hpt-59
- {:args ["host0301" "host0701" "1"],
-  :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0301"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0301"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -261,8 +351,14 @@
   :type :htn-primitive-task,
   :uid :hpt-59},
  :hpt-60
- {:args ["host0501" "host0701" "1"],
-  :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
+ {:args
+  [{:type :literal, :value "host0501"}
+   {:type :literal, :value "host0701"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0501"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0701"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{},

@@ -1,6 +1,10 @@
 {:act-17
- {:args ["host0101" "100MB"],
-  :argsmap {"server-host" "host0101", "size" "100MB"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "100MB"}],
+  :argsmap
+  {"server-host" {:type :literal, :value "host0101"},
+   "size" {:type :literal, :value "100MB"}},
   :command "ftp",
   :constraints #{:tc-9},
   :controllable false,
@@ -8,15 +12,22 @@
   :display-name "Ftp",
   :end-node :node-8,
   :htn-node :hem-25,
-  :name "Ftp(\"host0101\" \"100MB\")",
+  :name
+  "Ftp({:type :literal, :value \"host0101\"} {:type :literal, :value \"100MB\"})",
   :plant-part "host0701",
   :plantid "actuator",
   :reward 0,
   :tpn-type :activity,
   :uid :act-17},
  :act-33
- {:args ["host0701" "host0101" "1"],
-  :argsmap {"client" "host0701", "display" "1", "server" "host0101"},
+ {:args
+  [{:type :literal, :value "host0701"}
+   {:type :literal, :value "host0101"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0701"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0101"}},
   :command "video",
   :constraints #{},
   :controllable false,
@@ -24,7 +35,8 @@
   :display-name "Video",
   :end-node :node-21,
   :htn-node :hem-29,
-  :name "Video(\"host0701\" \"host0101\" \"1\")",
+  :name
+  "Video({:type :literal, :value \"host0701\"} {:type :literal, :value \"host0101\"} {:type :literal, :value \"1\"})",
   :plant-part "host0701",
   :plantid "actuator",
   :reward 0,

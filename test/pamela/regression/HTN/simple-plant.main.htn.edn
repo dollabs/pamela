@@ -20,8 +20,8 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-12},
  :hpt-13
- {:args [10],
-  :argsmap {"time" 10},
+ {:args [{:type :literal, :value 10}],
+  :argsmap {"time" {:type :literal, :value 10}},
   :display-name "Hardwork",
   :edges [:hedge-25],
   :incidence-set #{},
@@ -32,10 +32,13 @@
   :type :htn-primitive-task,
   :uid :hpt-13},
  :hpt-14
- {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}],
   :argsmap
-  {"fromfile" "bigfile",
-   "tofile" "me@192.168.11.100:~me/copyofbigfile"},
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile"
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}},
   :display-name "Scp",
   :edges [:hedge-26],
   :incidence-set #{:hedge-25},
@@ -46,8 +49,12 @@
   :type :htn-primitive-task,
   :uid :hpt-14},
  :hpt-15
- {:args ["bigfile" "copyofbigfile"],
-  :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "copyofbigfile"}],
+  :argsmap
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile" {:type :literal, :value "copyofbigfile"}},
   :display-name "Cp",
   :edges [:hedge-27],
   :incidence-set #{:hedge-26},
@@ -58,8 +65,16 @@
   :type :htn-primitive-task,
   :uid :hpt-15},
  :hpt-16
- {:args ["ls" "-lart" ">" "foo"],
-  :argsmap {"arg1" "-lart", "arg2" ">", "arg3" "foo", "cmd" "ls"},
+ {:args
+  [{:type :literal, :value "ls"}
+   {:type :literal, :value "-lart"}
+   {:type :literal, :value ">"}
+   {:type :literal, :value "foo"}],
+  :argsmap
+  {"arg1" {:type :literal, :value "-lart"},
+   "arg2" {:type :literal, :value ">"},
+   "arg3" {:type :literal, :value "foo"},
+   "cmd" {:type :literal, :value "ls"}},
   :display-name "Shell",
   :edges [:hedge-28],
   :incidence-set #{:hedge-27},
@@ -70,13 +85,18 @@
   :type :htn-primitive-task,
   :uid :hpt-16},
  :hpt-17
- {:args ["myscript.py" "2" "3" "4" "5"],
+ {:args
+  [{:type :literal, :value "myscript.py"}
+   {:type :literal, :value "2"}
+   {:type :literal, :value "3"}
+   {:type :literal, :value "4"}
+   {:type :literal, :value "5"}],
   :argsmap
-  {"arg1" "3",
-   "arg2" "4",
-   "arg3" "5",
-   "options" "2",
-   "script" "myscript.py"},
+  {"arg1" {:type :literal, :value "3"},
+   "arg2" {:type :literal, :value "4"},
+   "arg3" {:type :literal, :value "5"},
+   "options" {:type :literal, :value "2"},
+   "script" {:type :literal, :value "myscript.py"}},
   :display-name "Python",
   :edges [:hedge-29],
   :incidence-set #{:hedge-28},
@@ -94,8 +114,8 @@
   :type :htn-primitive-task,
   :uid :hpt-18},
  :hpt-19
- {:args ["McDonalds"],
-  :argsmap {"area" "McDonalds"},
+ {:args [{:type :literal, :value "McDonalds"}],
+  :argsmap {"area" {:type :literal, :value "McDonalds"}},
   :display-name "Stop",
   :edges [],
   :incidence-set #{:hedge-30},

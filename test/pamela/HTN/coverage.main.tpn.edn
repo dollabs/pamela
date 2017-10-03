@@ -1,8 +1,11 @@
 {:act-19
- {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}],
   :argsmap
-  {"fromfile" "bigfile",
-   "tofile" "me@192.168.11.100:~me/copyofbigfile"},
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile"
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}},
   :command "scp",
   :constraints #{:tc-10 :tc-18},
   :controllable false,
@@ -11,15 +14,20 @@
   :end-node :node-9,
   :htn-node :hem-33,
   :interface "RMQ",
-  :name "Scp(\"bigfile\" \"me@192.168.11.100:~me/copyofbigfile\")",
+  :name
+  "Scp({:type :literal, :value \"bigfile\"} {:type :literal, :value \"me@192.168.11.100:~me/copyofbigfile\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-19},
  :act-29
- {:args ["bigfile" "copyofbigfile"],
-  :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "copyofbigfile"}],
+  :argsmap
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile" {:type :literal, :value "copyofbigfile"}},
   :command "cp",
   :constraints #{:tc-28},
   :controllable false,
@@ -28,15 +36,24 @@
   :end-node :node-23,
   :htn-node :hem-35,
   :interface "RMQ",
-  :name "Copy(\"bigfile\" \"copyofbigfile\")",
+  :name
+  "Copy({:type :literal, :value \"bigfile\"} {:type :literal, :value \"copyofbigfile\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-29},
  :act-39
- {:args ["ls" "-lart" ">" "foo"],
-  :argsmap {"arg1" "-lart", "arg2" ">", "arg3" "foo", "cmd" "ls"},
+ {:args
+  [{:type :literal, :value "ls"}
+   {:type :literal, :value "-lart"}
+   {:type :literal, :value ">"}
+   {:type :literal, :value "foo"}],
+  :argsmap
+  {"arg1" {:type :literal, :value "-lart"},
+   "arg2" {:type :literal, :value ">"},
+   "arg3" {:type :literal, :value "foo"},
+   "cmd" {:type :literal, :value "ls"}},
   :command "shell",
   :constraints #{:tc-38},
   :controllable false,
@@ -45,15 +62,16 @@
   :end-node :node-33,
   :htn-node :hem-37,
   :interface "RMQ",
-  :name "Shell(\"ls\" \"-lart\" \">\" \"foo\")",
+  :name
+  "Shell({:type :literal, :value \"ls\"} {:type :literal, :value \"-lart\"} {:type :literal, :value \">\"} {:type :literal, :value \"foo\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-39},
  :act-49
- {:args [10],
-  :argsmap {"time" 10},
+ {:args [{:type :literal, :value 10}],
+  :argsmap {"time" {:type :literal, :value 10}},
   :command "hardwork",
   :constraints #{:tc-48},
   :controllable false,
@@ -63,20 +81,25 @@
   :htn-node :hem-40,
   :interface "RMQ",
   :label :hardwork,
-  :name "Hardwork(10)",
+  :name "Hardwork({:type :literal, :value 10})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-49},
  :act-58
- {:args ["myscript.py" "2" "3" "4" "5"],
+ {:args
+  [{:type :literal, :value "myscript.py"}
+   {:type :literal, :value "2"}
+   {:type :literal, :value "3"}
+   {:type :literal, :value "4"}
+   {:type :literal, :value "5"}],
   :argsmap
-  {"arg1" "3",
-   "arg2" "4",
-   "arg3" "5",
-   "options" "2",
-   "script" "myscript.py"},
+  {"arg1" {:type :literal, :value "3"},
+   "arg2" {:type :literal, :value "4"},
+   "arg3" {:type :literal, :value "5"},
+   "options" {:type :literal, :value "2"},
+   "script" {:type :literal, :value "myscript.py"}},
   :command "python",
   :constraints #{:tc-57},
   :controllable false,
@@ -86,17 +109,21 @@
   :htn-node :hem-40,
   :interface "RMQ",
   :label :python,
-  :name "Python(\"myscript.py\" \"2\" \"3\" \"4\" \"5\")",
+  :name
+  "Python({:type :literal, :value \"myscript.py\"} {:type :literal, :value \"2\"} {:type :literal, :value \"3\"} {:type :literal, :value \"4\"} {:type :literal, :value \"5\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-58},
  :act-74
- {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}],
   :argsmap
-  {"fromfile" "bigfile",
-   "tofile" "me@192.168.11.100:~me/copyofbigfile"},
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile"
+   {:type :literal, :value "me@192.168.11.100:~me/copyofbigfile"}},
   :command "scp",
   :constraints #{:tc-73 :tc-64},
   :controllable false,
@@ -105,15 +132,20 @@
   :end-node :node-63,
   :htn-node :hem-42,
   :interface "RMQ",
-  :name "Scp(\"bigfile\" \"me@192.168.11.100:~me/copyofbigfile\")",
+  :name
+  "Scp({:type :literal, :value \"bigfile\"} {:type :literal, :value \"me@192.168.11.100:~me/copyofbigfile\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-74},
  :act-83
- {:args ["bigfile" "copyofbigfile"],
-  :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
+ {:args
+  [{:type :literal, :value "bigfile"}
+   {:type :literal, :value "copyofbigfile"}],
+  :argsmap
+  {"fromfile" {:type :literal, :value "bigfile"},
+   "tofile" {:type :literal, :value "copyofbigfile"}},
   :command "cp",
   :constraints #{},
   :controllable false,
@@ -122,7 +154,8 @@
   :end-node :node-78,
   :htn-node :hem-44,
   :interface "RMQ",
-  :name "Copy(\"bigfile\" \"copyofbigfile\")",
+  :name
+  "Copy({:type :literal, :value \"bigfile\"} {:type :literal, :value \"copyofbigfile\"})",
   :plant-part "mypart",
   :plantid "sp1",
   :reward 0,

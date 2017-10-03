@@ -1,6 +1,14 @@
 {:act-106
- {:args [42.445327 -71.227784 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227784}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227784},
+   "yaw" {:type :literal, :value 350}},
   :command "location",
   :constraints #{:tc-104},
   :controllable false,
@@ -8,15 +16,24 @@
   :display-name "Location",
   :end-node :node-116,
   :htn-node :hem-82,
-  :name "Location(42.445327 -71.227784 4.0 350)",
+  :name
+  "Location({:type :literal, :value 42.445327} {:type :literal, :value -71.227784} {:type :literal, :value 4.0} {:type :literal, :value 350})",
   :plant-part "pp3",
   :plantid "qc3",
   :reward 0,
   :tpn-type :activity,
   :uid :act-106},
  :act-115
- {:args [42.44537 -71.227891 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227891}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227891},
+   "yaw" {:type :literal, :value 80}},
   :command "location",
   :constraints #{:tc-113},
   :controllable false,
@@ -24,15 +41,24 @@
   :display-name "Location",
   :end-node :node-125,
   :htn-node :hem-84,
-  :name "Location(42.44537 -71.227891 1.0 80)",
+  :name
+  "Location({:type :literal, :value 42.44537} {:type :literal, :value -71.227891} {:type :literal, :value 1.0} {:type :literal, :value 80})",
   :plant-part "pp3",
   :plantid "qc3",
   :reward 0,
   :tpn-type :activity,
   :uid :act-115},
  :act-124
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :command "location",
   :constraints #{:tc-122},
   :controllable false,
@@ -40,15 +66,24 @@
   :display-name "Location",
   :end-node :node-135,
   :htn-node :hem-86,
-  :name "Location(42.445435 -71.227842 2.0 170)",
+  :name
+  "Location({:type :literal, :value 42.445435} {:type :literal, :value -71.227842} {:type :literal, :value 2.0} {:type :literal, :value 170})",
   :plant-part "pp3",
   :plantid "qc3",
   :reward 0,
   :tpn-type :activity,
   :uid :act-124},
  :act-13
- {:args [42.44537 -71.227895 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227895, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227895}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227895},
+   "yaw" {:type :literal, :value 80}},
   :command "location",
   :constraints #{:tc-12},
   :controllable false,
@@ -57,15 +92,24 @@
   :end-node :node-19,
   :htn-node :hem-53,
   :interface "RMQ",
-  :name "Location(42.44537 -71.227895 1.0 80)",
+  :name
+  "Location({:type :literal, :value 42.44537} {:type :literal, :value -71.227895} {:type :literal, :value 1.0} {:type :literal, :value 80})",
   :plant-part "pp1",
   :plantid "qc1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-13},
  :act-134
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :command "location",
   :constraints #{:tc-132},
   :controllable false,
@@ -73,15 +117,24 @@
   :display-name "Location",
   :end-node :node-87,
   :htn-node :hem-88,
-  :name "Location(42.445389 -71.227733 3.0 260)",
+  :name
+  "Location({:type :literal, :value 42.445389} {:type :literal, :value -71.227733} {:type :literal, :value 3.0} {:type :literal, :value 260})",
   :plant-part "pp3",
   :plantid "qc3",
   :reward 0,
   :tpn-type :activity,
   :uid :act-134},
  :act-18
- {:args [42.445435 -71.227846 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227846, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227846}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227846},
+   "yaw" {:type :literal, :value 170}},
   :command "location",
   :constraints #{:tc-17},
   :controllable false,
@@ -90,15 +143,24 @@
   :end-node :node-24,
   :htn-node :hem-53,
   :interface "RMQ",
-  :name "Location(42.445435 -71.227846 2.0 170)",
+  :name
+  "Location({:type :literal, :value 42.445435} {:type :literal, :value -71.227846} {:type :literal, :value 2.0} {:type :literal, :value 170})",
   :plant-part "pp1",
   :plantid "qc1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-18},
  :act-23
- {:args [42.445389 -71.227737 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227737, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227737}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227737},
+   "yaw" {:type :literal, :value 260}},
   :command "location",
   :constraints #{:tc-22},
   :controllable false,
@@ -107,15 +169,24 @@
   :end-node :node-29,
   :htn-node :hem-53,
   :interface "RMQ",
-  :name "Location(42.445389 -71.227737 3.0 260)",
+  :name
+  "Location({:type :literal, :value 42.445389} {:type :literal, :value -71.227737} {:type :literal, :value 3.0} {:type :literal, :value 260})",
   :plant-part "pp1",
   :plantid "qc1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-23},
  :act-28
- {:args [42.445327 -71.227788 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227788, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227788}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227788},
+   "yaw" {:type :literal, :value 350}},
   :command "location",
   :constraints #{:tc-27},
   :controllable false,
@@ -124,15 +195,24 @@
   :end-node :node-34,
   :htn-node :hem-53,
   :interface "RMQ",
-  :name "Location(42.445327 -71.227788 4.0 350)",
+  :name
+  "Location({:type :literal, :value 42.445327} {:type :literal, :value -71.227788} {:type :literal, :value 4.0} {:type :literal, :value 350})",
   :plant-part "pp1",
   :plantid "qc1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-28},
  :act-33
- {:args [42.44537 -71.227899 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227899, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227899}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227899},
+   "yaw" {:type :literal, :value 80}},
   :command "location",
   :constraints #{:tc-32},
   :controllable false,
@@ -141,15 +221,24 @@
   :end-node :node-4,
   :htn-node :hem-53,
   :interface "RMQ",
-  :name "Location(42.44537 -71.227899 1.0 80)",
+  :name
+  "Location({:type :literal, :value 42.44537} {:type :literal, :value -71.227899} {:type :literal, :value 1.0} {:type :literal, :value 80})",
   :plant-part "pp1",
   :plantid "qc1",
   :reward 0,
   :tpn-type :activity,
   :uid :act-33},
  :act-46
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :command "location",
   :constraints #{:tc-44},
   :controllable false,
@@ -158,15 +247,24 @@
   :end-node :node-56,
   :htn-node :hem-63,
   :interface "ZMQ",
-  :name "Location(42.445435 -71.227842 2.0 170)",
+  :name
+  "Location({:type :literal, :value 42.445435} {:type :literal, :value -71.227842} {:type :literal, :value 2.0} {:type :literal, :value 170})",
   :plant-part "pp2",
   :plantid "qc2",
   :reward 0,
   :tpn-type :activity,
   :uid :act-46},
  :act-55
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :command "location",
   :constraints #{:tc-53},
   :controllable false,
@@ -175,15 +273,24 @@
   :end-node :node-65,
   :htn-node :hem-65,
   :interface "ZMQ",
-  :name "Location(42.445389 -71.227733 3.0 260)",
+  :name
+  "Location({:type :literal, :value 42.445389} {:type :literal, :value -71.227733} {:type :literal, :value 3.0} {:type :literal, :value 260})",
   :plant-part "pp2",
   :plantid "qc2",
   :reward 0,
   :tpn-type :activity,
   :uid :act-55},
  :act-64
- {:args [42.445327 -71.227784 4.0 350],
-  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+ {:args
+  [{:type :literal, :value 42.445327}
+   {:type :literal, :value -71.227784}
+   {:type :literal, :value 4.0}
+   {:type :literal, :value 350}],
+  :argsmap
+  {"alt" {:type :literal, :value 4.0},
+   "lat" {:type :literal, :value 42.445327},
+   "lon" {:type :literal, :value -71.227784},
+   "yaw" {:type :literal, :value 350}},
   :command "location",
   :constraints #{:tc-62},
   :controllable false,
@@ -192,15 +299,24 @@
   :end-node :node-74,
   :htn-node :hem-67,
   :interface "ZMQ",
-  :name "Location(42.445327 -71.227784 4.0 350)",
+  :name
+  "Location({:type :literal, :value 42.445327} {:type :literal, :value -71.227784} {:type :literal, :value 4.0} {:type :literal, :value 350})",
   :plant-part "pp2",
   :plantid "qc2",
   :reward 0,
   :tpn-type :activity,
   :uid :act-64},
  :act-73
- {:args [42.44537 -71.227891 1.0 80],
-  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+ {:args
+  [{:type :literal, :value 42.44537}
+   {:type :literal, :value -71.227891}
+   {:type :literal, :value 1.0}
+   {:type :literal, :value 80}],
+  :argsmap
+  {"alt" {:type :literal, :value 1.0},
+   "lat" {:type :literal, :value 42.44537},
+   "lon" {:type :literal, :value -71.227891},
+   "yaw" {:type :literal, :value 80}},
   :command "location",
   :constraints #{:tc-71},
   :controllable false,
@@ -209,15 +325,24 @@
   :end-node :node-84,
   :htn-node :hem-69,
   :interface "ZMQ",
-  :name "Location(42.44537 -71.227891 1.0 80)",
+  :name
+  "Location({:type :literal, :value 42.44537} {:type :literal, :value -71.227891} {:type :literal, :value 1.0} {:type :literal, :value 80})",
   :plant-part "pp2",
   :plantid "qc2",
   :reward 0,
   :tpn-type :activity,
   :uid :act-73},
  :act-83
- {:args [42.445435 -71.227842 2.0 170],
-  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+ {:args
+  [{:type :literal, :value 42.445435}
+   {:type :literal, :value -71.227842}
+   {:type :literal, :value 2.0}
+   {:type :literal, :value 170}],
+  :argsmap
+  {"alt" {:type :literal, :value 2.0},
+   "lat" {:type :literal, :value 42.445435},
+   "lon" {:type :literal, :value -71.227842},
+   "yaw" {:type :literal, :value 170}},
   :command "location",
   :constraints #{:tc-81},
   :controllable false,
@@ -226,15 +351,24 @@
   :end-node :node-37,
   :htn-node :hem-71,
   :interface "ZMQ",
-  :name "Location(42.445435 -71.227842 2.0 170)",
+  :name
+  "Location({:type :literal, :value 42.445435} {:type :literal, :value -71.227842} {:type :literal, :value 2.0} {:type :literal, :value 170})",
   :plant-part "pp2",
   :plantid "qc2",
   :reward 0,
   :tpn-type :activity,
   :uid :act-83},
  :act-97
- {:args [42.445389 -71.227733 3.0 260],
-  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+ {:args
+  [{:type :literal, :value 42.445389}
+   {:type :literal, :value -71.227733}
+   {:type :literal, :value 3.0}
+   {:type :literal, :value 260}],
+  :argsmap
+  {"alt" {:type :literal, :value 3.0},
+   "lat" {:type :literal, :value 42.445389},
+   "lon" {:type :literal, :value -71.227733},
+   "yaw" {:type :literal, :value 260}},
   :command "location",
   :constraints #{:tc-95},
   :controllable false,
@@ -242,7 +376,8 @@
   :display-name "Location",
   :end-node :node-107,
   :htn-node :hem-80,
-  :name "Location(42.445389 -71.227733 3.0 260)",
+  :name
+  "Location({:type :literal, :value 42.445389} {:type :literal, :value -71.227733} {:type :literal, :value 3.0} {:type :literal, :value 260})",
   :plant-part "pp3",
   :plantid "qc3",
   :reward 0,

@@ -13,7 +13,9 @@
   :type :htn-expanded-method,
   :uid :hem-20},
  :hem-23
- {:args ["host0101" "host0701"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "host0701"}],
   :display-name "test1",
   :edges [:hedge-36 :hedge-38],
   :incidence-set #{},
@@ -21,7 +23,9 @@
   :type :htn-expanded-method,
   :uid :hem-23},
  :hem-25
- {:args ["host0101" "100MB"],
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "100MB"}],
   :display-name "File Xfer",
   :edges [],
   :incidence-set #{},
@@ -29,7 +33,10 @@
   :type :htn-expanded-method,
   :uid :hem-25},
  :hem-29
- {:args ["host0701" "host0101" "1"],
+ {:args
+  [{:type :literal, :value "host0701"}
+   {:type :literal, :value "host0101"}
+   {:type :literal, :value "1"}],
   :display-name "Video Session",
   :edges [],
   :incidence-set #{},
@@ -64,8 +71,12 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-22},
  :hpt-24
- {:args ["host0101" "100MB"],
-  :argsmap {"server-host" "host0101", "size" "100MB"},
+ {:args
+  [{:type :literal, :value "host0101"}
+   {:type :literal, :value "100MB"}],
+  :argsmap
+  {"server-host" {:type :literal, :value "host0101"},
+   "size" {:type :literal, :value "100MB"}},
   :display-name "Ftp",
   :edges [],
   :incidence-set #{},
@@ -82,8 +93,14 @@
   :type :htn-primitive-task,
   :uid :hpt-27},
  :hpt-28
- {:args ["host0701" "host0101" "1"],
-  :argsmap {"client" "host0701", "display" "1", "server" "host0101"},
+ {:args
+  [{:type :literal, :value "host0701"}
+   {:type :literal, :value "host0101"}
+   {:type :literal, :value "1"}],
+  :argsmap
+  {"client" {:type :literal, :value "host0701"},
+   "display" {:type :literal, :value "1"},
+   "server" {:type :literal, :value "host0101"}},
   :display-name "Video",
   :edges [],
   :incidence-set #{:hedge-40},
