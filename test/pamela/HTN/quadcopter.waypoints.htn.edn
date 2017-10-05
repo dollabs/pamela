@@ -64,7 +64,7 @@
   :type :htn-expanded-method,
   :uid :hem-47},
  :hem-53
- {:args [{:type :method-arg-ref, :names [qc1]}],
+ {:args [qc1],
   :display-args [qc1],
   :display-name "Circuit One",
   :edges [],
@@ -73,7 +73,7 @@
   :type :htn-expanded-method,
   :uid :hem-53},
  :hem-60
- {:args [{:type :method-arg-ref, :names [qc2]}],
+ {:args [qc2],
   :display-args [qc2],
   :display-name "Circuit Two",
   :edges [:hedge-100 :hedge-103 :hedge-106 :hedge-109 :hedge-112],
@@ -127,7 +127,7 @@
   :type :htn-expanded-method,
   :uid :hem-71},
  :hem-77
- {:args [{:type :method-arg-ref, :names [qc3]}],
+ {:args [qc3],
   :display-args [qc3],
   :display-name "Circuit Three",
   :edges [:hedge-116 :hedge-119 :hedge-122 :hedge-125 :hedge-128],

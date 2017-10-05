@@ -1,44 +1,32 @@
 {:act-17
- {:args
-  [{:type :method-arg-ref, :names [server-host]}
-   {:type :method-arg-ref, :names [size]}],
-  :argsmap
-  {"server-host" {:names [server-host], :type :method-arg-ref},
-   "size" {:names [size], :type :method-arg-ref}},
+ {:args ["host0101" "100MB"],
+  :argsmap {"server-host" "host0101", "size" "100MB"},
   :command "ftp",
   :constraints #{:tc-9},
   :controllable false,
   :cost 0,
-  :display-args [server-host size],
+  :display-args ["host0101" "100MB"],
   :display-name "Ftp",
   :end-node :node-8,
   :htn-node :hem-25,
-  :name
-  "Ftp({:type :method-arg-ref, :names [server-host]} {:type :method-arg-ref, :names [size]})",
+  :name "Ftp(\"host0101\" \"100MB\")",
   :plant-id "actuator",
   :plant-part "host0701",
   :reward 0,
   :tpn-type :activity,
   :uid :act-17},
  :act-33
- {:args
-  [{:type :method-arg-ref, :names [client-host]}
-   {:type :method-arg-ref, :names [server-host]}
-   {:type :method-arg-ref, :names [display]}],
-  :argsmap
-  {"client" {:names [client-host], :type :method-arg-ref},
-   "display" {:names [display], :type :method-arg-ref},
-   "server" {:names [server-host], :type :method-arg-ref}},
+ {:args ["host0701" "host0101" "1"],
+  :argsmap {"client" "host0701", "display" "1", "server" "host0101"},
   :command "video",
   :constraints #{},
   :controllable false,
   :cost 0,
-  :display-args [client-host server-host display],
+  :display-args ["host0701" "host0101" "1"],
   :display-name "Video",
   :end-node :node-21,
   :htn-node :hem-29,
-  :name
-  "Video({:type :method-arg-ref, :names [client-host]} {:type :method-arg-ref, :names [server-host]} {:type :method-arg-ref, :names [display]})",
+  :name "Video(\"host0701\" \"host0101\" \"1\")",
   :plant-id "actuator",
   :plant-part "host0701",
   :reward 0,

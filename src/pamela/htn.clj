@@ -280,8 +280,14 @@
 
 ;; The younger cousin to resolve-arguments
 (defn resolve-argument [arg arg-map]
-  (let [new-arg (if (symbol? arg)
+  (let [new-arg (cond
+                  (symbol? arg)
                   (get arg-map arg arg)
+                  (and (map? arg) (= :method-arg-ref (:type arg))
+                    (= 1 (count (:names arg)))
+                    (get arg-map (-> arg :names first)))
+                  (get arg-map (-> arg :names first))
+                  :else
                   arg)]
     (dbg-println :trace "  RA argument" arg "=>" new-arg)
     new-arg))
