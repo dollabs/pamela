@@ -18,6 +18,7 @@
  :hedge-58 {:end-node :hpt-36, :type :edge, :uid :hedge-58},
  :hem-19
  {:args [],
+  :display-args [],
   :display-name "Main 1",
   :edges [:hedge-42 :hedge-48 :hedge-54],
   :incidence-set #{:hedge-40},
@@ -26,6 +27,7 @@
   :uid :hem-19},
  :hem-25
  {:args [],
+  :display-args [],
   :display-name "Submethod",
   :edges [],
   :incidence-set #{},
@@ -34,6 +36,7 @@
   :uid :hem-25},
  :hem-31
  {:args [],
+  :display-args [],
   :display-name "Submethod",
   :edges [],
   :incidence-set #{},
@@ -42,6 +45,7 @@
   :uid :hem-31},
  :hem-37
  {:args [],
+  :display-args [],
   :display-name "Submethod",
   :edges [],
   :incidence-set #{},
@@ -78,6 +82,7 @@
  :hpt-21
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-44],
   :incidence-set #{},
@@ -87,6 +92,7 @@
  :hpt-22
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-45],
   :incidence-set #{:hedge-44},
@@ -96,6 +102,7 @@
  :hpt-23
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [:hedge-46],
   :incidence-set #{:hedge-45},
@@ -105,6 +112,7 @@
  :hpt-24
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [],
   :incidence-set #{:hedge-46},
@@ -114,6 +122,7 @@
  :hpt-27
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-50],
   :incidence-set #{},
@@ -123,6 +132,7 @@
  :hpt-28
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-51],
   :incidence-set #{:hedge-50},
@@ -132,6 +142,7 @@
  :hpt-29
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [:hedge-52],
   :incidence-set #{:hedge-51},
@@ -141,6 +152,7 @@
  :hpt-30
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [],
   :incidence-set #{:hedge-52},
@@ -150,6 +162,7 @@
  :hpt-33
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-56],
   :incidence-set #{},
@@ -159,6 +172,7 @@
  :hpt-34
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method",
   :edges [:hedge-57],
   :incidence-set #{:hedge-56},
@@ -168,6 +182,7 @@
  :hpt-35
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [:hedge-58],
   :incidence-set #{:hedge-57},
@@ -177,6 +192,7 @@
  :hpt-36
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Primitive Method B",
   :edges [],
   :incidence-set #{:hedge-58},

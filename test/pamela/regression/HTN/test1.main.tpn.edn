@@ -1,44 +1,46 @@
 {:act-17
  {:args
-  [{:type :literal, :value "host0101"}
-   {:type :literal, :value "100MB"}],
+  [{:type :method-arg-ref, :names [server-host]}
+   {:type :method-arg-ref, :names [size]}],
   :argsmap
-  {"server-host" {:type :literal, :value "host0101"},
-   "size" {:type :literal, :value "100MB"}},
+  {"server-host" {:names [server-host], :type :method-arg-ref},
+   "size" {:names [size], :type :method-arg-ref}},
   :command "ftp",
   :constraints #{:tc-9},
   :controllable false,
   :cost 0,
+  :display-args [server-host size],
   :display-name "Ftp",
   :end-node :node-8,
   :htn-node :hem-25,
   :name
-  "Ftp({:type :literal, :value \"host0101\"} {:type :literal, :value \"100MB\"})",
+  "Ftp({:type :method-arg-ref, :names [server-host]} {:type :method-arg-ref, :names [size]})",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :reward 0,
   :tpn-type :activity,
   :uid :act-17},
  :act-33
  {:args
-  [{:type :literal, :value "host0701"}
-   {:type :literal, :value "host0101"}
-   {:type :literal, :value "1"}],
+  [{:type :method-arg-ref, :names [client-host]}
+   {:type :method-arg-ref, :names [server-host]}
+   {:type :method-arg-ref, :names [display]}],
   :argsmap
-  {"client" {:type :literal, :value "host0701"},
-   "display" {:type :literal, :value "1"},
-   "server" {:type :literal, :value "host0101"}},
+  {"client" {:names [client-host], :type :method-arg-ref},
+   "display" {:names [display], :type :method-arg-ref},
+   "server" {:names [server-host], :type :method-arg-ref}},
   :command "video",
   :constraints #{},
   :controllable false,
   :cost 0,
+  :display-args [client-host server-host display],
   :display-name "Video",
   :end-node :node-21,
   :htn-node :hem-29,
   :name
-  "Video({:type :literal, :value \"host0701\"} {:type :literal, :value \"host0101\"} {:type :literal, :value \"1\"})",
+  "Video({:type :method-arg-ref, :names [client-host]} {:type :method-arg-ref, :names [server-host]} {:type :method-arg-ref, :names [display]})",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :reward 0,
   :tpn-type :activity,
   :uid :act-33},

@@ -2,10 +2,7 @@
  box
  {:args [],
   :fields
-  {ball-in-motion
-   {:access :public,
-    :initial {:type :literal, :value false},
-    :observable true},
+  {ball-in-motion {:access :public, :initial false, :observable true},
    dummy
    {:access :private,
     :initial {:name :gensym, :type :lvar},
@@ -33,6 +30,7 @@
      :body nil,
      :controllable true,
      :cost 100,
+     :display-args [],
      :display-name "Close Lid",
      :doc "Close method",
      :post
@@ -52,6 +50,7 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Open Lid",
      :post
      {:type :mode-ref,
@@ -70,18 +69,17 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Reset",
      :post
      {:type :mode-ref,
       :mode-ref {:type :symbol-ref, :names [this]},
       :mode :open},
-     :pre {:type :literal, :value true},
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
-  :modes
-  {:close {:type :literal, :value true},
-   :open {:type :literal, :value true}},
+  :modes {:close true, :open true},
   :transitions
   {:close:open
    {:cost 10,
@@ -94,10 +92,7 @@
         {:type :mode-ref,
          :mode-ref {:type :symbol-ref, :names [pwrvals]},
          :mode :high}]}
-      {:type :equal,
-       :args
-       [{:type :field-ref, :names [fred]}
-        {:type :literal, :value 123.456}]}
+      {:type :equal, :args [{:type :field-ref, :names [fred]} 123.456]}
       {:type :mode-ref,
        :mode-ref {:type :symbol-ref, :names [this]},
        :mode :open}],
@@ -123,14 +118,8 @@
  cannon
  {:args [],
   :fields
-  {ammunitions
-   {:access :private,
-    :initial {:type :literal, :value 5},
-    :observable true},
-   ready
-   {:access :public,
-    :initial {:type :literal, :value false},
-    :observable true}},
+  {ammunitions {:access :private, :initial 5, :observable true},
+   ready {:access :public, :initial false, :observable true}},
   :methods
   {fire
    [{:args [arg1 arg2],
@@ -138,9 +127,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [arg1 arg2],
      :display-name "Fire",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -150,9 +140,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Reset",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 2]}]}]},
@@ -168,9 +159,9 @@
    {:access :private,
     :initial
     {:args [],
-     :id "first-cannon",
-     :interface "ZMQ",
      :pclass cannon,
+     :plant-id "first-cannon",
+     :plant-interface "ZMQ",
      :type :pclass-ctor},
     :observable false}},
   :methods
@@ -190,8 +181,7 @@
          :condition
          {:type :equal,
           :args
-          [{:type :field-ref, :names [box-f ball-in-motion]}
-           {:type :literal, :value true}]},
+          [{:type :field-ref, :names [box-f ball-in-motion]} true]},
          :body
          [{:type :tell,
            :condition
@@ -202,16 +192,13 @@
         {:type :whenever,
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [cannon-f ready]}
-           {:type :literal, :value true}]},
+          :args [{:type :field-ref, :names [cannon-f ready]} true]},
          :body
          [{:type :unless,
            :condition
            {:type :equal,
             :args
-            [{:type :field-ref, :names [cannon-f ammunitions]}
-             {:type :literal, :value 0}]},
+            [{:type :field-ref, :names [cannon-f ammunitions]} 0]},
            :body
            [{:type :try,
              :body
@@ -240,17 +227,14 @@
                    [{:type :method-fn,
                      :method-ref
                      {:type :field-ref, :names [cannon-f fire]},
-                     :args
-                     [{:type :literal, :value 123.45}
-                      {:type :literal, :value "456"}],
+                     :args [123.45 "456"],
                      :temporal-constraints
                      [{:type :bounds, :value [1 7]}]}
                     {:type :ask,
                      :condition
                      {:type :equal,
                       :args
-                      [{:type :state-variable, :name all-clear}
-                       {:type :literal, :value true}]},
+                      [{:type :state-variable, :name all-clear} true]},
                      :body nil,
                      :temporal-constraints
                      [{:type :bounds, :value [200 300]}]}],
@@ -426,9 +410,10 @@
        :temporal-constraints [{:type :bounds, :value [1 60]}]}],
      :controllable false,
      :cost 0,
+     :display-args [initial-state],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -438,23 +423,22 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this main]},
-       :args [{:type :literal, :value true}]}],
+       :args [true]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main Test",
      :doc "Unit test method entry point",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:bizarre
-   {:args
-    [{:type :field-ref, :names [cannon-f ammunitions]}
-     {:type :literal, :value 5}],
+   {:args [{:type :field-ref, :names [cannon-f ammunitions]} 5],
     :type :equal},
-   :wacky {:type :literal, :value true},
+   :wacky true,
    :weird
    {:args
     [{:type :equal,
@@ -470,17 +454,13 @@
         :mode-ref {:type :symbol-ref, :names [pwrvals]},
         :mode :high}]}
      {:type :equal,
-      :args
-      [{:type :state-variable, :name global-state}
-       {:type :literal, :value true}]}],
+      :args [{:type :state-variable, :name global-state} true]}],
     :type :and}},
   :type :pclass},
  global-state {:type :state-variable},
  pwrvals
  {:args [],
   :meta {:doc "Enum for power values", :version "0.2.0"},
-  :modes
-  {:high {:type :literal, :value true},
-   :none {:type :literal, :value true}},
+  :modes {:high true, :none true},
   :type :pclass},
  pamela/lvars {:lvars {"fred" :unset}, :type :lvars}}

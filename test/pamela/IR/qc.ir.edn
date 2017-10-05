@@ -8,11 +8,12 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [lat lon alt yaw],
      :display-name "Location",
      :doc
      "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -22,17 +23,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.44537}
-        {:type :literal, :value -71.227891}
-        {:type :literal, :value 1.0}
-        {:type :literal, :value 80}]}],
+       :args [42.44537 -71.227891 1.0 80]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 1",
      :doc "Waypoint 1",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 50]}]}],
@@ -42,17 +40,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445435}
-        {:type :literal, :value -71.227843}
-        {:type :literal, :value 2.0}
-        {:type :literal, :value 170}]}],
+       :args [42.445435 -71.227843 2.0 170]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 2",
      :doc "Waypoint 2",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 50]}]}],
@@ -62,17 +57,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445389}
-        {:type :literal, :value -71.227734}
-        {:type :literal, :value 3.0}
-        {:type :literal, :value 260}]}],
+       :args [42.445389 -71.227734 3.0 260]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 3",
      :doc "Waypoint 3",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 50]}]}],
@@ -82,17 +74,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445327}
-        {:type :literal, :value -71.227788}
-        {:type :literal, :value 4.0}
-        {:type :literal, :value 350}]}],
+       :args [42.445327 -71.227788 4.0 350]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 4",
      :doc "Waypoint 4",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 50]}]}]},

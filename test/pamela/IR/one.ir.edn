@@ -1,6 +1,5 @@
 {one
  {:args [],
   :meta {:doc "First", :version "0.2.0"},
-  :modes
-  {:a {:type :literal, :value true}, :b {:type :literal, :value true}},
+  :modes {:a true, :b true},
   :type :pclass}}

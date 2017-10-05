@@ -35,7 +35,28 @@
  :hedge-97 {:end-node :hpt-52, :type :edge, :uid :hedge-97},
  :hedge-98 {:end-node :hem-60, :type :edge, :uid :hedge-98},
  :hem-47
- {:args [qc1 qc2 qc3],
+ {:args
+  [{:type :pclass-ctor,
+    :pclass qc,
+    :args [],
+    :plant-id "qc1",
+    :plant-part "pp1",
+    :plant-interface "RMQ",
+    :param qc1}
+   {:type :pclass-ctor,
+    :pclass qc,
+    :args [],
+    :plant-id "qc2",
+    :plant-part "pp2",
+    :plant-interface "ZMQ",
+    :param qc2}
+   {:type :pclass-ctor,
+    :pclass qc,
+    :args [],
+    :plant-id "qc3",
+    :plant-part "pp3",
+    :param qc3}],
+  :display-args [qc1 qc2 qc3],
   :display-name "Waypoints",
   :edges [:hedge-92 :hedge-98 :hedge-114],
   :incidence-set #{:hedge-90},
@@ -43,7 +64,8 @@
   :type :htn-expanded-method,
   :uid :hem-47},
  :hem-53
- {:args [qc1],
+ {:args [{:type :method-arg-ref, :names [qc1]}],
+  :display-args [qc1],
   :display-name "Circuit One",
   :edges [],
   :incidence-set #{},
@@ -51,7 +73,8 @@
   :type :htn-expanded-method,
   :uid :hem-53},
  :hem-60
- {:args [qc2],
+ {:args [{:type :method-arg-ref, :names [qc2]}],
+  :display-args [qc2],
   :display-name "Circuit Two",
   :edges [:hedge-100 :hedge-103 :hedge-106 :hedge-109 :hedge-112],
   :incidence-set #{},
@@ -60,6 +83,7 @@
   :uid :hem-60},
  :hem-63
  {:args [],
+  :display-args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -68,6 +92,7 @@
   :uid :hem-63},
  :hem-65
  {:args [],
+  :display-args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
@@ -76,6 +101,7 @@
   :uid :hem-65},
  :hem-67
  {:args [],
+  :display-args [],
   :display-name "Wp 4",
   :edges [],
   :incidence-set #{},
@@ -84,6 +110,7 @@
   :uid :hem-67},
  :hem-69
  {:args [],
+  :display-args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
@@ -92,6 +119,7 @@
   :uid :hem-69},
  :hem-71
  {:args [],
+  :display-args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -99,7 +127,8 @@
   :type :htn-expanded-method,
   :uid :hem-71},
  :hem-77
- {:args [qc3],
+ {:args [{:type :method-arg-ref, :names [qc3]}],
+  :display-args [qc3],
   :display-name "Circuit Three",
   :edges [:hedge-116 :hedge-119 :hedge-122 :hedge-125 :hedge-128],
   :incidence-set #{},
@@ -108,6 +137,7 @@
   :uid :hem-77},
  :hem-80
  {:args [],
+  :display-args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
@@ -116,6 +146,7 @@
   :uid :hem-80},
  :hem-82
  {:args [],
+  :display-args [],
   :display-name "Wp 4",
   :edges [],
   :incidence-set #{},
@@ -124,6 +155,7 @@
   :uid :hem-82},
  :hem-84
  {:args [],
+  :display-args [],
   :display-name "Wp 1",
   :edges [],
   :incidence-set #{},
@@ -132,6 +164,7 @@
   :uid :hem-84},
  :hem-86
  {:args [],
+  :display-args [],
   :display-name "Wp 2",
   :edges [],
   :incidence-set #{},
@@ -140,6 +173,7 @@
   :uid :hem-86},
  :hem-88
  {:args [],
+  :display-args [],
   :display-name "Wp 3",
   :edges [],
   :incidence-set #{},
@@ -244,298 +278,193 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-76},
  :hpt-48
- {:args
-  [{:type :literal, :value 42.44537}
-   {:type :literal, :value -71.227895}
-   {:type :literal, :value 1.0}
-   {:type :literal, :value 80}],
-  :argsmap
-  {"alt" {:type :literal, :value 1.0},
-   "lat" {:type :literal, :value 42.44537},
-   "lon" {:type :literal, :value -71.227895},
-   "yaw" {:type :literal, :value 80}},
+ {:args [42.44537 -71.227895 1.0 80],
+  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227895, "yaw" 80},
+  :display-args [42.44537 -71.227895 1.0 80],
   :display-name "Location",
   :edges [:hedge-94],
   :incidence-set #{},
-  :interface "RMQ",
   :name "location",
+  :plant-id "qc1",
+  :plant-interface "RMQ",
   :plant-part "pp1",
-  :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-48},
  :hpt-49
- {:args
-  [{:type :literal, :value 42.445435}
-   {:type :literal, :value -71.227846}
-   {:type :literal, :value 2.0}
-   {:type :literal, :value 170}],
-  :argsmap
-  {"alt" {:type :literal, :value 2.0},
-   "lat" {:type :literal, :value 42.445435},
-   "lon" {:type :literal, :value -71.227846},
-   "yaw" {:type :literal, :value 170}},
+ {:args [42.445435 -71.227846 2.0 170],
+  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227846, "yaw" 170},
+  :display-args [42.445435 -71.227846 2.0 170],
   :display-name "Location",
   :edges [:hedge-95],
   :incidence-set #{:hedge-94},
-  :interface "RMQ",
   :name "location",
+  :plant-id "qc1",
+  :plant-interface "RMQ",
   :plant-part "pp1",
-  :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-49},
  :hpt-50
- {:args
-  [{:type :literal, :value 42.445389}
-   {:type :literal, :value -71.227737}
-   {:type :literal, :value 3.0}
-   {:type :literal, :value 260}],
-  :argsmap
-  {"alt" {:type :literal, :value 3.0},
-   "lat" {:type :literal, :value 42.445389},
-   "lon" {:type :literal, :value -71.227737},
-   "yaw" {:type :literal, :value 260}},
+ {:args [42.445389 -71.227737 3.0 260],
+  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227737, "yaw" 260},
+  :display-args [42.445389 -71.227737 3.0 260],
   :display-name "Location",
   :edges [:hedge-96],
   :incidence-set #{:hedge-95},
-  :interface "RMQ",
   :name "location",
+  :plant-id "qc1",
+  :plant-interface "RMQ",
   :plant-part "pp1",
-  :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-50},
  :hpt-51
- {:args
-  [{:type :literal, :value 42.445327}
-   {:type :literal, :value -71.227788}
-   {:type :literal, :value 4.0}
-   {:type :literal, :value 350}],
-  :argsmap
-  {"alt" {:type :literal, :value 4.0},
-   "lat" {:type :literal, :value 42.445327},
-   "lon" {:type :literal, :value -71.227788},
-   "yaw" {:type :literal, :value 350}},
+ {:args [42.445327 -71.227788 4.0 350],
+  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227788, "yaw" 350},
+  :display-args [42.445327 -71.227788 4.0 350],
   :display-name "Location",
   :edges [:hedge-97],
   :incidence-set #{:hedge-96},
-  :interface "RMQ",
   :name "location",
+  :plant-id "qc1",
+  :plant-interface "RMQ",
   :plant-part "pp1",
-  :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-51},
  :hpt-52
- {:args
-  [{:type :literal, :value 42.44537}
-   {:type :literal, :value -71.227899}
-   {:type :literal, :value 1.0}
-   {:type :literal, :value 80}],
-  :argsmap
-  {"alt" {:type :literal, :value 1.0},
-   "lat" {:type :literal, :value 42.44537},
-   "lon" {:type :literal, :value -71.227899},
-   "yaw" {:type :literal, :value 80}},
+ {:args [42.44537 -71.227899 1.0 80],
+  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227899, "yaw" 80},
+  :display-args [42.44537 -71.227899 1.0 80],
   :display-name "Location",
   :edges [],
   :incidence-set #{:hedge-97},
-  :interface "RMQ",
   :name "location",
+  :plant-id "qc1",
+  :plant-interface "RMQ",
   :plant-part "pp1",
-  :plantid "qc1",
   :type :htn-primitive-task,
   :uid :hpt-52},
  :hpt-62
- {:args
-  [{:type :literal, :value 42.445435}
-   {:type :literal, :value -71.227842}
-   {:type :literal, :value 2.0}
-   {:type :literal, :value 170}],
-  :argsmap
-  {"alt" {:type :literal, :value 2.0},
-   "lat" {:type :literal, :value 42.445435},
-   "lon" {:type :literal, :value -71.227842},
-   "yaw" {:type :literal, :value 170}},
+ {:args [42.445435 -71.227842 2.0 170],
+  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+  :display-args [42.445435 -71.227842 2.0 170],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
-  :interface "ZMQ",
   :name "location",
+  :plant-id "qc2",
+  :plant-interface "ZMQ",
   :plant-part "pp2",
-  :plantid "qc2",
   :type :htn-primitive-task,
   :uid :hpt-62},
  :hpt-64
- {:args
-  [{:type :literal, :value 42.445389}
-   {:type :literal, :value -71.227733}
-   {:type :literal, :value 3.0}
-   {:type :literal, :value 260}],
-  :argsmap
-  {"alt" {:type :literal, :value 3.0},
-   "lat" {:type :literal, :value 42.445389},
-   "lon" {:type :literal, :value -71.227733},
-   "yaw" {:type :literal, :value 260}},
+ {:args [42.445389 -71.227733 3.0 260],
+  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+  :display-args [42.445389 -71.227733 3.0 260],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
-  :interface "ZMQ",
   :name "location",
+  :plant-id "qc2",
+  :plant-interface "ZMQ",
   :plant-part "pp2",
-  :plantid "qc2",
   :type :htn-primitive-task,
   :uid :hpt-64},
  :hpt-66
- {:args
-  [{:type :literal, :value 42.445327}
-   {:type :literal, :value -71.227784}
-   {:type :literal, :value 4.0}
-   {:type :literal, :value 350}],
-  :argsmap
-  {"alt" {:type :literal, :value 4.0},
-   "lat" {:type :literal, :value 42.445327},
-   "lon" {:type :literal, :value -71.227784},
-   "yaw" {:type :literal, :value 350}},
+ {:args [42.445327 -71.227784 4.0 350],
+  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+  :display-args [42.445327 -71.227784 4.0 350],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
-  :interface "ZMQ",
   :name "location",
+  :plant-id "qc2",
+  :plant-interface "ZMQ",
   :plant-part "pp2",
-  :plantid "qc2",
   :type :htn-primitive-task,
   :uid :hpt-66},
  :hpt-68
- {:args
-  [{:type :literal, :value 42.44537}
-   {:type :literal, :value -71.227891}
-   {:type :literal, :value 1.0}
-   {:type :literal, :value 80}],
-  :argsmap
-  {"alt" {:type :literal, :value 1.0},
-   "lat" {:type :literal, :value 42.44537},
-   "lon" {:type :literal, :value -71.227891},
-   "yaw" {:type :literal, :value 80}},
+ {:args [42.44537 -71.227891 1.0 80],
+  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+  :display-args [42.44537 -71.227891 1.0 80],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
-  :interface "ZMQ",
   :name "location",
+  :plant-id "qc2",
+  :plant-interface "ZMQ",
   :plant-part "pp2",
-  :plantid "qc2",
   :type :htn-primitive-task,
   :uid :hpt-68},
  :hpt-70
- {:args
-  [{:type :literal, :value 42.445435}
-   {:type :literal, :value -71.227842}
-   {:type :literal, :value 2.0}
-   {:type :literal, :value 170}],
-  :argsmap
-  {"alt" {:type :literal, :value 2.0},
-   "lat" {:type :literal, :value 42.445435},
-   "lon" {:type :literal, :value -71.227842},
-   "yaw" {:type :literal, :value 170}},
+ {:args [42.445435 -71.227842 2.0 170],
+  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+  :display-args [42.445435 -71.227842 2.0 170],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
-  :interface "ZMQ",
   :name "location",
+  :plant-id "qc2",
+  :plant-interface "ZMQ",
   :plant-part "pp2",
-  :plantid "qc2",
   :type :htn-primitive-task,
   :uid :hpt-70},
  :hpt-79
- {:args
-  [{:type :literal, :value 42.445389}
-   {:type :literal, :value -71.227733}
-   {:type :literal, :value 3.0}
-   {:type :literal, :value 260}],
-  :argsmap
-  {"alt" {:type :literal, :value 3.0},
-   "lat" {:type :literal, :value 42.445389},
-   "lon" {:type :literal, :value -71.227733},
-   "yaw" {:type :literal, :value 260}},
+ {:args [42.445389 -71.227733 3.0 260],
+  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+  :display-args [42.445389 -71.227733 3.0 260],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
   :name "location",
+  :plant-id "qc3",
   :plant-part "pp3",
-  :plantid "qc3",
   :type :htn-primitive-task,
   :uid :hpt-79},
  :hpt-81
- {:args
-  [{:type :literal, :value 42.445327}
-   {:type :literal, :value -71.227784}
-   {:type :literal, :value 4.0}
-   {:type :literal, :value 350}],
-  :argsmap
-  {"alt" {:type :literal, :value 4.0},
-   "lat" {:type :literal, :value 42.445327},
-   "lon" {:type :literal, :value -71.227784},
-   "yaw" {:type :literal, :value 350}},
+ {:args [42.445327 -71.227784 4.0 350],
+  :argsmap {"alt" 4.0, "lat" 42.445327, "lon" -71.227784, "yaw" 350},
+  :display-args [42.445327 -71.227784 4.0 350],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
   :name "location",
+  :plant-id "qc3",
   :plant-part "pp3",
-  :plantid "qc3",
   :type :htn-primitive-task,
   :uid :hpt-81},
  :hpt-83
- {:args
-  [{:type :literal, :value 42.44537}
-   {:type :literal, :value -71.227891}
-   {:type :literal, :value 1.0}
-   {:type :literal, :value 80}],
-  :argsmap
-  {"alt" {:type :literal, :value 1.0},
-   "lat" {:type :literal, :value 42.44537},
-   "lon" {:type :literal, :value -71.227891},
-   "yaw" {:type :literal, :value 80}},
+ {:args [42.44537 -71.227891 1.0 80],
+  :argsmap {"alt" 1.0, "lat" 42.44537, "lon" -71.227891, "yaw" 80},
+  :display-args [42.44537 -71.227891 1.0 80],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
   :name "location",
+  :plant-id "qc3",
   :plant-part "pp3",
-  :plantid "qc3",
   :type :htn-primitive-task,
   :uid :hpt-83},
  :hpt-85
- {:args
-  [{:type :literal, :value 42.445435}
-   {:type :literal, :value -71.227842}
-   {:type :literal, :value 2.0}
-   {:type :literal, :value 170}],
-  :argsmap
-  {"alt" {:type :literal, :value 2.0},
-   "lat" {:type :literal, :value 42.445435},
-   "lon" {:type :literal, :value -71.227842},
-   "yaw" {:type :literal, :value 170}},
+ {:args [42.445435 -71.227842 2.0 170],
+  :argsmap {"alt" 2.0, "lat" 42.445435, "lon" -71.227842, "yaw" 170},
+  :display-args [42.445435 -71.227842 2.0 170],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
   :name "location",
+  :plant-id "qc3",
   :plant-part "pp3",
-  :plantid "qc3",
   :type :htn-primitive-task,
   :uid :hpt-85},
  :hpt-87
- {:args
-  [{:type :literal, :value 42.445389}
-   {:type :literal, :value -71.227733}
-   {:type :literal, :value 3.0}
-   {:type :literal, :value 260}],
-  :argsmap
-  {"alt" {:type :literal, :value 3.0},
-   "lat" {:type :literal, :value 42.445389},
-   "lon" {:type :literal, :value -71.227733},
-   "yaw" {:type :literal, :value 260}},
+ {:args [42.445389 -71.227733 3.0 260],
+  :argsmap {"alt" 3.0, "lat" 42.445389, "lon" -71.227733, "yaw" 260},
+  :display-args [42.445389 -71.227733 3.0 260],
   :display-name "Location",
   :edges [],
   :incidence-set #{},
   :name "location",
+  :plant-id "qc3",
   :plant-part "pp3",
-  :plantid "qc3",
   :type :htn-primitive-task,
   :uid :hpt-87},
  :net-101

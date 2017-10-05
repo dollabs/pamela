@@ -8,11 +8,12 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [lat lon alt yaw],
      :display-name "Location",
      :doc
      "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -22,17 +23,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.44537}
-        {:type :literal, :value -71.227891}
-        {:type :literal, :value 1.0}
-        {:type :literal, :value 80}]}],
+       :args [42.44537 -71.227891 1.0 80]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 1",
      :doc "Waypoint 1",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [11 50]}]}],
@@ -42,17 +40,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445435}
-        {:type :literal, :value -71.227842}
-        {:type :literal, :value 2.0}
-        {:type :literal, :value 170}]}],
+       :args [42.445435 -71.227842 2.0 170]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 2",
      :doc "Waypoint 2",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [12 50]}]}],
@@ -62,17 +57,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445389}
-        {:type :literal, :value -71.227733}
-        {:type :literal, :value 3.0}
-        {:type :literal, :value 260}]}],
+       :args [42.445389 -71.227733 3.0 260]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 3",
      :doc "Waypoint 3",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [13 50]}]}],
@@ -82,17 +74,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this location]},
-       :args
-       [{:type :literal, :value 42.445327}
-        {:type :literal, :value -71.227784}
-        {:type :literal, :value 4.0}
-        {:type :literal, :value 350}]}],
+       :args [42.445327 -71.227784 4.0 350]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Wp 4",
      :doc "Waypoint 4",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [14 50]}]}]},
@@ -104,9 +93,9 @@
    {:access :private,
     :initial
     {:args [],
-     :id "qc1",
-     :interface "RMQ",
      :pclass qc,
+     :plant-id "qc1",
+     :plant-interface "RMQ",
      :plant-part "pp1",
      :type :pclass-ctor},
     :observable false},
@@ -114,9 +103,9 @@
    {:access :private,
     :initial
     {:args [],
-     :id "qc2",
-     :interface "ZMQ",
      :pclass qc,
+     :plant-id "qc2",
+     :plant-interface "ZMQ",
      :plant-part "pp2",
      :type :pclass-ctor},
     :observable false},
@@ -124,8 +113,8 @@
    {:access :private,
     :initial
     {:args [],
-     :id "qc3",
      :pclass qc,
+     :plant-id "qc3",
      :plant-part "pp3",
      :type :pclass-ctor},
     :observable false}},
@@ -146,50 +135,31 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args
-         [{:type :literal, :value 42.44537}
-          {:type :literal, :value -71.227895}
-          {:type :literal, :value 1.0}
-          {:type :literal, :value 80}],
+         :args [42.44537 -71.227895 1.0 80],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args
-         [{:type :literal, :value 42.445435}
-          {:type :literal, :value -71.227846}
-          {:type :literal, :value 2.0}
-          {:type :literal, :value 170}],
+         :args [42.445435 -71.227846 2.0 170],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args
-         [{:type :literal, :value 42.445389}
-          {:type :literal, :value -71.227737}
-          {:type :literal, :value 3.0}
-          {:type :literal, :value 260}],
+         :args [42.445389 -71.227737 3.0 260],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args
-         [{:type :literal, :value 42.445327}
-          {:type :literal, :value -71.227788}
-          {:type :literal, :value 4.0}
-          {:type :literal, :value 350}],
+         :args [42.445327 -71.227788 4.0 350],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}
         {:type :method-fn,
          :method-ref {:type :method-arg-ref, :names [q location]},
-         :args
-         [{:type :literal, :value 42.44537}
-          {:type :literal, :value -71.227899}
-          {:type :literal, :value 1.0}
-          {:type :literal, :value 80}],
+         :args [42.44537 -71.227899 1.0 80],
          :temporal-constraints [{:type :bounds, :value [5 20]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [q],
      :display-name "Circuit One",
      :doc "First quadcopter circuit",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -216,10 +186,11 @@
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [q],
      :display-name "Circuit Three",
      :doc "Third quadcopter circuit",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -246,10 +217,11 @@
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [q],
      :display-name "Circuit Two",
      :doc "Second quadcopter circuit",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -270,10 +242,11 @@
          :args [{:type :method-arg-ref, :names [qc3]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [qc1 qc2 qc3],
      :display-name "Waypoints",
      :doc "Three quadcopter pattern of waypoints",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

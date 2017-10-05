@@ -4,6 +4,7 @@
  :hedge-21 {:end-node :hpt-13, :type :edge, :uid :hedge-21},
  :hem-14
  {:args [],
+  :display-args [],
   :display-name "Example",
   :edges [],
   :incidence-set #{:hedge-17},

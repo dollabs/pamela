@@ -29,6 +29,7 @@
  {:display-name "4", :end-node :hem-123, :type :edge, :uid :hedge-153},
  :hem-103
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -37,6 +38,7 @@
   :uid :hem-103},
  :hem-113
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -45,6 +47,7 @@
   :uid :hem-113},
  :hem-123
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -53,6 +56,7 @@
   :uid :hem-123},
  :hem-30
  {:args [],
+  :display-args [],
   :display-name "Main",
   :edges [:hedge-127 :hedge-142],
   :incidence-set #{:hedge-125},
@@ -61,6 +65,7 @@
   :uid :hem-30},
  :hem-36
  {:args [],
+  :display-args [],
   :display-name "Perform Activities",
   :edges [:hedge-129 :hedge-132 :hedge-135 :hedge-138],
   :incidence-set #{},
@@ -69,6 +74,7 @@
   :uid :hem-36},
  :hem-47
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -77,6 +83,7 @@
   :uid :hem-47},
  :hem-57
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -85,6 +92,7 @@
   :uid :hem-57},
  :hem-67
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -93,6 +101,7 @@
   :uid :hem-67},
  :hem-77
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -101,6 +110,7 @@
   :uid :hem-77},
  :hem-82
  {:args [],
+  :display-args [],
   :display-name "Perform Activities",
   :edges [:hedge-144 :hedge-147 :hedge-150 :hedge-153],
   :incidence-set #{},
@@ -109,6 +119,7 @@
   :uid :hem-82},
  :hem-93
  {:args [],
+  :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
@@ -194,6 +205,7 @@
  :hpt-100
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -203,6 +215,7 @@
  :hpt-101
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -212,6 +225,7 @@
  :hpt-102
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -221,6 +235,7 @@
  :hpt-104
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -230,6 +245,7 @@
  :hpt-105
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -239,6 +255,7 @@
  :hpt-106
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -248,6 +265,7 @@
  :hpt-107
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -257,6 +275,7 @@
  :hpt-108
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -266,6 +285,7 @@
  :hpt-109
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -275,6 +295,7 @@
  :hpt-110
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -284,6 +305,7 @@
  :hpt-111
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -293,6 +315,7 @@
  :hpt-112
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -302,6 +325,7 @@
  :hpt-114
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -311,6 +335,7 @@
  :hpt-115
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -320,6 +345,7 @@
  :hpt-116
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -329,6 +355,7 @@
  :hpt-117
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -338,6 +365,7 @@
  :hpt-118
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -347,6 +375,7 @@
  :hpt-119
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -356,6 +385,7 @@
  :hpt-120
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -365,6 +395,7 @@
  :hpt-121
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -374,6 +405,7 @@
  :hpt-122
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -390,6 +422,7 @@
  :hpt-38
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -399,6 +432,7 @@
  :hpt-39
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -408,6 +442,7 @@
  :hpt-40
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -417,6 +452,7 @@
  :hpt-41
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -426,6 +462,7 @@
  :hpt-42
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -435,6 +472,7 @@
  :hpt-43
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -444,6 +482,7 @@
  :hpt-44
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -453,6 +492,7 @@
  :hpt-45
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -462,6 +502,7 @@
  :hpt-46
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -471,6 +512,7 @@
  :hpt-48
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -480,6 +522,7 @@
  :hpt-49
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -489,6 +532,7 @@
  :hpt-50
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -498,6 +542,7 @@
  :hpt-51
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -507,6 +552,7 @@
  :hpt-52
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -516,6 +562,7 @@
  :hpt-53
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -525,6 +572,7 @@
  :hpt-54
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -534,6 +582,7 @@
  :hpt-55
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -543,6 +592,7 @@
  :hpt-56
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -552,6 +602,7 @@
  :hpt-58
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -561,6 +612,7 @@
  :hpt-59
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -570,6 +622,7 @@
  :hpt-60
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -579,6 +632,7 @@
  :hpt-61
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -588,6 +642,7 @@
  :hpt-62
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -597,6 +652,7 @@
  :hpt-63
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -606,6 +662,7 @@
  :hpt-64
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -615,6 +672,7 @@
  :hpt-65
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -624,6 +682,7 @@
  :hpt-66
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -633,6 +692,7 @@
  :hpt-68
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -642,6 +702,7 @@
  :hpt-69
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -651,6 +712,7 @@
  :hpt-70
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -660,6 +722,7 @@
  :hpt-71
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -669,6 +732,7 @@
  :hpt-72
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -678,6 +742,7 @@
  :hpt-73
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -687,6 +752,7 @@
  :hpt-74
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -696,6 +762,7 @@
  :hpt-75
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -705,6 +772,7 @@
  :hpt-76
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -714,6 +782,7 @@
  :hpt-84
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -723,6 +792,7 @@
  :hpt-85
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -732,6 +802,7 @@
  :hpt-86
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -741,6 +812,7 @@
  :hpt-87
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -750,6 +822,7 @@
  :hpt-88
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -759,6 +832,7 @@
  :hpt-89
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -768,6 +842,7 @@
  :hpt-90
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -777,6 +852,7 @@
  :hpt-91
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -786,6 +862,7 @@
  :hpt-92
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -795,6 +872,7 @@
  :hpt-94
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -804,6 +882,7 @@
  :hpt-95
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -813,6 +892,7 @@
  :hpt-96
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -822,6 +902,7 @@
  :hpt-97
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -831,6 +912,7 @@
  :hpt-98
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},
@@ -840,6 +922,7 @@
  :hpt-99
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Something Simple",
   :edges [],
   :incidence-set #{},

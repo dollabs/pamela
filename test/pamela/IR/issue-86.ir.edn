@@ -7,10 +7,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [a],
      :display-name "Foo",
      :doc "foo with 1 arg",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}
@@ -19,10 +20,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [a b],
      :display-name "Foo",
      :doc "foo with 2 args",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}
@@ -31,10 +33,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [a b c],
      :display-name "Foo",
      :doc "foo with 3 args",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -46,22 +49,20 @@
        :body
        [{:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args [{:type :literal, :value 1}]}
+         :args [1]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args [{:type :literal, :value 1} {:type :literal, :value 2}]}
+         :args [1 2]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this foo]},
-         :args
-         [{:type :literal, :value 1}
-          {:type :literal, :value 2}
-          {:type :literal, :value 3}]}]}],
+         :args [1 2 3]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
      :doc "call all the foos",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

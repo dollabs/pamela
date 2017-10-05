@@ -257,7 +257,8 @@
               (symbol? v)
               v
               (and (map? v) (= :pclass-ctor (:type v)) (symbol? k))
-              k
+              ;; k
+              v
               :else
               ;; (unparser/unparse-cond-expr v)
               v
@@ -268,26 +269,20 @@
 (defn unparse-arg-v [v]
   (unparse-arg-kv nil v))
 
+(defn display-argument [arg]
+  (let [new-arg (unparser/unparse-cond-expr arg)
+        _ (dbg-println :trace "  DA new-arg" (pr-str new-arg))
+        new-arg (if (and (= new-arg '(nil)) (:param arg))
+                  (:param arg)
+                  new-arg)]
+    (dbg-println :trace "  DA argument" arg "=>" new-arg)
+    new-arg))
+
 ;; The younger cousin to resolve-arguments
 (defn resolve-argument [arg arg-map]
-  (let [new-arg (cond
-                  (symbol? arg)
-                  arg
-                  (and (map? arg)
-                    (#{:method-arg-ref :pclass-arg-ref} (:type arg)))
-                  (-> arg :names first)
-                  (and (map? arg)
-                    (= :field-ref (:type arg)))
-                  (unparser/unparse-symbol-ref arg)
-                  (and (map? arg) (:param arg))
-                  (:param arg)
-                  (and (map? arg) (:type arg) (not (:param arg)))
-                  (unparse-arg-v arg)
-                  :else
-                  arg)
-        new-arg (if (symbol? new-arg)
-                  (get arg-map new-arg new-arg)
-                  new-arg)]
+  (let [new-arg (if (symbol? arg)
+                  (get arg-map arg arg)
+                  arg)]
     (dbg-println :trace "  RA argument" arg "=>" new-arg)
     new-arg))
 
@@ -394,10 +389,19 @@
                        ;; FIXME only handle one level of derefencing now
                        (let [marg (first names)
                              mval (get argument-mappings marg)]
-                         (if (= :pclass-ctor (:type mval))
-                           (do
-                             (dbg-println :debug "CALLER result" mval)
-                             mval)
+                         (cond
+                           (= :pclass-ctor (:type mval))
+                           mval
+                           (= :pclass-arg-ref (:type mval))
+                           (let [[n0 n1] (:names mval)
+                                 parg (first (filter #(= n0 (:param %)) pargs))
+                                 {:keys [pclass plant-id plant-part plant-interface]}
+                                 (if (= :pclass-ctor (:type parg))
+                                   parg
+                                   (fatal-error "pclass argument"
+                                     n0 "is not a pamela class constructor" ))]
+                             parg)
+                           :else
                            (let [arg (-> mval :names first)
                                  _ (dbg-println :debug "MARG" marg "MVAL" mval "ARG" arg)
                                  caller-subtask (second ancestry-path)
@@ -409,7 +413,6 @@
                                  ]
                              (dbg-println :debug "CALLER result" pc_)
                              pc_)))
-
                        (and (= mtype :method-fn) (= type :pclass-arg-ref))
                        ;; FIXME only handle one level of derefencing now
                        (let [param (first names)
@@ -624,7 +627,7 @@
   [original-task & [argument-mapping]]
   (dbg-println :debug "MET" original-task "args:" (pr-str argument-mapping))
   (let [task-type (:type original-task)
-        skeleton-task (dissoc original-task :uid :display-name)
+        skeleton-task (dissoc original-task :uid :display-name :display-args)
         task (if (= task-type :htn-primitive-task)
                (htn-primitive-task skeleton-task)
                (htn-expanded-nonprimitive-task skeleton-task))
@@ -840,7 +843,7 @@
   [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
-           label display-name incidence-set edges]
+           label display-name display-args incidence-set edges]
     :or {prefix "task-"
          task-type :communications
          display-name label
@@ -869,6 +872,7 @@
                :mission-task-weight mission-task-weight
                :label label
                :display-name display-name
+               :display-args display-args
                :incidence-set incidence-set ;; NOTE should be a clojure set
                :edges edges))))
 
@@ -877,7 +881,7 @@
   [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
-           label display-name incidence-set edges irks]
+           label display-name display-args  incidence-set edges irks]
     :as options}]
   ;;We should never see nil arguments
   (assert (not (some #(nil? %) arguments)) "htn-primitive-task: Found nil arguments")
@@ -891,7 +895,7 @@
   [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight
-           label display-name incidence-set edges irks]
+           label display-name display-args incidence-set edges irks]
     :as options}]
   (update-htn-object!
    (assoc-if (htn-task (assoc options :prefix (or prefix "hnpt-")))
@@ -903,7 +907,7 @@
   [{:keys [prefix uid ancestry-path pclass pargs name arguments cost task-type probability temporal-constraints
            mission-effectiveness priority resources network-flows
            flow-characteristics mission-task-weight task-expansions
-           label display-name incidence-set edges irks]
+           label display-name display-args incidence-set edges irks]
     :or {task-expansions []}
     :as options}]
   (let [task (assoc-if (htn-nonprimitive-task (assoc options :prefix (or prefix "henpt-")))
@@ -912,6 +916,7 @@
         display-name (if (empty? display-name) (name-with-args task) display-name)]
     (update-htn-object! (assoc-if task
                           :display-name display-name
+                          :display-args display-args
                           :label label))))
 
 (defn htn-method
@@ -922,6 +927,7 @@
            pclass
            name
            display-name
+           display-args
            nonprimitive-task ;;This is the HTN-nonprimitive-task that this method matches on
            preconditions
            subtasks ;;This is a simple list of the tasks
@@ -929,7 +935,7 @@
            mission-task-combination
            choice-weight
            task-expansions
-           display-name label incidence-set network edges
+           label incidence-set network edges
            irks]
     :or {prefix "hm-"
          subtasks []
@@ -940,6 +946,7 @@
                          :pclass pclass
                          :name name
                          :display-name display-name
+                         :display-args display-args
                          :nonprimitive-task nonprimitive-task
                          :preconditions preconditions
                          :subtasks (vec subtasks)
@@ -993,14 +1000,15 @@
            argument-mappings
            subtasks
            subtask-constraints
-           label display-name
+           label display-name display-args
            incidence-set network
            irks]
     :or {prefix "hem-"
-         display-name (:display-name expansion-method)
          subtasks []
          subtask-constraints []}}]
   (let [orig-method expansion-method
+        display-name (or display-name (:display-name expansion-method))
+        display-args (or display-args (:display-args expansion-method))
         orig-subtasks (:subtasks orig-method)
         new-subtasks subtasks ;; expanded henpt's
         subtask-constraints (map
@@ -1019,6 +1027,7 @@
         display-name (if (empty? display-name) (name-with-args hem) display-name)
         hem   (update-htn-object! (assoc-if hem
                                     :display-name display-name
+                                    :display-args display-args
                                     :label label))]
     hem))
 
@@ -1307,15 +1316,16 @@
             (loop [mi 0 mdef (first method-mdefs) more (rest method-mdefs)]
               (when mdef
                 (let [{:keys [temporal-constraints args primitive display-name
-                              body]} mdef]
+                              display-args body]} mdef]
                   (dbg-println :info "  METHOD" mname "MI" mi
-                    "PRIMITIVE" primitive "ARGS" args)
+                    "PRIMITIVE" primitive "ARGS" args
+                    "DISPLAY-NAME" display-name "DISPLAY-ARGS" display-args)
                   (when (and (not primitive) body)
                     (if (and (= 1 (count body))
                           (= :choose (get-in body [0 :type])))
                       (dbg-println :info "  TOP LEVEL CHOOSE!"))
                     (make-htn-methods ir pargs true pclass-name mname mi
-                      display-name args body)))
+                      display-name display-args args body)))
                 (recur (inc mi) (first more) (rest more))))))))))
 
 ;; consider memoizing or caching result
@@ -1382,9 +1392,103 @@
     (if-not (tpn/default-bounds? bounds)
       bounds)))
 
+;; only one level of dereferencing for now
+(defn resolve-to-plant-instance [ir hem-pclass pargs args subtask_]
+  (loop [rargs [] a (first args) more (rest args)]
+    (if-not a
+      rargs
+      (let [{:keys [type names]} (if (map? a) a)
+            [n0 n1] names
+            ra (cond
+                 (= :pclass-arg-ref type)
+                 (let [parg (first (filter #(= n0 (:param %)) pargs))
+                       {:keys [pclass plant-id plant-part plant-interface]}
+                       (if (= :pclass-ctor (:type parg))
+                         parg
+                         (fatal-error "pclass argument"
+                           n0 "is not a pamela class constructor" ))]
+                   (assoc-if a
+                     :pclass pclass
+                     :plant-id plant-id
+                     :plant-part plant-part
+                     :plant-interface plant-interface))
+                 (= :method-arg-ref type)
+                 (let [{:keys [ancestry-path]} subtask_
+                       hem (get-htn-object (first ancestry-path))
+                       {:keys [argument-mappings]} hem
+                       mval (get argument-mappings n0)
+                       {:keys [pclass plant-id plant-part plant-interface]}
+                       (cond
+                         (= :pclass-ctor (:type mval))
+                         mval
+                         (= :pclass-arg-ref (:type mval))
+                         (let [[n0 n1] (:names mval)
+                               parg (first (filter #(= n0 (:param %)) pargs))
+                               {:keys [pclass plant-id plant-part plant-interface]}
+                               (if (= :pclass-ctor (:type parg))
+                                 parg
+                                 (fatal-error "pclass argument"
+                                   n0 "is not a pamela class constructor" ))]
+                           (assoc-if a
+                             :pclass pclass
+                             :plant-id plant-id
+                             :plant-part plant-part
+                             :plant-interface plant-interface))
+                         :else
+                         (let [arg (-> mval :names first)
+                               _ (dbg-println :debug "RTPI MARG" n0
+                                   "MVAL" mval "ARG" arg)
+                               caller-subtask (second ancestry-path)
+                               caller-ancestry-path (:ancestry-path caller-subtask)
+                               caller-hem (get-htn-object (first caller-ancestry-path))
+                               caller-argument-mappings (:argument-mappings caller-hem)
+                               pc_ (get caller-argument-mappings (or arg mval))]
+                           pc_))]
+                   (assoc-if a
+                     :pclass pclass
+                     :plant-id plant-id
+                     :plant-part plant-part
+                     :plant-interface plant-interface))
+                 (= :field-ref type)
+                 (let [[n0 n1] names
+                       initial_ (get-in ir
+                                  [hem-pclass :fields n0 :initial])
+                       {:keys [type names]} initial_
+                       {:keys [pclass plant-id plant-part plant-interface]}
+                       (cond
+                         (= :pclass-ctor type)
+                         initial_
+                         ;; (= :field-ref type)
+                         ;; ;; This means method-ref is a reference to n0
+                         ;; ;; in hem-pclass.
+                         ;; (let [initial2_ (get-in ir
+                         ;;                   [hem-pclass :fields n0 :initial])]
+                         ;;   (dbg-println :debug "  initial2_" initial2_)
+                         ;;   ;; only handle one dereference for now
+                         ;;   (if (= :pclass-ctor (:type initial2_))
+                         ;;     initial2_
+                         ;;     (fatal-error "not implemented yet: :pclass-ctor :field-ref" initial2_)))
+                         (= :pclass-arg-ref type)
+                         (let [param (-> initial_ :names first)
+                               parg (first (filter #(= param (:param %)) pargs))]
+                           (if (= :pclass-ctor (:type parg))
+                             parg
+                             (fatal-error "pclass argument" param "is not a pamela class constructor" )))
+                         :else
+                         (fatal-error "not implemented yet: non :pclass-ctor field-ref type:" type))]
+                   (assoc-if a
+                     :pclass pclass
+                     :plant-id plant-id
+                     :plant-part plant-part
+                     :plant-interface plant-interface))
+                 :else
+                 a)
+            rargs (conj rargs ra)]
+        (recur rargs (first more) (rest more))))))
+
 ;; returns plant details map with keys
-;;   name display-name plantid plant-part interface args argvals
-(defn plant-details [ir pargs subtask_ pclass-ctor_ primitive?]
+;;   name display-name plant-id plant-part plant-interface args argvals
+(defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?]
   (let [{:keys [type name arguments ancestry-path]} subtask_
         name-str (str name)
         display-name (display-name-string name-str)
@@ -1392,14 +1496,17 @@
                  :display-name display-name}]
     (if (or (not primitive?) (= name 'delay))
       details
-      (let [{:keys [pclass id plant-part interface]} pclass-ctor_
-            plantid (if (reserved-conditional-method-name? name)
+      (let [{:keys [pclass plant-id plant-part plant-interface]} pclass-ctor_
+            plant-id (if (reserved-conditional-method-name? name)
                       *belief-state-manager-plant-id*
-                      id)
+                      plant-id)
             arguments (or arguments [])
             _ (dbg-println :trace "PD args before" arguments)
             args (resolve-arguments arguments nil ancestry-path)
+            display-args (mapv display-argument args)
+            args (resolve-to-plant-instance ir hem-pclass pargs args subtask_)
             _ (dbg-println :trace "PD args after" args)
+            _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
             _ (dbg-println :debug "PD get-in" pclass name)
             [mi mdef] (if (reserved-conditional-method-name? name)
@@ -1418,10 +1525,11 @@
         (assoc-if details
                   :args args
                   :argsmap argsmap
-                  :plantid plantid
+                  :plant-id plant-id
                   :plant-part plant-part
-                  :interface interface
+                  :plant-interface plant-interface
                   :display-name (or (:display-name mdef) display-name)
+                  :display-args display-args
                   :mdef (assoc mdef :method-bounds (bounds-from-mdef mdef))
                   )))))
 
@@ -1470,7 +1578,8 @@
                          :subtask-constraints :irks)
                  :incidence-set #{}
                  :edges []
-                 :args args)
+                 :args args
+                 :display-args (mapv display-argument args))
         edge (if root? (htn-edge {:end-node hem-uid}))
         edge-uid (:uid edge)
         hem-map (if root?
@@ -1592,7 +1701,8 @@
             pclass-ctor_ (if primitive?
                            (resolve-plant-class ir hem-pclass pargs
                                                 henpt subtask_))
-            details_ (plant-details ir pargs subtask_ pclass-ctor_ primitive?)
+            details_ (plant-details ir hem-pclass pargs subtask_
+                       pclass-ctor_ primitive?)
             ;; _ (dbg-println :debug "DETAILS_" (with-out-str (pprint details_)))
             subtask-map (merge
                          (assoc
@@ -1619,14 +1729,14 @@
                                  :plant-command (str (:name details_)
                                                      (seq (:args details_)))
                                  :verbose (let [plant-part (:plant-part details_)
-                                                plant-id (or (:plantid details_) "plant")
-                                                interface (or (:interface details_) "RMQ")]
+                                                plant-id (or (:plant-id details_) "plant")
+                                                plant-interface (or (:plant-interface details_) "RMQ")]
                                             (str (:name details_)
                                                  (seq (:args details_))
                                                  "@"
                                                  (if plant-part (str plant-part "."))
                                                  (if plant-id (str plant-id "."))
-                                                 interface))
+                                                 plant-interface))
                                  :display-name (str (:display-name details_)
                                                  (if (or (= name 'delay)
                                                        (empty? (:args details_)))
@@ -1637,14 +1747,15 @@
                                                       (pr-str (seq (:args details_)))
                                                       )))
                          :command (:name details_)
-                         :display-name (:display-name details_) ;; to be removed
+                         :display-name (:display-name details_) ;; to be removed?
+                         :display-args (:display-args details_) ;; to be removed?
                          ;; NOTE: labels go on activities if primitive
                          :label label
                          :args (:args details_)
                          :argsmap (:argsmap details_)
-                         :plantid (:plantid details_)
+                         :plant-id (:plant-id details_)
                          :plant-part (:plant-part details_)
-                         :interface (:interface details_)
+                         :plant-interface (:plant-interface details_)
                          ;; add constraints on the activity
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
@@ -2099,10 +2210,12 @@
 ;; create htn-methods as a side effect)
 (defn make-htn-methods
   "Construct the HTN Method(s) for mname"
-  [ir pargs top-level? mpclass mname mi display-name margs mbody & [irks]]
+  [ir pargs top-level? mpclass mname mi display-name
+   display-args margs mbody & [irks]]
   (dbg-println :debug "MHM " "TOP-LEVEL?" top-level? "MPCLASS" mpclass
     "MNAME" mname "MI" mi
     "DISPLAY-NAME" display-name
+    "DISPLAY-ARGS" display-args
     "MARGS" margs
     "IRKS" irks "\nMBODY" mbody)
   (let [irks (conj (or irks [mpclass :methods mname mi]) :body)
@@ -2115,6 +2228,7 @@
                              {:pclass mpclass
                               :name mname
                               :display-name display-name ;;Necessary???
+                              :display-args display-args
                               :arguments margs
                               ;; No need for :temporal-constraints?
                               :irks irks-0 ;;TODO - verify
@@ -2130,6 +2244,7 @@
                   method (htn-method {:pclass mpclass
                                       :name mname
                                       :display-name display-name
+                                      :display-args display-args
                                       :nonprimitive-task nonprimitive-task
                                       :subtasks subtasks
                                       :subtask-constraints subtask-constraints
@@ -2147,6 +2262,7 @@
                   method (htn-method {:pclass mpclass
                                       :name mname
                                       :display-name display-name
+                                      :display-args display-args
                                       :nonprimitive-task nonprimitive-task
                                       :subtasks subtasks
                                       :subtask-constraints subtask-constraints

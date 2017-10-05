@@ -284,18 +284,19 @@
   [{:keys [prefix uid constraints order end-node
            label sequence-label probability cost reward guard
            task name controllable htn-node
-           plant plantid plant-part interface
-           command display-name args argsmap]
+           plant plant-id plant-part plant-interface
+           command display-name display-args args argsmap]
     :as options}]
   (update-tpn-plan-map!
     (assoc-if (tpn-delay-activity (assoc options :prefix (or prefix "act-")))
       :tpn-type :activity
       :plant plant
-      :plantid plantid
+      :plant-id plant-id
       :plant-part plant-part
-      :interface interface
+      :plant-interface plant-interface
       :command command
       :display-name display-name
+      :display-args display-args
       :args args
       :argsmap argsmap)))
 
@@ -839,7 +840,7 @@
 ;;     tc))
 
 ;; NOTE: plant-id is nil and no longer used
-(defn build-tpn [ir labels tpn-pclass plant-id tpn-pclass-args pfn parent-begin-uid
+(defn build-tpn [ir labels tpn-pclass tpn-plant-id tpn-pclass-args pfn parent-begin-uid
                  & [parent-order]]
   (dbg-println :trace "BUILD-TPN tpn-pclass:" tpn-pclass "tpn-pclass-args" tpn-pclass-args
     "\n  pfn type:" (:type pfn))
@@ -866,15 +867,15 @@
         ;; plant-sym (or (first (keys tpn-pclass-args)) tpn-pclass)
         plant-sym (or method-pclass tpn-pclass)
         plant-ctor (if plant-fn? (get tpn-pclass-args method-arg))
-        {:keys [pclass id interface]} plant-ctor
+        {:keys [pclass plant-id plant-interface]} plant-ctor
         ;; assume the first mdef is the correct one
         plant-mdef (if plant-fn? (get-in ir [plant-sym :methods method 0]))
         _ (dbg-println :trace "BUILD-TPN plant-sym:" plant-sym
             "plant-mdef:" plant-mdef)
-        id (if plant-fn? (or id plant-id))
-        plantid (if id (str id (if interface "@") interface))
+        id (if plant-fn? (or plant-id tpn-plant-id))
+        plant-id (if id (str id (if plant-interface "@") plant-interface))
         _ (dbg-println :trace "BUILD-TPN plant-ctor:" plant-ctor
-            "\n id" id "plantid" plantid)
+            "\n id" id "plant-id" plant-id)
         method-args (if plant-fn? (map str (:args plant-mdef)))
         args (mapv unparser/unparse-cond-expr args)
         argsmap (if plant-fn? (zipmap method-args args))
@@ -926,7 +927,7 @@
         activity (if basic-fn?
                    (tpn-activity
                      {:plant (if (and (not delay-fn?) plant-sym) (str plant-sym))
-                      :plantid plantid
+                      :plant-id plant-id
                       :command command
                       :args (if-not delay-fn? args)
                       :argsmap (if-not delay-fn? argsmap)
@@ -1163,12 +1164,10 @@
                         (let [{:keys [type value names]} arg
                               n0 (first names)]
                           (cond
-                            (= :literal type)
-                            value
                             (= :field-ref type)
                             (get-in ir [demo-pclass :fields n0 :initial])
                             :else
-                            :error-unsupported-arg)))
+                            value)))
         tpn-args (mapv get-field-def args)]
     (dbg-println :trace "FTMC tpn-args" tpn-args)
     (if-not tpn-method-def

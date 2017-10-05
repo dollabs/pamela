@@ -15,23 +15,24 @@
    {:access :private,
     :initial
     {:args [],
-     :id "qc1",
-     :interface "RMQ",
      :pclass qc,
+     :plant-id "qc1",
+     :plant-interface "RMQ",
      :type :pclass-ctor},
     :observable false},
    qc2
    {:access :private,
     :initial
     {:args [],
-     :id "qc2",
-     :interface "ZMQ",
      :pclass qc,
+     :plant-id "qc2",
+     :plant-interface "ZMQ",
      :type :pclass-ctor},
     :observable false},
    qc3
    {:access :private,
-    :initial {:args [], :id "qc3", :pclass qc, :type :pclass-ctor},
+    :initial
+    {:args [], :pclass qc, :plant-id "qc3", :type :pclass-ctor},
     :observable false}},
   :meta
   {:depends {qc "0.2.1", qc-waypoints "0.2.1"},

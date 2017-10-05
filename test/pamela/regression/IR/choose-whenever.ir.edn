@@ -20,9 +20,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 1}]},
+          :args [{:type :field-ref, :names [priority]} 1]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [plant acquire]},
@@ -38,9 +36,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 2}]},
+          :args [{:type :field-ref, :names [priority]} 2]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [plant acquire]},
@@ -56,9 +52,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 3}]},
+          :args [{:type :field-ref, :names [priority]} 3]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [plant acquire]},
@@ -74,9 +68,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 4}]},
+          :args [{:type :field-ref, :names [priority]} 4]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [plant acquire]},
@@ -87,20 +79,17 @@
           :args [:xyzzy]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Choose By Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
  choice-tpn2
  {:args [plant],
-  :fields
-  {priority
-   {:access :private,
-    :initial {:type :literal, :value 4},
-    :observable false}},
+  :fields {priority {:access :private, :initial 4, :observable false}},
   :meta {:doc "New choose-whenever example"},
   :methods
   {choose-by-priority
@@ -116,9 +105,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 1}]},
+          :args [{:type :field-ref, :names [priority]} 1]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [set-priority]},
@@ -130,9 +117,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 2}]},
+          :args [{:type :field-ref, :names [priority]} 2]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [set-priority]},
@@ -144,9 +129,7 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 3}]},
+          :args [{:type :field-ref, :names [priority]} 3]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [set-priority]},
@@ -158,18 +141,17 @@
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-ref, :names [priority]}
-           {:type :literal, :value 4}]},
+          :args [{:type :field-ref, :names [priority]} 4]},
          :enter
          {:type :method-fn,
           :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [4]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Choose By Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -186,9 +168,10 @@
        :body nil}],
      :controllable false,
      :cost 0,
+     :display-args [new-priority],
      :display-name "Set Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -203,9 +186,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [resource],
      :display-name "Acquire",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -215,9 +199,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Four",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -227,9 +212,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "One",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -239,9 +225,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [resource],
      :display-name "Release",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -251,9 +238,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Three",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -263,9 +251,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Two",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

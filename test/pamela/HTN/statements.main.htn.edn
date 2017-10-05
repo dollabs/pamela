@@ -8,6 +8,7 @@
  :hedge-34 {:end-node :hpt-22, :type :edge, :uid :hedge-34},
  :hem-16
  {:args [],
+  :display-args [],
   :display-name "Main",
   :edges [:hedge-28],
   :incidence-set #{:hedge-26},
@@ -16,6 +17,7 @@
   :uid :hem-16},
  :hem-23
  {:args [],
+  :display-args [],
   :display-name "Test Of Various Statements",
   :edges [],
   :incidence-set #{},
@@ -36,8 +38,12 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-15},
  :hpt-17
- {:args [field1.simple2],
-  :argsmap {"x" field1.simple2},
+ {:args
+  [{:type :field-ref, :names [field1 simple2], :pclass simple-pclass}],
+  :argsmap
+  {"x"
+   {:names [field1 simple2], :pclass simple-pclass, :type :field-ref}},
+  :display-args [field1.simple2],
   :display-name "One Arg Method",
   :edges [:hedge-30],
   :incidence-set #{},
@@ -47,82 +53,67 @@
  :hpt-18
  {:args
   [{:type :equal,
-    :args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}]}],
+    :args [{:type :state-variable, :name foo} :illuminated]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}],
+   {:args [{:type :state-variable, :name foo} :illuminated],
     :type :equal}},
+  :display-args [(= foo :illuminated)],
   :display-name "Assert",
   :edges [:hedge-31],
   :incidence-set #{:hedge-30},
   :name "assert",
-  :plantid "bsm1",
+  :plant-id "bsm1",
   :type :htn-primitive-task,
   :uid :hpt-18},
  :hpt-19
  {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}]}],
+  [{:type :equal, :args [{:type :state-variable, :name bar} :dead]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}],
-    :type :equal}},
+   {:args [{:type :state-variable, :name bar} :dead], :type :equal}},
+  :display-args [(= bar :dead)],
   :display-name "Ask",
   :edges [:hedge-32],
   :incidence-set #{:hedge-31},
   :name "ask",
-  :plantid "bsm1",
+  :plant-id "bsm1",
   :type :htn-primitive-task,
   :uid :hpt-19},
  :hpt-20
  {:args
   [{:type :equal,
-    :args
-    [{:type :field-ref, :names [field1 simple2]}
-     {:type :literal, :value "white"}]}],
+    :args [{:type :field-ref, :names [field1 simple2]} "white"]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :field-ref, :names [field1 simple2]}
-     {:type :literal, :value "white"}],
+   {:args [{:type :field-ref, :names [field1 simple2]} "white"],
     :type :equal}},
+  :display-args [(= field1.simple2 "white")],
   :display-name "Ask",
   :edges [:hedge-33],
   :incidence-set #{:hedge-32},
   :name "ask",
-  :plantid "bsm1",
+  :plant-id "bsm1",
   :type :htn-primitive-task,
   :uid :hpt-20},
  :hpt-21
  {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}]}],
+  [{:type :equal, :args [{:type :state-variable, :name door} :open]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}],
-    :type :equal}},
+   {:args [{:type :state-variable, :name door} :open], :type :equal}},
+  :display-args [(= door :open)],
   :display-name "Tell",
   :edges [:hedge-34],
   :incidence-set #{:hedge-33},
   :name "tell",
-  :plantid "bsm1",
+  :plant-id "bsm1",
   :type :htn-primitive-task,
   :uid :hpt-21},
  :hpt-22
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Initialize",
   :edges [],
   :incidence-set #{:hedge-34},

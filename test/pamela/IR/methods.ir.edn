@@ -8,15 +8,14 @@
      :body
      [{:type :method-fn,
        :method-ref {:type :symbol-ref, :names [this primitive]},
-       :args
-       [{:type :literal, :value 42.44537}
-        {:type :literal, :value -71.227891}]}],
+       :args [42.44537 -71.227891]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Nonprimitive",
      :doc "A non primitive method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 50]}]}],
@@ -26,10 +25,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [arg1 arg2],
      :display-name "Primitive",
      :doc "A primitive method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -51,9 +51,7 @@
          [{:type :method-fn,
            :method-ref
            {:type :pclass-arg-ref, :names [arg1 primitive]},
-           :args
-           [{:type :literal, :value 42.44537}
-            {:type :literal, :value -71.227891}],
+           :args [42.44537 -71.227891],
            :temporal-constraints [{:type :bounds, :value [5 20]}]}]}
         {:type :sequence,
          :body
@@ -63,10 +61,11 @@
            :args []}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Entry Method",
      :doc "Check methods",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -86,12 +85,18 @@
    qc1
    {:access :private,
     :initial
-    {:args [], :id "qc1", :pclass plant-methods, :type :pclass-ctor},
+    {:args [],
+     :pclass plant-methods,
+     :plant-id "qc1",
+     :type :pclass-ctor},
     :observable false},
    qc2
    {:access :private,
     :initial
-    {:args [], :id "qc2", :pclass plant-methods, :type :pclass-ctor},
+    {:args [],
+     :pclass plant-methods,
+     :plant-id "qc2",
+     :type :pclass-ctor},
     :observable false}},
   :meta
   {:depends {plant-methods "0.2.1", tpn-methods "0.2.1"},

@@ -6,6 +6,7 @@
  :hedge-40 {:end-node :hpt-28, :type :edge, :uid :hedge-40},
  :hem-20
  {:args [],
+  :display-args [],
   :display-name "Main Activity",
   :edges [:hedge-34],
   :incidence-set #{:hedge-32},
@@ -13,9 +14,8 @@
   :type :htn-expanded-method,
   :uid :hem-20},
  :hem-23
- {:args
-  [{:type :literal, :value "host0101"}
-   {:type :literal, :value "host0701"}],
+ {:args ["host0101" "host0701"],
+  :display-args ["host0101" "host0701"],
   :display-name "test1",
   :edges [:hedge-36 :hedge-38],
   :incidence-set #{},
@@ -23,9 +23,8 @@
   :type :htn-expanded-method,
   :uid :hem-23},
  :hem-25
- {:args
-  [{:type :literal, :value "host0101"}
-   {:type :literal, :value "100MB"}],
+ {:args [{:type :method-arg-ref, :names [server-host]} "100MB"],
+  :display-args [server-host "100MB"],
   :display-name "File Xfer",
   :edges [],
   :incidence-set #{},
@@ -34,9 +33,10 @@
   :uid :hem-25},
  :hem-29
  {:args
-  [{:type :literal, :value "host0701"}
-   {:type :literal, :value "host0101"}
-   {:type :literal, :value "1"}],
+  [{:type :method-arg-ref, :names [client-host]}
+   {:type :method-arg-ref, :names [server-host]}
+   "1"],
+  :display-args [client-host server-host "1"],
   :display-name "Video Session",
   :edges [],
   :incidence-set #{},
@@ -72,17 +72,18 @@
   :uid :henpt-22},
  :hpt-24
  {:args
-  [{:type :literal, :value "host0101"}
-   {:type :literal, :value "100MB"}],
+  [{:type :method-arg-ref, :names [server-host]}
+   {:type :method-arg-ref, :names [size]}],
   :argsmap
-  {"server-host" {:type :literal, :value "host0101"},
-   "size" {:type :literal, :value "100MB"}},
+  {"server-host" {:names [server-host], :type :method-arg-ref},
+   "size" {:names [size], :type :method-arg-ref}},
+  :display-args [server-host size],
   :display-name "Ftp",
   :edges [],
   :incidence-set #{},
   :name "ftp",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :type :htn-primitive-task,
   :uid :hpt-24},
  :hpt-27
@@ -94,19 +95,20 @@
   :uid :hpt-27},
  :hpt-28
  {:args
-  [{:type :literal, :value "host0701"}
-   {:type :literal, :value "host0101"}
-   {:type :literal, :value "1"}],
+  [{:type :method-arg-ref, :names [client-host]}
+   {:type :method-arg-ref, :names [server-host]}
+   {:type :method-arg-ref, :names [display]}],
   :argsmap
-  {"client" {:type :literal, :value "host0701"},
-   "display" {:type :literal, :value "1"},
-   "server" {:type :literal, :value "host0101"}},
+  {"client" {:names [client-host], :type :method-arg-ref},
+   "display" {:names [display], :type :method-arg-ref},
+   "server" {:names [server-host], :type :method-arg-ref}},
+  :display-args [client-host server-host display],
   :display-name "Video",
   :edges [],
   :incidence-set #{:hedge-40},
   :name "video",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :type :htn-primitive-task,
   :uid :hpt-28},
  :net-31

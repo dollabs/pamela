@@ -49,7 +49,8 @@
 
 (defn cond-operand? [v]
   (or (literal? v) ;; literal
-    (#{:literal :field-ref :mode-ref :state-variable
+    ;; (#{:literal :field-ref :mode-ref :state-variable
+    (#{:field-ref :mode-ref :state-variable
        :method-arg-ref :pclass-arg-ref}
       (:type v))))
 
@@ -81,8 +82,8 @@
 (defmethod unparse-field-type :default [field-type]
   (unparse-number-ref field-type))
 
-(defmethod unparse-field-type :literal [field-type]
-  (:value field-type))
+;; (defmethod unparse-field-type :literal [field-type]
+;;   (:value field-type))
 
 (defmethod unparse-field-type :mode-ref [field-type]
   (let [{:keys [mode-ref mode]} field-type
@@ -106,16 +107,20 @@
 (declare  unparse-argvals)
 
 (defmethod unparse-field-type :pclass-ctor [field-type]
-  (let [{:keys [pclass args id interface plant-part]} field-type
+  (let [{:keys [pclass args plant-id plant-interface plant-part]} field-type
         pclass-ctor '()
         pclass-ctor (if plant-part
                       (cons :plant-part (cons plant-part pclass-ctor))
                       pclass-ctor)
-        pclass-ctor (if interface
-                      (cons :interface (cons interface pclass-ctor))
+        pclass-ctor (if plant-interface
+                      ;; future
+                      ;; (cons :plant-interface (cons plant-interface pclass-ctor))
+                      (cons :interface (cons plant-interface pclass-ctor))
                       pclass-ctor)
-        pclass-ctor (if id
-                      (cons :id (cons id pclass-ctor))
+        pclass-ctor (if plant-id
+                      ;; future
+                      ;; (cons :plant-id (cons plant-id pclass-ctor))
+                      (cons :id (cons plant-id pclass-ctor))
                       pclass-ctor)
         pclass-ctor (if (empty? args)
                       (cons pclass pclass-ctor)
@@ -160,8 +165,8 @@
 (defmethod unparse-cond-operand :default [cond-operand]
   cond-operand)
 
-(defmethod unparse-cond-operand :literal [cond-operand]
-  (:value cond-operand))
+;; (defmethod unparse-cond-operand :literal [cond-operand]
+;;   (:value cond-operand))
 
 (defmethod unparse-cond-operand :state-variable [cond-operand]
   (let [{:keys [name]} cond-operand]
@@ -186,14 +191,20 @@
 ;; unparse-cond-expr -------------------------
 
 (defn unparse-cond-expr [cond-expr]
-  (if cond-expr
+  (cond
+    (nil? cond-expr)
+    true-type ;; default for unspecified conditions
+    (or (symbol? cond-expr) (literal? cond-expr))
+    cond-expr
+    (cond-operand? cond-expr)
+    (unparse-cond-operand cond-expr)
+    (map? cond-expr)
     (let [{:keys [type args]} cond-expr]
-      (if (cond-operand? cond-expr)
-        (unparse-cond-operand cond-expr)
-        (apply list
-          (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
-          (map unparse-cond-expr args))))
-    true-type)) ;; assume default is the constant true (if-not cond-expr)
+      (apply list
+        (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
+        (map unparse-cond-expr args)))
+    :else ;; default
+    true-type))
 
 ;; -------------------------
 
@@ -246,14 +257,15 @@
 (defmethod unparse-option :inherit [option def]
   (pprint-option option def))
 
-;; if the value of all the modes is {:type :literal, :value true}
+;; ;; if the value of all the modes is {:type :literal, :value true}
+;; if the value of all the modes is true?
 ;; then convert to a mode-enum
 ;; else if value is true then use that
 ;; else unparse-cond-expr
 (defmethod unparse-option :modes [option def]
   (pprint-option option
     (let [modes-kvs (seq def)]
-      (if (every? #(= % true-type) (map second modes-kvs))
+      (if (every? true? (map second modes-kvs))
         (mapv first modes-kvs) ;; mode-enum
         (loop [modes-source {} mode-kv (first modes-kvs) more (rest modes-kvs)]
           (if-not mode-kv
@@ -453,7 +465,7 @@
   (let [{:keys [doc pre post cost reward controllable primitive display-name
                 temporal-constraints ;; bounds in cond-map
                 args betweens body]} mdef
-        cond-map (dissoc mdef :args :betweens :body)
+        cond-map (dissoc mdef :args :betweens :body :display-args)
         primitive-default (nil? body)
         cond-map-default (assoc (dissoc (default-mdef method) :betweens :body)
                            :primitive primitive-default)

@@ -15,9 +15,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Emit Head",
      :doc "Heads",
-     :post {:type :literal, :value true},
+     :post true,
      :pre
      {:type :equal,
       :args
@@ -34,9 +35,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Emit Tail",
      :doc "Tails",
-     :post {:type :literal, :value true},
+     :post true,
      :pre
      {:type :equal,
       :args
@@ -77,7 +79,7 @@
           [{:type :mode-ref,
             :mode-ref {:type :symbol-ref, :names [this]},
             :mode :biased}
-           {:type :literal, :value true}]}}
+           true]}}
         {:type :choice,
          :body
          [{:type :choose,
@@ -103,19 +105,18 @@
           [{:type :mode-ref,
             :mode-ref {:type :symbol-ref, :names [this]},
             :mode :unbiased}
-           {:type :literal, :value true}]}}]}],
+           true]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip",
      :doc "Flip the coin",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
-  :modes
-  {:biased {:type :literal, :value true},
-   :unbiased {:type :literal, :value true}},
+  :modes {:biased true, :unbiased true},
   :transitions
   {:biased:biased
    {:post
@@ -161,9 +162,7 @@
  coin-faces
  {:args [],
   :meta {:doc "Enumeration of coin faces"},
-  :modes
-  {:head {:type :literal, :value true},
-   :tail {:type :literal, :value true}},
+  :modes {:head true, :tail true},
   :type :pclass},
  main
  {:args [],
@@ -172,9 +171,9 @@
    {:access :private,
     :initial
     {:args [],
-     :id "penny",
-     :interface "RMQ",
      :pclass coin,
+     :plant-id "penny",
+     :plant-interface "RMQ",
      :plant-part "coin-fsm",
      :type :pclass-ctor},
     :observable false}},
@@ -217,10 +216,11 @@
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip 1000",
      :doc "Series of 1000 coin flips",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -241,10 +241,11 @@
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip 3",
      :doc "Series of 3 coin flips",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

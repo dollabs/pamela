@@ -21,7 +21,8 @@
             [me.raynes.fs :as fs]
             [clojure.java.io :refer [resource]]
             [camel-snake-kebab.core :as translate]
-            [pamela.utils :refer [output-file display-name-string dbg-println]]
+            [pamela.utils :refer [output-file display-name-string dbg-println
+                                  clj19-boolean?]]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta]
             [plan-schema.utils :refer [fs-basename]]
@@ -93,9 +94,11 @@
                     :temporal-constraints [default-bounds-type]
                     :body nil})
 
-(def true-type {:type :literal, :value true})
+;; (def true-type {:type :literal, :value true})
+(def true-type true)
 
-(def false-type {:type :literal, :value true})
+;; (def false-type {:type :literal, :value false})
+(def false-type false)
 
 (def between-stmt-types #{:between :between-ends :between-starts})
 
@@ -133,10 +136,11 @@
 ;; field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
 ;;                mode-ref | symbol-ref )
 (defn ir-field-type [v]
-  (if (map? v) ;; lvar-ctor, pclass-ctor, mode-ref, or symbol-ref
-    v
-    {:type :literal
-     :value v}))
+  v)
+  ;; (if (map? v) ;; lvar-ctor, pclass-ctor, mode-ref, or symbol-ref
+  ;;   v
+  ;;   {:type :literal
+  ;;    :value v}))
 
 ;; The only rationale for not simply using identity is that we
 ;; may want to, at some point, change the IR to express every
@@ -161,13 +165,13 @@
       :default lvar-init)))
 
 (defn ir-id [id]
-  {:id id})
+  {:plant-id id})
 
 (defn ir-plant-part [plant-part]
   {:plant-part plant-part})
 
 (defn ir-interface [interface]
-  {:interface interface})
+  {:plant-interface interface})
 
 (defn ir-pclass-ctor [name & args-opts]
   (dbg-println :trace "ir-pclass-ctor" name "ARGS-OPTS" args-opts)
@@ -274,6 +278,7 @@
                   :betweens []
                   :primitive false
                   :display-name nil
+                  :display-args nil
                   :body nil}
         display-name (if method (display-name-string method))]
     (assoc-if cond-map :display-name display-name)))
@@ -638,7 +643,8 @@
     (if (not (get modes operand))
       (do
         (log/warn (str "mode " operand " is not defined in pclass " pclass))
-        {:type :literal, :value operand})
+        ;; {:type :literal, :value operand}
+        operand)
       {:type :mode-ref
        :mode-ref {:type :symbol-ref :names ['this]}
        :mode operand})
@@ -779,7 +785,8 @@
         vargs
         (let [va (cond
                    (literal? a)
-                   {:type :literal, :value a}
+                   ;; {:type :literal, :value a}
+                   a
                    (mode-ref? a)
                    (validate-cond-operand ir state-vars in-pclass
                      fields modes context
@@ -825,11 +832,12 @@
         method-args (if method
                       (get-in ir [pclass :methods method c-mi :args]))]
     (cond
+      ;; (= type :literal)
+      (clj19-boolean? condition)
+      condition ;; literal boolean condition
       (or (nil? type) (symbol-ref? condition) (mode-ref? condition))
       (validate-cond-operand ir state-vars pclass fields modes context
         pclass-args method-args condition)
-      (= type :literal)
-      condition ;; literal boolean condition
       (= type :equal)
       (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
         (if-not a
@@ -844,7 +852,8 @@
             (map? a) ;; already specified by instaparse
             (recur vcond (conj vargs a) (first more) (rest more))
             :else ;; must be a literal
-            (recur vcond (conj vargs {:type :literal :value a})
+            ;; (recur vcond (conj vargs {:type :literal :value a})
+            (recur vcond (conj vargs a)
               (first more) (rest more)))))
       :else ;; :and :or :not :implies => recurse on args
       (let [vargs (mapv
@@ -933,7 +942,7 @@
                    " pamela class constructor arg " n0
                    " is neither a formal argument to, "
                    "nor another field of the pclass " scope-pclass)}
-                (and (keyword? a) (#{:id :interface :plant-part} a))
+                (and (keyword? a) (#{:plant-id :plant-interface :plant-part} a))
                 a
                 (keyword? a)
                 {:error (str "Keyword argument to pclass constructor " a
@@ -956,7 +965,7 @@
         (let [[field val] field-val
               {:keys [access observable initial]} val
               scope-pclass pclass
-              {:keys [type pclass args names value id interface plant-part]} initial
+              {:keys [type pclass args names value plant-id plant-interface plant-part]} initial
               n0 (first names)
               _ (dbg-println :trace "  FIELD" field "type" type "n0" n0)
               [type args] (cond
@@ -1062,10 +1071,18 @@
                         body (if-not (empty? body)
                                (validate-body ir state-vars pclass
                                  fields modes methods method mi body))
+                        ;; Yes, this is a hack to avoid a circular
+                        ;; namespace dependency
+                        unparser (the-ns 'pamela.unparser)
+                        unparse-cond-expr (ns-resolve unparser 'unparse-cond-expr)
                         mdef (assoc-if mdef
                                :pre pre
                                :post post
-                               :body body)
+                               :body body
+                               :display-args
+                               (mapv unparse-cond-expr args))
+                        _ (dbg-println :trace "  VM ARGS" args
+                            "DISPLAY-ARGS" (:display-args mdef))
                         vmdefs (cond
                                  (:error pre)
                                  pre

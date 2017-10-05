@@ -1,10 +1,7 @@
 {example
  {:args [pclass-arg],
   :fields
-  {field1
-   {:access :private,
-    :initial {:type :literal, :value 3.14},
-    :observable false},
+  {field1 {:access :private, :initial 3.14, :observable false},
    field2
    {:access :private,
     :initial
@@ -23,9 +20,10 @@
         {:type :field-ref, :names [field2 simple2]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -35,9 +33,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [a b c],
      :display-name "My Method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -45,10 +44,7 @@
  locations
  {:args [],
   :meta {:doc "Enumeration of locations"},
-  :modes
-  {:air {:type :literal, :value true},
-   :land {:type :literal, :value true},
-   :sea {:type :literal, :value true}},
+  :modes {:air true, :land true, :sea true},
   :type :pclass},
  main
  {:args [],
@@ -61,10 +57,7 @@
    {:access :private,
     :initial {:args [43], :pclass pclass1, :type :pclass-ctor},
     :observable false},
-   field3
-   {:access :private,
-    :initial {:type :literal, :value 100},
-    :observable false},
+   field3 {:access :private, :initial 100, :observable false},
    field4
    {:access :private,
     :initial
@@ -86,14 +79,13 @@
        [{:type :method-fn,
          :method-ref
          {:type :symbol-ref, :names [this reference-tests]},
-         :args
-         [{:type :field-ref, :names [field1]}
-          {:type :literal, :value 42}]}]}],
+         :args [{:type :field-ref, :names [field1]} 42]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -137,20 +129,16 @@
         {:type :tell,
          :condition
          {:type :equal,
-          :args
-          [{:type :method-arg-ref, :names [method-arg]}
-           {:type :literal, :value 101}]}}
+          :args [{:type :method-arg-ref, :names [method-arg]} 101]}}
         {:type :when,
          :condition
          {:type :equal,
-          :args
-          [{:type :method-arg-ref, :names [method-arg]}
-           {:type :literal, :value 101}]},
+          :args [{:type :method-arg-ref, :names [method-arg]} 101]},
          :body
          [{:type :method-fn,
            :method-ref
            {:type :symbol-ref, :names [this simple-method]},
-           :args [{:type :literal, :value 101}]}]}
+           :args [101]}]}
         {:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this simple-method]},
          :args [{:type :method-arg-ref, :names [method-arg]}]}
@@ -173,40 +161,35 @@
          :args [{:type :field-ref, :names [field4 field2-1 field1-1]}]}
         {:type :method-fn,
          :method-ref {:type :field-ref, :names [field2 method1]},
-         :args [{:type :literal, :value 1} {:type :literal, :value 2}]}
+         :args [1 2]}
         {:type :method-fn,
          :method-ref
          {:type :field-ref, :names [field4 field2-1 method1]},
-         :args [{:type :literal, :value 1} {:type :literal, :value 2}]}
+         :args [1 2]}
         {:type :method-fn,
          :method-ref
          {:type :method-arg-ref, :names [pclass-instance-arg method1]},
-         :args [{:type :literal, :value 1} {:type :literal, :value 2}]}
+         :args [1 2]}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [field4 method3]},
+         :args [4 5 :running]}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [field4 method3]},
+         :args [4 5 :stopped]}
         {:type :method-fn,
          :method-ref {:type :field-ref, :names [field4 method3]},
          :args
-         [{:type :literal, :value 4}
-          {:type :literal, :value 5}
-          {:type :literal, :value :running}]}
-        {:type :method-fn,
-         :method-ref {:type :field-ref, :names [field4 method3]},
-         :args
-         [{:type :literal, :value 4}
-          {:type :literal, :value 5}
-          {:type :literal, :value :stopped}]}
-        {:type :method-fn,
-         :method-ref {:type :field-ref, :names [field4 method3]},
-         :args
-         [{:type :literal, :value 4}
-          {:type :literal, :value 5}
+         [4
+          5
           {:type :mode-ref,
            :mode-ref {:type :symbol-ref, :names [locations]},
            :mode :sea}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [pclass-instance-arg method-arg],
      :display-name "Reference Tests",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -216,15 +199,14 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [arg],
      :display-name "Simple Method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
-  :modes
-  {:running {:type :literal, :value true},
-   :stopped {:type :literal, :value true}},
+  :modes {:running true, :stopped true},
   :type :pclass},
  pclass1
  {:args [p-arg1],
@@ -241,9 +223,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [x y],
      :display-name "Method 1",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -264,9 +247,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [x y],
      :display-name "Method 2",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -281,9 +265,10 @@
         {:type :method-arg-ref, :names [b]}]}],
      :controllable false,
      :cost 0,
+     :display-args [a b c],
      :display-name "Method 3",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -291,10 +276,7 @@
  simple-pclass
  {:args [simple2-initial],
   :fields
-  {simple1
-   {:access :private,
-    :initial {:type :literal, :value "white"},
-    :observable true},
+  {simple1 {:access :private, :initial "white", :observable true},
    simple2
    {:access :private,
     :initial {:names [simple2-initial], :type :pclass-arg-ref},
@@ -306,9 +288,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Simple Method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

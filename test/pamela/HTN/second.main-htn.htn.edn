@@ -23,6 +23,7 @@
  :hedge-73 {:end-node :hpt-40, :type :edge, :uid :hedge-73},
  :hem-34
  {:args [],
+  :display-args [],
   :display-name "Start",
   :edges [:hedge-58 :hedge-61],
   :incidence-set #{:hedge-56},
@@ -31,6 +32,7 @@
   :uid :hem-34},
  :hem-37
  {:args [],
+  :display-args [],
   :display-name "Do A And B",
   :edges [],
   :incidence-set #{},
@@ -39,6 +41,7 @@
   :uid :hem-37},
  :hem-41
  {:args [],
+  :display-args [],
   :display-name "Do Choice And C",
   :edges [:hedge-63 :hedge-68],
   :incidence-set #{},
@@ -47,6 +50,7 @@
   :uid :hem-41},
  :hem-44
  {:args [],
+  :display-args [],
   :display-name "Do Choice-0",
   :edges [:hedge-65],
   :incidence-set #{},
@@ -55,6 +59,7 @@
   :uid :hem-44},
  :hem-46
  {:args [],
+  :display-args [],
   :display-name "Do Choice-1",
   :edges [:hedge-70],
   :incidence-set #{},
@@ -63,6 +68,7 @@
   :uid :hem-46},
  :hem-49
  {:args [],
+  :display-args [],
   :display-name "Do D And E",
   :edges [],
   :incidence-set #{},
@@ -71,6 +77,7 @@
   :uid :hem-49},
  :hem-53
  {:args [],
+  :display-args [],
   :display-name "Do F And G",
   :edges [],
   :incidence-set #{},
@@ -121,6 +128,7 @@
  :hpt-35
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do A",
   :edges [:hedge-60],
   :incidence-set #{},
@@ -130,6 +138,7 @@
  :hpt-36
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do B",
   :edges [],
   :incidence-set #{:hedge-60},
@@ -139,6 +148,7 @@
  :hpt-40
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do C",
   :edges [],
   :incidence-set #{:hedge-73},
@@ -148,6 +158,7 @@
  :hpt-47
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do D",
   :edges [:hedge-67],
   :incidence-set #{},
@@ -157,6 +168,7 @@
  :hpt-48
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do E",
   :edges [],
   :incidence-set #{:hedge-67},
@@ -166,6 +178,7 @@
  :hpt-51
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do F",
   :edges [:hedge-72],
   :incidence-set #{},
@@ -175,6 +188,7 @@
  :hpt-52
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Do G",
   :edges [],
   :incidence-set #{:hedge-72},

@@ -2,6 +2,7 @@
  :hedge-15 {:end-node :hem-11, :type :edge, :uid :hedge-15},
  :hem-11
  {:args [],
+  :display-args [],
   :display-name "Main-1",
   :edges [],
   :incidence-set #{:hedge-15},
@@ -10,6 +11,7 @@
   :uid :hem-11},
  :hem-9
  {:args [],
+  :display-args [],
   :display-name "Main-0",
   :edges [],
   :incidence-set #{:hedge-13},
@@ -25,6 +27,7 @@
  :hpt-10
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Take Medium Res Images",
   :edges [],
   :incidence-set #{},
@@ -34,6 +37,7 @@
  :hpt-8
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Take High Res Images",
   :edges [],
   :incidence-set #{},

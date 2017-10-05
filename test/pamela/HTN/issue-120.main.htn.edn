@@ -48,6 +48,7 @@
  :hedge-92 {:end-node :hpt-64, :type :edge, :uid :hedge-92},
  :hem-39
  {:args [],
+  :display-args [],
   :display-name "Main",
   :edges [:hedge-70],
   :incidence-set #{:hedge-68},
@@ -56,6 +57,7 @@
   :uid :hem-39},
  :hem-44
  {:args [],
+  :display-args [],
   :display-name "Top Level",
   :edges
   [:hedge-72
@@ -72,6 +74,7 @@
   :uid :hem-44},
  :hem-47
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 1-0",
   :edges [],
   :incidence-set #{},
@@ -80,6 +83,7 @@
   :uid :hem-47},
  :hem-49
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 1-1",
   :edges [],
   :incidence-set #{},
@@ -88,6 +92,7 @@
   :uid :hem-49},
  :hem-51
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 1-2",
   :edges [],
   :incidence-set #{},
@@ -96,6 +101,7 @@
   :uid :hem-51},
  :hem-53
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 2-0",
   :edges [],
   :incidence-set #{},
@@ -104,6 +110,7 @@
   :uid :hem-53},
  :hem-55
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 2-1",
   :edges [],
   :incidence-set #{},
@@ -112,6 +119,7 @@
   :uid :hem-55},
  :hem-57
  {:args [],
+  :display-args [],
   :display-name "Ex Choose 2-2",
   :edges [],
   :incidence-set #{},
@@ -120,6 +128,7 @@
   :uid :hem-57},
  :hem-61
  {:args [],
+  :display-args [],
   :display-name "Ex Parallel",
   :edges [],
   :incidence-set #{},
@@ -128,6 +137,7 @@
   :uid :hem-61},
  :hem-65
  {:args [],
+  :display-args [],
   :display-name "Ex Sequence",
   :edges [],
   :incidence-set #{},
@@ -178,6 +188,7 @@
  :hpt-46
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -187,6 +198,7 @@
  :hpt-48
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -196,6 +208,7 @@
  :hpt-50
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -205,6 +218,7 @@
  :hpt-52
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -214,6 +228,7 @@
  :hpt-54
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -223,6 +238,7 @@
  :hpt-56
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -232,6 +248,7 @@
  :hpt-58
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -241,6 +258,7 @@
  :hpt-59
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -250,6 +268,7 @@
  :hpt-60
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{},
@@ -259,6 +278,7 @@
  :hpt-62
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [:hedge-91],
   :incidence-set #{},
@@ -268,6 +288,7 @@
  :hpt-63
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [:hedge-92],
   :incidence-set #{:hedge-91},
@@ -277,6 +298,7 @@
  :hpt-64
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Action",
   :edges [],
   :incidence-set #{:hedge-92},
