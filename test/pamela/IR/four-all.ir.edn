@@ -4,24 +4,20 @@
   {:depends {one "0.2.0", three "0.2.0"},
    :doc "Forth",
    :version "0.2.0"},
-  :modes
-  {:g {:type :literal, :value true}, :i {:type :literal, :value true}},
+  :modes {:g true, :i true},
   :type :pclass},
  one
  {:args [],
   :meta {:doc "First", :version "0.2.0"},
-  :modes
-  {:a {:type :literal, :value true}, :b {:type :literal, :value true}},
+  :modes {:a true, :b true},
   :type :pclass},
  three
  {:args [],
   :meta {:depends {two "0.2.0"}, :doc "Third", :version "0.2.0"},
-  :modes
-  {:e {:type :literal, :value true}, :f {:type :literal, :value true}},
+  :modes {:e true, :f true},
   :type :pclass},
  two
  {:args [],
   :meta {:doc "Second", :version "0.2.0"},
-  :modes
-  {:c {:type :literal, :value true}, :d {:type :literal, :value true}},
+  :modes {:c true, :d true},
   :type :pclass}}

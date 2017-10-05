@@ -1,0 +1,253 @@
+[:pamela
+ [:defpclass
+  [:symbol "qc"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.3.0"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "location"]
+     [:cond-map
+      [:cond
+       [:doc
+        [:string
+         "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)"]]]]
+     [:args
+      [:symbol "lat"]
+      [:symbol "lon"]
+      [:symbol "alt"]
+      [:symbol "yaw"]]]
+    [:defpmethod
+     [:symbol "wp1"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 1"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "11"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "location"]]
+       [:argval [:number [:float "42.445370"]]]
+       [:argval [:number [:float "-71.227891"]]]
+       [:argval [:number [:float "1.0"]]]
+       [:argval [:number [:integer "80"]]]]]]
+    [:defpmethod
+     [:symbol "wp2"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 2"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "12"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "location"]]
+       [:argval [:number [:float "42.445435"]]]
+       [:argval [:number [:float "-71.227842"]]]
+       [:argval [:number [:float "2.0"]]]
+       [:argval [:number [:integer "170"]]]]]]
+    [:defpmethod
+     [:symbol "wp3"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 3"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "13"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "location"]]
+       [:argval [:number [:float "42.445389"]]]
+       [:argval [:number [:float "-71.227733"]]]
+       [:argval [:number [:float "3.0"]]]
+       [:argval [:number [:integer "260"]]]]]]
+    [:defpmethod
+     [:symbol "wp4"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 4"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "14"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "location"]]
+       [:argval [:number [:float "42.445327"]]]
+       [:argval [:number [:float "-71.227784"]]]
+       [:argval [:number [:float "4.0"]]]
+       [:argval [:number [:integer "350"]]]]]]]]]
+ [:defpclass
+  [:symbol "qc-waypoints"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.3.0"]]]
+    [:meta-entry [:doc [:string "Quadcopter test waypoints"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "circuit-one"]
+     [:cond-map [:cond [:doc [:string "First quadcopter circuit"]]]]
+     [:args [:symbol "q"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "q"] [:symbol "location"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "5"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:float "42.445370"]]]
+         [:argval [:number [:float "-71.227895"]]]
+         [:argval [:number [:float "1.0"]]]
+         [:argval [:number [:integer "80"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "q"] [:symbol "location"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "5"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:float "42.445435"]]]
+         [:argval [:number [:float "-71.227846"]]]
+         [:argval [:number [:float "2.0"]]]
+         [:argval [:number [:integer "170"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "q"] [:symbol "location"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "5"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:float "42.445389"]]]
+         [:argval [:number [:float "-71.227737"]]]
+         [:argval [:number [:float "3.0"]]]
+         [:argval [:number [:integer "260"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "q"] [:symbol "location"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "5"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:float "42.445327"]]]
+         [:argval [:number [:float "-71.227788"]]]
+         [:argval [:number [:float "4.0"]]]
+         [:argval [:number [:integer "350"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "q"] [:symbol "location"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "5"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:float "42.445370"]]]
+         [:argval [:number [:float "-71.227899"]]]
+         [:argval [:number [:float "1.0"]]]
+         [:argval [:number [:integer "80"]]]]]]]]
+    [:defpmethod
+     [:symbol "circuit-two"]
+     [:cond-map [:cond [:doc [:string "Second quadcopter circuit"]]]]
+     [:args [:symbol "q"]]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]]]]
+    [:defpmethod
+     [:symbol "circuit-three"]
+     [:cond-map [:cond [:doc [:string "Third quadcopter circuit"]]]]
+     [:args [:symbol "q"]]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp4"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp2"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "q"] [:symbol "wp3"]]]]]]]
+    [:defpmethod
+     [:symbol "waypoints"]
+     [:cond-map
+      [:cond [:doc [:string "Three quadcopter pattern of waypoints"]]]]
+     [:args [:symbol "qc1"] [:symbol "qc2"] [:symbol "qc3"]]
+     [:fn
+      [:parallel
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "circuit-one"]]
+         [:argval [:symbol-ref [:symbol "qc1"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "circuit-two"]]
+         [:argval [:symbol-ref [:symbol "qc2"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "circuit-three"]]
+         [:argval [:symbol-ref [:symbol "qc3"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "qc-demo"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.3.0"]]]
+    [:meta-entry
+     [:depends
+      [:dep [:symbol "qc"] [:string "0.3.0"]]
+      [:dep [:symbol "qc-waypoints"] [:string "0.3.0"]]]]
+    [:meta-entry [:doc [:string "Quadcopter test waypoints"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "qc1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc1"]]]
+       [:pclass-ctor-option [:plant-part [:string "pp1"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+    [:field
+     [:symbol "qc2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc2"]]]
+       [:pclass-ctor-option [:plant-part [:string "pp2"]]]
+       [:pclass-ctor-option [:interface [:string "ZMQ"]]]]]]
+    [:field
+     [:symbol "qc3"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "qc"]
+       [:pclass-ctor-option [:id [:string "qc3"]]]
+       [:pclass-ctor-option [:plant-part [:string "pp3"]]]]]]]]]]

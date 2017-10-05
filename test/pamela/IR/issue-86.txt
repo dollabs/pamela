@@ -1,0 +1,39 @@
+[:pamela
+ [:defpclass
+  [:symbol "simpleplant"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "call all the foos"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "foo"]]
+         [:argval [:number [:integer "1"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "foo"]]
+         [:argval [:number [:integer "1"]]]
+         [:argval [:number [:integer "2"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "foo"]]
+         [:argval [:number [:integer "1"]]]
+         [:argval [:number [:integer "2"]]]
+         [:argval [:number [:integer "3"]]]]]]]]
+    [:defpmethod
+     [:symbol "foo"]
+     [:cond-map [:cond [:doc [:string "foo with 1 arg"]]]]
+     [:args [:symbol "a"]]]
+    [:defpmethod
+     [:symbol "foo"]
+     [:cond-map [:cond [:doc [:string "foo with 2 args"]]]]
+     [:args [:symbol "a"] [:symbol "b"]]]
+    [:defpmethod
+     [:symbol "foo"]
+     [:cond-map [:cond [:doc [:string "foo with 3 args"]]]]
+     [:args [:symbol "a"] [:symbol "b"] [:symbol "c"]]]]]]]

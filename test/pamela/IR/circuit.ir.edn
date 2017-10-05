@@ -1,54 +1,64 @@
 {bulb
  {:args [vcc vdd],
   :fields
-  {:anode
+  {anode
    {:access :private,
-    :initial {:name vcc, :type :arg-reference},
+    :initial {:names [vcc], :type :pclass-arg-ref},
     :observable false},
-   :cathode
+   cathode
    {:access :private,
-    :initial {:name vdd, :type :arg-reference},
+    :initial {:names [vdd], :type :pclass-arg-ref},
     :observable false},
-   :illumination
+   illumination
    {:access :public,
-    :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
+    :initial
+    {:mode :dark,
+     :mode-ref {:names [lightvals], :type :symbol-ref},
+     :type :mode-ref},
     :observable false},
-   :sensed-illumination
+   sensed-illumination
    {:access :public,
-    :initial {:mode :dark, :pclass lightvals, :type :mode-reference},
+    :initial
+    {:mode :dark,
+     :mode-ref {:names [lightvals], :type :symbol-ref},
+     :type :mode-ref},
     :observable true}},
   :meta
   {:depends {lightvals "0.2.0"},
    :doc "A light bulb",
    :icon "bulb.svg",
-   :version "0.2.1"},
+   :version "0.3.0"},
   :modes
-  {:fail {:type :literal, :value true},
+  {:fail true,
    :off
    {:args
     [{:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :illumination}
-       {:type :mode-reference, :pclass lightvals, :mode :dark}]}
+      [{:type :field-ref, :names [illumination]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [lightvals]},
+        :mode :dark}]}
      {:type :equal,
       :args
-      [{:type :field-reference,
-        :pclass this,
-        :field :sensed-illumination}
-       {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
+      [{:type :field-ref, :names [sensed-illumination]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [lightvals]},
+        :mode :dark}]}],
     :type :and},
    :on
    {:args
     [{:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :illumination}
-       {:type :mode-reference, :pclass lightvals, :mode :bright}]}
+      [{:type :field-ref, :names [illumination]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [lightvals]},
+        :mode :bright}]}
      {:type :equal,
       :args
-      [{:type :field-reference,
-        :pclass this,
-        :field :sensed-illumination}
-       {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
+      [{:type :field-ref, :names [sensed-illumination]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [lightvals]},
+        :mode :bright}]}],
     :type :and}},
   :transitions
   {:*:fail
@@ -56,100 +66,119 @@
     :probability {:name "pfbulb", :type :lvar}},
    :off:on
    {:doc "turning on bulb",
-    :post {:mode :on, :pclass this, :type :mode-reference},
+    :post
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :pre
     {:args
-     [{:type :mode-reference, :pclass this, :mode :off}
+     [{:type :mode-ref,
+       :mode-ref {:type :symbol-ref, :names [this]},
+       :mode :off}
       {:type :equal,
        :args
-       [{:type :field-reference, :pclass this, :field :anode}
-        {:type :mode-reference, :pclass pwrvals, :mode :high}]}
+       [{:type :field-ref, :names [anode]}
+        {:type :mode-ref,
+         :mode-ref {:type :symbol-ref, :names [pwrvals]},
+         :mode :high}]}
       {:type :equal,
        :args
-       [{:type :field-reference,
-         :pclass this,
-         :field :sensed-illumination}
-        {:type :mode-reference, :pclass lightvals, :mode :bright}]}],
+       [{:type :field-ref, :names [sensed-illumination]}
+        {:type :mode-ref,
+         :mode-ref {:type :symbol-ref, :names [lightvals]},
+         :mode :bright}]}],
      :type :and},
     :temporal-constraints [{:type :bounds, :value [1 3]}]},
    :on:off
    {:doc "turning off bulb",
-    :post {:mode :off, :pclass this, :type :mode-reference},
+    :post
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :pre
     {:args
-     [{:type :mode-reference, :pclass this, :mode :on}
+     [{:type :mode-ref,
+       :mode-ref {:type :symbol-ref, :names [this]},
+       :mode :on}
       {:type :equal,
        :args
-       [{:type :field-reference, :pclass this, :field :anode}
-        {:type :mode-reference, :pclass pwrvals, :mode :none}]}
+       [{:type :field-ref, :names [anode]}
+        {:type :mode-ref,
+         :mode-ref {:type :symbol-ref, :names [pwrvals]},
+         :mode :none}]}
       {:type :equal,
        :args
-       [{:type :field-reference,
-         :pclass this,
-         :field :sensed-illumination}
-        {:type :mode-reference, :pclass lightvals, :mode :dark}]}],
+       [{:type :field-ref, :names [sensed-illumination]}
+        {:type :mode-ref,
+         :mode-ref {:type :symbol-ref, :names [lightvals]},
+         :mode :dark}]}],
      :type :and},
     :temporal-constraints [{:type :bounds, :value [1 3]}]}},
   :type :pclass},
  circuit1
  {:args [],
   :fields
-  {:bulb1
+  {bulb1
    {:access :private,
     :initial
-    {:args [:source :drain],
-     :id "switchedcircuit",
+    {:args
+     [{:type :field-ref, :names [source]}
+      {:type :field-ref, :names [drain]}],
      :pclass bulb,
+     :plant-id "switchedcircuit",
      :plant-part "Bulb1",
      :type :pclass-ctor},
     :observable false},
-   :drain
+   drain
    {:access :private,
     :initial {:name "drain", :type :lvar},
     :observable false},
-   :source
+   source
    {:access :private,
     :initial {:name "source", :type :lvar},
     :observable false},
-   :switchedpower
+   switchedpower
    {:access :private,
     :initial
-    {:args [:source :drain],
-     :id "switchedcircuit",
-     :interface "RMQ",
+    {:args
+     [{:type :field-ref, :names [source]}
+      {:type :field-ref, :names [drain]}],
      :pclass psw,
+     :plant-id "switchedcircuit",
+     :plant-interface "RMQ",
      :plant-part "PSW1",
      :type :pclass-ctor},
     :observable false}},
   :meta
-  {:depends {bulb "0.2.1", psw "0.2.1"},
+  {:depends {bulb "0.3.0", psw "0.3.0"},
    :doc "An example circuit with a power switch and light bulb",
-   :version "0.2.1"},
+   :version "0.3.0"},
   :type :pclass},
  lightvals
  {:args [],
   :meta {:doc "Enum for lighting values", :version "0.2.0"},
-  :modes
-  {:bright {:type :literal, :value true},
-   :dark {:type :literal, :value true}},
+  :modes {:bright true, :dark true},
   :type :pclass},
  psw
  {:args [gnd pwr],
   :fields
-  {:TP1
+  {TP1
    {:access :private,
-    :initial {:name gnd, :type :arg-reference},
+    :initial {:names [gnd], :type :pclass-arg-ref},
     :observable false},
-   :TP2
+   TP2
    {:access :private,
-    :initial {:name pwr, :type :arg-reference},
+    :initial {:names [pwr], :type :pclass-arg-ref},
     :observable false},
-   :pwr
+   pwr
    {:access :private,
-    :initial {:mode :none, :pclass pwrvals, :type :mode-reference},
+    :initial
+    {:mode :none,
+     :mode-ref {:names [pwrvals], :type :symbol-ref},
+     :type :mode-ref},
     :observable false}},
   :meta
-  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.2.1"},
+  {:depends {pwrvals "0.2.0"}, :doc "Power Switch", :version "0.3.0"},
   :methods
   {reset
    [{:args [],
@@ -157,10 +186,14 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Reset",
      :doc "resets the power supply",
-     :post {:type :mode-reference, :pclass this, :mode :off},
-     :pre {:type :literal, :value true},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :off},
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -170,10 +203,17 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Turn Off",
      :doc "turns off the power supply",
-     :post {:type :mode-reference, :pclass this, :mode :off},
-     :pre {:type :mode-reference, :pclass this, :mode :on},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :off},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :on},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 3]}]}],
@@ -183,42 +223,63 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Turn On",
      :doc "turns on the power supply",
-     :post {:type :mode-reference, :pclass this, :mode :on},
-     :pre {:type :mode-reference, :pclass this, :mode :off},
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :on},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :off},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 3]}]}]},
   :modes
-  {:fail {:type :literal, :value true},
+  {:fail true,
    :off
    {:args
-    [{:type :field-reference, :pclass this, :field :pwr}
-     {:type :mode-reference, :pclass pwrvals, :mode :none}],
+    [{:type :field-ref, :names [pwr]}
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [pwrvals]},
+      :mode :none}],
     :type :equal},
    :on
    {:args
-    [{:type :field-reference, :pclass this, :field :pwr}
-     {:type :mode-reference, :pclass pwrvals, :mode :high}],
+    [{:type :field-ref, :names [pwr]}
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [pwrvals]},
+      :mode :high}],
     :type :equal}},
   :transitions
   {:*:fail {:doc "spontaneous switch failure", :probability 1.0E-7},
    :off:on
    {:doc "turning on",
-    :post {:mode :on, :pclass this, :type :mode-reference},
-    :pre {:mode :off, :pclass this, :type :mode-reference}},
+    :post
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}},
    :on:off
    {:doc "turning off",
-    :post {:mode :off, :pclass this, :type :mode-reference},
-    :pre {:mode :on, :pclass this, :type :mode-reference}}},
+    :post
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}}},
   :type :pclass},
  pwrvals
  {:args [],
   :meta {:doc "Enum for power values", :version "0.2.0"},
-  :modes
-  {:high {:type :literal, :value true},
-   :none {:type :literal, :value true}},
+  :modes {:high true, :none true},
   :type :pclass},
  pamela/lvars
  {:lvars {"drain" :unset, "pfbulb" :unset, "source" :unset},

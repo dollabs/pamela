@@ -1,0 +1,40 @@
+[:pamela
+ [:defpclass
+  [:symbol "choose-time"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "choose example with time bounds"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "choose based on time"]]]]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "1"]]
+            [:number [:integer "100"]]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "101"]]
+            [:number [:integer "200"]]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "201"]]
+            [:number [:integer "300"]]]]]]
+        [:fn [:delay]]]]]]]]]]

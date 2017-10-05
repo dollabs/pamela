@@ -1,32 +1,38 @@
 {qc-demo
  {:args [],
   :fields
-  {:qc-waypoints
+  {qc-waypoints
    {:access :private,
     :initial
-    {:args [qc1 qc2 qc3], :pclass qc-waypoints, :type :pclass-ctor},
+    {:args
+     [{:type :field-ref, :names [qc1]}
+      {:type :field-ref, :names [qc2]}
+      {:type :field-ref, :names [qc3]}],
+     :pclass qc-waypoints,
+     :type :pclass-ctor},
     :observable false},
-   :qc1
+   qc1
    {:access :private,
     :initial
     {:args [],
-     :id "qc1",
-     :interface "RMQ",
      :pclass qc,
+     :plant-id "qc1",
+     :plant-interface "RMQ",
      :type :pclass-ctor},
     :observable false},
-   :qc2
+   qc2
    {:access :private,
     :initial
     {:args [],
-     :id "qc2",
-     :interface "ZMQ",
      :pclass qc,
+     :plant-id "qc2",
+     :plant-interface "ZMQ",
      :type :pclass-ctor},
     :observable false},
-   :qc3
+   qc3
    {:access :private,
-    :initial {:args [], :id "qc3", :pclass qc, :type :pclass-ctor},
+    :initial
+    {:args [], :pclass qc, :plant-id "qc3", :type :pclass-ctor},
     :observable false}},
   :meta
   {:depends {qc "0.2.1", qc-waypoints "0.2.1"},

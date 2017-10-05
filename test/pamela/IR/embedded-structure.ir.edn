@@ -11,31 +11,32 @@
          :body
          [{:type :sequence,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}
         {:type :choice,
          :body
          [{:type :sequence,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -51,29 +52,28 @@
        :body
        [{:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -89,29 +89,28 @@
        :body
        [{:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :sequence,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -126,10 +125,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Bounded",
      :doc "Bounded",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 5]}]}],
@@ -139,10 +139,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Unbounded",
      :doc "Unbounded",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -160,35 +161,36 @@
          :body
          [{:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}]}
           {:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}
         {:type :choose,
          :body
          [{:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method bounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant bounded]},
              :args []}]}
           {:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method unbounded,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant unbounded]},
              :args []}]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -202,25 +204,24 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method bounded,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
          :args []}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -236,29 +237,28 @@
        :body
        [{:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}
         {:type :parallel,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method bounded,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
            :args []}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method unbounded,
+          {:type :method-fn,
+           :method-ref
+           {:type :pclass-arg-ref, :names [plant unbounded]},
            :args []}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -272,19 +272,18 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name plant,
-         :method bounded,
+       [{:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant bounded]},
          :args []}
-        {:type :plant-fn-symbol,
-         :name plant,
-         :method unbounded,
+        {:type :method-fn,
+         :method-ref {:type :pclass-arg-ref, :names [plant unbounded]},
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

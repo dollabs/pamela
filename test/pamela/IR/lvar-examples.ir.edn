@@ -9,15 +9,15 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method take-high-res-images,
+         [{:type :method-fn,
+           :method-ref
+           {:type :symbol-ref, :names [this take-high-res-images]},
            :args []}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name this,
-           :method take-medium-res-images,
+         [{:type :method-fn,
+           :method-ref
+           {:type :symbol-ref, :names [this take-medium-res-images]},
            :args []}],
          :temporal-constraints
          [{:type :bounds,
@@ -25,10 +25,11 @@
            {:type :lvar, :name "med-res-bounds", :default [3 6]}}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
      :doc "the tpn",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -38,10 +39,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Take High Res Images",
      :doc "Take High Res Image",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints
@@ -54,10 +56,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Take Medium Res Images",
      :doc "Take Medium Res Image",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -65,7 +68,7 @@
  example
  {:args [camera],
   :fields
-  {:imager
+  {imager
    {:access :private,
     :initial {:args [], :pclass camera, :type :pclass-ctor},
     :observable false}},

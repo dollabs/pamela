@@ -1,9 +1,9 @@
 {isr-htn
  {:args [sensor],
   :fields
-  {:sensor-f
+  {sensor-f
    {:access :private,
-    :initial {:name sensor, :type :arg-reference},
+    :initial {:names [sensor], :type :pclass-arg-ref},
     :observable false}},
   :meta
   {:doc "This defines all of the HTN methods for this ISR domain"},
@@ -12,16 +12,16 @@
    [{:args [at],
      :betweens [],
      :body
-     [{:type :plant-fn-field,
-       :field :sensor-f,
-       :method evidence,
-       :args [at],
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [sensor-f evidence]},
+       :args [{:type :method-arg-ref, :names [at]}],
        :temporal-constraints [{:type :bounds, :value [15 25]}]}],
      :controllable false,
      :cost 0,
+     :display-args [at],
      :display-name "Evidence",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -31,19 +31,18 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method evidence,
-         :args [from]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method interpret,
-         :args [from]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this evidence]},
+         :args [{:type :method-arg-ref, :names [from]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this interpret]},
+         :args [{:type :method-arg-ref, :names [from]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [from],
      :display-name "Evidence And Interpret",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -53,19 +52,19 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method evidence-and-interpret,
-         :args [location1]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-at,
-         :args [location2]}]}],
+       [{:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this evidence-and-interpret]},
+         :args [{:type :method-arg-ref, :names [location1]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this get-data-at]},
+         :args [{:type :method-arg-ref, :names [location2]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [location1 location2],
      :display-name "Get Data And Interpret",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -75,20 +74,19 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field,
-         :field :sensor-f,
-         :method go-to,
-         :args [loc]}
-        {:type :plant-fn-field,
-         :field :sensor-f,
-         :method capture,
-         :args [loc],
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [sensor-f go-to]},
+         :args [{:type :method-arg-ref, :names [loc]}]}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [sensor-f capture]},
+         :args [{:type :method-arg-ref, :names [loc]}],
          :temporal-constraints [{:type :bounds, :value [5 10]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [loc],
      :display-name "Get Data At",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -100,31 +98,32 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :field :sensor-f,
-           :method interpret1,
-           :args [place],
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret1]},
+           :args [{:type :method-arg-ref, :names [place]}],
            :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :field :sensor-f,
-           :method interpret2,
-           :args [place],
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret2]},
+           :args [{:type :method-arg-ref, :names [place]}],
            :temporal-constraints [{:type :bounds, :value [15 25]}]}]}
         {:type :choice,
          :body
-         [{:type :plant-fn-field,
-           :field :sensor-f,
-           :method interpret3,
-           :args [place],
+         [{:type :method-fn,
+           :method-ref
+           {:type :field-ref, :names [sensor-f interpret3]},
+           :args [{:type :method-arg-ref, :names [place]}],
            :temporal-constraints
            [{:type :bounds, :value [15 25]}]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [place],
      :display-name "Interpret",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -134,31 +133,37 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method get-data-at,
-         :args [a]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [a b]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [b c]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method get-data-and-interpret,
-         :args [c d]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method evidence-and-interpret,
-         :args [d]}]}],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this get-data-at]},
+         :args [{:type :method-arg-ref, :names [a]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [a]}
+          {:type :method-arg-ref, :names [b]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [b]}
+          {:type :method-arg-ref, :names [c]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this get-data-and-interpret]},
+         :args
+         [{:type :method-arg-ref, :names [c]}
+          {:type :method-arg-ref, :names [d]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this evidence-and-interpret]},
+         :args [{:type :method-arg-ref, :names [d]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [a b c d],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -166,17 +171,20 @@
  isr-htn-demo
  {:args [],
   :fields
-  {:htn
+  {htn
    {:access :private,
-    :initial {:args [plant], :pclass isr-htn, :type :pclass-ctor},
+    :initial
+    {:args [{:type :field-ref, :names [plant]}],
+     :pclass isr-htn,
+     :type :pclass-ctor},
     :observable false},
-   :plant
+   plant
    {:access :private,
     :initial
     {:args [],
-     :id "sensor1",
-     :interface "RMQ",
      :pclass sensor,
+     :plant-id "sensor1",
+     :plant-interface "RMQ",
      :plant-part "isr1",
      :type :pclass-ctor},
     :observable false}},
@@ -192,9 +200,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Capture",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -204,9 +213,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Evidence",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -216,9 +226,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Go To",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [20 30]}]}],
@@ -228,10 +239,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Interpret 1",
      :doc "Interpret (Method 1)",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -241,10 +253,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Interpret 2",
      :doc "Interpret (Method 2)",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -254,10 +267,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [location],
      :display-name "Interpret 3",
      :doc "Interpret (Method 3)",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

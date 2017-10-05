@@ -55,5 +55,5 @@
                 (plant.stop "McDonalds")))])
 
 (defpclass simple-plant-demo []
-  :fields {:sp1 (simpleplant :id "myplant" :plant-part "mypart" :interface "RMQ")
-           :run (planttest sp1)})
+  :fields {sp1 (simpleplant :id "myplant" :plant-part "mypart" :interface "RMQ")
+           run (planttest sp1)})

@@ -1,0 +1,118 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-a"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "2"]]
+          [:number [:integer "4"]]]]]]
+      [:cond [:display-name [:string "Due Eh"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-b"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "3"]]
+          [:number [:integer "6"]]]]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-c"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "4"]]
+          [:number [:integer "8"]]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "4"]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-d"]
+     [:cond-map [:cond [:primitive [:boolean [:TRUE]]]]]
+     [:args]
+     [:fn
+      [:delay
+       [:delay-opt
+        [:fn-opt
+         [:between-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "0"]]
+             [:number [:integer "1"]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "do-e"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "5"]]
+          [:number [:integer "10"]]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "5"]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "infeasible-sequence"]
+  [:args [:symbol "plnt"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string "An example of infeasible sequence of activties"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:cond-map [:cond [:doc [:string "Simple TPN with constraints"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "10"]]
+            [:number [:integer "30"]]]]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]]
+ [:defpclass
+  [:symbol "infeasible-sequence-demo"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "p1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant"]
+       [:pclass-ctor-option [:id [:string "p1"]]]
+       [:pclass-ctor-option [:plant-part [:string "t1"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+    [:field
+     [:symbol "run"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "infeasible-sequence"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "p1"]]]]]]]]]]

@@ -1,0 +1,229 @@
+{coverage-demo
+ {:args [],
+  :fields
+  {run
+   {:access :private,
+    :initial
+    {:args
+     [{:type :field-ref, :names [sp1]}
+      {:type :field-ref, :names [sp2]}],
+     :pclass coverage-test,
+     :type :pclass-ctor},
+    :observable false},
+   sp1
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass simpleplant,
+     :plant-id "sp1",
+     :plant-interface "RMQ",
+     :plant-part "mypart",
+     :type :pclass-ctor},
+    :observable false},
+   sp2
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass simpleplant,
+     :plant-id "sp2",
+     :plant-interface "RMQ",
+     :plant-part "mypart2",
+     :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
+ coverage-test
+ {:args [plant1 plant2],
+  :fields
+  {p1
+   {:access :private,
+    :initial {:names [plant1], :type :pclass-arg-ref},
+    :observable false},
+   p2
+   {:access :private,
+    :initial {:names [plant2], :type :pclass-arg-ref},
+    :observable false}},
+  :meta {:doc "Coverage Test"},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this via-pargs]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this via-margs]},
+         :args
+         [{:type :pclass-arg-ref, :names [plant1]}
+          {:type :pclass-arg-ref, :names [plant2]}]}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this via-fields]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :doc "The HTN",
+     :post true,
+     :pre true,
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   via-fields
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [p2 shell]},
+       :args
+       ["echo"
+        :myoptions
+        {:type :field-ref, :names [p1 data1]}
+        {:type :field-ref, :names [p2 data2]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Via Fields",
+     :doc "dereference via fields",
+     :post true,
+     :pre true,
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   via-margs
+   [{:args [a b],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :method-arg-ref, :names [a cp]},
+       :args
+       [{:type :method-arg-ref, :names [a data1]}
+        {:type :method-arg-ref, :names [b data2]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [a b],
+     :display-name "Via Margs",
+     :doc "dereference via method arguments",
+     :post true,
+     :pre true,
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   via-pargs
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :pclass-arg-ref, :names [plant2 scp]},
+       :args
+       [{:type :pclass-arg-ref, :names [plant2 data1]}
+        {:type :pclass-arg-ref, :names [plant2 data2]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Via Pargs",
+     :doc "dereference via pclass arguments",
+     :post true,
+     :pre true,
+     :primitive false,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ simpleplant
+ {:args [],
+  :fields
+  {data1 {:access :private, :initial 123, :observable false},
+   data2 {:access :private, :initial "fred", :observable false}},
+  :methods
+  {cp
+   [{:args [fromfile tofile],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [fromfile tofile],
+     :display-name "Copy",
+     :doc "local file copy",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   hardwork
+   [{:args [time],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [time],
+     :display-name "Hardwork",
+     :doc "Simulated work with a simulated failure",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [1 20]}]}],
+   python
+   [{:args [script options arg1 arg2 arg3],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [script options arg1 arg2 arg3],
+     :display-name "Python",
+     :doc "Runs a python script",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   scp
+   [{:args [fromfile tofile],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [fromfile tofile],
+     :display-name "Scp",
+     :doc "Secure network file copy",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [10 20]}]}],
+   shell
+   [{:args [cmd arg1 arg2 arg3],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [cmd arg1 arg2 arg3],
+     :display-name "Shell",
+     :doc "Runs a command-line program",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 3]}]}],
+   stop
+   [{:args [area],
+     :betweens [],
+     :body nil,
+     :controllable true,
+     :cost 0,
+     :display-args [area],
+     :display-name "Stop",
+     :doc "Stops the plant",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 1]}]}]},
+  :modes
+  {:bykw
+   {:args [{:type :field-ref, :names [data1]} 123], :type :equal},
+   :bysym
+   {:args [{:type :field-ref, :names [data2]} "fred"], :type :equal}},
+  :type :pclass}}

@@ -57,9 +57,10 @@
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
           data (if (map? data)
-                 (if (= file-format "edn-mixed")
-                   (sort-mixed-map data)
-                   (sort-map data))
+                 ;; (if (= file-format "edn-mixed")
+                 ;;   (sort-mixed-map data)
+                 ;;   (sort-map data))
+                 (sort-mixed-map data)
                  data)
           out (cond
                 (#{"edn" "edn-mixed"} file-format)

@@ -1,0 +1,74 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "action1"]
+     [:cond-map [:cond [:doc [:string "Take action 1"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "action2"]
+     [:cond-map [:cond [:doc [:string "Take action 2"]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "slack"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc [:string "An example of using slack operations."]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:cond-map [:cond [:doc [:string "Demo method"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:slack-sequence
+         [:fn-opt [:label [:keyword ":slack-sequence"]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
+       [:fn
+        [:slack-parallel
+         [:fn-opt [:label [:keyword ":slack-parallel"]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
+       [:fn
+        [:optional
+         [:fn-opt [:label [:keyword ":optional"]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]]]
+       [:fn
+        [:soft-sequence
+         [:fn-opt [:label [:keyword ":soft-sequence"]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]]]
+       [:fn
+        [:soft-parallel
+         [:fn-opt [:label [:keyword ":soft-parallel"]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "action2"]]]]]]]]]]]]]

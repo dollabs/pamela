@@ -1,0 +1,10 @@
+[:pamela
+ [:defpclass
+  [:symbol "three"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Third"]]]
+    [:meta-entry [:depends [:dep [:symbol "two"] [:string "0.2.0"]]]]]]
+  [:option [:modes [:mode-enum [:keyword ":e"] [:keyword ":f"]]]]]]

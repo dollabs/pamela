@@ -1,0 +1,65 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "action1"]
+     [:cond-map [:cond [:doc [:string "Take action 1"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "action2"]
+     [:cond-map
+      [:cond [:doc [:string "Take action 2"]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "controllable"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc [:string "An example of invoking plant functions."]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:cond-map [:cond [:doc [:string "Demo method"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action1"]]]]
+       [:fn [:delay]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action1"]]
+         [:method-opt [:controllable [:boolean [:TRUE]]]]]]
+       [:fn [:delay [:delay-opt [:controllable [:boolean [:TRUE]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action2"]]]]
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "2"]]
+               [:number [:integer "8"]]]]]]]]
+         [:delay-opt [:controllable [:boolean [:FALSE]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "action2"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "10"]]]]]]
+         [:method-opt [:controllable [:boolean [:FALSE]]]]]]]]]]]]]

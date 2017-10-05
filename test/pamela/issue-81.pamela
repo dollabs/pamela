@@ -1,0 +1,78 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Test for #81
+
+(defpclass simpleplant []
+  :fields {data1 123
+           data2 "fred"}
+  :modes {:bykw (= data1 123)
+          :bysym (= data2 "fred")}
+  :methods [(defpmethod hardwork
+              {:doc "Simulated work with a simulated failure"
+               :bounds [1 20]}
+              [time])
+            (defpmethod scp
+              {:doc "Secure network file copy"
+               :bounds [10 20]}
+              [fromfile tofile])
+            (defpmethod cp
+              {:doc "local file copy"
+               :display-name "Copy"}
+              [fromfile tofile])
+            (defpmethod shell
+              {:doc "Runs a command-line program"
+               :bounds [0 3]}
+              [cmd arg1 arg2 arg3])
+            (defpmethod python
+              {:doc "Runs a python script"}
+              [script options arg1 arg2 arg3])
+            (defpmethod stop
+              {:doc    "Stops the plant"
+               :bounds [0 1]
+               :controllable true}
+              [area])
+            ])
+
+(defpclass coverage-test [plant1 plant2]
+  :meta {:doc "Coverage Test"}
+
+  :fields {p1 plant1
+           p2 plant2}
+
+  :methods [(defpmethod main
+              {:doc "The HTN"}
+              []
+              (sequence
+                (via-pargs)
+                (via-margs plant1 plant2)
+                (via-fields)))
+            (defpmethod via-pargs
+              {:doc "dereference via pclass arguments"}
+              []
+              (plant2.scp plant2.data1 plant2.data2))
+            (defpmethod via-margs
+              {:doc "dereference via method arguments"}
+              [a b]
+              (a.cp a.data1 b.data2))
+            (defpmethod via-fields
+              {:doc "dereference via fields"}
+              []
+              (p2.shell "echo" :myoptions p1.data1 p2.data2))
+            ])
+
+;; root-task: "(coverage-demo.run.main)"
+(defpclass coverage-demo []
+  :fields {sp1 (simpleplant :id "sp1" :plant-part "mypart" :interface "RMQ")
+           sp2 (simpleplant :id "sp2" :plant-part "mypart2" :interface "RMQ")
+           run (coverage-test sp1 sp2)})

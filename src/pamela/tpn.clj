@@ -19,9 +19,11 @@
             [clojure.tools.logging :as log]
             [me.raynes.fs :as fs]
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
+            [pamela.unparser :as unparser]
             [pamela.utils :refer [output-file dbg-println]]))
 
-                                        ; local implementation of gensym so that we get predictable uids in generated plans.
+;; local implementation of gensym so that we get predictable uids in
+;; generated plans.
 (defonce my-count (atom 0))
 
 (defn my-gensym [prefix]
@@ -282,18 +284,19 @@
   [{:keys [prefix uid constraints order end-node
            label sequence-label probability cost reward guard
            task name controllable htn-node
-           plant plantid plant-part interface
-           command display-name args argsmap]
+           plant plant-id plant-part plant-interface
+           command display-name display-args args argsmap]
     :as options}]
   (update-tpn-plan-map!
     (assoc-if (tpn-delay-activity (assoc options :prefix (or prefix "act-")))
       :tpn-type :activity
       :plant plant
-      :plantid plantid
+      :plant-id plant-id
       :plant-part plant-part
-      :interface interface
+      :plant-interface plant-interface
       :command command
       :display-name display-name
+      :display-args display-args
       :args args
       :argsmap argsmap)))
 
@@ -836,34 +839,55 @@
 ;;                 }))]
 ;;     tc))
 
-(defn build-tpn [ir labels plant plant-id plant-args pfn parent-begin-uid
+;; NOTE: plant-id is nil and no longer used
+(defn build-tpn [ir labels tpn-pclass tpn-plant-id tpn-pclass-args pfn parent-begin-uid
                  & [parent-order]]
-  (let [{:keys [type name method args temporal-constraints primitive body
-                label cost reward cost<= reward>= controllable]} pfn
+  (dbg-println :trace "BUILD-TPN tpn-pclass:" tpn-pclass "tpn-pclass-args" tpn-pclass-args
+    "\n  pfn type:" (:type pfn))
+  (let [{:keys [type primitive body probability name method-ref args
+                condition field temporal-constraints
+                cost reward cost<= reward>=
+                exactly min max controllable
+                catch label enter leave]} pfn
         ;; _ (println "BUILD-TPN1" type "cost<=" cost<= "reward>=" reward>=)
+        ;; FIXME: these classic TPN's typically do NOT use full
+        ;; symbol-ref dereferencing therefore we'll just assume the
+        ;; second name is the method
+        [method-arg method] (:names method-ref)
+        method-pclass (or (:pclass (get tpn-pclass-args method-arg))
+                        method-arg)
+        _ (dbg-println :trace "BUILD-TPN type:" type "method-pclass:" method-pclass
+            "method:" method)
         sequence? (= :sequence type)
         [label sequence-label] (if sequence? [nil label] [label nil])
         choice? (= :choose type)
-        plant-fn? (= type :plant-fn-symbol)
+        plant-fn? (= type :method-fn)
         delay-fn? (= type :delay)
         basic-fn? (or plant-fn? delay-fn?)
-        plant-def (if (and plant-fn? name) (get plant-args name))
-        {:keys [access observable initial]} plant-def
-        {:keys [pclass id interface]} initial
-        plant-sym (or pclass name)
-        plant-sym (if (= plant-sym 'this) plant plant-sym)
+        ;; plant-sym (or (first (keys tpn-pclass-args)) tpn-pclass)
+        plant-sym (or method-pclass tpn-pclass)
+        plant-ctor (if plant-fn? (get tpn-pclass-args method-arg))
+        {:keys [pclass plant-id plant-interface]} plant-ctor
         ;; assume the first mdef is the correct one
-        plant-method (if plant-fn? (get-in ir [plant-sym :methods method 0]))
-        id (if plant-fn? (or id plant-id))
-        plantid (if id (str id (if interface "@") interface))
-        method-args (if plant-fn? (map str (:args plant-method)))
+        plant-mdef (if plant-fn? (get-in ir [plant-sym :methods method 0]))
+        _ (dbg-println :trace "BUILD-TPN plant-sym:" plant-sym
+            "plant-mdef:" plant-mdef)
+        id (if plant-fn? (or plant-id tpn-plant-id))
+        plant-id (if id (str id (if plant-interface "@") plant-interface))
+        _ (dbg-println :trace "BUILD-TPN plant-ctor:" plant-ctor
+            "\n id" id "plant-id" plant-id)
+        method-args (if plant-fn? (map str (:args plant-mdef)))
+        args (mapv unparser/unparse-cond-expr args)
         argsmap (if plant-fn? (zipmap method-args args))
+        _ (dbg-println :trace "BUILD-TPN method-args:" method-args
+            "\n  args:" args
+            "\n  argsmap:" argsmap)
         command (if delay-fn? "delay" (str method))
-        cost (or cost (:cost plant-method))
-        reward (or reward (:reward plant-method))
+        cost (or cost (:cost plant-mdef))
+        reward (or reward (:reward plant-mdef))
         controllable (if (false? controllable)
                        controllable
-                       (or controllable (:controllable plant-method) false))
+                       (or controllable (:controllable plant-mdef) false))
         ;; _ (println "  sequence?" sequence? "choice?" choice?
         ;;     "plant-fn?" plant-fn? "basic-fn?" basic-fn?
         ;;     "label" label "sequence-label" sequence-label)
@@ -883,13 +907,16 @@
         end-uid (:uid end)
         bounds (if (and temporal-constraints (= 1 (count temporal-constraints)))
                  (:value (first temporal-constraints)))
+        _ (dbg-println :trace "BUILD-TPN bounds:" bounds)
         bounds (if (default-bounds? bounds) nil bounds)
-        method-bounds (if plant-method
-                        (get-in plant-method [:temporal-constraints 0 :value]))
+        method-bounds (if plant-mdef
+                        (get-in plant-mdef [:temporal-constraints 0 :value]))
+        _ (dbg-println :trace "BUILD-TPN method-bounds:" method-bounds)
         method-bounds (if (or (not method-bounds)
                             (default-bounds? method-bounds))
                         nil method-bounds)
         bounds (or bounds method-bounds) ;; default to method bounds
+        _ (dbg-println :trace "BUILD-TPN bounds:" bounds)
         tc (if bounds
              (tpn-temporal-constraint {:value bounds :end-node end-uid}))
         cost-le (if cost<=
@@ -899,11 +926,11 @@
         constraints (apply union-items (map :uid [tc cost-le reward-ge]))
         activity (if basic-fn?
                    (tpn-activity
-                     {:plant (if plant-sym (str plant-sym))
-                      :plantid plantid
+                     {:plant (if (and (not delay-fn?) plant-sym) (str plant-sym))
+                      :plant-id plant-id
                       :command command
-                      :args args
-                      :argsmap argsmap
+                      :args (if-not delay-fn? args)
+                      :argsmap (if-not delay-fn? argsmap)
                       :label label
                       :sequence-label sequence-label
                       :cost cost
@@ -1054,7 +1081,7 @@
                           ;; :constraints (if choice-tc #{(:uid choice-tc)})
                           )]
               (update-tpn-plan-map! begin)))
-          (build-tpn ir labels plant plant-id plant-args b (:uid sb) @order)
+          (build-tpn ir labels tpn-pclass plant-id tpn-pclass-args b (:uid sb) @order)
           (swap! order inc)))
       (when sequence?
         (let [na-end (tpn-null-activity {:end-node end-uid})]
@@ -1088,13 +1115,13 @@
 ;; assumes args are to the tpn-pclass constructor!
 (defn create-tpn [ir plant-id tpn-ks tpn-args]
   (reinitialize-tpn-plan-map)
-  (let [plant (first tpn-ks)
-        tpn-pclass (get ir plant)
-        {:keys [args]} tpn-pclass
+  (let [tpn-pclass (first tpn-ks)
+        tpn-pclass-def (get ir tpn-pclass)
+        {:keys [args]} tpn-pclass-def
         tpn-method (get-in ir tpn-ks)
         ;; not pre post cost reward controllable betweens
         {:keys [temporal-constraints body betweens]} tpn-method
-        plant-args (zipmap args tpn-args) ;; maps symbol -> argval
+        tpn-pclass-args (zipmap args tpn-args) ;; maps symbol -> argval
         end (tpn-state {})
         end-uid (:uid end)
         bounds (if (and temporal-constraints (= 1 (count temporal-constraints)))
@@ -1110,27 +1137,39 @@
     (swap! *tpn-plan-map* assoc
       :network-id (:uid (tpn-network {:begin-node begin-uid
                                       :end-node end-uid})))
-    (build-tpn ir labels plant plant-id plant-args (first body) begin-uid)
+    (dbg-println :trace "CREATE-TPN tpn-pclass:" tpn-pclass
+      "tpn-pclass-args" tpn-pclass-args)
+    (build-tpn ir labels tpn-pclass plant-id tpn-pclass-args (first body) begin-uid)
     (add-between-constraints labels betweens)
     (optimize-tpn-map)
     @*tpn-plan-map*))
 
 ;; returns tpn-ks in ir
 (defn find-tpn-method-construct [ir construct-tpn]
-  (let [[demo-pclass tpn-field tpn-method] (if construct-tpn
+  (let [[demo-pclass tpn-field tpn-method] (map symbol
                                              (string/split construct-tpn  #":"))
-        demo-pclass (symbol demo-pclass)
-        tpn-field (keyword tpn-field)
-        tpn-method (symbol tpn-method)
+        _ (dbg-println :trace "FTMC demo-pclass:" demo-pclass
+            "tpn-field:" tpn-field "tpn-method:" tpn-method)
         tpn-pclass (if (= :pclass (get-in ir [demo-pclass :type]))
                      (get-in ir [demo-pclass :fields tpn-field :initial :pclass]))
-        {:keys [args id]} (get-in ir [demo-pclass :fields tpn-field :initial])
+        ;; {:keys [args id]} (get-in ir [demo-pclass :fields tpn-field :initial])
+        demo-pclass-ctor (get-in ir [demo-pclass :fields tpn-field :initial])
+        _ (dbg-println :trace "FTMC tpn-pclass:" tpn-pclass
+            "demo-pclass-ctor:" demo-pclass-ctor)
         ;; assume the first method is the one with zero arity
+        args (:args demo-pclass-ctor)
         tpn-ks [tpn-pclass :methods tpn-method 0]
         tpn-method-def (get-in ir tpn-ks)
-        field-def (fn [field-sym]
-                    (get-in ir [demo-pclass :fields (keyword field-sym)]))
-        tpn-args (mapv field-def args)]
+        get-field-def (fn [arg]
+                        (let [{:keys [type value names]} arg
+                              n0 (first names)]
+                          (cond
+                            (= :field-ref type)
+                            (get-in ir [demo-pclass :fields n0 :initial])
+                            :else
+                            value)))
+        tpn-args (mapv get-field-def args)]
+    (dbg-println :trace "FTMC tpn-args" tpn-args)
     (if-not tpn-method-def
       (do
         (log/errorf "parse: --construct-tpn argument invalid:"
@@ -1141,7 +1180,7 @@
           (log/errorf "parse: --construct-tpn method with zero arity not found:"
             construct-tpn)
           [nil nil nil])
-        [id tpn-ks tpn-args]))))
+        [nil tpn-ks tpn-args]))))
 
 ;; NOTE there might not be a plant (there may be just one pclass)
 (defn find-tpn-method-default [ir]
@@ -1193,6 +1232,8 @@
         [plant-id tpn-ks args] (if construct-tpn
                                  (find-tpn-method-construct ir construct-tpn)
                                  (find-tpn-method-default ir))
+        _ (dbg-println :trace "LOAD-TPN plant-id:" plant-id "tpn-ks" tpn-ks
+            "args" args)
         tpn (if tpn-ks
               (create-tpn ir plant-id tpn-ks args)
               {:error

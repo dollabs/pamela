@@ -1,0 +1,43 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "bounded"]
+     [:cond-map
+      [:cond [:doc [:string "Bounded"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "5"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "unbounded"]
+     [:cond-map [:cond [:doc [:string "Unbounded"]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "parallel-tpn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc [:string "Simple Parallel with 2 Activities"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "simple-parallel-tpn"]
+     [:cond-map [:cond [:doc [:string "Simple Parallel TPN"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]]

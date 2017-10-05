@@ -1,0 +1,28 @@
+[:pamela
+ [:defpclass
+  [:symbol "choose-reward"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "choose example with rewards"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "choose based on rewards"]]]]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:choice-opt
+         [:reward [:number-ref [:number [:integer "1000"]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:reward [:number-ref [:number [:integer "2000"]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:reward [:number-ref [:lvar-ctor [:string "payoff"]]]]]
+        [:fn [:delay]]]]]]]]]]

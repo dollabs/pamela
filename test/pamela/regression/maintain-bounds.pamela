@@ -14,9 +14,9 @@
 (defpclass maintain-bounds []
   :meta {:version "0.2.0"
          :doc "maintain example with time bounds"}
-  :fields {:a (lvar)}
+  :fields {a (lvar)}
   :methods [(defpmethod always-on
-              {:doc "ensure field :a is always 1.0"}
+              {:doc "ensure field a is always 1.0"}
               []
-              (maintain (= :a 1.0) :bounds [1 100]
+              (maintain (= a 1.0) :bounds [1 100]
                 (delay)))])

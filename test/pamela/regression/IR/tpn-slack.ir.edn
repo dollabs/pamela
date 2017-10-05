@@ -8,10 +8,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Action 1",
      :doc "Take action 1",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -21,10 +22,11 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Action 2",
      :doc "Take action 2",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -45,17 +47,15 @@
            :temporal-constraints
            [{:type :bounds, :value [0 :infinity]}],
            :body nil}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method action1,
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant action1]},
            :args []}
           {:type :delay,
            :temporal-constraints
            [{:type :bounds, :value [0 :infinity]}],
            :body nil}
-          {:type :plant-fn-symbol,
-           :name plant,
-           :method action2,
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant action2]},
            :args []}
           {:type :delay,
            :temporal-constraints
@@ -70,9 +70,9 @@
              :temporal-constraints
              [{:type :bounds, :value [0 :infinity]}],
              :body nil}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method action1,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant action1]},
              :args []}
             {:type :delay,
              :temporal-constraints
@@ -84,9 +84,9 @@
              :temporal-constraints
              [{:type :bounds, :value [0 :infinity]}],
              :body nil}
-            {:type :plant-fn-symbol,
-             :name plant,
-             :method action2,
+            {:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant action2]},
              :args []}
             {:type :delay,
              :temporal-constraints
@@ -102,9 +102,9 @@
              :body nil}]}
           {:type :choice,
            :body
-           [{:type :plant-fn-symbol,
-             :name plant,
-             :method action1,
+           [{:type :method-fn,
+             :method-ref
+             {:type :pclass-arg-ref, :names [plant action1]},
              :args []}]}],
          :label :optional}
         {:type :sequence,
@@ -118,9 +118,9 @@
                :body nil}]}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name plant,
-               :method action1,
+             [{:type :method-fn,
+               :method-ref
+               {:type :pclass-arg-ref, :names [plant action1]},
                :args []}]}]}
           {:type :choose,
            :body
@@ -131,9 +131,9 @@
                :body nil}]}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name plant,
-               :method action2,
+             [{:type :method-fn,
+               :method-ref
+               {:type :pclass-arg-ref, :names [plant action2]},
                :args []}]}]}],
          :label :soft-sequence}
         {:type :parallel,
@@ -147,9 +147,9 @@
                :body nil}]}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name plant,
-               :method action1,
+             [{:type :method-fn,
+               :method-ref
+               {:type :pclass-arg-ref, :names [plant action1]},
                :args []}]}]}
           {:type :choose,
            :body
@@ -160,17 +160,18 @@
                :body nil}]}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name plant,
-               :method action2,
+             [{:type :method-fn,
+               :method-ref
+               {:type :pclass-arg-ref, :names [plant action2]},
                :args []}]}]}],
          :label :soft-parallel}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Start",
      :doc "Demo method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

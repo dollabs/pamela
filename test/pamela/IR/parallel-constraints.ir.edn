@@ -7,41 +7,48 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc1 loc2],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc2]}],
          :temporal-constraints [{:type :bounds, :value [5 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc1 loc3],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc3]}],
          :temporal-constraints [{:type :bounds, :value [5 11]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc1 loc4],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc4]}],
          :temporal-constraints [{:type :bounds, :value [5 12]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc2 loc3],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc3]}],
          :temporal-constraints [{:type :bounds, :value [5 13]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc2 loc4],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc4]}],
          :temporal-constraints [{:type :bounds, :value [5 14]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video-flow,
-         :args [loc3 loc4],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video-flow]},
+         :args
+         [{:type :method-arg-ref, :names [loc3]}
+          {:type :method-arg-ref, :names [loc4]}],
          :temporal-constraints [{:type :bounds, :value [5 15]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [loc1 loc2 loc3 loc4],
      :display-name "Coordination 1",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -51,41 +58,54 @@
      :body
      [{:type :parallel,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc1 loc2 "1"],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc2]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 10]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc1 loc3 "1"],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc3]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 11]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc1 loc4 "1"],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc4]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 12]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc2 loc3 "1"],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc3]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 13]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc2 loc4 "1"],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc4]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 14]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method video,
-         :args [loc3 loc4 "1"],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this video]},
+         :args
+         [{:type :method-arg-ref, :names [loc3]}
+          {:type :method-arg-ref, :names [loc4]}
+          "1"],
          :temporal-constraints [{:type :bounds, :value [5 15]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [loc1 loc2 loc3 loc4],
      :display-name "Coordination 2",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -93,15 +113,16 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method top-level-sequence,
+     [{:type :method-fn,
+       :method-ref
+       {:type :symbol-ref, :names [this top-level-sequence]},
        :args ["host0101" "host0301" "host0501" "host0701"]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Top-Level Activity",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -111,21 +132,28 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method coordination1,
-         :args [loc1 loc2 loc3 loc4],
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this coordination1]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc3]}
+          {:type :method-arg-ref, :names [loc4]}],
          :temporal-constraints [{:type :bounds, :value [20 30]}]}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method coordination2,
-         :args [loc1 loc2 loc3 loc4],
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this coordination2]},
+         :args
+         [{:type :method-arg-ref, :names [loc1]}
+          {:type :method-arg-ref, :names [loc2]}
+          {:type :method-arg-ref, :names [loc3]}
+          {:type :method-arg-ref, :names [loc4]}],
          :temporal-constraints [{:type :bounds, :value [15 25]}]}]}],
      :controllable false,
      :cost 0,
+     :display-args [loc1 loc2 loc3 loc4],
      :display-name "Top Level Sequence",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -135,9 +163,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [client server display],
      :display-name "Video",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -145,15 +174,18 @@
    [{:args [loc1 loc2],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method video,
-       :args [loc1 loc2 "1"]}],
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this video]},
+       :args
+       [{:type :method-arg-ref, :names [loc1]}
+        {:type :method-arg-ref, :names [loc2]}
+        "1"]}],
      :controllable false,
      :cost 0,
+     :display-args [loc1 loc2],
      :display-name "Video",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

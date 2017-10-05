@@ -1,0 +1,74 @@
+[:pamela
+ [:defpclass
+  [:symbol "psw"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "A power switch"]]]]]
+  [:option
+   [:methods
+    [:defpmethod [:symbol "turn_on"] [:args]]
+    [:defpmethod [:symbol "turn_off"] [:args]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string "An example circuit: power switch and light bulb"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "switchedpower"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "psw"]
+       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
+       [:pclass-ctor-option [:plant-part [:string "psw1"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "turn-on-switch"]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "switchedpower"] [:symbol "turn_on"]]]]]
+    [:defpmethod
+     [:symbol "turn-off-switch"]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "switchedpower"] [:symbol "turn_off"]]]]]
+    [:defpmethod
+     [:symbol "toggle-switch"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "turn-on-switch"]]]]
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "10"]]
+               [:number [:integer "10"]]]]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "turn-off-switch"]]]]
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "10"]]
+               [:number [:integer "10"]]]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "demo"]
+     [:args]
+     [:fn
+      [:dotimes
+       [:natural "3"]
+       [:fn [:method-fn [:symbol-ref [:symbol "toggle-switch"]]]]]]]]]]]

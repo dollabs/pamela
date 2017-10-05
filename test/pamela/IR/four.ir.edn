@@ -4,6 +4,5 @@
   {:depends {one "0.2.0", three "0.2.0"},
    :doc "Forth",
    :version "0.2.0"},
-  :modes
-  {:g {:type :literal, :value true}, :i {:type :literal, :value true}},
+  :modes {:g true, :i true},
   :type :pclass}}

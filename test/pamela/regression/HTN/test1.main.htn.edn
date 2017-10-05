@@ -6,6 +6,7 @@
  :hedge-40 {:end-node :hpt-28, :type :edge, :uid :hedge-40},
  :hem-20
  {:args [],
+  :display-args [],
   :display-name "Main Activity",
   :edges [:hedge-34],
   :incidence-set #{:hedge-32},
@@ -14,6 +15,7 @@
   :uid :hem-20},
  :hem-23
  {:args ["host0101" "host0701"],
+  :display-args ["host0101" "host0701"],
   :display-name "test1",
   :edges [:hedge-36 :hedge-38],
   :incidence-set #{},
@@ -22,6 +24,7 @@
   :uid :hem-23},
  :hem-25
  {:args ["host0101" "100MB"],
+  :display-args ["host0101" "100MB"],
   :display-name "File Xfer",
   :edges [],
   :incidence-set #{},
@@ -30,6 +33,7 @@
   :uid :hem-25},
  :hem-29
  {:args ["host0701" "host0101" "1"],
+  :display-args ["host0701" "host0101" "1"],
   :display-name "Video Session",
   :edges [],
   :incidence-set #{},
@@ -66,12 +70,13 @@
  :hpt-24
  {:args ["host0101" "100MB"],
   :argsmap {"server-host" "host0101", "size" "100MB"},
+  :display-args ["host0101" "100MB"],
   :display-name "Ftp",
   :edges [],
   :incidence-set #{},
   :name "ftp",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :type :htn-primitive-task,
   :uid :hpt-24},
  :hpt-27
@@ -84,12 +89,13 @@
  :hpt-28
  {:args ["host0701" "host0101" "1"],
   :argsmap {"client" "host0701", "display" "1", "server" "host0101"},
+  :display-args ["host0701" "host0101" "1"],
   :display-name "Video",
   :edges [],
   :incidence-set #{:hedge-40},
   :name "video",
+  :plant-id "actuator",
   :plant-part "host0701",
-  :plantid "actuator",
   :type :htn-primitive-task,
   :uid :hpt-28},
  :net-31

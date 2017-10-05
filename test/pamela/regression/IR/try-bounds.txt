@@ -1,0 +1,24 @@
+[:pamela
+ [:defpclass
+  [:symbol "try-bounds"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "try example with time bounds"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "try example"]]]]
+     [:args]
+     [:fn
+      [:try
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "100"]]]]]
+       [:fn [:delay]]
+       [:CATCH]
+       [:fn [:delay]]]]]]]]]

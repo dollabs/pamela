@@ -1,0 +1,54 @@
+[:pamela
+ [:defpclass
+  [:symbol "camera"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "take-high-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Take High Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:lvar-ctor
+          [:string "high-res-bounds"]
+          [:lvar-init
+           [:bounds-literal
+            [:number [:integer "5"]]
+            [:number [:integer "10"]]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "take-medium-res-images"]
+     [:cond-map [:cond [:doc [:string "Take Medium Res Image"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "the tpn"]]]]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "take-high-res-images"]]]]]
+       [:choice
+        [:choice-opt
+         [:opt-bounds
+          [:bounds
+           [:lvar-ctor
+            [:string "med-res-bounds"]
+            [:lvar-init
+             [:bounds-literal
+              [:number [:integer "3"]]
+              [:number [:integer "6"]]]]]]]]
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "take-medium-res-images"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "example"]
+  [:args [:symbol "camera"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "imager"]
+     [:field-type [:pclass-ctor [:symbol "camera"]]]]]]]]

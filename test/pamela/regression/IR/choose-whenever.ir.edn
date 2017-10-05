@@ -1,7 +1,7 @@
 {choice-tpn1
  {:args [plant],
   :fields
-  {:priority
+  {priority
    {:access :private,
     :initial {:name "plant-priority", :type :lvar},
     :observable false}},
@@ -15,104 +15,81 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method one,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant one]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 1}]},
+          :args [{:type :field-ref, :names [priority]} 1]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:foo]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:foo]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method two,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant two]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 2}]},
+          :args [{:type :field-ref, :names [priority]} 2]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:bar]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:bar]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method three,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant three]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 3}]},
+          :args [{:type :field-ref, :names [priority]} 3]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:baz]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:baz]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method four,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant four]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 4}]},
+          :args [{:type :field-ref, :names [priority]} 4]},
          :enter
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method acquire,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant acquire]},
           :args [:xyzzy]},
          :leave
-         {:type :plant-fn-symbol,
-          :name plant,
-          :method release,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [plant release]},
           :args [:xyzzy]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Choose By Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
  choice-tpn2
  {:args [plant],
-  :fields
-  {:priority
-   {:access :private,
-    :initial {:type :literal, :value 4},
-    :observable false}},
+  :fields {priority {:access :private, :initial 4, :observable false}},
   :meta {:doc "New choose-whenever example"},
   :methods
   {choose-by-priority
@@ -123,73 +100,58 @@
        :body
        [{:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method one,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant one]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 1}]},
+          :args [{:type :field-ref, :names [priority]} 1]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [1]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method two,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant two]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 2}]},
+          :args [{:type :field-ref, :names [priority]} 2]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [2]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method three,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant three]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 3}]},
+          :args [{:type :field-ref, :names [priority]} 3]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [3]}}
         {:type :choice,
          :body
-         [{:type :plant-fn-symbol,
-           :name plant,
-           :method four,
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [plant four]},
            :args []}],
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :priority}
-           {:type :literal, :value 4}]},
+          :args [{:type :field-ref, :names [priority]} 4]},
          :enter
-         {:type :plant-fn-symbol,
-          :name this,
-          :method set-priority,
+         {:type :method-fn,
+          :method-ref {:type :symbol-ref, :names [set-priority]},
           :args [4]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Choose By Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -201,19 +163,19 @@
        :condition
        {:type :equal,
         :args
-        [{:type :field-reference, :pclass this, :field :priority}
-         {:type :state-variable, :name new-priority}]},
+        [{:type :field-ref, :names [priority]}
+         {:type :method-arg-ref, :names [new-priority]}]},
        :body nil}],
      :controllable false,
      :cost 0,
+     :display-args [new-priority],
      :display-name "Set Priority",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
- new-priority {:type :state-variable},
  plant
  {:args [],
   :meta {:doc "The Plant API"},
@@ -224,9 +186,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [resource],
      :display-name "Acquire",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -236,9 +199,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Four",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -248,9 +212,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "One",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -260,9 +225,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [resource],
      :display-name "Release",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -272,9 +238,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Three",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -284,9 +251,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Two",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

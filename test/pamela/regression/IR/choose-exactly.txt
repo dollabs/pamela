@@ -1,0 +1,50 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod [:symbol "one"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "two"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "three"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "four"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "five"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "six"] [:cond-map] [:args]]]]]
+ [:defpclass
+  [:symbol "choice-tpn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:doc [:string "New choose multiple example"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "choose-multiple"]
+     [:cond-map]
+     [:args]
+     [:fn
+      [:choose
+       [:choose-opt [:exactly [:EXACTLY] [:integer "3"]]]
+       [:choice
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+       [:choice
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+       [:choice
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
+       [:choice
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]
+       [:choice
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "five"]]]]]
+       [:choice
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "six"]]]]]]]]]]]]

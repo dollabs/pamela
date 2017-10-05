@@ -1,0 +1,216 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod [:symbol "one"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "two"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "three"] [:cond-map] [:args]]
+    [:defpmethod [:symbol "four"] [:cond-map] [:args]]
+    [:defpmethod
+     [:symbol "acquire"]
+     [:cond-map]
+     [:args [:symbol "resource"]]]
+    [:defpmethod
+     [:symbol "release"]
+     [:cond-map]
+     [:args [:symbol "resource"]]]]]]
+ [:defpclass
+  [:symbol "choice-tpn1"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:doc [:string "New choose-whenever example"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "priority"]
+     [:field-type [:lvar-ctor [:string "plant-priority"]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "choose-by-priority"]
+     [:cond-map]
+     [:args]
+     [:fn
+      [:choose-whenever
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "1"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
+            [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
+        [:choice-opt
+         [:leave
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
+            [:argval [:safe-keyword [:keyword ":foo"]]]]]]]
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "2"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
+            [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
+        [:choice-opt
+         [:leave
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
+            [:argval [:safe-keyword [:keyword ":bar"]]]]]]]
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "3"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
+            [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
+        [:choice-opt
+         [:leave
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
+            [:argval [:safe-keyword [:keyword ":baz"]]]]]]]
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "4"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "acquire"]]
+            [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
+        [:choice-opt
+         [:leave
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "release"]]
+            [:argval [:safe-keyword [:keyword ":xyzzy"]]]]]]]
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "choice-tpn2"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:doc [:string "New choose-whenever example"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "priority"]
+     [:field-init
+      [:initial [:field-type [:literal [:number [:integer "4"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "choose-by-priority"]
+     [:cond-map]
+     [:args]
+     [:fn
+      [:choose-whenever
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "1"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "set-priority"]]
+            [:argval [:number [:integer "1"]]]]]]]
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "one"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "2"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "set-priority"]]
+            [:argval [:number [:integer "2"]]]]]]]
+        [:fn
+         [:method-fn [:symbol-ref [:symbol "plant"] [:symbol "two"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "3"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "set-priority"]]
+            [:argval [:number [:integer "3"]]]]]]]
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "three"]]]]]
+       [:choice
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "priority"]]]
+            [:cond-operand [:literal [:number [:integer "4"]]]]]]]]
+        [:choice-opt
+         [:enter
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "set-priority"]]
+            [:argval [:number [:integer "4"]]]]]]]
+        [:fn
+         [:method-fn
+          [:symbol-ref [:symbol "plant"] [:symbol "four"]]]]]]]]
+    [:defpmethod
+     [:symbol "set-priority"]
+     [:cond-map]
+     [:args [:symbol "new-priority"]]
+     [:fn
+      [:assert
+       [:cond-expr
+        [:equal-expr
+         [:cond-operand [:symbol-ref [:symbol "priority"]]]
+         [:cond-operand [:symbol-ref [:symbol "new-priority"]]]]]]]]]]]]

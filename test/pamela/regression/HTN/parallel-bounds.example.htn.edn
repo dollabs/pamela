@@ -1,6 +1,7 @@
 {:hedge-15 {:end-node :hem-13, :type :edge, :uid :hedge-15},
  :hem-13
  {:args [],
+  :display-args [],
   :display-name "Example",
   :edges [],
   :incidence-set #{:hedge-15},

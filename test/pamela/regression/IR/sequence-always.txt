@@ -1,0 +1,21 @@
+[:pamela
+ [:defpclass
+  [:symbol "sequence-always"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:doc [:string "sequence example with no time bounds"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "sequence example"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]
+       [:fn [:delay]]]]]]]]]

@@ -1,0 +1,79 @@
+#!/bin/sh
+# diffir
+#
+# Copyright © 2017 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+#
+# Acknowledgement and Disclaimer:
+# This material is based upon work supported by the Army Contracting
+# and DARPA under contract No. W911NF-15-C-0005.
+# Any opinions, findings and conclusions or recommendations expressed
+# in this material are those of the author(s) and do necessarily reflect the
+# views of the Army Contracting Command and DARPA.
+
+# The purpose of this script is to do a diff on all IR changes
+# following: boot test --namespaces testing.pamela.parser
+
+# NOTE this script will exit on the first failure
+set -e
+
+program=$(basename $0)
+code=$(dirname $0)
+cd "$code/.."
+code="$(pwd -P)"
+export PATH=${PATH}:$code/bin
+
+skipped=0
+passed=0
+failed=0
+targetdir="target/parser"
+
+output="$program.diff"
+rm -f "$output"
+
+pamelas=""
+for p in test/pamela/*.pamela; do
+    pamelas="$pamelas $p"
+done
+for p in test/pamela/regression/*.pamela; do
+    pamelas="$pamelas $p"
+done
+for p in $pamelas; do
+    pdir=$(dirname $p)
+    pparent=$(basename $pdir)
+    printf "checking $p "
+    pname=$(basename $p)
+    irname=${pname%%.pamela}.ir.edn
+    rubric="$pdir/IR/$irname"
+    if [ "$pparent" = "regression" ]; then
+        specimen="$targetdir/regression/IR/$irname"
+    else
+        specimen="$targetdir/IR/$irname"
+    fi
+    if [ -e "$rubric" ]; then
+        if [ -e "$specimen" ]; then
+            if diff -u "$rubric" "$specimen" >> "$output" ; then
+                echo PASSED
+                passed=$((passed + 1))
+            else
+                echo FAILED
+                failed=$((failed + 1))
+            fi
+        else
+            echo "specimen missing??"
+            skipped=$((skipped + 1))
+        fi
+    else
+        echo "rubric missing??"
+        skipped=$((skipped + 1))
+    fi
+done
+
+total=$(($skipped + $passed + $failed))
+echo "SKIPPED $skipped PASSED $passed FAILED $failed = TOTAL $total"
+if [ $failed -gt 0 ]; then
+    exit 1
+fi

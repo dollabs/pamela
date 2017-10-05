@@ -30,24 +30,24 @@
 
 (defpclass choice-tpn1 [plant]
   :meta {:doc "New choose-whenever example"}
-  :fields {:priority (lvar "plant-priority")}
+  :fields {priority (lvar "plant-priority")}
   :methods [(defpmethod choose-by-priority
               {}
               []
               (choose-whenever
-                (choice :guard (= :priority 1)
+                (choice :guard (= priority 1)
                   :enter (plant.acquire :foo)
                   :leave (plant.release :foo)
                   (plant.one))
-                (choice :guard (= :priority 2)
+                (choice :guard (= priority 2)
                   :enter (plant.acquire :bar)
                   :leave (plant.release :bar)
                   (plant.two))
-                (choice :guard (= :priority 3)
+                (choice :guard (= priority 3)
                   :enter (plant.acquire :baz)
                   :leave (plant.release :baz)
                   (plant.three))
-                (choice :guard (= :priority 4)
+                (choice :guard (= priority 4)
                   :enter (plant.acquire :xyzzy)
                   :leave (plant.release :xyzzy)
                   (plant.four))
@@ -55,25 +55,25 @@
 
 (defpclass choice-tpn2 [plant]
   :meta {:doc "New choose-whenever example"}
-  :fields {:priority {:initial 4}} ;as an example, this could have remained as an lvar
+  :fields {priority {:initial 4}} ;as an example, this could have remained as an lvar
   :methods [(defpmethod choose-by-priority
               {}
               []
               (choose-whenever
                (choice ;;There is some obvious redundancy between :guard and :enter declarations!
-                :guard (= :priority 1)
+                :guard (= priority 1)
                 :enter (set-priority 1) ;Is this the correct syntax for a "local" method? YES
                 (plant.one))
                (choice
-                :guard (= :priority 2)
+                :guard (= priority 2)
                 :enter (set-priority 2)
                 (plant.two))
                (choice
-                :guard (= :priority 3)
+                :guard (= priority 3)
                 :enter (set-priority 3)
                 (plant.three))
                (choice
-                :guard (= :priority 4)
+                :guard (= priority 4)
                 :enter (set-priority 4)
                 (plant.four))
                ))
@@ -81,7 +81,7 @@
             (defpmethod set-priority
               {}
               [new-priority]
-              (assert (= :priority new-priority)))])
+              (assert (= priority new-priority)))])
 ;; BTW: Is it posssible/meaningful to set the value of a local field?  If so, what's the syntax?
 ;; We have NOT defined mutations like that... Generally PAMELA tries to
 ;; be declarative (not imperative). In this case I think it's more likely

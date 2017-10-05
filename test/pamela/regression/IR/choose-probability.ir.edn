@@ -1,7 +1,7 @@
 {choose-probability
  {:args [],
   :fields
-  {:a
+  {a
    {:access :private,
     :initial {:name :gensym, :type :lvar},
     :observable false}},
@@ -20,19 +20,17 @@
          :body [{:type :delay, :body nil}],
          :probability 0.25,
          :condition
-         {:type :equal,
-          :args
-          [{:type :field-reference, :pclass this, :field :a}
-           {:type :literal, :value 1.0}]}}
+         {:type :equal, :args [{:type :field-ref, :names [a]} 1.0]}}
         {:type :choice,
          :body [{:type :delay, :body nil}],
          :probability {:type :lvar, :name "likelihood"}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Example",
      :doc "choose based on probability",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

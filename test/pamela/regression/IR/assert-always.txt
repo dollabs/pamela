@@ -1,0 +1,23 @@
+[:pamela
+ [:defpclass
+  [:symbol "assert-always"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry
+     [:doc [:string "assert example with no time bounds"]]]]]
+  [:option [:fields [:field [:symbol "a"] [:field-type [:lvar-ctor]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "always-on"]
+     [:cond-map
+      [:cond [:doc [:string "ensure field a is always 1.0"]]]]
+     [:args]
+     [:fn
+      [:assert
+       [:cond-expr
+        [:equal-expr
+         [:cond-operand [:symbol-ref [:symbol "a"]]]
+         [:cond-operand [:literal [:number [:float "1.0"]]]]]]]]]]]]]

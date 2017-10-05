@@ -1,9 +1,12 @@
 {coin
  {:args [],
   :fields
-  {:observed-face
+  {observed-face
    {:access :private,
-    :initial {:mode :head, :pclass coin-faces, :type :mode-reference},
+    :initial
+    {:mode :head,
+     :mode-ref {:names [coin-faces], :type :symbol-ref},
+     :type :mode-ref},
     :observable true}},
   :methods
   {emit-head
@@ -12,14 +15,17 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Emit Head",
      :doc "Heads",
-     :post {:type :literal, :value true},
+     :post true,
      :pre
      {:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :observed-face}
-       {:type :mode-reference, :pclass coin-faces, :mode :head}]},
+      [{:type :field-ref, :names [observed-face]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [coin-faces]},
+        :mode :head}]},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -29,14 +35,17 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Emit Tail",
      :doc "Tails",
-     :post {:type :literal, :value true},
+     :post true,
      :pre
      {:type :equal,
       :args
-      [{:type :field-reference, :pclass this, :field :observed-face}
-       {:type :mode-reference, :pclass coin-faces, :mode :tail}]},
+      [{:type :field-ref, :names [observed-face]}
+       {:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [coin-faces]},
+        :mode :tail}]},
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -52,94 +61,119 @@
            :body
            [{:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name this,
-               :method emit-head,
+             [{:type :method-fn,
+               :method-ref
+               {:type :symbol-ref, :names [this emit-head]},
                :args []}],
              :probability {:type :lvar, :name "eBH", :default 0.8}}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name this,
-               :method emit-tail,
+             [{:type :method-fn,
+               :method-ref
+               {:type :symbol-ref, :names [this emit-tail]},
                :args []}],
              :probability {:type :lvar, :name "eBT", :default 0.2}}]}],
          :condition
          {:type :equal,
           :args
-          [{:type :mode-reference, :pclass this, :mode :biased}
-           {:type :literal, :value true}]}}
+          [{:type :mode-ref,
+            :mode-ref {:type :symbol-ref, :names [this]},
+            :mode :biased}
+           true]}}
         {:type :choice,
          :body
          [{:type :choose,
            :body
            [{:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name this,
-               :method emit-head,
+             [{:type :method-fn,
+               :method-ref
+               {:type :symbol-ref, :names [this emit-head]},
                :args []}],
              :probability {:type :lvar, :name "eUH", :default 0.51}}
             {:type :choice,
              :body
-             [{:type :plant-fn-symbol,
-               :name this,
-               :method emit-tail,
+             [{:type :method-fn,
+               :method-ref
+               {:type :symbol-ref, :names [this emit-tail]},
                :args []}],
              :probability
              {:type :lvar, :name "eUT", :default 0.49}}]}],
          :condition
          {:type :equal,
           :args
-          [{:type :mode-reference, :pclass this, :mode :unbiased}
-           {:type :literal, :value true}]}}]}],
+          [{:type :mode-ref,
+            :mode-ref {:type :symbol-ref, :names [this]},
+            :mode :unbiased}
+           true]}}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip",
      :doc "Flip the coin",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
-  :modes
-  {:biased {:type :literal, :value true},
-   :unbiased {:type :literal, :value true}},
+  :modes {:biased true, :unbiased true},
   :transitions
   {:biased:biased
-   {:post {:mode :biased, :pclass this, :type :mode-reference},
-    :pre {:mode :biased, :pclass this, :type :mode-reference},
+   {:post
+    {:mode :biased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :biased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :probability {:default 0.9, :name "tBB", :type :lvar}},
    :biased:unbiased
-   {:post {:mode :unbiased, :pclass this, :type :mode-reference},
-    :pre {:mode :biased, :pclass this, :type :mode-reference},
+   {:post
+    {:mode :unbiased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :biased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :probability {:default 0.1, :name "tBU", :type :lvar}},
    :unbiased:biased
-   {:post {:mode :biased, :pclass this, :type :mode-reference},
-    :pre {:mode :unbiased, :pclass this, :type :mode-reference},
+   {:post
+    {:mode :biased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :unbiased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :probability {:default 0.1, :name "tUB", :type :lvar}},
    :unbiased:unbiased
-   {:post {:mode :unbiased, :pclass this, :type :mode-reference},
-    :pre {:mode :unbiased, :pclass this, :type :mode-reference},
+   {:post
+    {:mode :unbiased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :unbiased,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
     :probability {:default 0.9, :name "tUU", :type :lvar}}},
   :type :pclass},
  coin-faces
  {:args [],
   :meta {:doc "Enumeration of coin faces"},
-  :modes
-  {:head {:type :literal, :value true},
-   :tail {:type :literal, :value true}},
+  :modes {:head true, :tail true},
   :type :pclass},
  main
  {:args [],
   :fields
-  {:acoin
+  {acoin
    {:access :private,
     :initial
     {:args [],
-     :id "penny",
-     :interface "RMQ",
      :pclass coin,
+     :plant-id "penny",
+     :plant-interface "RMQ",
      :plant-part "coin-fsm",
      :type :pclass-ctor},
     :observable false}},
@@ -150,25 +184,43 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field,
-         :method flip,
-         :args [],
-         :field :acoin}]}],
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip 1000",
      :doc "Series of 1000 coin flips",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -178,18 +230,22 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field, :method flip, :args [], :field :acoin}
-        {:type :plant-fn-field,
-         :method flip,
-         :args [],
-         :field :acoin}]}],
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [acoin flip]},
+         :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Flip 3",
      :doc "Series of 3 coin flips",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

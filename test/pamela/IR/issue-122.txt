@@ -1,0 +1,92 @@
+[:pamela
+ [:defpclass
+  [:symbol "issue-122"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "value"]
+     [:field-type [:literal [:number [:integer "122"]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:ask
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "100"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "0"]]
+            [:number [:integer "1"]]]]]]]
+       [:fn
+        [:assert
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "200"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "2"]]
+            [:number [:integer "3"]]]]]]]
+       [:fn
+        [:maintain
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "300"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "4"]]
+            [:number [:integer "5"]]]]]
+         [:fn [:delay]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "400"]]]]]]]]
+       [:fn
+        [:unless
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "500"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "6"]]
+            [:number [:integer "7"]]]]]
+         [:fn [:delay]]]]
+       [:fn
+        [:when
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "600"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "8"]]
+            [:number [:integer "9"]]]]]
+         [:fn [:delay]]]]
+       [:fn
+        [:whenever
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "value"]]]
+           [:cond-operand [:literal [:number [:integer "700"]]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "10"]]
+            [:number [:integer "11"]]]]]
+         [:fn [:delay]]]]]]]]]]]

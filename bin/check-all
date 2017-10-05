@@ -1,0 +1,84 @@
+#!/bin/sh
+# check-all
+#
+# Copyright © 2017 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+#
+# Acknowledgement and Disclaimer:
+# This material is based upon work supported by the Army Contracting
+# and DARPA under contract No. W911NF-15-C-0005.
+# Any opinions, findings and conclusions or recommendations expressed
+# in this material are those of the author(s) and do necessarily reflect the
+# views of the Army Contracting Command and DARPA.
+
+# The purpose of this script is to do a syntax check on all
+# pamela source files in
+#   test/pamela/*.pamela
+#   test/pamela/regression/*.pamela
+# If the source file can be parsed correctly, the parse tree output *.txt
+# will be placed in (respectively):
+#   test/pamela/IR/*.txt
+#   test/pamela/regression/IR/*.txt
+
+
+# NOTE this script will exit on the first failure
+set -e
+
+program=$(basename $0)
+code=$(dirname $0)
+cd "$code/.."
+code="$(pwd -P)"
+export PATH=${PATH}:$code/bin
+
+# NOTE: the DONE tests can be removed with
+# find test -name '*.txt' | grep -v test/cli | xargs rm
+done=0
+passed=0
+failed=0
+checkdir="$code/target/check-all"
+pamela="$code/bin/pamela"
+
+if [ ! -d "$checkdir" ]; then
+    mkdir -p "$checkdir"
+fi
+# export PAMELA_MODE=dev
+
+pamelas=""
+for p in test/pamela/*.pamela; do
+    pamelas="$pamelas $p"
+done
+for p in test/pamela/regression/*.pamela; do
+    pamelas="$pamelas $p"
+done
+for p in $pamelas; do
+    printf "checking $p "
+    pdir=$(dirname $p)
+    pname=$(basename $p)
+    ptxt=${pname%%.pamela}.txt
+    rubric="$pdir/IR/$ptxt"
+    output="$checkdir/$ptxt"
+    logfile="$checkdir/$pname.log"
+    if [ -e "$rubric" ]; then
+        echo DONE
+        done=$((done + 1))
+    else
+        if "$pamela" -i "$p" -o "$output" check > $logfile 2>&1; then
+            echo PASSED
+            passed=$((passed + 1))
+            mv "$output" "$rubric"
+        else
+            echo FAILED
+            failed=$((failed + 1))
+            # break # for debugging STOP on first failure!
+        fi
+    fi
+done
+
+total=$(($done + $passed + $failed))
+echo "DONE $done PASSED $passed FAILED $failed = TOTAL $total"
+if [ $failed -gt 0 ]; then
+    exit 1
+fi

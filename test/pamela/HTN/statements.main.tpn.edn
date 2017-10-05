@@ -1,95 +1,77 @@
 {:act-14
  {:args
   [{:type :equal,
-    :args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}]}],
+    :args [{:type :state-variable, :name foo} :illuminated]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name foo}
-     {:type :literal, :value :illuminated}],
+   {:args [{:type :state-variable, :name foo} :illuminated],
     :type :equal}},
   :command "assert",
   :constraints #{:tc-13},
   :controllable false,
+  :display-args [(= foo :illuminated)],
   :display-name "Assert",
   :end-node :node-20,
   :htn-node :hem-23,
-  :name "Assert((= foo :illuminated))",
-  :plantid "bsm1",
+  :name
+  "Assert({:type :equal, :args [{:type :state-variable, :name foo} :illuminated]})",
+  :plant-id "bsm1",
   :tpn-type :activity,
   :uid :act-14},
  :act-19
  {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}]}],
+  [{:type :equal, :args [{:type :state-variable, :name bar} :dead]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name bar}
-     {:type :literal, :value :dead}],
-    :type :equal}},
+   {:args [{:type :state-variable, :name bar} :dead], :type :equal}},
   :command "ask",
   :constraints #{:tc-18},
   :controllable false,
+  :display-args [(= bar :dead)],
   :display-name "Ask",
   :end-node :node-25,
   :htn-node :hem-23,
-  :name "Ask((= bar :dead))",
-  :plantid "bsm1",
+  :name
+  "Ask({:type :equal, :args [{:type :state-variable, :name bar} :dead]})",
+  :plant-id "bsm1",
   :tpn-type :activity,
   :uid :act-19},
  :act-24
  {:args
   [{:type :equal,
-    :args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field :field1,
-      :value :simple2}
-     {:type :literal, :value "white"}]}],
+    :args [{:type :field-ref, :names [field1 simple2]} "white"]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :field-reference-field,
-      :pclass this,
-      :field :field1,
-      :value :simple2}
-     {:type :literal, :value "white"}],
+   {:args [{:type :field-ref, :names [field1 simple2]} "white"],
     :type :equal}},
   :command "ask",
   :constraints #{:tc-23},
   :controllable false,
+  :display-args [(= field1.simple2 "white")],
   :display-name "Ask",
   :end-node :node-29,
   :htn-node :hem-23,
-  :name "Ask((= :field1.:simple2 \"white\"))",
-  :plantid "bsm1",
+  :name
+  "Ask({:type :equal, :args [{:type :field-ref, :names [field1 simple2]} \"white\"]})",
+  :plant-id "bsm1",
   :tpn-type :activity,
   :uid :act-24},
  :act-28
  {:args
-  [{:type :equal,
-    :args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}]}],
+  [{:type :equal, :args [{:type :state-variable, :name door} :open]}],
   :argsmap
   {"condition"
-   {:args
-    [{:type :state-variable, :name door}
-     {:type :literal, :value :open}],
-    :type :equal}},
+   {:args [{:type :state-variable, :name door} :open], :type :equal}},
   :command "tell",
   :constraints #{},
   :controllable false,
+  :display-args [(= door :open)],
   :display-name "Tell",
   :end-node :node-33,
   :htn-node :hem-23,
-  :name "Tell((= door :open))",
-  :plantid "bsm1",
+  :name
+  "Tell({:type :equal, :args [{:type :state-variable, :name door} :open]})",
+  :plant-id "bsm1",
   :tpn-type :activity,
   :uid :act-28},
  :act-32
@@ -99,6 +81,7 @@
   :constraints #{},
   :controllable false,
   :cost 0,
+  :display-args [],
   :display-name "Initialize",
   :end-node :node-1,
   :htn-node :hem-23,
@@ -107,16 +90,21 @@
   :tpn-type :activity,
   :uid :act-32},
  :act-9
- {:args [:field1.:simple2],
-  :argsmap {"x" :field1.:simple2},
+ {:args
+  [{:type :field-ref, :names [field1 simple2], :pclass simple-pclass}],
+  :argsmap
+  {"x"
+   {:names [field1 simple2], :pclass simple-pclass, :type :field-ref}},
   :command "one-arg-method",
   :constraints #{},
   :controllable false,
   :cost 0,
+  :display-args [field1.simple2],
   :display-name "One Arg Method",
   :end-node :node-15,
   :htn-node :hem-23,
-  :name "One Arg Method(:field1.:simple2)",
+  :name
+  "One Arg Method({:type :field-ref, :names [field1 simple2], :pclass simple-pclass})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-9},

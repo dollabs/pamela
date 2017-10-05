@@ -1,0 +1,38 @@
+[:pamela
+ [:defpclass
+  [:symbol "one"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "First"]]]]]
+  [:option [:modes [:mode-enum [:keyword ":a"] [:keyword ":b"]]]]]
+ [:defpclass
+  [:symbol "two"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Second"]]]]]
+  [:option [:modes [:mode-enum [:keyword ":c"] [:keyword ":d"]]]]]
+ [:defpclass
+  [:symbol "three"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Third"]]]
+    [:meta-entry [:depends [:dep [:symbol "two"] [:string "0.2.0"]]]]]]
+  [:option [:modes [:mode-enum [:keyword ":e"] [:keyword ":f"]]]]]
+ [:defpclass
+  [:symbol "four"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "Forth"]]]
+    [:meta-entry
+     [:depends
+      [:dep [:symbol "one"] [:string "0.2.0"]]
+      [:dep [:symbol "three"] [:string "0.2.0"]]]]]]
+  [:option [:modes [:mode-enum [:keyword ":g"] [:keyword ":i"]]]]]]

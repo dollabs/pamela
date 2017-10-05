@@ -19,7 +19,8 @@
    [clojure.tools.logging :as log]
    [avenir.utils :refer [assoc-if concatv]]
    [pamela.parser :refer [true-type default-bounds-type
-                          default-bounds default-mdef]]))
+                          default-bounds default-mdef literal?]]
+   [pamela.utils :refer [dbg-println]]))
 
 (defn dissoc-default
   "Dissoc k from m if the current value is equal to default"
@@ -46,23 +47,32 @@
         (cons 'lvar lvar))
       number-ref)))
 
-(defn literal? [v]
-  (or (number? v) ;; literal
-    (true? v) ;; (boolean? v) ;; literal
-    (false? v) ;; (boolean? v) ;; literal
-    (string? v) ;; literal
-    (keyword? v) ;; literal
-    (symbol? v))) ;; symbol
-
 (defn cond-operand? [v]
   (or (literal? v) ;; literal
-    (#{:literal :field-reference :mode-reference :field-reference-field
-       :state-variable}
+    ;; (#{:literal :field-ref :mode-ref :state-variable
+    (#{:field-ref :mode-ref :state-variable
+       :method-arg-ref :pclass-arg-ref}
       (:type v))))
+
+(defn remove-first-this [names]
+  (if (= (first names) 'this)
+    (vec (rest names))
+    names))
+
+(defn unparse-symbol-ref [symbol-ref]
+  (let [{:keys [type names]} symbol-ref
+        symbol-ref-src (->> names
+                         remove-first-this
+                         (map str)
+                         (interpose ".")
+                         (apply str)
+                         symbol)]
+    symbol-ref-src))
 
 ;; unparse-field-type -------------------------
 
 (defn unparse-field-type-dispatch [field-type]
+  (dbg-println :trace "    UFT DISPATCH" field-type)
   (:type field-type))
 
 (defmulti unparse-field-type
@@ -72,27 +82,51 @@
 (defmethod unparse-field-type :default [field-type]
   (unparse-number-ref field-type))
 
-(defmethod unparse-field-type :literal [field-type]
-  (:value field-type))
+;; (defmethod unparse-field-type :literal [field-type]
+;;   (:value field-type))
 
-(defmethod unparse-field-type :mode-reference [field-type]
-  (list 'mode-of (:pclass field-type) (:mode field-type)))
+(defmethod unparse-field-type :mode-ref [field-type]
+  (let [{:keys [mode-ref mode]} field-type
+        {:keys [names]} mode-ref]
+    (if (= names ['this])
+      mode
+      (list 'mode-of (unparse-symbol-ref mode-ref) mode))))
+
+(defmethod unparse-field-type :symbol-ref [field-type]
+  (unparse-symbol-ref field-type))
+
+(defmethod unparse-field-type :pclass-arg-ref [field-type]
+  (let [_ (dbg-println :trace "  UFT PAR before" field-type)
+        rv (unparse-symbol-ref field-type)]
+    (dbg-println :trace "  UFT PAR after" rv)
+    rv))
+
+(defmethod unparse-field-type :method-arg-ref [field-type]
+  (unparse-symbol-ref field-type))
+
+(declare  unparse-argvals)
 
 (defmethod unparse-field-type :pclass-ctor [field-type]
-  (let [{:keys [pclass args id interface plant-part]} field-type
+  (let [{:keys [pclass args plant-id plant-interface plant-part]} field-type
         pclass-ctor '()
         pclass-ctor (if plant-part
                       (cons :plant-part (cons plant-part pclass-ctor))
                       pclass-ctor)
-        pclass-ctor (if interface
-                      (cons :interface (cons interface pclass-ctor))
+        pclass-ctor (if plant-interface
+                      ;; future
+                      ;; (cons :plant-interface (cons plant-interface pclass-ctor))
+                      (cons :interface (cons plant-interface pclass-ctor))
                       pclass-ctor)
-        pclass-ctor (if id
-                      (cons :id (cons id pclass-ctor))
+        pclass-ctor (if plant-id
+                      ;; future
+                      ;; (cons :plant-id (cons plant-id pclass-ctor))
+                      (cons :id (cons plant-id pclass-ctor))
                       pclass-ctor)
         pclass-ctor (if (empty? args)
                       (cons pclass pclass-ctor)
-                      (concat (list pclass) args pclass-ctor))]
+                      (concat (list pclass)
+                        (unparse-argvals args)
+                        pclass-ctor))]
     pclass-ctor))
 
 (defmethod unparse-field-type :lvar [field-type]
@@ -102,10 +136,6 @@
                     (cons name lvar-ctor)
                     lvar-ctor)]
     (cons 'lvar lvar-ctor)))
-
-(defmethod unparse-field-type :arg-reference [field-type]
-  (let [{:keys [name]} field-type]
-    name))
 
 ;; unparse-temporal-constraints -------------------------
 
@@ -135,51 +165,73 @@
 (defmethod unparse-cond-operand :default [cond-operand]
   cond-operand)
 
-(defmethod unparse-cond-operand :literal [cond-operand]
-  (:value cond-operand))
-
-(defmethod unparse-cond-operand :field-reference [cond-operand]
-  (let [{:keys [pclass field]} cond-operand]
-    (if (= pclass 'this)
-      field
-      (symbol (str pclass "." field)))))
-
-(defmethod unparse-cond-operand :field-reference-field [cond-operand]
-  (let [{:keys [pclass field value]} cond-operand
-        ;; field (if (symbol? field)
-        ;;         field
-        ;;         (symbol (clojure.core/name field)))
-        ;; value (if (symbol? value)
-        ;;         value
-        ;;         (symbol (clojure.core/name value)))
-        value (clojure.core/name value)]
-    ;; (if (= pclass 'this)
-    ;;   field
-    ;;   (symbol (str pclass "." field)))
-    (symbol (str field ".:" value))))
+;; (defmethod unparse-cond-operand :literal [cond-operand]
+;;   (:value cond-operand))
 
 (defmethod unparse-cond-operand :state-variable [cond-operand]
   (let [{:keys [name]} cond-operand]
     name))
 
-(defmethod unparse-cond-operand :mode-reference [cond-operand]
-  (let [{:keys [pclass mode]} cond-operand]
-    (if (= pclass 'this)
+(defmethod unparse-cond-operand :mode-ref [cond-operand]
+  (let [{:keys [mode-ref mode]} cond-operand
+        {:keys [names]} mode-ref]
+    (if (= names ['this])
       mode
-      ;; (symbol (str pclass "." mode)))))
-      (list 'mode-of pclass mode))))
+      (list 'mode-of (unparse-symbol-ref mode-ref) mode))))
+
+(defmethod unparse-cond-operand :field-ref [cond-operand]
+  (unparse-symbol-ref cond-operand))
+
+(defmethod unparse-cond-operand :method-arg-ref [cond-operand]
+  (unparse-symbol-ref cond-operand))
+
+(defmethod unparse-cond-operand :pclass-arg-ref [cond-operand]
+  (unparse-symbol-ref cond-operand))
 
 ;; unparse-cond-expr -------------------------
 
 (defn unparse-cond-expr [cond-expr]
-  (if cond-expr
+  (cond
+    (nil? cond-expr)
+    true-type ;; default for unspecified conditions
+    (or (symbol? cond-expr) (literal? cond-expr))
+    cond-expr
+    (cond-operand? cond-expr)
+    (unparse-cond-operand cond-expr)
+    (map? cond-expr)
     (let [{:keys [type args]} cond-expr]
-      (if (cond-operand? cond-expr)
-        (unparse-cond-operand cond-expr)
-        (apply list
-          (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
-          (map unparse-cond-expr args))))
-    true-type)) ;; assume default is the constant true (if-not cond-expr)
+      (apply list
+        (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
+        (map unparse-cond-expr args)))
+    :else ;; default
+    true-type))
+
+;; -------------------------
+
+(defn unparse-argvals [args]
+  (mapv unparse-cond-expr args))
+  ;; (loop [argvals nil a (first args) more (rest args)]
+  ;;   (if-not a
+  ;;     (if-not (empty? argvals)
+  ;;       (vec (reverse argvals)))
+  ;;     (let [{:keys [type mode-ref mode name param]} (if (map? a) a)
+  ;;           {:keys [names]} mode-ref
+  ;;           argval (cond
+  ;;                    (= type :mode-ref)
+  ;;                    (if (= names ['this])
+  ;;                      mode
+  ;;                      (list 'mode-of (unparse-symbol-ref mode-ref) mode))
+  ;;                    (#{:symbol-ref :field-ref :method-arg-ref :pclass-arg-ref}
+  ;;                      type)
+  ;;                    (unparse-symbol-ref a)
+  ;;                    (= type :state-variable)
+  ;;                    name
+  ;;                    (= type :pclass-ctor)
+  ;;                    param
+  ;;                    :else
+  ;;                    a)
+  ;;           argvals (cons argval argvals)]
+  ;;       (recur argvals (first more) (rest more))))))
 
 ;; unparse-option -------------------------
 
@@ -205,14 +257,15 @@
 (defmethod unparse-option :inherit [option def]
   (pprint-option option def))
 
-;; if the value of all the modes is {:type :literal, :value true}
+;; ;; if the value of all the modes is {:type :literal, :value true}
+;; if the value of all the modes is true?
 ;; then convert to a mode-enum
 ;; else if value is true then use that
 ;; else unparse-cond-expr
 (defmethod unparse-option :modes [option def]
   (pprint-option option
     (let [modes-kvs (seq def)]
-      (if (every? #(= % true-type) (map second modes-kvs))
+      (if (every? true? (map second modes-kvs))
         (mapv first modes-kvs) ;; mode-enum
         (loop [modes-source {} mode-kv (first modes-kvs) more (rest modes-kvs)]
           (if-not mode-kv
@@ -229,7 +282,9 @@
         (pprint-option option fields)
         (let [field-init (get def field)
               {:keys [access observable initial]} field-init
+              _ (dbg-println :trace "INITIAL before" initial)
               initial-src (unparse-field-type initial)
+              _ (dbg-println :trace "INITIAL-SRC" initial-src)
               field-type-src (if (and (= access :private) (false? observable))
                                initial-src
                                (->
@@ -272,7 +327,7 @@
           (recur transitions (first more) (rest more)))))))
 
 (defn unparse-fn [fn]
-  (let [{:keys [type body probability name method args
+  (let [{:keys [type body probability name method-ref args
                 condition field temporal-constraints
                 cost reward cost<= reward>=
                 exactly min max controllable
@@ -363,50 +418,27 @@
                          (cons :label (cons label choice-src))
                          choice-src)]
         (cons 'choice choice-src))
-      (= type :plant-fn-symbol)
-      (let [pclass-method (if (= name 'this)
-                            method
-                            (symbol (str name "." method)))
-            plant-src (if-not (empty? args) (seq args))
-            plant-src (if (nil? controllable)
-                       plant-src
-                       (cons :controllable (cons controllable plant-src)))
-            plant-src (if reward
+      (= type :method-fn)
+      (let [args-src (unparse-argvals args)
+            args-src (if (nil? controllable)
+                       args-src
+                       (cons :controllable (cons controllable args-src)))
+            args-src (if reward
                         (cons :reward
-                          (cons (unparse-number-ref reward) plant-src))
-                        plant-src)
-            plant-src (if cost
+                          (cons (unparse-number-ref reward) args-src))
+                        args-src)
+            args-src (if cost
                         (cons :cost
-                          (cons (unparse-number-ref cost) plant-src))
-                        plant-src)
-            plant-src (if bounds
-                         (cons :bounds (cons bounds plant-src))
-                         plant-src)
-            plant-src (if label
-                         (cons :label (cons label plant-src))
-                         plant-src)]
-        (cons pclass-method plant-src))
-      (= type :plant-fn-field)
-      (let [field-method (keyword (str (clojure.core/name field) "." method))
-            plant-src (if-not (empty? args) (seq args))
-            plant-src (if (nil? controllable)
-                       plant-src
-                       (cons :controllable (cons controllable plant-src)))
-            plant-src (if reward
-                        (cons :reward
-                          (cons (unparse-number-ref reward) plant-src))
-                        plant-src)
-            plant-src (if cost
-                        (cons :cost
-                          (cons (unparse-number-ref cost) plant-src))
-                        plant-src)
-            plant-src (if bounds
-                         (cons :bounds (cons bounds plant-src))
-                         plant-src)
-            plant-src (if label
-                         (cons :label (cons label plant-src))
-                         plant-src)]
-        (cons field-method plant-src))
+                          (cons (unparse-number-ref cost) args-src))
+                        args-src)
+            args-src (if bounds
+                         (cons :bounds (cons bounds args-src))
+                         args-src)
+            args-src (if label
+                         (cons :label (cons label args-src))
+                         args-src)
+            method-ref-src (unparse-symbol-ref method-ref)]
+        (cons method-ref-src args-src))
       :else
       (do
         (log/error "Unable to unparse fn type:" type " raw IR inserted in place")
@@ -433,7 +465,7 @@
   (let [{:keys [doc pre post cost reward controllable primitive display-name
                 temporal-constraints ;; bounds in cond-map
                 args betweens body]} mdef
-        cond-map (dissoc mdef :args :betweens :body)
+        cond-map (dissoc mdef :args :betweens :body :display-args)
         primitive-default (nil? body)
         cond-map-default (assoc (dissoc (default-mdef method) :betweens :body)
                            :primitive primitive-default)

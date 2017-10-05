@@ -1,0 +1,111 @@
+[:pamela
+ [:defpclass
+  [:symbol "qc-waypoints"]
+  [:args [:symbol "qc1"] [:symbol "qc2"] [:symbol "qc3"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:doc [:string "Quadcopter test waypoints"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "waypoints"]
+     [:cond-map
+      [:cond [:doc [:string "QC waypoints for 3 quad copters"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:sequence
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
+           [:method-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "5"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445370"]]]
+           [:argval [:number [:float "-71.227891"]]]
+           [:argval [:number [:float "1.0"]]]
+           [:argval [:number [:integer "80"]]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
+           [:method-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "6"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445435"]]]
+           [:argval [:number [:float "-71.227843"]]]
+           [:argval [:number [:float "2.0"]]]
+           [:argval [:number [:integer "170"]]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
+           [:method-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "7"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445389"]]]
+           [:argval [:number [:float "-71.227734"]]]
+           [:argval [:number [:float "3.0"]]]
+           [:argval [:number [:integer "260"]]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
+           [:method-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "8"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445327"]]]
+           [:argval [:number [:float "-71.227788"]]]
+           [:argval [:number [:float "4.0"]]]
+           [:argval [:number [:integer "350"]]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "qc1"] [:symbol "location"]]
+           [:method-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "9"]]
+               [:number [:integer "20"]]]]]]
+           [:argval [:number [:float "42.445370"]]]
+           [:argval [:number [:float "-71.227891"]]]
+           [:argval [:number [:float "1.0"]]]
+           [:argval [:number [:integer "80"]]]]]]]
+       [:fn
+        [:sequence
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp3"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp4"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp1"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc2"] [:symbol "wp2"]]]]]]
+       [:fn
+        [:sequence
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp4"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp1"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp2"]]]]
+         [:fn
+          [:method-fn [:symbol-ref [:symbol "qc3"] [:symbol "wp3"]]]]]]
+       [:fn
+        [:choose [:choice [:fn [:delay]]] [:choice [:fn [:delay]]]]]
+       [:fn [:parallel [:fn [:delay]] [:fn [:delay]]]]]]]]]]]

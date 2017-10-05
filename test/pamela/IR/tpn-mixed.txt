@@ -1,0 +1,208 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "track-elephant"]
+     [:cond-map
+      [:cond [:doc [:string "Track Elephant"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "150"]]
+          [:number [:integer "180"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "watch-right-hemisphere"]
+     [:cond-map
+      [:cond [:doc [:string "Watch Right Hemisphere"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "20"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "watch-left-hemisphere"]
+     [:cond-map [:cond [:doc [:string "Watch Left Hemisphere"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "take-move-low-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Take and Move Low Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "3"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "take-high-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Take High Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "3"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "move-high-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Move High Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "4"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "take-medium-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Take Medium Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "3"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "move-medium-res-images"]
+     [:cond-map
+      [:cond [:doc [:string "Move Medium Res Image"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "4"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "picture-analysis-type-1"]
+     [:cond-map
+      [:cond [:doc [:string "Picture Analysis Type-1"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "6"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "picture-analysis-type-2-fast"]
+     [:cond-map
+      [:cond [:doc [:string "Picture Analysis Type-2: Fast"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "10"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "picture-analysis-type-2-slow"]
+     [:cond-map
+      [:cond [:doc [:string "Picture Analysis Type-2: Slow"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "10"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "picture-analysis-type-3"]
+     [:cond-map
+      [:cond [:doc [:string "Picture Analysis Type-3"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "7"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "picture-distribution"]
+     [:cond-map
+      [:cond [:doc [:string "Picture Distribution"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "5"]]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "tpn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "TPN Demo"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "elephant"]
+     [:cond-map [:cond [:doc [:string "the tpn"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:choose
+         [:choice
+          [:choice-opt [:cost [:number-ref [:number [:float "3.0"]]]]]
+          [:choice-opt
+           [:reward [:number-ref [:number [:integer "10"]]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-high-res-images"]]]]]
+         [:choice
+          [:choice-opt [:cost [:number-ref [:number [:float "2.0"]]]]]
+          [:choice-opt
+           [:reward [:number-ref [:number [:integer "4"]]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-medium-res-images"]]]]]
+         [:choice
+          [:choice-opt [:cost [:number-ref [:number [:float "1.0"]]]]]
+          [:choice-opt
+           [:reward [:number-ref [:number [:integer "1"]]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "take-move-low-res-images"]]]]]]]
+       [:fn
+        [:choose
+         [:choice
+          [:choice-opt
+           [:probability [:number-ref [:number [:float "0.66"]]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "picture-analysis-type-2-slow"]]]]]
+         [:choice
+          [:choice-opt
+           [:probability [:number-ref [:number [:float "0.33"]]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "picture-analysis-type-2-fast"]]]]]]]]]]]]]]

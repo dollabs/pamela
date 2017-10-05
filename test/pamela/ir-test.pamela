@@ -23,19 +23,19 @@
          :depends [[pwrvals "0.2.0"]]
          :icon "box.svg"
          :doc "Box"}
-  :fields {:ball-in-motion {:initial false
+  :fields {ball-in-motion {:initial false
                             :observable true
                             :access :public}
-           :fred (lvar "fred")
-           :dummy (lvar)
-           :pwr (mode-of pwrvals :high)
+           fred (lvar "fred")
+           dummy (lvar)
+           pwr (mode-of pwrvals :high)
            }
   :modes [:open :close]
   :transitions {:open:close {:pre :open :post :close :doc "lid closes"}
                 :close:open {:pre :close
-                             :post (and (= :pwr (mode-of pwrvals :high))
-                                     (= (:fred this) 123.456)
-                                     (mode-of this :wacky))
+                             :post (and (= pwr (mode-of pwrvals :high))
+                                     (= fred 123.456)
+                                     (mode-of this :open))
                              :doc "lid opens"
                              :bounds [12 34]
                              :cost 10
@@ -59,9 +59,9 @@
 
 ;; Pamela plant class
 (defpclass cannon []
-  :fields {:ammunitions {:initial 5
+  :fields {ammunitions {:initial 5
                          :observable true}
-           :ready       {:initial false
+           ready       {:initial false
                          :access :public
                          :observable true}}
   :methods [(defpmethod fire
@@ -72,66 +72,66 @@
 
 ;; Pamela main / class or entry point for a control program
 (defpclass game [power]
-  :fields {:cannon-f (cannon :id "first-cannon" :interface "ZMQ")
-           :box-f    (box)}
+  :fields {cannon-f (cannon :id "first-cannon" :interface "ZMQ")
+           box-f    (box)}
 
   :modes {:wacky true
-          :bizarre (= :cannon-f.:ammunitions 5)
-          :weird (and (= :box-f.:pwr (mode-of pwrvals :high))
+          :bizarre (= cannon-f.ammunitions 5)
+          :weird (and (= box-f.pwr (mode-of pwrvals :high))
                    (= power (mode-of pwrvals :high))
                    (= global-state true))
           }
   :methods [(defpmethod main
               [initial-state]
               (parallel :bounds [1 60]
-                (whenever (= :box-f.:ball-in-motion true)
+                (whenever (= box-f.ball-in-motion true)
                   (tell (= all-clear initial-state))) ;;all-clear is a state var
-                (whenever (= :cannon-f.:ready true)
-                  (unless (= :cannon-f.:ammunitions 0)
+                (whenever (= cannon-f.ready true)
+                  (unless (= cannon-f.ammunitions 0)
                     (try :bounds [2 20]
                          (sequence
-                           (assert (= :box-f (mode-of box :open)))
-                           (maintain (= :box-f (mode-of box :open))
+                           (assert (= box-f (mode-of box :open)))
+                           (maintain (= box-f (mode-of box :open))
                              (sequence :label :my :bounds [98 101]
                                :cost<= 11 :reward>= 90
-                               (:cannon-f.fire :bounds [1 7] 123.45  "456")
+                               (cannon-f.fire :bounds [1 7] 123.45  "456")
                                (ask (= all-clear true) :bounds [200 300]
                                  ) ;; wait / rendezvous
                                ))
-                           (:box-f.close-lid)
+                           (box-f.close-lid)
                            (choose :label :pickme :bounds [36 37]
                              :cost<= 45 :reward>= 46
                              (choice :label :chance
                                :cost 9 :reward 99 :probability 0.67
                                (delay :label :aaa)
                                )
-                             (choice :bounds [7 8] :guard (= :box-f (mode-of box :open))
+                             (choice :bounds [7 8] :guard (= box-f (mode-of box :open))
                                (delay :label :bbb)
                                )
                              ))
                          (catch
                              (sequence
                                (parallel
-                                 (:box-f.reset)
-                                 (:cannon-f.reset))
+                                 (box-f.reset)
+                                 (cannon-f.reset))
                                (delay :bounds [30 30]))))))
                 (slack-sequence :label :slack-sequence
-                  (:box-f.reset)
-                  (:cannon-f.reset))
+                  (box-f.reset)
+                  (cannon-f.reset))
                 (slack-parallel :label :slack-parallel
-                  (:box-f.reset)
-                  (:cannon-f.reset))
+                  (box-f.reset)
+                  (cannon-f.reset))
                 (optional :label :optional
-                  (:cannon-f.reset))
+                  (cannon-f.reset))
                 (soft-sequence :label :soft-sequence
-                  (:box-f.reset)
-                  (:cannon-f.reset))
+                  (box-f.reset)
+                  (cannon-f.reset))
                 (soft-parallel :label :soft-parallel
-                  (:box-f.reset)
-                  (:cannon-f.reset)))
-                (between :my :pickme :bounds [50 :infinity])
-                (between-starts :doit :aaa :cost<= 51)
-                (between-ends :chance :bbb :reward>= 17))
+                  (box-f.reset)
+                  (cannon-f.reset)))
+              (between :my :pickme :bounds [50 :infinity])
+              (between-starts :doit :aaa :cost<= 51)
+              (between-ends :chance :bbb :reward>= 17))
 
             (defpmethod main-test {:doc "Unit test method entry point"} []
                         (main true))

@@ -1,6 +1,7 @@
 {:hedge-13 {:end-node :hem-11, :type :edge, :uid :hedge-13},
  :hem-11
  {:args [],
+  :display-args [],
   :display-name "Main",
   :edges [],
   :incidence-set #{:hedge-13},
@@ -16,6 +17,7 @@
  :hpt-10
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Option",
   :edges [],
   :incidence-set #{},
@@ -25,6 +27,7 @@
  :hpt-8
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Option",
   :edges [],
   :incidence-set #{},
@@ -34,6 +37,7 @@
  :hpt-9
  {:args [],
   :argsmap {},
+  :display-args [],
   :display-name "Option",
   :edges [],
   :incidence-set #{},

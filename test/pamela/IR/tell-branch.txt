@@ -1,0 +1,13 @@
+[:pamela
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn [:method-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
+    [:defpmethod [:symbol "tell-branch"] [:args]]]]]]

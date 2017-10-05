@@ -1,0 +1,174 @@
+[:pamela
+ [:defpclass
+  [:symbol "simpleplant"]
+  [:args]
+  [:option
+   [:meta [:meta-entry [:doc [:string "The Simple Plant Example"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "hardwork"]
+     [:cond-map
+      [:cond
+       [:doc [:string "Simulated work with a simulated failure"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "20"]]]]]]]
+     [:args [:symbol "time"]]]
+    [:defpmethod
+     [:symbol "scp"]
+     [:cond-map
+      [:cond [:doc [:string "Secure network file copy"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "20"]]]]]]]
+     [:args [:symbol "fromfile"] [:symbol "tofile"]]]
+    [:defpmethod
+     [:symbol "cp"]
+     [:cond-map [:cond [:doc [:string "local file copy"]]]]
+     [:args [:symbol "fromfile"] [:symbol "tofile"]]]
+    [:defpmethod
+     [:symbol "shell"]
+     [:cond-map
+      [:cond [:doc [:string "Runs a command-line program"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "3"]]]]]]]
+     [:args
+      [:symbol "cmd"]
+      [:symbol "arg1"]
+      [:symbol "arg2"]
+      [:symbol "arg3"]]]
+    [:defpmethod
+     [:symbol "python"]
+     [:cond-map [:cond [:doc [:string "Runs a python script"]]]]
+     [:args
+      [:symbol "script"]
+      [:symbol "options"]
+      [:symbol "arg1"]
+      [:symbol "arg2"]
+      [:symbol "arg3"]]]
+    [:defpmethod
+     [:symbol "stop"]
+     [:cond-map
+      [:cond [:doc [:string "Stops the plant"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "0"]]
+          [:number [:integer "1"]]]]]]]
+     [:args [:symbol "area"]]]]]]
+ [:defpclass
+  [:symbol "planttest"]
+  [:args [:symbol "plant"]]
+  [:option [:meta [:meta-entry [:doc [:string "Plant Test"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "The HTN"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "hardwork"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "10"]]
+             [:number [:integer "20"]]]]]]
+         [:argval [:number [:integer "10"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "scp"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "0"]]
+             [:number [:integer "99"]]]]]]
+         [:argval [:string "bigfile"]]
+         [:argval [:string "me@192.168.11.100:~me/copyofbigfile"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "cp"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "0"]]
+             [:number [:integer "99"]]]]]]
+         [:argval [:string "bigfile"]]
+         [:argval [:string "copyofbigfile"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "shell"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "0"]]
+             [:number [:integer "99"]]]]]]
+         [:argval [:string "ls"]]
+         [:argval [:string "-lart"]]
+         [:argval [:string ">"]]
+         [:argval [:string "foo"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "python"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "0"]]
+             [:number [:integer "99"]]]]]]
+         [:argval [:string "myscript.py"]]
+         [:argval [:string "2"]]
+         [:argval [:string "3"]]
+         [:argval [:string "4"]]
+         [:argval [:string "5"]]]]
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "3"]]
+               [:number [:integer "3"]]]]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "stop"]]
+         [:argval [:string "McDonalds"]]]]]]]]]]
+ [:defpclass
+  [:symbol "simple-plant-demo"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "sp1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "simpleplant"]
+       [:pclass-ctor-option [:id [:string "myplant"]]]
+       [:pclass-ctor-option [:plant-part [:string "mypart"]]]
+       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+    [:field
+     [:symbol "run"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "planttest"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "sp1"]]]]]]]]]]

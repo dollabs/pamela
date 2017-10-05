@@ -1,0 +1,240 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-a"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "2"]]
+          [:number [:integer "4"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-b"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "3"]]
+          [:number [:integer "6"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-c"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "85"]]
+          [:number [:integer "90"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-d"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "7"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-e"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "9"]]
+          [:number [:integer "16"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-f"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "3"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "do-g"]
+     [:cond-map
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "2"]]
+          [:number [:integer "5"]]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "first-tpn-htn"]
+  [:args [:symbol "plnt"]]
+  [:option
+   [:meta
+    [:meta-entry [:doc [:string "A example with constraints. "]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:cond-map [:cond [:doc [:string "Simple TPN with constraints"]]]]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn-opt
+        [:between-opt
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "1"]]
+            [:number [:integer "100"]]]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "do-a-and-b"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "do-choice-and-c"]]]]]]
+     [:between-stmt
+      [:between
+       [:keyword ":choice"]
+       [:keyword ":b"]
+       [:between-opt
+        [:opt-bounds
+         [:bounds
+          [:bounds-literal
+           [:number [:integer "1"]]
+           [:number [:integer "100"]]]]]]]]]
+    [:defpmethod
+     [:symbol "do-a-and-b"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "2"]]
+             [:number [:integer "4"]]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]
+         [:method-opt [:label [:keyword ":b"]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "3"]]
+             [:number [:integer "6"]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "do-choice-and-c"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "do-choice"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-c"]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "85"]]
+             [:number [:integer "90"]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "do-choice"]
+     [:args]
+     [:fn
+      [:choose
+       [:choose-opt [:fn-opt [:label [:keyword ":choice"]]]]
+       [:choice
+        [:fn [:method-fn [:symbol-ref [:symbol "do-d-and-e"]]]]]
+       [:choice
+        [:fn [:method-fn [:symbol-ref [:symbol "do-f-and-g"]]]]]]]]
+    [:defpmethod
+     [:symbol "do-d-and-e"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]
+         [:method-opt [:cost [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "2"]]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "7"]]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]
+         [:method-opt [:cost [:number-ref [:number [:integer "2"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "9"]]
+             [:number [:integer "16"]]]]]]]]]]]
+    [:defpmethod
+     [:symbol "do-f-and-g"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-f"]]
+         [:method-opt [:cost [:number-ref [:number [:integer "3"]]]]]
+         [:method-opt [:reward [:number-ref [:number [:integer "1"]]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "1"]]
+             [:number [:integer "3"]]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-g"]]
+         [:method-opt [:cost [:number-ref [:number [:integer "4"]]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:number [:integer "2"]]
+             [:number [:integer "5"]]]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "plnt"]
+     [:field-type [:pclass-ctor [:symbol "plant"]]]]
+    [:field
+     [:symbol "tpn"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "first-tpn"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plnt"]]]]]]]]]
+ [:defpclass
+  [:symbol "main-htn"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "plnt"]
+     [:field-type [:pclass-ctor [:symbol "plant"]]]]
+    [:field
+     [:symbol "tpn"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "first-tpn-htn"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plnt"]]]]]]]]]]

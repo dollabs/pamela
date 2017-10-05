@@ -14,7 +14,7 @@
 (defpclass choose-probability []
   :meta {:version "0.2.0"
          :doc "choose example with probability"}
-  :fields {:a (lvar)}
+  :fields {a (lvar)}
   :methods [(defpmethod example
               {:doc "choose based on probability"}
               []
@@ -22,7 +22,7 @@
                 (choice :probability 0.5 (delay))
                 (choice
                   :probability 0.25
-                  :guard (= :a 1.0)
+                  :guard (= a 1.0)
                   (delay))
                 (choice :probability (lvar "likelihood")
                   (delay))))])

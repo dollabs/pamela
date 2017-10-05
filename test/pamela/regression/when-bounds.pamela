@@ -14,9 +14,9 @@
 (defpclass when-bounds []
   :meta {:version "0.2.0"
          :doc "when example with time bounds"}
-  :fields {:a (lvar)}
+  :fields {a (lvar)}
   :methods [(defpmethod always-on
-              {:doc "ensure field :a is always 1.0"}
+              {:doc "ensure field a is always 1.0"}
               []
-              (when (= :a 1.0) :bounds [1 100]
+              (when (= a 1.0) :bounds [1 100]
                 (delay)))])

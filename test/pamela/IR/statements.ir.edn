@@ -4,7 +4,7 @@
  main
  {:args [],
   :fields
-  {:field1
+  {field1
    {:access :private,
     :initial
     {:args ["black"], :pclass simple-pclass, :type :pclass-ctor},
@@ -16,9 +16,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Initialize",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -26,15 +27,16 @@
    [{:args [],
      :betweens [],
      :body
-     [{:type :plant-fn-symbol,
-       :name this,
-       :method test-of-various-statements,
+     [{:type :method-fn,
+       :method-ref
+       {:type :symbol-ref, :names [this test-of-various-statements]},
        :args []}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Main",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -44,9 +46,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [x],
      :display-name "One Arg Method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
@@ -56,52 +59,40 @@
      :body
      [{:type :sequence,
        :body
-       [{:type :plant-fn-symbol,
-         :name this,
-         :method one-arg-method,
-         :args [:field1.:simple2]}
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this one-arg-method]},
+         :args [{:type :field-ref, :names [field1 simple2]}]}
         {:type :assert,
          :condition
          {:type :equal,
-          :args
-          [{:type :state-variable, :name foo}
-           {:type :literal, :value :illuminated}]},
+          :args [{:type :state-variable, :name foo} :illuminated]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [3 5]}]}
         {:type :ask,
          :condition
          {:type :equal,
-          :args
-          [{:type :state-variable, :name bar}
-           {:type :literal, :value :dead}]},
+          :args [{:type :state-variable, :name bar} :dead]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [4 7]}]}
         {:type :ask,
          :condition
          {:type :equal,
-          :args
-          [{:type :field-reference-field,
-            :pclass this,
-            :field :field1,
-            :value :simple2}
-           {:type :literal, :value "white"}]},
+          :args [{:type :field-ref, :names [field1 simple2]} "white"]},
          :body nil,
          :temporal-constraints [{:type :bounds, :value [4 7]}]}
         {:type :tell,
          :condition
          {:type :equal,
-          :args
-          [{:type :state-variable, :name door}
-           {:type :literal, :value :open}]}}
-        {:type :plant-fn-symbol,
-         :name this,
-         :method initialize,
+          :args [{:type :state-variable, :name door} :open]}}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this initialize]},
          :args []}]}],
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Test Of Various Statements",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive false,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
@@ -109,13 +100,10 @@
  simple-pclass
  {:args [simple2-initial],
   :fields
-  {:simple1
+  {simple1 {:access :private, :initial "white", :observable true},
+   simple2
    {:access :private,
-    :initial {:type :literal, :value "white"},
-    :observable true},
-   :simple2
-   {:access :private,
-    :initial {:name simple2-initial, :type :arg-reference},
+    :initial {:names [simple2-initial], :type :pclass-arg-ref},
     :observable true}},
   :methods
   {simple-method
@@ -124,9 +112,10 @@
      :body nil,
      :controllable false,
      :cost 0,
+     :display-args [],
      :display-name "Simple Method",
-     :post {:type :literal, :value true},
-     :pre {:type :literal, :value true},
+     :post true,
+     :pre true,
      :primitive true,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},

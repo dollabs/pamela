@@ -1,0 +1,207 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "bounded"]
+     [:cond-map
+      [:cond [:doc [:string "Bounded"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "1"]]
+          [:number [:integer "5"]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "unbounded"]
+     [:cond-map [:cond [:doc [:string "Unbounded"]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "single-parallel-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]]]]
+ [:defpclass
+  [:symbol "sequence-parallel1-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+       [:fn
+        [:parallel
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "double-parallel-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:parallel
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
+       [:fn
+        [:parallel
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "sequence-parallel2-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:parallel
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
+       [:fn
+        [:parallel
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "parallel-sequence2-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn
+        [:sequence
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]
+       [:fn
+        [:sequence
+         [:fn
+          [:method-fn
+           [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+         [:fn
+          [:method-fn
+           [:symbol-ref
+            [:symbol "plant"]
+            [:symbol "unbounded"]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "sequence-choose-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:choose
+         [:choice
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
+         [:choice
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
+       [:fn
+        [:choose
+         [:choice
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]]
+         [:choice
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "unbounded"]]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "choose-sequence-htn"]
+  [:args [:symbol "plant"]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:fn
+         [:sequence
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "unbounded"]]]]]]]
+       [:choice
+        [:fn
+         [:sequence
+          [:fn
+           [:method-fn
+            [:symbol-ref [:symbol "plant"] [:symbol "bounded"]]]]
+          [:fn
+           [:method-fn
+            [:symbol-ref
+             [:symbol "plant"]
+             [:symbol "unbounded"]]]]]]]]]]]]]]

@@ -1,0 +1,36 @@
+[:pamela
+ [:defpclass
+  [:symbol "choose-probability"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.0"]]]
+    [:meta-entry [:doc [:string "choose example with probability"]]]]]
+  [:option [:fields [:field [:symbol "a"] [:field-type [:lvar-ctor]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "example"]
+     [:cond-map [:cond [:doc [:string "choose based on probability"]]]]
+     [:args]
+     [:fn
+      [:choose
+       [:choice
+        [:choice-opt
+         [:probability [:number-ref [:number [:float "0.5"]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:probability [:number-ref [:number [:float "0.25"]]]]]
+        [:choice-opt
+         [:guard
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "a"]]]
+            [:cond-operand [:literal [:number [:float "1.0"]]]]]]]]
+        [:fn [:delay]]]
+       [:choice
+        [:choice-opt
+         [:probability
+          [:number-ref [:lvar-ctor [:string "likelihood"]]]]]
+        [:fn [:delay]]]]]]]]]]

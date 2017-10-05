@@ -1,0 +1,94 @@
+[:pamela
+ [:defpclass
+  [:symbol "qc"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry [:version [:string "0.2.1"]]]
+    [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "location"]
+     [:cond-map
+      [:cond
+       [:doc
+        [:string
+         "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)"]]]]
+     [:args
+      [:symbol "lat"]
+      [:symbol "lon"]
+      [:symbol "alt"]
+      [:symbol "yaw"]]]
+    [:defpmethod
+     [:symbol "wp1"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 1"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
+       [:argval [:number [:float "42.445370"]]]
+       [:argval [:number [:float "-71.227891"]]]
+       [:argval [:number [:float "1.0"]]]
+       [:argval [:number [:integer "80"]]]]]]
+    [:defpmethod
+     [:symbol "wp2"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 2"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
+       [:argval [:number [:float "42.445435"]]]
+       [:argval [:number [:float "-71.227843"]]]
+       [:argval [:number [:float "2.0"]]]
+       [:argval [:number [:integer "170"]]]]]]
+    [:defpmethod
+     [:symbol "wp3"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 3"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
+       [:argval [:number [:float "42.445389"]]]
+       [:argval [:number [:float "-71.227734"]]]
+       [:argval [:number [:float "3.0"]]]
+       [:argval [:number [:integer "260"]]]]]]
+    [:defpmethod
+     [:symbol "wp4"]
+     [:cond-map
+      [:cond [:doc [:string "Waypoint 4"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:number [:integer "10"]]
+          [:number [:integer "50"]]]]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "this"] [:symbol "location"]]
+       [:argval [:number [:float "42.445327"]]]
+       [:argval [:number [:float "-71.227788"]]]
+       [:argval [:number [:float "4.0"]]]
+       [:argval [:number [:integer "350"]]]]]]]]]]

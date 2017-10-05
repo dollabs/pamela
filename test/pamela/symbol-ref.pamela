@@ -1,0 +1,144 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; Test of the grammar change introducing symbol-ref
+
+;; A symbol-ref A.B.C ... is used as a function -OR- as an argval
+;;   A is method arg, pclass arg, field
+;;   B+ field, method (previous symbol is a pclass instance)
+
+;; symbol-ref could reference a
+;;   pclass-arg(1) :pclass-arg-ref
+;;   method-arg(1) :method-arg-ref
+;;             (1) :state-variable
+;;   field(1+)     :field-ref
+;;   method(1+)    :method-fn (should be method reference)
+
+;; cond-operand = ( literal | mode-ref | symbol-ref )
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
+
+;; mode-ref = <LP> <MODE_OF> symbol-ref keyword <RP>
+;;   symbol-ref could be...   CALLED :mode-ref
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
+;;   :symbol-ref [this-or-pclass]
+;;
+;; field-type = ( literal | lvar-ctor | !lvar-ctor pclass-ctor |
+;;                mode-ref | symbol-ref )
+;;   symbol-ref could be...
+;;   :pclass-arg-ref :state-variable
+
+;; method-fn = <LP> symbol-ref method-opt* argval* <RP>
+;;   symbol-ref could be... CALLED :method-ref
+;;   :pclass-arg-ref :method-arg-ref :field-ref
+;;   :symbol-ref [this local-method]
+
+;; number-ref = ( number | lvar-ctor | symbol-ref )
+;;   symbol-ref could be...
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
+
+;; pclass-ctor-arg = ( string | number | pclass-arg-keyword | boolean | symbol-ref )
+;;   symbol-ref could be...
+;;   :pclass-arg-ref :field-ref :state-variable
+
+;; argval = ( string | number | safe-keyword | boolean | symbol-ref )
+;;   symbol-ref could be...
+;;   :pclass-arg-ref :method-arg-ref :field-ref :state-variable
+
+(defpclass simple-pclass [simple2-initial]
+  :fields {simple1 {:observable true :initial "white"}
+           simple2 {:observable true :initial simple2-initial}}
+  :methods [(defpmethod simple-method []
+              )]
+  )
+
+(defpclass example [pclass-arg]
+  :fields {field1 3.14
+           field2 (simple-pclass "black")}
+  :methods [(defpmethod main []
+              (my-method pclass-arg field1 field2.simple2))
+            (defpmethod my-method [a b c]
+              )
+            ])
+
+;;; ----------------------
+
+(defpclass locations []
+  :meta {:doc "Enumeration of locations"}
+  :modes [:land :sea :air])
+
+(defpclass pclass1 [p-arg1]
+  :meta {:doc "Within this example, field1-1 is a number"}
+  :fields {field1-1 {:initial p-arg1}}
+  :methods [(defpmethod method1 [x y])])
+
+(defpclass pclass2 [p-arg2]
+  :meta {:doc "Within this example, field2-1 is an instance of pclass1"}
+  :fields {field2-1 {:initial p-arg2}}
+  :methods [(defpmethod method2 [x y])
+            (defpmethod method3 [a b c]
+              ;; c is not used
+              ;; below is an example of :method-ref as :pclass-arg-ref
+              (p-arg2.method1 a b))
+            ])
+
+(defpclass main []
+  :fields {field1 (pclass1 42)
+           field2 (pclass1 43)
+           field3 {:initial 100}
+           ;; currently a pclass-ctor-arg canot be another pclass-ctor
+           ;; field4 (pclass2 (pclass1 44))}
+           pclass1-44 (pclass1 44)
+           field4 (pclass2 pclass1-44)}
+  :modes [:running :stopped]
+  :methods [(defpmethod main []
+              (sequence
+               (reference-tests field1 42)))
+
+            (defpmethod reference-tests [pclass-instance-arg method-arg]
+              (sequence
+               ;; references contained within a condition...
+               (tell (= state-var method-arg))
+               (tell (= field3 method-arg))
+               (tell (= field2.field1-1 method-arg))
+               (tell (= pclass-instance-arg.field1-1 method-arg))
+               (tell (= field4.field2-1.field1-1 method-arg))
+               ;; the following should be an error (method args are local, and tell's affect global)
+               (tell (= method-arg 101)) ;;ERROR!
+               ;; but, locals CAN be used in local condition checks...
+               (when (= method-arg 101)
+                 (simple-method 101))
+
+               ;; references contained as a method arg...
+               (simple-method method-arg)
+               (simple-method state-var)
+               (simple-method field3)
+               (simple-method field2.field1-1)
+               (simple-method pclass-instance-arg.field1-1)
+               (simple-method field4.field2-1.field1-1)
+
+               ;; method references...
+               (field2.method1 1 2)
+               (field4.field2-1.method1 1 2)
+               (pclass-instance-arg.method1 1 2)
+               (field4.method3 4 5 :running)
+               ;; NOTE the following is legal and works, BUT
+               ;; unparse has to pick ONE of these two forms...
+               ;; so we'll use the shorter one:
+               ;; (field4.method3 4 5 (mode-of this :stopped))
+               (field4.method3 4 5 :stopped)
+               (field4.method3 4 5 (mode-of locations :sea))
+               ))
+
+            (defpmethod simple-method [arg])
+
+            ])
