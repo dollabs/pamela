@@ -1,0 +1,34 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;;; Acknowledgement and Disclaimer:
+;;; This material is based upon work supported by the Army Contracting
+;;; and DARPA under contract No. W911NF-15-C-0005.
+;;; Any opinions, findings and conclusions or recommendations expressed
+;;; in this material are those of the author(s) and do necessarily reflect the
+;;; views of the Army Contracting Command and DARPA.
+
+(defpclass a11 [])
+(defpclass a12 [])
+(defpclass a13 [])
+
+;(defpclass c31 [])
+;(defpclass c32 [])
+;(defpclass c33 [])
+
+(defpclass a1 [] :inherit [a11 a12 a13])
+(defpclass a2 [])
+(defpclass a3 [])
+
+;(defpclass c1 [] )
+;(defpclass c2 [])
+;(defpclass c3 [] :inherit [c31 c32 c33])
+
+(defpclass a [] :inherit [a1 a2 a3])
+(defpclass b [])
+;(defpclass c [] :inherit [c1 c2 c3])
+
+(defpclass main [] :inherit [a b])
