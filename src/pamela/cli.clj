@@ -31,7 +31,7 @@
             [environ.core :refer [env]])
   (:gen-class)) ;; required for uberjar
 
-(def test-mode false)
+(defonce test-mode false)
 (defn set-test-mode! [value]
   (def test-mode value))
 
