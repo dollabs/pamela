@@ -11,7 +11,7 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-;; inheritance example: inheriting modes. a precedes b
+;; inheritance example: Test inherit from a and b
 
 (defpclass a []
            :fields {fa "fa"}
@@ -21,7 +21,10 @@
                          :moa1:moa2 {:pre :moa1 :post :moa2
                                    :doc "transition :moa1 -> :moa2"}
                          :moa2:moa1 {:pre :moa2 :post :moa1
-                                   :doc "transition :moa2 -> :moa1"}}
+                                   :doc "transition :moa2 -> :moa1"}
+                         :with:samekey {:pre :moa1 :post :moa2
+                                        :probability 0.1    ; Note different probability
+                                        :doc "Same key different signatures, prob 0.1"}}
            :methods [(defpmethod ma [arg1 arg2])]
            )
 
@@ -33,7 +36,10 @@
                          :mob1:mob2 {:pre :mob1 :post :mob2
                                    :doc "transition :mob1 -> :mob2"}
                          :mob2:mob1 {:pre :mob2 :post :mob1
-                                   :doc "transition :mob2 -> :mob1"}}
+                                   :doc "transition :mob2 -> :mob1"}
+                         :with:samekey {:pre :moa1 :post :moa2
+                                        :probability 0.2    ;Note probability is different
+                                        :doc "Same key different signatures, prob 0.2"}}
            :methods [(defpmethod mb [arg1 arg2])])
 
 (defpclass c []
@@ -50,6 +56,14 @@
                          :mob1:mob2 {:pre :mob1 :post :mob2
                                      :doc "transition :mob1 -> :mob2"}
                          :mob2:mob1 {:pre :mob2 :post :mob1
-                                   :doc "transition :mob2 -> :mob1"}}
+                                   :doc "transition :mob2 -> :mob1"}
+                         ; In current IR, only one of them will be there but not both.
+                         :with:samekey {:pre :moa1 :post :moa2
+                                        :probability 0.1    ; Note different probability
+                                        :doc "Same key different signatures, prob 0.1"}
+                         :with:samekey {:pre :moa1 :post :moa2
+                                        :probability 0.2    ;Note probability is different
+                                        :doc "Same key different signatures, prob 0.2"}
+                         }
            :methods [(defpmethod ma [arg1 arg2])
                      (defpmethod mb [arg1 arg2])])
