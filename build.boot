@@ -57,6 +57,7 @@
                       'testing.pamela.parser 'testing.pamela.unparser
                       'testing.pamela.tpn 'testing.pamela.htn
                       'testing.pamela.plan-schema
+                      'testing.pamela.inheritance
                       }})
 
 (deftask run

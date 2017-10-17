@@ -1,0 +1,86 @@
+{a {:args [], :inherit [a1], :type :pclass},
+ a1
+ {:args [],
+  :fields {fa {:access :private, :initial "fa", :observable false}},
+  :methods
+  {ma
+   [{:args [arg1 arg2],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [arg1 arg2],
+     :display-name "Ma",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes
+  {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
+   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal}},
+  :transitions
+  {:moa1:moa2
+   {:doc "transition :moa1 -> :moa2",
+    :post
+    {:mode :moa2,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :moa1,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}},
+   :moa2:moa1
+   {:doc "transition :moa2 -> :moa1",
+    :post
+    {:mode :moa1,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :moa2,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}}},
+  :type :pclass},
+ b
+ {:args [],
+  :fields {fa {:access :private, :initial "fb", :observable false}},
+  :methods
+  {ma
+   [{:args [arg1 arg2],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [arg1 arg2],
+     :display-name "Ma",
+     :post true,
+     :pre true,
+     :primitive true,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes
+  {:moa1 {:args [{:type :field-ref, :names [fa]} "fb"], :type :equal},
+   :moa2 {:args [{:type :field-ref, :names [fa]} true], :type :equal}},
+  :transitions
+  {:moa1:moa2
+   {:doc "transition :mob1 -> :mob2",
+    :post
+    {:mode :moa2,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :moa1,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}},
+   :moa2:moa1
+   {:doc "transition :mob2 -> :mob1",
+    :post
+    {:mode :moa1,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :moa2,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}}},
+  :type :pclass},
+ c {:args [], :inherit [a b], :type :pclass}}

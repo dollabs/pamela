@@ -1,0 +1,51 @@
+{a
+ {:args [],
+  :methods
+  {turn-on
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable true,
+     :cost 2,
+     :display-args [],
+     :display-name "turn-on/a",
+     :doc "turns on the power supply type a",
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :on},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :off},
+     :primitive true,
+     :reward 5,
+     :temporal-constraints [{:type :bounds, :value [1 3]}]}]},
+  :modes {:off true, :on true},
+  :type :pclass},
+ b
+ {:args [],
+  :methods
+  {turn-on
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable true,
+     :cost 2,
+     :display-args [],
+     :display-name "turn-on/b",
+     :doc "turns on the power supply type b",
+     :post
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :on},
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :off},
+     :primitive true,
+     :reward 5,
+     :temporal-constraints [{:type :bounds, :value [1 3]}]}]},
+  :modes {:off true, :on true},
+  :type :pclass},
+ c {:args [], :inherit [a b], :type :pclass}}

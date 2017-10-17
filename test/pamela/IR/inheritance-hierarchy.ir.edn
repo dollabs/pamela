@@ -1,0 +1,9 @@
+{a {:args [], :inherit [a1 a2 a3], :type :pclass},
+ a1 {:args [], :inherit [a11 a12 a13], :type :pclass},
+ a11 {:args [], :type :pclass},
+ a12 {:args [], :type :pclass},
+ a13 {:args [], :type :pclass},
+ a2 {:args [], :type :pclass},
+ a3 {:args [], :type :pclass},
+ b {:args [], :type :pclass},
+ main {:args [], :inherit [a b], :type :pclass}}
