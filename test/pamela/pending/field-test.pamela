@@ -1,0 +1,45 @@
+;; Test of field references
+
+;; To construct HTN and TPN:
+;; pamela -i field-test.pamela -o field-test -t "(main.main)" htn
+
+
+(defpclass aoc-pclass []
+  :methods [
+            (defpmethod ftp-to {:display-name "FTP to"} [destination size])
+
+            (defpmethod send-it-to [unit]
+              (sequence
+               (ftp-to unit "100MB")))
+            ])
+
+(defpclass requesting-unit []
+  :fields {field1 "me"}
+  )
+
+;;; This currently does not work
+(defpclass main []
+  :fields {aocf (aoc-pclass :id "AOC")
+           requesting-unit1 (requesting-unit :id "RequestingUnit1")
+           }
+  :methods [
+            (defpmethod main []
+              (sequence
+               (aocf.send-it-to requesting-unit1.field1)
+               ))
+            ]
+  )
+
+;;; This currently works
+(defpclass main2 []
+  :fields {requesting-unit1 (requesting-unit :id "RequestingUnit1")
+           }
+  :methods [
+            (defpmethod do-it [x]
+              )
+            (defpmethod main []
+              (sequence
+               (do-it requesting-unit1.field1)
+               ))
+            ]
+  )
