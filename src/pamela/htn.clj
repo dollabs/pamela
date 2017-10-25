@@ -1313,10 +1313,10 @@
 ;; walk ir, look for pclasses that have non-empty methods
 (defn transform-htn [ir pargs]
   (doseq [[pclass-name v] (seq ir)]
-    (assert pclass-name "Found a nil pclass in the IR")
-    (let [{:keys [type methods]} v]
-      (dbg-println :info "TRANSFORM-HTN" pclass-name)
-      (when (= type :pclass) ;;Could it be anything else?
+    (when (= (:type v) :pclass)
+      (assert pclass-name "Found a nil pclass in the IR")
+      (let [{:keys [type methods]} v]
+        (dbg-println :info "TRANSFORM-HTN" pclass-name)
         (doseq [[mname method-mdefs] (seq methods)]
           (if mname ;; else (dbg-println :debug "no more methods")
             (loop [mi 0 mdef (first method-mdefs) more (rest method-mdefs)]
@@ -1324,14 +1324,14 @@
                 (let [{:keys [temporal-constraints args primitive display-name
                               display-args body]} mdef]
                   (dbg-println :info "  METHOD" mname "MI" mi
-                    "PRIMITIVE" primitive "ARGS" args
-                    "DISPLAY-NAME" display-name "DISPLAY-ARGS" display-args)
+                               "PRIMITIVE" primitive "ARGS" args
+                               "DISPLAY-NAME" display-name "DISPLAY-ARGS" display-args)
                   (when (and (not primitive) body)
                     (if (and (= 1 (count body))
-                          (= :choose (get-in body [0 :type])))
+                             (= :choose (get-in body [0 :type])))
                       (dbg-println :info "  TOP LEVEL CHOOSE!"))
                     (make-htn-methods ir pargs true pclass-name mname mi
-                      display-name display-args args body)))
+                                      display-name display-args args body)))
                 (recur (inc mi) (first more) (rest more))))))))))
 
 ;; consider memoizing or caching result
