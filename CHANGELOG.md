@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This change
 ### [Unreleased]
 
 Changes
-* _TBD_
+* Grammar ambiguity fixed in a previous commit (Closes #144)
 
 ### [0.6.2] - 2017-08-28
 
