@@ -28,15 +28,13 @@ or-expr ::= LP OR ( cond-expr | cond-operand )+ RP
 implies-expr ::= LP IMPLIES ( cond-expr | cond-operand )+ RP
 not-expr ::= LP NOT cond-expr RP
 equal-expr ::= LP EQUAL cond-operand+ RP
-cond-operand ::= ( literal | symbol | field-expr | mode-expr )
-field-expr ::= LP FIELD_OF symbol symbol RP 
-
-mode-expr ::= LP MODE_OF symbol keyword RP
+cond-operand ::= ( literal | mode-ref | symbol-ref )
+mode-ref ::= LP MODE_OF symbol-ref keyword RP
 
 fields ::= FIELDS LM field+ RM
 field ::= symbol ( LM field-init+ RM | field-type )
-field-type ::= ( literal | symbol | lvar-ctor |  pclass-ctor |
-               mode-expr )
+field-type ::= ( literal | lvar-ctor |  pclass-ctor |
+               mode-ref | symbol-ref )
 field-init ::= ( initial | access | observable )
 
 initial ::= INITIAL field-type
@@ -62,7 +60,7 @@ display-name ::= DISPLAY_NAME string
 fn ::= ( ask | assert | choose | choose-whenever | delay | dotimes | maintain |
        optional | parallel | sequence | slack-parallel | slack-sequence |
        soft-parallel | soft-sequence | tell | try | unless | when | whenever |
-       plant-fn )
+       method-fn )
 
 ask ::= LP ASK cond-expr opt-bounds? RP
 assert ::= LP ASSERT cond-expr opt-bounds? RP
@@ -84,8 +82,7 @@ try ::= LP TRY opt-bounds? fn LP CATCH fn RP RP
 unless ::= LP UNLESS cond-expr opt-bounds? fn RP
 when ::= LP WHEN cond-expr opt-bounds? fn RP
 whenever ::= LP WHENEVER cond-expr opt-bounds? fn RP
-plant-fn ::= LP ( symbol '.' symbol | symbol | keyword ) plant-opt*
-                  argval* RP
+method-fn ::= LP symbol-ref method-opt* argval* RP
 
 between-stmt ::= (between | between-ends | between-starts)
 between ::= LP BETWEEN keyword keyword between-opt+ RP
@@ -96,7 +93,7 @@ between-opt ::= ( opt-bounds | cost-le | reward-ge )
 fn-opt ::= ( between-opt | label )
 choose-opt ::= ( fn-opt | exactly | min | max )
 delay-opt ::= ( fn-opt | controllable )
-plant-opt ::= ( opt-bounds | label | cost | reward | controllable )
+method-opt ::= ( opt-bounds | label | cost | reward | controllable )
 choice-opt ::= ( opt-bounds | label | cost | reward | probability | guard |
                enter | leave )
 
@@ -116,13 +113,13 @@ exactly ::= EXACTLY integer
 enter ::= ENTER fn
 leave ::= LEAVE fn
 
-number-ref ::= ( symbol | lvar-ctor | number )
+number-ref ::= ( number | lvar-ctor | symbol-ref )
 
 lvar-ctor ::= ( LP LVAR RP | LP LVAR string lvar-init? RP )
 lvar-init ::= literal | bounds-literal
 
 pclass-ctor ::= LP symbol pclass-ctor-arg* pclass-ctor-option* RP
-pclass-ctor-arg ::= ( boolean | string | number | symbol | pclass-arg-keyword )
+pclass-ctor-arg ::= ( string | number | pclass-arg-keyword | boolean | symbol-ref )
 pclass-ctor-option ::= ( id | plant-part | interface )
 pclass-arg-keyword ::=  keyword
 reserved-pclass-ctor-keyword ::= ( ID | INTERFACE | PLANT_PART ) stop-token
@@ -133,21 +130,22 @@ interface ::= INTERFACE string
 bounds ::= bounds-literal | lvar-ctor
 bounds-literal ::= LB number ( number | INFINITY ) RB
 
+symbol-ref ::= symbol ( '.' symbol )*
 symbol ::=  [A-Za-z][A-Za-z0-9-]*
 reserved-symbol ::= reserved-string stop-token
 reserved-string ::= ( AND | ASK | ASSERT | BETWEEN | BETWEEN_ENDS |
                     BETWEEN_STARTS | CATCH | CHOICE | CHOOSE |
                     CHOOSE_WHENEVER | DEFPCLASS | DEFPMETHOD | DELAY |
-                    DOTIMES | FALSE | FIELD_OF |
-                    IMPLIES | LVAR | MAINTAIN |
+                    DOTIMES | FALSE | IMPLIES | LVAR | MAINTAIN |
                     MODE_OF | NOT | OPTIONAL | OR | PARALLEL |
                     SEQUENCE | SLACK_PARALLEL | SLACK_SEQUENCE |
-                    SOFT_PARALLEL | SOFT_SEQUENCE | TELL | TRUE |
-                    TRY | UNLESS | WHEN | WHENEVER )
-stop-token ::= (whitespace | '.' | LP | RP )
+                    SOFT_PARALLEL | SOFT_SEQUENCE | TELL |
+                    TRUE | TRY | UNLESS | WHEN | WHENEVER )
+
+stop-token ::= (whitespace | '.' | LP | RP | LB | RB | LM | RM )
 
 literal ::= ( boolean | string | keyword | number )
-argval ::= ( symbol | boolean | string | number | safe-keyword | field-expr )
+argval ::= ( string | number | safe-keyword | boolean | mode-ref | symbol-ref )
 safe-keyword ::=  keyword
 reserved-keyword ::= ( LABEL | BOUNDS | COST | REWARD | CONTROLLABLE )
                    stop-token
@@ -186,7 +184,6 @@ EQUAL ::= '='
 EXACTLY ::= ':exactly'
 FALSE ::= 'false'
 FIELDS ::= ':fields'
-FIELD_OF ::= 'field-of'
 GUARD ::= ':guard'
 ICON ::= ':icon'
 ID ::= ':id'
