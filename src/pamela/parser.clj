@@ -830,41 +830,44 @@
         [c-pclass c-methods c-method c-mi] context
         method (if (= c-methods :methods) c-method)
         method-args (if method
-                      (get-in ir [pclass :methods method c-mi :args]))]
-    (cond
-      ;; (= type :literal)
-      (clj19-boolean? condition)
-      condition ;; literal boolean condition
-      (or (nil? type) (symbol-ref? condition) (mode-ref? condition))
-      (validate-cond-operand ir state-vars pclass fields modes context
-        pclass-args method-args condition)
-      (= type :equal)
-      (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
-        (if-not a
-          (assoc-if vcond :args vargs)
-          (cond
-            (or (keyword? a) (symbol-ref? a) (mode-ref? a))
-            (let [va (validate-cond-operand ir state-vars pclass fields modes
-                       context pclass-args method-args a)
-                  vcond (if (:error va) va vcond)
-                  vargs (if (:error va) nil (conj vargs va))]
-              (recur vcond vargs (first more) (rest more)))
-            (map? a) ;; already specified by instaparse
-            (recur vcond (conj vargs a) (first more) (rest more))
-            :else ;; must be a literal
-            ;; (recur vcond (conj vargs {:type :literal :value a})
-            (recur vcond (conj vargs a)
-              (first more) (rest more)))))
-      :else ;; :and :or :not :implies => recurse on args
-      (let [vargs (mapv
-                    (partial validate-condition ir state-vars
-                      pclass fields modes (conj context type))
-                    args)
-            error (first (filter #(:error %) vargs))]
-        (if error
-          error
-          {:type type
-           :args vargs})))))
+                      (get-in ir [pclass :methods method c-mi :args]))
+        rv
+        (cond
+          ;; (= type :literal)
+          (clj19-boolean? condition)
+          condition ;; literal boolean condition
+          (or (nil? type) (symbol-ref? condition) (mode-ref? condition))
+          (validate-cond-operand ir state-vars pclass fields modes context
+            pclass-args method-args condition)
+          (= type :equal)
+          (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
+            (if (nil? a)
+              (assoc-if vcond :args vargs)
+              (cond
+                (or (keyword? a) (symbol-ref? a) (mode-ref? a))
+                (let [va (validate-cond-operand ir state-vars pclass fields modes
+                           context pclass-args method-args a)
+                      vcond (if (:error va) va vcond)
+                      vargs (if (:error va) nil (conj vargs va))]
+                  (recur vcond vargs (first more) (rest more)))
+                (map? a) ;; already specified by instaparse
+                (recur vcond (conj vargs a) (first more) (rest more))
+                :else ;; must be a literal
+                ;; (recur vcond (conj vargs {:type :literal :value a})
+                (recur vcond (conj vargs a)
+                  (first more) (rest more)))))
+          :else ;; :and :or :not :implies => recurse on args
+          (let [vargs (mapv
+                        (partial validate-condition ir state-vars
+                          pclass fields modes (conj context type))
+                        args)
+                error (first (filter #(:error %) vargs))]
+            (if error
+              error
+              {:type type
+               :args vargs})))]
+    (dbg-println :debug  "  VALIDATE-CONDITION =>" (pr-str rv))
+    rv))
 
 ;; return Validated body or {:error "message"}
 (defn validate-body [ir state-vars in-pclass
