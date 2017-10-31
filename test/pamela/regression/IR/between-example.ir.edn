@@ -18,6 +18,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

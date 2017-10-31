@@ -50,6 +50,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    coordination2
@@ -107,6 +108,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    main
@@ -124,6 +126,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    top-level-sequence
@@ -155,6 +158,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    video
@@ -168,6 +172,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    video-flow
@@ -187,6 +192,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

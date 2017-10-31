@@ -14,6 +14,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 4]}]}],
    move-medium-res-images
@@ -28,6 +29,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 4]}]}],
    picture-analysis-type-1
@@ -42,6 +44,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 6]}]}],
    picture-analysis-type-2-fast
@@ -56,6 +59,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 10]}]}],
    picture-analysis-type-2-slow
@@ -70,6 +74,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 10]}]}],
    picture-analysis-type-3
@@ -84,6 +89,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 7]}]}],
    picture-distribution
@@ -98,6 +104,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 5]}]}],
    pre-picture-distribution
@@ -112,6 +119,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 5]}]}],
    take-high-res-images
@@ -126,6 +134,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 3]}]}],
    take-medium-res-images
@@ -140,6 +149,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 3]}]}],
    take-move-low-res-images
@@ -154,6 +164,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 3]}]}],
    track-elephant
@@ -168,6 +179,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [150 180]}]}],
    watch-left-hemisphere
@@ -182,6 +194,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    watch-right-hemisphere
@@ -196,6 +209,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [10 20]}]}]},
   :type :pclass},
@@ -335,6 +349,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

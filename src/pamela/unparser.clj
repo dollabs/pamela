@@ -470,6 +470,7 @@
         cond-map-default (assoc (dissoc (default-mdef method) :betweens :body)
                            :primitive primitive-default)
         display-name-default (:display-name cond-map-default)
+        probability-default 1.0
         cond-map-src (->
                        (if (= cond-map cond-map-default)
                          {}
@@ -487,7 +488,8 @@
                        (dissoc-default :controllable false)
                        (dissoc-default :primitive primitive-default)
                        (dissoc-default :bounds default-bounds)
-                       (dissoc-default :display-name display-name-default))
+                       (dissoc-default :display-name display-name-default)
+                       (dissoc-default :probability probability-default))
         src (if-not (empty? betweens) (map unparse-between-stmt betweens))
         src (if (empty? body) src (cons (unparse-fn (first body)) src))
         src (cons args src)

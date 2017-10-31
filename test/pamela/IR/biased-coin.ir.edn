@@ -27,6 +27,7 @@
         :mode-ref {:type :symbol-ref, :names [coin-faces]},
         :mode :head}]},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    emit-tail
@@ -47,6 +48,7 @@
         :mode-ref {:type :symbol-ref, :names [coin-faces]},
         :mode :tail}]},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    flip
@@ -114,6 +116,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes {:biased true, :unbiased true},
@@ -222,6 +225,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    flip-3
@@ -247,6 +251,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},

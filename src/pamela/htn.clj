@@ -1504,19 +1504,23 @@
 
 ;; returns plant details map with keys
 ;;   name display-name plant-id plant-part plant-interface args argvals
-(defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?]
-  (let [{:keys [type name arguments ancestry-path]} subtask_
+(defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?
+                     method-opts]
+  (let [method-opts (select-keys method-opts ;; from call site
+                      [:label :cost :reward :controllable])
+        {:keys [type name arguments ancestry-path]} subtask_
         caller-pclass (if (> (count ancestry-path ) 3)
                         (-> ancestry-path (nth 3) :pclass))
         name-str (str name)
         display-name (display-name-string name-str)
-        details {:name name-str
-                 :display-name display-name}]
+        details_ {:name name-str
+                  :display-name display-name
+                  :method-opts method-opts}]
     (dbg-println :trace "PD primitive?" primitive?
       "ancestry-path" (print-ancestry-path ancestry-path)
       "caller-pclass" caller-pclass)
     (if (or (not primitive?) (= name 'delay))
-      details
+      details_
       (let [{:keys [pclass plant-id plant-part plant-interface]} pclass-ctor_
             plant-id (if (reserved-conditional-method-name? name)
                       *belief-state-manager-plant-id*
@@ -1543,8 +1547,16 @@
             formal-args (mapv #(if (symbol? %) (str %) %) formal-args)
             _ (dbg-println :debug "PD ARGS" (pr-str args)
                        "FORMAL-ARGS" (pr-str formal-args)) ;;:: DEBUG
-            argsmap (zipmap formal-args args)]
-        (assoc-if details
+            argsmap (zipmap formal-args args)
+            opt-bounds (bounds-from-mdef mdef) ;; here only from method def
+            label (:label method-opts) ;; only from call site
+            ;; For the following prefer call site, default to method def
+            cost (or (:cost method-opts) (:cost mdef))
+            reward (or (:reward method-opts) (:reward mdef))
+            controllable (if (clj19-boolean? (:controllable method-opts))
+                               (:controllable method-opts)
+                               (:controllable mdef))]
+        (assoc-if details_
                   :args args
                   :argsmap argsmap
                   :plant-id plant-id
@@ -1552,7 +1564,12 @@
                   :plant-interface plant-interface
                   :display-name (or (:display-name mdef) display-name)
                   :display-args display-args
-                  :mdef (assoc mdef :method-bounds (bounds-from-mdef mdef))
+                  :method-opts (assoc-if {}
+                                 :opt-bounds opt-bounds
+                                 :label label
+                                 :cost cost
+                                 :reward reward
+                                 :controllable controllable)
                   )))))
 
 ;; root? is true to create the "synthetic" htn-network at the very
@@ -1689,7 +1706,8 @@
             subtask_ (get-htn-object subtask-uid)
             {:keys [type pclass name task-expansions arguments
                     irks ancestry-path]} subtask_
-            label (if irks (get-in ir (conj irks :label)))
+            subtask-name name
+            method-opts (if irks (get-in ir irks))
             choice-bounds (if hem-choice? ;; (choice :bounds [1 2] (fn))
                             (irks->bounds ir (vec (take 8 hem-irks))))
             bounds (if (and irks (not= irks hem-irks))
@@ -1700,7 +1718,7 @@
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
                        "type" type "pclass" pclass "name" name
                        "m-task-expansions" m-task-expansions
-                       "label" label "bounds" bounds)
+                       "bounds" bounds)
             ;; resolve pclass if (= type :htn-nonprimitive-task)
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
@@ -1724,9 +1742,12 @@
                            (resolve-plant-class ir hem-pclass pargs
                                                 henpt subtask_))
             details_ (plant-details ir hem-pclass pargs subtask_
-                       pclass-ctor_ primitive?)
-            args (:args details_)
+                       pclass-ctor_ primitive? method-opts)
             _ (dbg-println :trace "DETAILS_" (with-out-str (pprint details_)))
+            {:keys [name display-name args display-args argsmap
+                    plant-part plant-id plant-interface
+                    method-opts]} details_
+            {:keys [opt-bounds label cost reward controllable]} method-opts
             subtask-map (merge
                          (assoc
                           (dissoc subtask_ :pclass :pargs :arguments
@@ -1735,60 +1756,57 @@
                                   :irks)
                           :incidence-set (if edge #{(:uid edge)} #{})
                           :edges [])
-                         (dissoc details_ :mdef))
+                         (dissoc details_ :method-opts))
             ;; TPN ------------------
             se (tpn/tpn-state {})
             ;; if call site bounds are not specified use default
-            bounds (or bounds (get-in details_ [:mdef :method-bounds]))
+            bounds (or bounds opt-bounds)
             tc (if bounds
                  (tpn/tpn-temporal-constraint
                    {:value bounds :end-node (:uid se)}))
             _ (dbg-println :debug "TC" tc)
             activity (if primitive?
-                       ((if (= name 'delay)
+                       ((if (= subtask-name 'delay)
                           tpn/tpn-delay-activity
                           tpn/tpn-activity)
                         {:name (case activity-name-content
-                                 :plant-command (str (:name details_)
-                                                     (seq args))
-                                 :verbose (let [plant-part (:plant-part details_)
-                                                plant-id (or (:plant-id details_) "plant")
-                                                plant-interface (or (:plant-interface details_) "RMQ")]
-                                            (str (:name details_)
+                                 :plant-command (str name
+                                                  (seq args))
+                                 :verbose (let [plant-id (or plant-id "plant")
+                                                plant-interface (or plant-interface "RMQ")]
+                                            (str name
                                                  (seq args)
                                                  "@"
                                                  (if plant-part (str plant-part "."))
                                                  (if plant-id (str plant-id "."))
                                                  plant-interface))
-                                 :display-name (str (:display-name details_)
-                                                 (if (or (= name 'delay)
+                                 :display-name (str display-name
+                                                 (if (or (= subtask-name 'delay)
                                                        (empty? args))
                                                       nil
-                                                      ;; WAS (seq (to-pamela args))
+                                                      ;; FIX (seq (to-pamela args))
                                                       ;; simple implementation
                                                       ;; pending #139
                                                       (pr-str (seq args))
                                                       )))
-                         :command (:name details_)
-                         :display-name (:display-name details_) ;; to be removed?
-                         :display-args (:display-args details_) ;; to be removed?
+                         :command name
+                         :display-name display-name
+                         :display-args display-args
                          ;; NOTE: labels go on activities if primitive
                          :label label
                          :args args
-                         :argsmap (:argsmap details_)
-                         :plant-id (:plant-id details_)
-                         :plant-part (:plant-part details_)
-                         :plant-interface (:plant-interface details_)
+                         :argsmap argsmap
+                         :plant-id plant-id
+                         :plant-part plant-part
+                         :plant-interface plant-interface
                          ;; add constraints on the activity
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
                          :end-node (:uid se)
                          ;; method metadata
-                         :cost (get-in details_ [:mdef :cost])
-                         :reward (get-in details_ [:mdef :reward])
-                         :controllable (boolean (get-in details_
-                                                  [:mdef :controllable]))
-                         }))
+                         :cost cost
+                         :reward reward
+                         :controllable controllable}))
             _ (when activity
                 (dbg-println :trace "activity" (:uid activity) (:name activity)
                   "getting :label" (and (not primitive?) label)))
