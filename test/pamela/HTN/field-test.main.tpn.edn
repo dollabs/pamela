@@ -1,0 +1,48 @@
+{:act-9
+ {:args
+  [{:type :field-ref,
+    :names [requesting-unit1 field1],
+    :pclass requesting-unit,
+    :plant-id "RequestingUnit1"}
+   "100MB"],
+  :argsmap
+  {"destination"
+   {:names [requesting-unit1 field1],
+    :pclass requesting-unit,
+    :plant-id "RequestingUnit1",
+    :type :field-ref},
+   "size" "100MB"},
+  :command "ftp-to",
+  :constraints #{},
+  :controllable false,
+  :cost 0,
+  :display-args [requesting-unit1.field1 "100MB"],
+  :display-name "FTP to",
+  :end-node :node-1,
+  :htn-node :hem-19,
+  :name
+  "FTP to({:type :field-ref, :names [requesting-unit1 field1], :pclass requesting-unit, :plant-id \"RequestingUnit1\"} \"100MB\")",
+  :plant-id "AOC",
+  :reward 0,
+  :tpn-type :activity,
+  :uid :act-9},
+ :net-3
+ {:begin-node :node-10,
+  :end-node :node-1,
+  :tpn-type :network,
+  :uid :net-3},
+ :network-id :net-3,
+ :node-1
+ {:activities #{},
+  :constraints #{},
+  :incidence-set #{:act-9},
+  :tpn-type :state,
+  :uid :node-1},
+ :node-10
+ {:activities #{:act-9},
+  :constraints #{},
+  :end-node :node-1,
+  :htn-node :hem-16,
+  :incidence-set #{},
+  :tpn-type :state,
+  :uid :node-10}}

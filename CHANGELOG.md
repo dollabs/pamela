@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file. This change
 
 Changes
 * Grammar ambiguity fixed in a previous commit (Closes #144)
+* Fixed argument values with field references (Closes #150)
 
 ### [0.6.2] - 2017-08-28
 
