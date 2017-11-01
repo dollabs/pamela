@@ -1,0 +1,72 @@
+{:hedge-22 {:end-node :hem-16, :type :edge, :uid :hedge-22},
+ :hedge-24
+ {:display-name "1", :end-node :hem-19, :type :edge, :uid :hedge-24},
+ :hem-16
+ {:args [],
+  :display-args [],
+  :display-name "Main",
+  :edges [:hedge-24],
+  :incidence-set #{:hedge-22},
+  :network :net-23,
+  :type :htn-expanded-method,
+  :uid :hem-16},
+ :hem-19
+ {:args [{:type :field-ref, :names [requesting-unit1 field1]}],
+  :display-args [requesting-unit1.field1],
+  :display-name "Send It To",
+  :edges [],
+  :incidence-set #{},
+  :network :net-25,
+  :type :htn-expanded-method,
+  :uid :hem-19},
+ :henpt-14
+ {:display-name "main",
+  :edges [:hedge-22],
+  :incidence-set #{},
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-14},
+ :henpt-15
+ {:display-name "Send It To",
+  :edges [],
+  :incidence-set #{},
+  :name "send-it-to",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-15},
+ :hpt-18
+ {:args
+  [{:type :field-ref,
+    :names [requesting-unit1 field1],
+    :pclass requesting-unit,
+    :plant-id "RequestingUnit1"}
+   "100MB"],
+  :argsmap
+  {"destination"
+   {:names [requesting-unit1 field1],
+    :pclass requesting-unit,
+    :plant-id "RequestingUnit1",
+    :type :field-ref},
+   "size" "100MB"},
+  :display-args [requesting-unit1.field1 "100MB"],
+  :display-name "FTP to",
+  :edges [],
+  :incidence-set #{},
+  :name "ftp-to",
+  :plant-id "AOC",
+  :type :htn-primitive-task,
+  :uid :hpt-18},
+ :net-21
+ {:display-name "main",
+  :rootnodes #{:henpt-14},
+  :type :htn-network,
+  :uid :net-21},
+ :net-23
+ {:display-name "Main",
+  :rootnodes #{:henpt-15},
+  :type :htn-network,
+  :uid :net-23},
+ :net-25
+ {:display-name "Send It To",
+  :rootnodes #{:hpt-18},
+  :type :htn-network,
+  :uid :net-25},
+ :network :net-21}
