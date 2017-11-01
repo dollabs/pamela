@@ -1,0 +1,38 @@
+{:hedge-11 {:end-node :hem-8, :type :edge, :uid :hedge-11},
+ :hem-8
+ {:args [],
+  :display-args [],
+  :display-name "Start",
+  :edges [],
+  :incidence-set #{:hedge-11},
+  :network :net-12,
+  :type :htn-expanded-method,
+  :uid :hem-8},
+ :henpt-6
+ {:display-name "mission",
+  :edges [:hedge-11],
+  :incidence-set #{},
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-6},
+ :hpt-7
+ {:args ["A"],
+  :argsmap {"location" "A"},
+  :display-args ["A"],
+  :display-name "Aquire",
+  :edges [],
+  :incidence-set #{},
+  :name "aquire",
+  :plant-id "Camera 1",
+  :type :htn-primitive-task,
+  :uid :hpt-7},
+ :net-10
+ {:display-name "mission",
+  :rootnodes #{:henpt-6},
+  :type :htn-network,
+  :uid :net-10},
+ :net-12
+ {:display-name "Start",
+  :rootnodes #{:hpt-7},
+  :type :htn-network,
+  :uid :net-12},
+ :network :net-10}

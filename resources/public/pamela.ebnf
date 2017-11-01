@@ -48,7 +48,7 @@ transition = keyword trans-map
 cond-map =  <LM> cond* <RM>
 trans-map =  <LM> trans* <RM>
 cond = ( doc | pre | post | opt-bounds | cost | reward | controllable |
-         primitive | display-name )
+         primitive | display-name | probability )
 trans = ( doc | pre | post | opt-bounds | cost | reward | probability )
 
 pre = <PRE> ( keyword | cond-expr )

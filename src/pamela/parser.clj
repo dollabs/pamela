@@ -279,6 +279,7 @@
                   :primitive false
                   :display-name nil
                   :display-args nil
+                  :probability 1.0
                   :body nil}
         display-name (if method (display-name-string method))]
     (assoc-if cond-map :display-name display-name)))
