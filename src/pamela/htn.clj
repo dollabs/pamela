@@ -279,10 +279,14 @@
     new-arg))
 
 ;; The younger cousin to resolve-arguments
-(defn resolve-argument [arg arg-map]
+(defn resolve-argument [pargs arg arg-map]
   (let [new-arg (cond
                   (symbol? arg)
                   (get arg-map arg arg)
+                  (and (map? arg) (= :pclass-arg-ref (:type arg))
+                    (= 1 (count (:names arg)))
+                    (first (filter #(= (-> arg :names first) (:param %)) pargs)))
+                  (first (filter #(= (-> arg :names first) (:param %)) pargs))
                   (and (map? arg) (= :method-arg-ref (:type arg))
                     (= 1 (count (:names arg)))
                     (get arg-map (-> arg :names first)))
@@ -292,14 +296,17 @@
     (dbg-println :trace "  RA argument" arg "=>" new-arg)
     new-arg))
 
-(defn resolve-arguments [arguments argument-mapping ancestry-path & [prev-args]]
+(defn resolve-arguments [pargs arguments argument-mapping ancestry-path
+                         & [prev-args]]
   (let [arg-map (or argument-mapping
                   (-> ancestry-path first get-htn-object :argument-mappings))
-        _ (dbg-println :trace "RA (before)" arguments "ARG-MAP" arg-map)
-        args (mapv resolve-argument arguments (repeat arg-map))
+        _ (dbg-println :trace "RA (before)" arguments "ARG-MAP" arg-map
+            "PARGS" pargs)
+        args (mapv resolve-argument (repeat pargs) arguments (repeat arg-map))
         _ (dbg-println :trace "RA (after)" args)
         args (if (not= args prev-args)
                (resolve-arguments
+                 pargs
                  args
                  argument-mapping
                  (if ancestry-path (nthrest ancestry-path 2))
@@ -442,12 +449,18 @@
                        (reserved-conditional-method-type? mtype)
                        {} ;;TODO: Update this
 
+                       ;; NEW! getting the pclass-ctor_ in this case
+                       ;; is optional (do NOT :error)
+                       (= task-type :htn-expanded-nonprimitive-task)
+                       nil
+
                        :else
                        {:error (str "ERROR, not currently supported method-fn type=" mtype)})
         ]
     (dbg-println :trace "RPC pclass-ctor_" pclass-ctor_)
     (when (:error pclass-ctor_)
-      (fatal-error "Failure to find pclass constructor: " (:error pclass-ctor_)))
+      (fatal-error "Failure to find pclass constructor: " (:error pclass-ctor_)
+        "task-type" task-type))
     pclass-ctor_))
 
 ;; print-object multi-methods --------------------------------------
@@ -648,7 +661,7 @@
                                 (if (and (map? arg) (:param arg))
                                   (:param arg)
                                   arg))
-                          (resolve-arguments arguments argument-mapping nil)
+                          (resolve-arguments nil arguments argument-mapping nil)
                           )
                         arguments)]
     (dbg-println :debug "  MET TASK" task "NEW-ARGUMENTS" new-arguments)
@@ -1525,9 +1538,13 @@
             plant-id (if (reserved-conditional-method-name? name)
                       *belief-state-manager-plant-id*
                       plant-id)
+            ;; if any of these are a pclass-arg-ref resolve them...
+            [plant-id plant-interface plant-part]
+            (resolve-arguments pargs [plant-id plant-interface plant-part]
+              nil ancestry-path)
             arguments (or arguments [])
             _ (dbg-println :trace "PD args before" arguments)
-            args (resolve-arguments arguments nil ancestry-path)
+            args (resolve-arguments pargs arguments nil ancestry-path)
             display-args (mapv display-argument args)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
                    pargs args subtask_)
@@ -1737,10 +1754,10 @@
                        "\nsubtask_" (with-out-str
                                       (pprint
                                        (dissoc subtask_
-                                               :ancestry-path :task-expansions))))
-            pclass-ctor_ (if primitive?
-                           (resolve-plant-class ir hem-pclass pargs
-                                                henpt subtask_))
+                                         :ancestry-path :task-expansions))))
+            ;; NOTE: previously RPC was gated by (if primitive?...)
+            ;; This is currently useful for debugging non primitive calls
+            pclass-ctor_ (resolve-plant-class ir hem-pclass pargs henpt subtask_)
             details_ (plant-details ir hem-pclass pargs subtask_
                        pclass-ctor_ primitive? method-opts)
             _ (dbg-println :trace "DETAILS_" (with-out-str (pprint details_)))

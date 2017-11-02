@@ -921,39 +921,45 @@
                      (conj vmbody vb))]
         (recur vmbody (inc bi) (first more) (rest more))))))
 
+;; validate just one argval in the context of a scope-pclass
+;; while evaluating the initializer of field
+(defn validate-argval [ir scope-pclass field fields argval]
+  (dbg-println :trace "    VALIDATE-ARGVAL" argval)
+  (let [{:keys [type names]} (if (map? argval) argval)
+        n0 (first names)
+        rv (cond
+             (and (= :symbol-ref type)
+               (some #(= n0 %) (get-in ir [scope-pclass :args])))
+             (do
+               (dbg-println :trace "    promote to :pclass-arg-ref")
+               (assoc argval :type :pclass-arg-ref))
+             (and (= :symbol-ref type)
+               (not= n0 field) (get fields n0))
+             (do
+               (dbg-println :trace "    promote to :field-ref")
+               (assoc argval :type :field-ref))
+             (= :symbol-ref type)
+             {:error
+              (str "Symbol argument to " field
+                " pamela class constructor arg " n0
+                " is neither a formal argument to, "
+                "nor another field of the pclass " scope-pclass)}
+             :else
+             argval)]
+    (dbg-println :trace "    =>" rv)
+    rv))
+
 ;; return Validated args or {:error "message"}
 (defn validate-pclass-ctor-args [ir scope-pclass field fields pclass args]
+  (dbg-println :trace "    VALIDATE-PCLASS-CTOR-ARGS for pclass:" pclass
+    "args:" (pr-str args))
   (loop [vargs [] a (first args) more (rest args)]
     (if (or (not a) (:error vargs))
       vargs
       (let [{:keys [type names]} (if (map? a) a)
             n0 (first names)
-            _ (dbg-println :trace "  pclass-ctor-arg for" field "=" a)
-            a (cond
-                (and (= :symbol-ref type)
-                  (some #(= n0 %) (get-in ir [scope-pclass :args])))
-                (do
-                  (dbg-println :trace "  promote to :pclass-arg-ref")
-                  (assoc a :type :pclass-arg-ref))
-                (and (= :symbol-ref type)
-                  (not= n0 field) (get fields n0))
-                (do
-                  (dbg-println :trace "  promote to :field-ref")
-                  (assoc a :type :field-ref))
-                (= :symbol-ref type)
-                {:error
-                 (str "Symbol argument to " field
-                   " pamela class constructor arg " n0
-                   " is neither a formal argument to, "
-                   "nor another field of the pclass " scope-pclass)}
-                (and (keyword? a) (#{:plant-id :plant-interface :plant-part} a))
-                a
-                (keyword? a)
-                {:error (str "Keyword argument to pclass constructor " a
-                          " is not a pclass-ctor-option in the pclass "
-                          scope-pclass)}
-                :else
-                a)
+            ;; _ (dbg-println :trace "    pclass-ctor-arg for" field "=" a)
+            a (validate-argval ir scope-pclass field fields a)
             vargs (if (and (map? a) (:error a))
                     a
                     (conj vargs a))]
@@ -969,7 +975,8 @@
         (let [[field val] field-val
               {:keys [access observable initial]} val
               scope-pclass pclass
-              {:keys [type pclass args names value plant-id plant-interface plant-part]} initial
+              {:keys [type pclass args names value
+                      plant-id plant-interface plant-part]} initial
               n0 (first names)
               _ (dbg-println :trace "  FIELD" field "type" type "n0" n0)
               [type args] (cond
@@ -995,11 +1002,25 @@
                                 "nor another field of the pclass " scope-pclass)}]
                             :else
                             [type args])
+              plant-id (if plant-id
+                         (validate-argval ir scope-pclass field fields
+                           plant-id))
+              plant-interface (if plant-interface
+                                (validate-argval ir scope-pclass field fields
+                                  plant-interface))
+              plant-part (if plant-part
+                           (validate-argval ir scope-pclass field fields
+                             plant-part))
               vfields (if (and (map? args) (:error args))
                         args
                         (assoc vfields field
                           (assoc val :initial
-                            (assoc-if initial :type type :args args))))]
+                            (assoc-if initial
+                              :type type
+                              :args args
+                              :plant-id plant-id
+                              :plant-interface plant-interface
+                              :plant-part plant-part))))]
           (recur vfields (first more) (rest more)))))))
 
 ;; return Validated modes or {:error "message"}
