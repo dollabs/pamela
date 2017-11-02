@@ -6,7 +6,8 @@
   {:alive
    {:args [{:type :field-ref, :names [breathing]} true], :type :equal},
    :dead
-   {:args [{:type :field-ref, :names [breathing]}], :type :equal}},
+   {:args [{:type :field-ref, :names [breathing]} false],
+    :type :equal}},
   :type :pclass},
  b
  {:args [],
