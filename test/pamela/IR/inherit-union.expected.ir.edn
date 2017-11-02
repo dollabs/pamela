@@ -1,6 +1,8 @@
 {a
  {:args [],
-  :fields {fa {:access :private, :initial "fa", :observable false}},
+  :fields
+  {fa {:access :private, :initial "fa", :observable false},
+   x {:access :private, :initial 1, :observable false}},
   :methods
   {ma
    [{:args [arg1 arg2],
@@ -13,11 +15,14 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
-   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal}},
+   :moa2 {:args [{:type :field-ref, :names [fa]} false], :type :equal},
+   :x {:args [{:type :field-ref, :names [x]} 1], :type :equal},
+   :y {:args [{:type :field-ref, :names [x]} 2], :type :equal}},
   :transitions
   {:moa1:moa2
    {:doc "transition :moa1 -> :moa2",
@@ -38,11 +43,25 @@
     :pre
     {:mode :moa2,
      :mode-ref {:names [this], :type :symbol-ref},
-     :type :mode-ref}}},
+     :type :mode-ref}},
+   :x:y
+   {:doc "Same signature, different bounds, class a",
+    :post
+    {:mode :y,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :x,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :probability 0.1,
+    :temporal-constraints [{:type :bounds, :value [3 6]}]}},
   :type :pclass},
  b
  {:args [],
-  :fields {fb {:access :private, :initial "fb", :observable false}},
+  :fields
+  {fb {:access :private, :initial "fb", :observable false},
+   x {:access :private, :initial 2, :observable false}},
   :methods
   {mb
    [{:args [arg1 arg2],
@@ -55,11 +74,14 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:mob1 {:args [{:type :field-ref, :names [fb]} "fb"], :type :equal},
-   :mob2 {:args [{:type :field-ref, :names [fb]} true], :type :equal}},
+   :mob2 {:args [{:type :field-ref, :names [fb]} true], :type :equal},
+   :x {:args [{:type :field-ref, :names [x]} 2], :type :equal},
+   :y {:args [{:type :field-ref, :names [x]} 1], :type :equal}},
   :transitions
   {:mob1:mob2
    {:doc "transition :mob1 -> :mob2",
@@ -80,13 +102,26 @@
     :pre
     {:mode :mob2,
      :mode-ref {:names [this], :type :symbol-ref},
-     :type :mode-ref}}},
+     :type :mode-ref}},
+   :x:y
+   {:doc "Same signature, different bounds",
+    :post
+    {:mode :y,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :x,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :probability 0.2,
+    :temporal-constraints [{:type :bounds, :value [2 8]}]}},
   :type :pclass},
  c
  {:args [],
   :fields
   {fa {:access :private, :initial "fa", :observable false},
-   fb {:access :private, :initial "fb", :observable false}},
+   fb {:access :private, :initial "fb", :observable false},
+   x {:access :private, :initial 1, :observable false}},
   :methods
   {ma
    [{:args [arg1 arg2],
@@ -99,6 +134,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    mb
@@ -112,13 +148,16 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
-   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal},
+   :moa2 {:args [{:type :field-ref, :names [fa]} false], :type :equal},
    :mob1 {:args [{:type :field-ref, :names [fb]} "fb"], :type :equal},
-   :mob2 {:args [{:type :field-ref, :names [fb]} true], :type :equal}},
+   :mob2 {:args [{:type :field-ref, :names [fb]} true], :type :equal},
+   :x {:args [{:type :field-ref, :names [x]} 1], :type :equal},
+   :y {:args [{:type :field-ref, :names [x]} 2], :type :equal}},
   :transitions
   {:moa1:moa2
    {:doc "transition :moa1 -> :moa2",
@@ -159,5 +198,17 @@
     :pre
     {:mode :mob2,
      :mode-ref {:names [this], :type :symbol-ref},
-     :type :mode-ref}}},
+     :type :mode-ref}},
+   :x:y
+   {:doc "Same signature, different bounds, class a",
+    :post
+    {:mode :y,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :x,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :probability 0.1,
+    :temporal-constraints [{:type :bounds, :value [2 8]}]}},
   :type :pclass}}
