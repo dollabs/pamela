@@ -83,5 +83,6 @@
                             (read-string (slurp specimen-ir-path))
                             {:error (str "Specimen does not exist: "
                                       specimen-ir-path)})]
-          (is (= example-ir specimen-ir))))
+          ; example is expected, specimen is current.
+          (is (= example-ir specimen-ir) (str "IR files should match\nExpected: " example-ir-path "\nCurrent: " specimen-ir-file))))
       )))
