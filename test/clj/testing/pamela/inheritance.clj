@@ -16,7 +16,10 @@
             [pamela.unparser]
             [pamela.inheritance]
             [clojure.pprint :refer :all]
-            [clojure.test :refer :all]))
+            [clojure.test :refer :all]
+            [me.raynes.fs :as fs]))
+
+(def debug false)
 
 (def expected-class-precedence '{a    [a a1 a11 a12 a13 a2 a3]
                                 a1   [a1 a11 a12 a13]
@@ -68,9 +71,16 @@
                   "test/pamela/inherit-precedence.expected.pamela"]])
 (deftest flatten-inheritance
   []
-  (doseq [files test-files]
-    (let [file (first files)
-          expected (second files)
-          ir (pamela.inheritance/flatten-inheritance (parse-ir file))
-          exp-ir (parse-ir expected)]
-      (is (= exp-ir ir) (str "IR should match " file " " expected)))))
+  (let [out-dir (fs/file "target" "inheritance")]
+    (if-not (fs/exists? out-dir)
+      (fs/mkdirs out-dir))
+    (doseq [files test-files]
+      (let [file (first files)
+            expected (second files)
+            ir (pamela.inheritance/flatten-inheritance (parse-ir file))
+            exp-ir (parse-ir expected)]
+        (when debug
+          (println (fs/base-name file))
+          (spit (fs/file out-dir (fs/base-name file)) ir)
+          (spit (fs/file out-dir (fs/base-name expected)) exp-ir))
+        (is (= exp-ir ir) (str "IR should match " file " " expected))))))
