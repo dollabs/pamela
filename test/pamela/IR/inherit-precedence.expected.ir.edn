@@ -13,11 +13,13 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
-   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal}},
+   :moa2
+   {:args [{:type :field-ref, :names [fa]} false], :type :equal}},
   :transitions
   {:moa1:moa2
    {:doc "transition :moa1 -> :moa2",
@@ -55,11 +57,13 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
-   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal}},
+   :moa2
+   {:args [{:type :field-ref, :names [fa]} false], :type :equal}},
   :transitions
   {:moa1:moa2
    {:doc "transition :moa1 -> :moa2",
@@ -97,6 +101,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
@@ -139,11 +144,13 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes
   {:moa1 {:args [{:type :field-ref, :names [fa]} "fa"], :type :equal},
-   :moa2 {:args [{:type :field-ref, :names [fa]}], :type :equal}},
+   :moa2
+   {:args [{:type :field-ref, :names [fa]} false], :type :equal}},
   :transitions
   {:moa1:moa2
    {:doc "transition :moa1 -> :moa2",
