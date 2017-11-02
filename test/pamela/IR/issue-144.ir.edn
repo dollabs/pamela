@@ -1,0 +1,5 @@
+{a
+ {:args [],
+  :fields
+  {breathing {:access :private, :initial true, :observable false}},
+  :type :pclass}}

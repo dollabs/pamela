@@ -1,0 +1,48 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+(defpclass plant []
+  :meta {:doc "The Plant API"}
+  :methods [(defpmethod action1
+              {:doc "Take action 1"
+               ;; :bounds [0 :infinity]
+               ;; :controllable false
+               ;; :cost 0
+               ;; :reward 0
+               }
+              [])
+            (defpmethod action2
+              {:doc "Take action 2"
+               :bounds [2 20]
+               :controllable true
+               :cost 3
+               :reward 5}
+              [])
+            ])
+
+(defpclass controllable []
+  :meta {:doc "An example of invoking plant functions."}
+  :fields {p (plant :id "Plant 1")}
+  :methods [(defpmethod start
+              {:doc "Demo method"}
+              []
+              (sequence
+                (p.action1) ;; inherit controllable false
+                (p.action1 :controllable true :bounds [1 10]
+                  :cost 9 :reward 13 :label :override1)
+                (p.action1 :controllable false)
+                (p.action2) ;; inherit controllable true
+                (p.action2 :controllable true)
+                (p.action2 :controllable false :bounds [3 30]
+                  :cost 15 :reward 19 :label :override2)
+                ))])

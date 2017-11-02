@@ -12,6 +12,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    ask-method
@@ -25,6 +26,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    assert-method
@@ -38,6 +40,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    between-ends-method
@@ -51,6 +54,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    between-method
@@ -64,6 +68,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    between-starts-method
@@ -77,6 +82,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    catch-method
@@ -90,6 +96,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    choice-method
@@ -103,6 +110,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    choose-method
@@ -116,6 +124,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    choose-whenever-method
@@ -129,6 +138,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    defpclass-method
@@ -142,6 +152,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    defpmethod-method
@@ -155,6 +166,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    delay-method
@@ -168,6 +180,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    dotimes-method
@@ -181,6 +194,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    false-method
@@ -194,6 +208,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    implies-method
@@ -207,6 +222,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    lvar-method
@@ -220,6 +236,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    main
@@ -351,6 +368,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    maintain-method
@@ -364,6 +382,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    mode-of-method
@@ -377,6 +396,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    not-method
@@ -390,6 +410,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    optional-method
@@ -403,6 +424,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    or-method
@@ -416,6 +438,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    parallel-method
@@ -429,6 +452,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    sequence-method
@@ -442,6 +466,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    slack-parallel-method
@@ -455,6 +480,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    slack-sequence-method
@@ -468,6 +494,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    soft-parallel-method
@@ -481,6 +508,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    soft-sequence-method
@@ -494,6 +522,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    tell-method
@@ -507,6 +536,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    true-method
@@ -520,6 +550,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    try-method
@@ -533,6 +564,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    unless-method
@@ -546,6 +578,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    when-method
@@ -559,6 +592,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    whenever-method
@@ -572,6 +606,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

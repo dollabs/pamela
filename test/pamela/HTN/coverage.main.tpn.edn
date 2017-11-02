@@ -123,7 +123,7 @@
   :command "cp",
   :constraints #{},
   :controllable false,
-  :cost 0,
+  :cost 5,
   :display-args ["bigfile" "copyofbigfile"],
   :display-name "Copy",
   :end-node :node-78,
@@ -132,7 +132,7 @@
   :plant-id "sp1",
   :plant-interface "RMQ",
   :plant-part "mypart",
-  :reward 0,
+  :reward 1,
   :tpn-type :activity,
   :uid :act-83},
  :costle-88

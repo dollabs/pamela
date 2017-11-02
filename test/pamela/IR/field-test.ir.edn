@@ -1,0 +1,130 @@
+{aoc-pclass
+ {:args [],
+  :methods
+  {ftp-to
+   [{:args [destination size],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [destination size],
+     :display-name "FTP to",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   send-it-to
+   [{:args [unit],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ftp-to]},
+         :args [{:type :method-arg-ref, :names [unit]} "100MB"]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [unit],
+     :display-name "Send It To",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ main
+ {:args [],
+  :fields
+  {aocf
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass aoc-pclass,
+     :plant-id "AOC",
+     :type :pclass-ctor},
+    :observable false},
+   requesting-unit1
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass requesting-unit,
+     :plant-id "RequestingUnit1",
+     :type :pclass-ctor},
+    :observable false}},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [aocf send-it-to]},
+         :args
+         [{:type :field-ref, :names [requesting-unit1 field1]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ main2
+ {:args [],
+  :fields
+  {requesting-unit1
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass requesting-unit,
+     :plant-id "RequestingUnit1",
+     :type :pclass-ctor},
+    :observable false}},
+  :methods
+  {do-it
+   [{:args [x],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [x],
+     :display-name "Do It",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this do-it]},
+         :args
+         [{:type :field-ref, :names [requesting-unit1 field1]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ requesting-unit
+ {:args [],
+  :fields
+  {field1 {:access :private, :initial "me", :observable false}},
+  :type :pclass}}

@@ -1,0 +1,93 @@
+{controllable
+ {:args [],
+  :fields
+  {p
+   {:access :private,
+    :initial
+    {:args [], :pclass plant, :plant-id "Plant 1", :type :pclass-ctor},
+    :observable false}},
+  :meta {:doc "An example of invoking plant functions."},
+  :methods
+  {start
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action1]},
+         :args [],
+         :controllable true,
+         :temporal-constraints [{:type :bounds, :value [1 10]}],
+         :cost 9,
+         :reward 13,
+         :label :override1}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action1]},
+         :args [],
+         :controllable false}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action2]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action2]},
+         :args [],
+         :controllable true}
+        {:type :method-fn,
+         :method-ref {:type :field-ref, :names [p action2]},
+         :args [],
+         :controllable false,
+         :temporal-constraints [{:type :bounds, :value [3 30]}],
+         :cost 15,
+         :reward 19,
+         :label :override2}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Start",
+     :doc "Demo method",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ plant
+ {:args [],
+  :meta {:doc "The Plant API"},
+  :methods
+  {action1
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Action 1",
+     :doc "Take action 1",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   action2
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable true,
+     :cost 3,
+     :display-args [],
+     :display-name "Action 2",
+     :doc "Take action 2",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 5,
+     :temporal-constraints [{:type :bounds, :value [2 20]}]}]},
+  :type :pclass}}

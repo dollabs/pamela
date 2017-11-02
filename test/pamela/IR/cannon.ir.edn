@@ -21,6 +21,7 @@
       :mode-ref {:type :symbol-ref, :names [this]},
       :mode :open},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    open-lid
@@ -40,6 +41,7 @@
       :mode-ref {:type :symbol-ref, :names [this]},
       :mode :close},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    reset
@@ -56,6 +58,7 @@
       :mode :open},
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :modes {:close true, :open true},
@@ -77,6 +80,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    reset
@@ -90,6 +94,7 @@
      :post true,
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
@@ -199,6 +204,7 @@
      :post true,
      :pre true,
      :primitive false,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

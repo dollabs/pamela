@@ -195,6 +195,7 @@
       :mode :off},
      :pre true,
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
    turn-off
@@ -215,6 +216,7 @@
       :mode-ref {:type :symbol-ref, :names [this]},
       :mode :on},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 3]}]}],
    turn-on
@@ -235,6 +237,7 @@
       :mode-ref {:type :symbol-ref, :names [this]},
       :mode :off},
      :primitive true,
+     :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [1 3]}]}]},
   :modes

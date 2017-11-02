@@ -308,6 +308,10 @@
     (dbg-println :trace "RA final" args)
     args))
 
+(defn print-ancestry-path [ancestry-path]
+  (mapv #(list (:uid %) (or (:display-name %) (:name %)))
+    ancestry-path))
+
 ;; returns pclass_ctor_ map
 ;; (defn resolve-plant-class [ir hem-pclass pargs pclass method
 ;;                            task-type irks henpt ancestry-path]
@@ -363,7 +367,7 @@
                                parg
                                (fatal-error "pclass argument" param "is not a pamela class constructor" )))
                            :else
-                           (fatal-error "not implemented yet: non :pclass-ctor field-ref type:" type)))
+                           (fatal-error "RPC not implemented yet: non :pclass-ctor field-ref type:" type)))
                        (and (= mtype :method-fn) (= type :symbol-ref))
                        ;; expect this to be a local method
                        (let [_ (assert (= 'this (first names))
@@ -384,8 +388,7 @@
                            ;; else use the ancestry-path to
                            ;; resolve the pclass of the caller
                            (let [_ (dbg-println :debug "RPC Recursing on ancestry-path"
-                                     (mapv #(list (:uid %) (or (:display-name %) (:name %)))
-                                       ancestry-path))
+                                     (print-ancestry-path ancestry-path))
                                  _ (dbg-println :debug "parent-hem-pclass" parent-hem-pclass)
                                  pc_ (resolve-plant-class
                                        ir parent-hem-pclass pargs parent-henpt parent-subtask_)]
@@ -1313,10 +1316,10 @@
 ;; walk ir, look for pclasses that have non-empty methods
 (defn transform-htn [ir pargs]
   (doseq [[pclass-name v] (seq ir)]
-    (assert pclass-name "Found a nil pclass in the IR")
-    (let [{:keys [type methods]} v]
-      (dbg-println :info "TRANSFORM-HTN" pclass-name)
-      (when (= type :pclass) ;;Could it be anything else?
+    (when (= (:type v) :pclass)
+      (assert pclass-name "Found a nil pclass in the IR")
+      (let [{:keys [type methods]} v]
+        (dbg-println :info "TRANSFORM-HTN" pclass-name)
         (doseq [[mname method-mdefs] (seq methods)]
           (if mname ;; else (dbg-println :debug "no more methods")
             (loop [mi 0 mdef (first method-mdefs) more (rest method-mdefs)]
@@ -1324,14 +1327,14 @@
                 (let [{:keys [temporal-constraints args primitive display-name
                               display-args body]} mdef]
                   (dbg-println :info "  METHOD" mname "MI" mi
-                    "PRIMITIVE" primitive "ARGS" args
-                    "DISPLAY-NAME" display-name "DISPLAY-ARGS" display-args)
+                               "PRIMITIVE" primitive "ARGS" args
+                               "DISPLAY-NAME" display-name "DISPLAY-ARGS" display-args)
                   (when (and (not primitive) body)
                     (if (and (= 1 (count body))
-                          (= :choose (get-in body [0 :type])))
+                             (= :choose (get-in body [0 :type])))
                       (dbg-println :info "  TOP LEVEL CHOOSE!"))
                     (make-htn-methods ir pargs true pclass-name mname mi
-                      display-name display-args args body)))
+                                      display-name display-args args body)))
                 (recur (inc mi) (first more) (rest more))))))))))
 
 ;; consider memoizing or caching result
@@ -1399,12 +1402,14 @@
       bounds)))
 
 ;; only one level of dereferencing for now
-(defn resolve-to-plant-instance [ir hem-pclass pargs args subtask_]
+(defn resolve-to-plant-instance [ir caller-pclass hem-pclass pargs args subtask_]
+  (dbg-println :debug "RTPI caller-pclass" caller-pclass "hem-pclass" hem-pclass)
   (loop [rargs [] a (first args) more (rest args)]
-    (if-not a
+    (if (nil? a)
       rargs
       (let [{:keys [type names]} (if (map? a) a)
             [n0 n1] names
+            _ (dbg-println :debug "RTPI A" a)
             ra (cond
                  (= :pclass-arg-ref type)
                  (let [parg (first (filter #(= n0 (:param %)) pargs))
@@ -1456,14 +1461,19 @@
                      :plant-part plant-part
                      :plant-interface plant-interface))
                  (= :field-ref type)
-                 (let [[n0 n1] names
-                       initial_ (get-in ir
-                                  [hem-pclass :fields n0 :initial])
-                       {:keys [type names]} initial_
+                 (let [this-initial_ (get-in ir
+                                       [caller-pclass :fields n0 :initial])
+                       caller-initial_ (get-in ir
+                                         [caller-pclass :fields n0 :initial])
+                       _ (dbg-println :debug "RTPI :field-ref this-initial_"
+                           this-initial_ "caller-initial_" caller-initial_)
+                       ;; {:keys [type names]} initial_
                        {:keys [pclass plant-id plant-part plant-interface]}
                        (cond
-                         (= :pclass-ctor type)
-                         initial_
+                         (= :pclass-ctor (:type this-initial_))
+                         this-initial_
+                         (= :pclass-ctor (:type caller-initial_))
+                         caller-initial_
                          ;; (= :field-ref type)
                          ;; ;; This means method-ref is a reference to n0
                          ;; ;; in hem-pclass.
@@ -1474,14 +1484,14 @@
                          ;;   (if (= :pclass-ctor (:type initial2_))
                          ;;     initial2_
                          ;;     (fatal-error "not implemented yet: :pclass-ctor :field-ref" initial2_)))
-                         (= :pclass-arg-ref type)
-                         (let [param (-> initial_ :names first)
+                         (= :pclass-arg-ref (:type this-initial_))
+                         (let [param (-> this-initial_ :names first)
                                parg (first (filter #(= param (:param %)) pargs))]
                            (if (= :pclass-ctor (:type parg))
                              parg
                              (fatal-error "pclass argument" param "is not a pamela class constructor" )))
                          :else
-                         (fatal-error "not implemented yet: non :pclass-ctor field-ref type:" type))]
+                         (fatal-error "RTPI not implemented yet: non :pclass-ctor field-ref"))]
                    (assoc-if a
                      :pclass pclass
                      :plant-id plant-id
@@ -1494,14 +1504,23 @@
 
 ;; returns plant details map with keys
 ;;   name display-name plant-id plant-part plant-interface args argvals
-(defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?]
-  (let [{:keys [type name arguments ancestry-path]} subtask_
+(defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?
+                     method-opts]
+  (let [method-opts (select-keys method-opts ;; from call site
+                      [:label :cost :reward :controllable])
+        {:keys [type name arguments ancestry-path]} subtask_
+        caller-pclass (if (> (count ancestry-path ) 3)
+                        (-> ancestry-path (nth 3) :pclass))
         name-str (str name)
         display-name (display-name-string name-str)
-        details {:name name-str
-                 :display-name display-name}]
+        details_ {:name name-str
+                  :display-name display-name
+                  :method-opts method-opts}]
+    (dbg-println :trace "PD primitive?" primitive?
+      "ancestry-path" (print-ancestry-path ancestry-path)
+      "caller-pclass" caller-pclass)
     (if (or (not primitive?) (= name 'delay))
-      details
+      details_
       (let [{:keys [pclass plant-id plant-part plant-interface]} pclass-ctor_
             plant-id (if (reserved-conditional-method-name? name)
                       *belief-state-manager-plant-id*
@@ -1510,7 +1529,8 @@
             _ (dbg-println :trace "PD args before" arguments)
             args (resolve-arguments arguments nil ancestry-path)
             display-args (mapv display-argument args)
-            args (resolve-to-plant-instance ir hem-pclass pargs args subtask_)
+            args (resolve-to-plant-instance ir caller-pclass hem-pclass
+                   pargs args subtask_)
             _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
@@ -1527,8 +1547,16 @@
             formal-args (mapv #(if (symbol? %) (str %) %) formal-args)
             _ (dbg-println :debug "PD ARGS" (pr-str args)
                        "FORMAL-ARGS" (pr-str formal-args)) ;;:: DEBUG
-            argsmap (zipmap formal-args args)]
-        (assoc-if details
+            argsmap (zipmap formal-args args)
+            opt-bounds (bounds-from-mdef mdef) ;; here only from method def
+            label (:label method-opts) ;; only from call site
+            ;; For the following prefer call site, default to method def
+            cost (or (:cost method-opts) (:cost mdef))
+            reward (or (:reward method-opts) (:reward mdef))
+            controllable (if (clj19-boolean? (:controllable method-opts))
+                               (:controllable method-opts)
+                               (:controllable mdef))]
+        (assoc-if details_
                   :args args
                   :argsmap argsmap
                   :plant-id plant-id
@@ -1536,7 +1564,12 @@
                   :plant-interface plant-interface
                   :display-name (or (:display-name mdef) display-name)
                   :display-args display-args
-                  :mdef (assoc mdef :method-bounds (bounds-from-mdef mdef))
+                  :method-opts (assoc-if {}
+                                 :opt-bounds opt-bounds
+                                 :label label
+                                 :cost cost
+                                 :reward reward
+                                 :controllable controllable)
                   )))))
 
 ;; root? is true to create the "synthetic" htn-network at the very
@@ -1673,7 +1706,8 @@
             subtask_ (get-htn-object subtask-uid)
             {:keys [type pclass name task-expansions arguments
                     irks ancestry-path]} subtask_
-            label (if irks (get-in ir (conj irks :label)))
+            subtask-name name
+            method-opts (if irks (get-in ir irks))
             choice-bounds (if hem-choice? ;; (choice :bounds [1 2] (fn))
                             (irks->bounds ir (vec (take 8 hem-irks))))
             bounds (if (and irks (not= irks hem-irks))
@@ -1684,7 +1718,7 @@
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
                        "type" type "pclass" pclass "name" name
                        "m-task-expansions" m-task-expansions
-                       "label" label "bounds" bounds)
+                       "bounds" bounds)
             ;; resolve pclass if (= type :htn-nonprimitive-task)
             ;; to determine if this was really an unresolved primitive task
             ;; DEBUG plant-class (if (htn-isa? type :htn-nonprimitive-task)
@@ -1708,8 +1742,12 @@
                            (resolve-plant-class ir hem-pclass pargs
                                                 henpt subtask_))
             details_ (plant-details ir hem-pclass pargs subtask_
-                       pclass-ctor_ primitive?)
-            ;; _ (dbg-println :debug "DETAILS_" (with-out-str (pprint details_)))
+                       pclass-ctor_ primitive? method-opts)
+            _ (dbg-println :trace "DETAILS_" (with-out-str (pprint details_)))
+            {:keys [name display-name args display-args argsmap
+                    plant-part plant-id plant-interface
+                    method-opts]} details_
+            {:keys [opt-bounds label cost reward controllable]} method-opts
             subtask-map (merge
                          (assoc
                           (dissoc subtask_ :pclass :pargs :arguments
@@ -1718,60 +1756,57 @@
                                   :irks)
                           :incidence-set (if edge #{(:uid edge)} #{})
                           :edges [])
-                         (dissoc details_ :mdef))
+                         (dissoc details_ :method-opts))
             ;; TPN ------------------
             se (tpn/tpn-state {})
             ;; if call site bounds are not specified use default
-            bounds (or bounds (get-in details_ [:mdef :method-bounds]))
+            bounds (or bounds opt-bounds)
             tc (if bounds
                  (tpn/tpn-temporal-constraint
                    {:value bounds :end-node (:uid se)}))
             _ (dbg-println :debug "TC" tc)
             activity (if primitive?
-                       ((if (= name 'delay)
+                       ((if (= subtask-name 'delay)
                           tpn/tpn-delay-activity
                           tpn/tpn-activity)
                         {:name (case activity-name-content
-                                 :plant-command (str (:name details_)
-                                                     (seq (:args details_)))
-                                 :verbose (let [plant-part (:plant-part details_)
-                                                plant-id (or (:plant-id details_) "plant")
-                                                plant-interface (or (:plant-interface details_) "RMQ")]
-                                            (str (:name details_)
-                                                 (seq (:args details_))
+                                 :plant-command (str name
+                                                  (seq args))
+                                 :verbose (let [plant-id (or plant-id "plant")
+                                                plant-interface (or plant-interface "RMQ")]
+                                            (str name
+                                                 (seq args)
                                                  "@"
                                                  (if plant-part (str plant-part "."))
                                                  (if plant-id (str plant-id "."))
                                                  plant-interface))
-                                 :display-name (str (:display-name details_)
-                                                 (if (or (= name 'delay)
-                                                       (empty? (:args details_)))
+                                 :display-name (str display-name
+                                                 (if (or (= subtask-name 'delay)
+                                                       (empty? args))
                                                       nil
-                                                      ;; WAS (seq (to-pamela (:args details_)))
+                                                      ;; FIX (seq (to-pamela args))
                                                       ;; simple implementation
                                                       ;; pending #139
-                                                      (pr-str (seq (:args details_)))
+                                                      (pr-str (seq args))
                                                       )))
-                         :command (:name details_)
-                         :display-name (:display-name details_) ;; to be removed?
-                         :display-args (:display-args details_) ;; to be removed?
+                         :command name
+                         :display-name display-name
+                         :display-args display-args
                          ;; NOTE: labels go on activities if primitive
                          :label label
-                         :args (:args details_)
-                         :argsmap (:argsmap details_)
-                         :plant-id (:plant-id details_)
-                         :plant-part (:plant-part details_)
-                         :plant-interface (:plant-interface details_)
+                         :args args
+                         :argsmap argsmap
+                         :plant-id plant-id
+                         :plant-part plant-part
+                         :plant-interface plant-interface
                          ;; add constraints on the activity
                          :constraints (if tc #{(:uid tc)})
                          :htn-node (:uid hem-map)
                          :end-node (:uid se)
                          ;; method metadata
-                         :cost (get-in details_ [:mdef :cost])
-                         :reward (get-in details_ [:mdef :reward])
-                         :controllable (boolean (get-in details_
-                                                  [:mdef :controllable]))
-                         }))
+                         :cost cost
+                         :reward reward
+                         :controllable controllable}))
             _ (when activity
                 (dbg-println :trace "activity" (:uid activity) (:name activity)
                   "getting :label" (and (not primitive?) label)))
