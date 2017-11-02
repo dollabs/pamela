@@ -99,13 +99,41 @@
                                  {} clist)]
     (methods-from-signature-map m-with-signature)))
 
+(defn merge-bounds
+  "Return new bounds with min and max values of either a or b"
+  [a b]
+  (let [la (first a)
+        lb (first b)
+        ua (second a)
+        ub (second b)]
+    [(apply min (remove nil? [la lb]))
+     (apply max (remove nil? [ua ub]))]))
+
+(defn merge-transition
+  "More specific transition overrides specific transition.
+  However, if they have :temporal-constraints, they are merged such that the
+  new constraints have min and max of the two transitions."
+  [specific more-specific]
+  (let [has-tc? (or (:temporal-constraints specific) (:temporal-constraints more-specific))
+        trans (or more-specific specific)]
+    (if has-tc?
+      (conj trans {:temporal-constraints [{:type :bounds :value (merge-bounds (-> specific :temporal-constraints first :value)
+                                                                              (-> more-specific :temporal-constraints first :value))}]
+                   })
+      trans)))
+
 (defn merge-transitions
   "Returns a map of transitions-signature -> transition
   Note: Currently, transitions signature is assumed to be name of the transitions."
   [clist ir]
   (reduce (fn [result clas]
-            ; result always holds the value from the class itself or the closes parent
-            (merge (get-in ir [clas :transitions]) result)) {} clist))
+            (let [bounds-updated (reduce (fn [inner-result [name trans]]
+                                           (merge inner-result {name (merge-transition trans (name inner-result))}))
+                                         result (get-in ir [clas :transitions]))]
+              ; Note bounds-updated has transition from more specific class
+              ; and union of the bounds
+              (merge result bounds-updated)))
+          {} clist))
 
 (defn merge-modes
   "Returns a map of modes-signature -> mode"
