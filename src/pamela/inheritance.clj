@@ -1,20 +1,21 @@
-;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
 ;;
 ;; This software is licensed under the terms of the
 ;; Apache License, Version 2.0 which can be found in
 ;; the file LICENSE at the root of this distribution.
 
-;;; Acknowledgement and Disclaimer:
-;;; This material is based upon work supported by the Army Contracting
-;;; and DARPA under contract No. W911NF-15-C-0005.
-;;; Any opinions, findings and conclusions or recommendations expressed
-;;; in this material are those of the author(s) and do necessarily reflect the
-;;; views of the Army Contracting Command and DARPA.
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
 
 
 (ns pamela.inheritance
   (:require [clojure.pprint :refer :all]
-            [pamela.utils :as putils]))
+            [pamela.utils :as putils]
+            [pamela.tpn]))
 
 
 (defn get-parents [clas ir]
@@ -43,7 +44,7 @@
 ; methods are uniquely identified by name-symbol, args( number of args)
 ; and following keys
 (def method-signature #{:pre :post :temporal-constraints :cost :reward
-                        :controllable :primitive :args-count})
+                        :controllable :primitive :args-count :probability})
 
 (defn make-method-signature
   "Given a method (map describing the method), return signature of the method"
@@ -62,9 +63,9 @@
                 (do (putils/dbg-println :warn "pamela.inheritance assoc-method method:"
                                         method-sym "has multiple methods with same signature" msig "\ncurrent will stay")
                     (putils/dbg-println :warn "current")
-                    (pprint (get msig result))
+                    (putils/dbg-println :warn (with-out-str (pprint (get msig result))))
                     (putils/dbg-println :warn "another")
-                    (pprint method))
+                    (putils/dbg-println :warn (with-out-str (pprint method))))
                 (merge result {msig method}))))
           {} m-vec))
 
@@ -99,16 +100,6 @@
                                  {} clist)]
     (methods-from-signature-map m-with-signature)))
 
-(defn merge-bounds
-  "Return new bounds with min and max values of either a or b"
-  [a b]
-  (let [la (first a)
-        lb (first b)
-        ua (second a)
-        ub (second b)]
-    [(apply min (remove nil? [la lb]))
-     (apply max (remove nil? [ua ub]))]))
-
 (defn merge-transition
   "More specific transition overrides specific transition.
   However, if they have :temporal-constraints, they are merged such that the
@@ -117,7 +108,7 @@
   (let [has-tc? (or (:temporal-constraints specific) (:temporal-constraints more-specific))
         trans (or more-specific specific)]
     (if has-tc?
-      (conj trans {:temporal-constraints [{:type :bounds :value (merge-bounds (-> specific :temporal-constraints first :value)
+      (conj trans {:temporal-constraints [{:type :bounds :value (pamela.tpn/merge-bounds (-> specific :temporal-constraints first :value)
                                                                               (-> more-specific :temporal-constraints first :value))}]
                    })
       trans)))
