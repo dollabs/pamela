@@ -17,19 +17,20 @@
             [pamela.inheritance]
             [clojure.pprint :refer :all]
             [clojure.test :refer :all]
+            [clojure.data]
             [me.raynes.fs :as fs]))
 
 (def debug false)
 
 (def expected-class-precedence '{a    [a a1 a11 a12 a13 a2 a3]
-                                a1   [a1 a11 a12 a13]
-                                a11  [a11]
-                                a12  [a12]
-                                a13  [a13]
-                                a2   [a2]
-                                a3   [a3]
-                                b    [b]
-                                main [main a a1 a11 a12 a13 a2 a3 b]})
+                                 a1   [a1 a11 a12 a13]
+                                 a11  [a11]
+                                 a12  [a12]
+                                 a13  [a13]
+                                 a2   [a2]
+                                 a3   [a3]
+                                 b    [b]
+                                 main [main a a1 a11 a12 a13 a2 a3 b]})
 (deftest test-class-precedence
   []
   (let [ir (parser/parse {:input [(clojure.java.io/file "test/pamela/inheritance-hierarchy.pamela")]})
@@ -40,9 +41,13 @@
     (is (= expected-class-precedence flat) "Class precedence list should match")))
 
 (defn parse-ir [file & [validate]]
-  (parser/parse {:input [(clojure.java.io/file file)]
-                 :do-not-validate (or validate true)}))
+  ;(println "parser-ir do-not-validate" validate)
+  (parser/parse {:input           [(clojure.java.io/file file)]
+                 :do-not-validate (or validate false)}))
 
+; sometimes and in repl only,
+; (testing.pamela.inheritance/test-flatten-inheritance "test/pamela/inherit2.pamela")
+; produces nils breathing in mode's conditional expression.
 (defn test-flatten-inheritance [file]
   (let [ir (parse-ir file)
         in-ir (pamela.inheritance/flatten-inheritance ir)
@@ -69,18 +74,31 @@
                   "test/pamela/inherit-union.expected.pamela"]
                  ["test/pamela/inherit-precedence.pamela"
                   "test/pamela/inherit-precedence.expected.pamela"]])
+
 (deftest flatten-inheritance
   []
   (let [out-dir (fs/file "target" "inheritance")]
     (if-not (fs/exists? out-dir)
       (fs/mkdirs out-dir))
-    (doseq [files test-files]
-      (let [file (first files)
-            expected (second files)
-            ir (pamela.inheritance/flatten-inheritance (parse-ir file))
+    (doseq [[file expected] test-files]
+      (let [ir (pamela.inheritance/flatten-inheritance (parse-ir file))
             exp-ir (parse-ir expected)]
         (when debug
           (println (fs/base-name file))
           (spit (fs/file out-dir (fs/base-name file)) ir)
           (spit (fs/file out-dir (fs/base-name expected)) exp-ir))
         (is (= exp-ir ir) (str "IR should match " file " " expected))))))
+
+; To show diff between validated and unvalidated IR.
+(defn check-do-not-validate []
+  (let [validated (parse-ir (first (first test-files)) false)
+        not-validated (parse-ir (first (first test-files)) true)
+        dif (clojure.data/diff validated not-validated)]
+    (println "Validated")
+    (pprint validated)
+    (println "Not Validated")
+    (pprint not-validated)
+    (println "Diff validated not-validated")
+    (pprint dif)
+    (println "= " (= validated not-validated))
+    ))
