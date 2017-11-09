@@ -26,14 +26,13 @@
 
             (defpmethod ask-branch []
               (sequence
-               (ask (or (and (= door "open") :running)
-                        (and (= door "closed") :stopped))
+               (ask (and (= door "open") :running)
                     :bounds [5 30])
                (delayed-gratification)))
 
             (defpmethod tell-branch []
               (sequence
-               (delay :bounds [6 6])
+               (delay :bounds [10 10])
                (tell (= door "open"))))
 
             (defpmethod delayed-gratification [])
@@ -54,7 +53,7 @@
 
             (defpmethod tell-branch []
               (sequence
-               (delay :bounds [6 6])
+               (delay :bounds [10 10])
                (tell (= door "open"))))
 
             (defpmethod delayed-gratification [])
