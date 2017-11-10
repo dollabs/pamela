@@ -9,6 +9,7 @@ Changes
 * Fixed argument values with field references (Closes #150)
 * Fixed method-opts in plant function invocations (Closes #151)
 * Added probability to defpmethod (Closes #148)
+* dbg-println level now controlled by pamela.utils/set-dbg-println-level (Closes #117)
 
 ### [0.6.2] - 2017-08-28
 
