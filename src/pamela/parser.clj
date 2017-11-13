@@ -1197,7 +1197,7 @@
 ;;   tree as txt
 (defn parse [options]
   ;; (log/warn "PARSE" options)
-  (let [{:keys [input magic output-magic check-only?]} options
+  (let [{:keys [input magic output-magic check-only? do-not-validate]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
@@ -1249,8 +1249,10 @@
                          ;; _ (log/warn "PRE-VALIDATE")
                          pir (if check-only?
                                {:tree tree0}
-                               (validate-pamela
-                                 (insta/transform pamela-ir tree0)))]
+                               (if do-not-validate
+                                 (insta/transform pamela-ir tree0)
+                                 (validate-pamela
+                                   (insta/transform pamela-ir tree0))))]
                      (if (:error pir)
                        pir
                        (merge ir pir))))]

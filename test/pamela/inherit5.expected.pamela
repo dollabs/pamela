@@ -16,36 +16,36 @@
 (defpclass a []
   :modes [:on :off :fail]
   :transitions {:off:on {:pre :off :post :on
-                         :doc "turning on"}
+                         :doc "turning a on"}
                 :on:off {:pre :on :post :off
-                         :doc "turning off"}
+                         :doc "turning a off"}
                 :*:fail {:probability 0.0000001
                          :doc "spontaneous failure"}})
 
 (defpclass b []
-  :fields {:brand "DOLL"}
+  :fields {brand "DOLL"}
   :modes [:on :off :fail]
   :transitions {:off:on {:pre :off :post :on
-                         :doc "turning on"}
+                         :doc "turning b on"}
                 :on:off {:pre :on :post :off
-                         :doc "turning off"}
-                :*:fail {:probability 0.0000001
+                         :doc "turning b off"}
+                :*:fail {:probability 0.00000001
                          :doc "spontaneous failure"}})
 
 (defpclass c []
-  :inherit [a b]
+
 
   ;; inherited fields
-  ;; :fields {:brand "DOLL"}
+   :fields {brand "DOLL"}
 
   ;; inherited modes
-  ;; :modes [:on :off :fail]
+   :modes [:on :off :fail]
 
   ;; inherited transition from a (because it appears first, signature same)
-  ;; :transitions {:off:on {:pre :off :post :on
-  ;;                        :doc "turning on"}
-  ;;               :on:off {:pre :on :post :off
-  ;;                        :doc "turning off"}
-  ;;               :*:fail {:probability 0.0000001
-  ;;                        :doc "spontaneous failure"}}
+   :transitions {:off:on {:pre :off :post :on
+                          :doc "turning a on"}
+                 :on:off {:pre :on :post :off
+                          :doc "turning a off"}
+                 :*:fail {:probability 0.0000001
+                          :doc "spontaneous failure"}}
   )

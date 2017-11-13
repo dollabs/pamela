@@ -1,0 +1,55 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; inheritance example: Test inherit from a and b
+
+(defpclass a []
+           :fields {fa "fa" x 1}
+           :modes {:moa1 (= fa "fa")
+                   :moa2 (= fa false)
+                   :x    (= x 1)
+                   :y    (= x 2)}
+           :transitions {
+                         :moa1:moa2 {:pre :moa1 :post :moa2
+                                     :doc "transition :moa1 -> :moa2"}
+                         :moa2:moa1 {:pre :moa2 :post :moa1
+                                     :doc "transition :moa2 -> :moa1"}
+                         :x:y       {:pre         :x :post :y
+                                     :probability 0.1       ; Note different probability
+                                     :bounds      [3 6]
+                                     ; Signature for transitions is comprised of
+                                     ; name, pre and post conditions
+                                     :doc         "Same signature, different bounds, class a"}}
+           :methods [(defpmethod ma [arg1 arg2])]
+           )
+
+(defpclass b []
+           :fields {fb "fb" x 2}
+           :modes {:mob1 (= fb "fb")
+                   :mob2 (= fb true)
+                   :x    (= x 2)
+                   :y    (= x 1)}
+           :transitions {
+                         :mob1:mob2 {:pre :mob1 :post :mob2
+                                     :doc "transition :mob1 -> :mob2"}
+                         :mob2:mob1 {:pre :mob2 :post :mob1
+                                     :doc "transition :mob2 -> :mob1"}
+                         :x:y       {:pre         :x :post :y
+                                     :bounds      [2 8]
+                                     :probability 0.2       ;Note probability is different
+                                     :doc         "Same signature, different bounds"}}
+           :methods [(defpmethod mb [arg1 arg2])])
+
+(defpclass c []
+           :inherit [a b]
+           )

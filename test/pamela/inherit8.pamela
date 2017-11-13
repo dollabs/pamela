@@ -14,10 +14,10 @@
 ;; inheritance example: superclass member disambiguation
 
 (defpclass a []
-  :fields {:temperature 25})
+  :fields {temperature 25})
 
 (defpclass b []
-  :fields {:temperature 20})
+  :fields {temperature 20})
 
 (defpclass c []
   :inherit [a b]
@@ -29,13 +29,14 @@
   :methods [(defpmethod print-temperature
               {:doc "Displays the current temperature"}
               []
-              (print "temperature" :temperature)
-              (print "temperature" temperature) ;; allow via symbol?
-              ;; the following apply iff we support all superclass members
-              (print "a temperature" this.0.:temperature)
-              (print "a temperature" this.0.temperature)
-              (print "b temperature" this.1.:temperature)
-              (print "b temperature" this.1.temperature))
+              (sequence
+
+                (print "temperature" temperature)
+
+                ;; the following apply iff we support all superclass members
+                ;(print "a temperature" this.a.temperature)  ; We don't support references to super classes. TODO Should we?
+                ;(print "b temperature" this.b.temperature)
+                ))
             (defpmethod print
               {:doc "Displays label and value"}
               [label value])])

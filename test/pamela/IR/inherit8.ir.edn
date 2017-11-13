@@ -1,0 +1,53 @@
+{a
+ {:args [],
+  :fields
+  {temperature {:access :private, :initial 25, :observable false}},
+  :type :pclass},
+ b
+ {:args [],
+  :fields
+  {temperature {:access :private, :initial 20, :observable false}},
+  :type :pclass},
+ c
+ {:args [],
+  :inherit [a b],
+  :methods
+  {print
+   [{:args [label value],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [label value],
+     :display-name "Print",
+     :doc "Displays label and value",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   print-temperature
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this print]},
+         :args
+         ["temperature"
+          {:type :state-variable, :name temperature}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Print Temperature",
+     :doc "Displays the current temperature",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ temperature {:type :state-variable}}

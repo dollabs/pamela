@@ -1,0 +1,25 @@
+{a
+ {:args [],
+  :fields
+  {breathing {:access :private, :initial "true", :observable false}},
+  :modes
+  {:alive
+   {:args [{:type :field-ref, :names [breathing]} true], :type :equal},
+   :dead
+   {:args [{:type :field-ref, :names [breathing]} false],
+    :type :equal}},
+  :type :pclass},
+ b
+ {:args [],
+  :fields
+  {temperature {:access :private, :initial 25, :observable false}},
+  :modes
+  {:alive
+   {:args
+    [{:type :equal,
+      :args [{:type :field-ref, :names [temperature]} 0]}],
+    :type :not},
+   :dead
+   {:args [{:type :field-ref, :names [temperature]} 0], :type :equal}},
+  :type :pclass},
+ c {:args [], :inherit [a b], :type :pclass}}
