@@ -9,6 +9,9 @@ Changes
 * Fixed argument values with field references (Closes #150)
 * Fixed method-opts in plant function invocations (Closes #151)
 * Added probability to defpmethod (Closes #148)
+* Create pclass-instance data structure for HTN's
+  - Fixes #146 Extend pclass-ctor-options to be strings OR references
+  - Fixes #111 0-Arg main method not correctly used as the default root task
 
 ### [0.6.2] - 2017-08-28
 

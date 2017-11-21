@@ -1,137 +1,137 @@
-{:hedge-46 {:end-node :hem-30, :type :edge, :uid :hedge-46},
- :hedge-48 {:end-node :henpt-27, :type :edge, :uid :hedge-48},
- :hedge-49
+{:hedge-49 {:end-node :hem-33, :type :edge, :uid :hedge-49},
+ :hedge-51 {:end-node :henpt-30, :type :edge, :uid :hedge-51},
+ :hedge-52
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-33,
+  :end-node :hem-36,
   :type :edge,
-  :uid :hedge-49},
- :hedge-51
+  :uid :hedge-52},
+ :hedge-54
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-35,
+  :end-node :hem-38,
   :type :edge,
-  :uid :hedge-51},
- :hedge-53
- {:display-name "2",
-  :edge-type :choice,
-  :end-node :hem-37,
-  :type :edge,
-  :uid :hedge-53},
- :hedge-55 {:end-node :henpt-28, :type :edge, :uid :hedge-55},
+  :uid :hedge-54},
  :hedge-56
- {:display-name "3", :end-node :hem-40, :type :edge, :uid :hedge-56},
- :hedge-58 {:end-node :henpt-29, :type :edge, :uid :hedge-58},
+ {:display-name "2",
+  :edge-type :choice,
+  :end-node :hem-40,
+  :type :edge,
+  :uid :hedge-56},
+ :hedge-58 {:end-node :henpt-31, :type :edge, :uid :hedge-58},
  :hedge-59
+ {:display-name "3", :end-node :hem-43, :type :edge, :uid :hedge-59},
+ :hedge-61 {:end-node :henpt-32, :type :edge, :uid :hedge-61},
+ :hedge-62
  {:display-name "4",
   :edge-type :choice,
-  :end-node :hem-42,
+  :end-node :hem-45,
   :type :edge,
-  :uid :hedge-59},
- :hedge-61
+  :uid :hedge-62},
+ :hedge-64
  {:display-name "4",
   :edge-type :choice,
-  :end-node :hem-44,
+  :end-node :hem-47,
   :type :edge,
-  :uid :hedge-61},
- :hem-30
+  :uid :hedge-64},
+ :hem-33
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-49 :hedge-51 :hedge-53 :hedge-56 :hedge-59 :hedge-61],
-  :incidence-set #{:hedge-46},
-  :network :net-47,
+  :edges [:hedge-52 :hedge-54 :hedge-56 :hedge-59 :hedge-62 :hedge-64],
+  :incidence-set #{:hedge-49},
+  :network :net-50,
   :type :htn-expanded-method,
-  :uid :hem-30},
- :hem-33
+  :uid :hem-33},
+ :hem-36
  {:args [],
   :display-args [],
   :display-name "Transfer-0",
   :edges [],
   :incidence-set #{},
-  :network :net-50,
+  :network :net-53,
   :type :htn-expanded-method,
-  :uid :hem-33},
- :hem-35
+  :uid :hem-36},
+ :hem-38
  {:args [],
   :display-args [],
   :display-name "Transfer-1",
   :edges [],
   :incidence-set #{},
-  :network :net-52,
+  :network :net-55,
   :type :htn-expanded-method,
-  :uid :hem-35},
- :hem-37
+  :uid :hem-38},
+ :hem-40
  {:args [],
   :display-args [],
   :display-name "Transfer-2",
   :edges [],
   :incidence-set #{},
-  :network :net-54,
+  :network :net-57,
   :type :htn-expanded-method,
-  :uid :hem-37},
- :hem-40
+  :uid :hem-40},
+ :hem-43
  {:args [],
   :display-args [],
   :display-name "Work",
   :edges [],
   :incidence-set #{},
-  :network :net-57,
+  :network :net-60,
   :type :htn-expanded-method,
-  :uid :hem-40},
- :hem-42
+  :uid :hem-43},
+ :hem-45
  {:args [],
   :display-args [],
   :display-name "Copy-0",
   :edges [],
   :incidence-set #{},
-  :network :net-60,
+  :network :net-63,
   :type :htn-expanded-method,
-  :uid :hem-42},
- :hem-44
+  :uid :hem-45},
+ :hem-47
  {:args [],
   :display-args [],
   :display-name "Copy-1",
   :edges [],
   :incidence-set #{},
-  :network :net-62,
+  :network :net-65,
   :type :htn-expanded-method,
-  :uid :hem-44},
- :henpt-25
+  :uid :hem-47},
+ :henpt-28
  {:display-name "coverage-test",
-  :edges [:hedge-46],
+  :edges [:hedge-49],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-25},
- :henpt-27
+  :uid :henpt-28},
+ :henpt-30
  {:display-name "Transfer",
-  :edges [:hedge-55],
-  :incidence-set #{:hedge-48},
+  :edges [:hedge-58],
+  :incidence-set #{:hedge-51},
   :name "transfer",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-27},
- :henpt-28
+  :uid :henpt-30},
+ :henpt-31
  {:display-name "Work",
-  :edges [:hedge-58],
-  :incidence-set #{:hedge-55},
+  :edges [:hedge-61],
+  :incidence-set #{:hedge-58},
   :name "work",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-28},
- :henpt-29
+  :uid :henpt-31},
+ :henpt-32
  {:display-name "Copy",
   :edges [],
-  :incidence-set #{:hedge-58},
+  :incidence-set #{:hedge-61},
   :name "copy",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-29},
- :hpt-26
+  :uid :henpt-32},
+ :hpt-29
  {:display-name "Delay",
-  :edges [:hedge-48],
+  :edges [:hedge-51],
   :incidence-set #{},
   :name "delay",
   :type :htn-primitive-task,
-  :uid :hpt-26},
- :hpt-32
+  :uid :hpt-29},
+ :hpt-35
  {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
   :argsmap
   {"fromfile" "bigfile",
@@ -145,8 +145,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-32},
- :hpt-34
+  :uid :hpt-35},
+ :hpt-37
  {:args ["bigfile" "copyofbigfile"],
   :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
   :display-args ["bigfile" "copyofbigfile"],
@@ -158,8 +158,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-34},
- :hpt-36
+  :uid :hpt-37},
+ :hpt-39
  {:args ["ls" "-lart" ">" "foo"],
   :argsmap {"arg1" "-lart", "arg2" ">", "arg3" "foo", "cmd" "ls"},
   :display-args ["ls" "-lart" ">" "foo"],
@@ -171,8 +171,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-36},
- :hpt-38
+  :uid :hpt-39},
+ :hpt-41
  {:args [10],
   :argsmap {"time" 10},
   :display-args [10],
@@ -184,8 +184,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-38},
- :hpt-39
+  :uid :hpt-41},
+ :hpt-42
  {:args ["myscript.py" "2" "3" "4" "5"],
   :argsmap
   {"arg1" "3",
@@ -202,8 +202,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-39},
- :hpt-41
+  :uid :hpt-42},
+ :hpt-44
  {:args ["bigfile" "me@192.168.11.100:~me/copyofbigfile"],
   :argsmap
   {"fromfile" "bigfile",
@@ -217,8 +217,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-41},
- :hpt-43
+  :uid :hpt-44},
+ :hpt-46
  {:args ["bigfile" "copyofbigfile"],
   :argsmap {"fromfile" "bigfile", "tofile" "copyofbigfile"},
   :display-args ["bigfile" "copyofbigfile"],
@@ -230,45 +230,45 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-43},
- :net-45
+  :uid :hpt-46},
+ :net-48
  {:display-name "coverage-test",
-  :rootnodes #{:henpt-25},
+  :rootnodes #{:henpt-28},
   :type :htn-network,
-  :uid :net-45},
- :net-47
- {:display-name "Main",
-  :rootnodes #{:hpt-26},
-  :type :htn-network,
-  :uid :net-47},
+  :uid :net-48},
  :net-50
- {:display-name "Transfer-0",
-  :rootnodes #{:hpt-32},
+ {:display-name "Main",
+  :rootnodes #{:hpt-29},
   :type :htn-network,
   :uid :net-50},
- :net-52
+ :net-53
+ {:display-name "Transfer-0",
+  :rootnodes #{:hpt-35},
+  :type :htn-network,
+  :uid :net-53},
+ :net-55
  {:display-name "Transfer-1",
-  :rootnodes #{:hpt-34},
+  :rootnodes #{:hpt-37},
   :type :htn-network,
-  :uid :net-52},
- :net-54
- {:display-name "Transfer-2",
-  :rootnodes #{:hpt-36},
-  :type :htn-network,
-  :uid :net-54},
+  :uid :net-55},
  :net-57
- {:display-name "Work",
-  :rootnodes #{:hpt-38 :hpt-39},
+ {:display-name "Transfer-2",
+  :rootnodes #{:hpt-39},
   :type :htn-network,
   :uid :net-57},
  :net-60
- {:display-name "Copy-0",
-  :rootnodes #{:hpt-41},
+ {:display-name "Work",
+  :rootnodes #{:hpt-42 :hpt-41},
   :type :htn-network,
   :uid :net-60},
- :net-62
- {:display-name "Copy-1",
-  :rootnodes #{:hpt-43},
+ :net-63
+ {:display-name "Copy-0",
+  :rootnodes #{:hpt-44},
   :type :htn-network,
-  :uid :net-62},
- :network :net-45}
+  :uid :net-63},
+ :net-65
+ {:display-name "Copy-1",
+  :rootnodes #{:hpt-46},
+  :type :htn-network,
+  :uid :net-65},
+ :network :net-48}

@@ -1,31 +1,31 @@
-{:hedge-30 {:end-node :hem-21, :type :edge, :uid :hedge-30},
- :hedge-32
- {:display-name "1", :end-node :hem-24, :type :edge, :uid :hedge-32},
- :hedge-34 {:end-node :henpt-19, :type :edge, :uid :hedge-34},
- :hedge-35
- {:display-name "2", :end-node :hem-26, :type :edge, :uid :hedge-35},
- :hedge-37 {:end-node :henpt-20, :type :edge, :uid :hedge-37},
- :hedge-38
- {:display-name "3", :end-node :hem-28, :type :edge, :uid :hedge-38},
- :hem-21
+{:hedge-34 {:end-node :hem-25, :type :edge, :uid :hedge-34},
+ :hedge-36
+ {:display-name "1", :end-node :hem-28, :type :edge, :uid :hedge-36},
+ :hedge-38 {:end-node :henpt-23, :type :edge, :uid :hedge-38},
+ :hedge-39
+ {:display-name "2", :end-node :hem-30, :type :edge, :uid :hedge-39},
+ :hedge-41 {:end-node :henpt-24, :type :edge, :uid :hedge-41},
+ :hedge-42
+ {:display-name "3", :end-node :hem-32, :type :edge, :uid :hedge-42},
+ :hem-25
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-32 :hedge-35 :hedge-38],
-  :incidence-set #{:hedge-30},
-  :network :net-31,
+  :edges [:hedge-36 :hedge-39 :hedge-42],
+  :incidence-set #{:hedge-34},
+  :network :net-35,
   :type :htn-expanded-method,
-  :uid :hem-21},
- :hem-24
+  :uid :hem-25},
+ :hem-28
  {:args [],
   :display-args [],
   :display-name "Via Pargs",
   :edges [],
   :incidence-set #{},
-  :network :net-33,
+  :network :net-37,
   :type :htn-expanded-method,
-  :uid :hem-24},
- :hem-26
+  :uid :hem-28},
+ :hem-30
  {:args
   [{:type :pclass-arg-ref, :names [plant1]}
    {:type :pclass-arg-ref, :names [plant2]}],
@@ -33,46 +33,46 @@
   :display-name "Via Margs",
   :edges [],
   :incidence-set #{},
-  :network :net-36,
+  :network :net-40,
   :type :htn-expanded-method,
-  :uid :hem-26},
- :hem-28
+  :uid :hem-30},
+ :hem-32
  {:args [],
   :display-args [],
   :display-name "Via Fields",
   :edges [],
   :incidence-set #{},
-  :network :net-39,
+  :network :net-43,
   :type :htn-expanded-method,
-  :uid :hem-28},
- :henpt-17
+  :uid :hem-32},
+ :henpt-21
  {:display-name "coverage-test",
-  :edges [:hedge-30],
+  :edges [:hedge-34],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-17},
- :henpt-18
+  :uid :henpt-21},
+ :henpt-22
  {:display-name "Via Pargs",
-  :edges [:hedge-34],
+  :edges [:hedge-38],
   :incidence-set #{},
   :name "via-pargs",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-18},
- :henpt-19
+  :uid :henpt-22},
+ :henpt-23
  {:display-name "Via Margs",
-  :edges [:hedge-37],
-  :incidence-set #{:hedge-34},
+  :edges [:hedge-41],
+  :incidence-set #{:hedge-38},
   :name "via-margs",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-19},
- :henpt-20
+  :uid :henpt-23},
+ :henpt-24
  {:display-name "Via Fields",
   :edges [],
-  :incidence-set #{:hedge-37},
+  :incidence-set #{:hedge-41},
   :name "via-fields",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-20},
- :hpt-23
+  :uid :henpt-24},
+ :hpt-27
  {:args
   [{:type :pclass-arg-ref,
     :names [plant2 data1],
@@ -110,8 +110,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart2",
   :type :htn-primitive-task,
-  :uid :hpt-23},
- :hpt-25
+  :uid :hpt-27},
+ :hpt-29
  {:args
   [{:type :method-arg-ref,
     :names [a data1],
@@ -149,8 +149,8 @@
   :plant-interface "RMQ",
   :plant-part "mypart",
   :type :htn-primitive-task,
-  :uid :hpt-25},
- :hpt-27
+  :uid :hpt-29},
+ :hpt-31
  {:args
   ["echo"
    :myoptions
@@ -192,30 +192,30 @@
   :plant-interface "RMQ",
   :plant-part "mypart2",
   :type :htn-primitive-task,
-  :uid :hpt-27},
- :net-29
- {:display-name "coverage-test",
-  :rootnodes #{:henpt-17},
-  :type :htn-network,
-  :uid :net-29},
- :net-31
- {:display-name "Main",
-  :rootnodes #{:henpt-18},
-  :type :htn-network,
-  :uid :net-31},
+  :uid :hpt-31},
  :net-33
- {:display-name "Via Pargs",
-  :rootnodes #{:hpt-23},
+ {:display-name "coverage-test",
+  :rootnodes #{:henpt-21},
   :type :htn-network,
   :uid :net-33},
- :net-36
- {:display-name "Via Margs",
-  :rootnodes #{:hpt-25},
+ :net-35
+ {:display-name "Main",
+  :rootnodes #{:henpt-22},
   :type :htn-network,
-  :uid :net-36},
- :net-39
- {:display-name "Via Fields",
+  :uid :net-35},
+ :net-37
+ {:display-name "Via Pargs",
   :rootnodes #{:hpt-27},
   :type :htn-network,
-  :uid :net-39},
- :network :net-29}
+  :uid :net-37},
+ :net-40
+ {:display-name "Via Margs",
+  :rootnodes #{:hpt-29},
+  :type :htn-network,
+  :uid :net-40},
+ :net-43
+ {:display-name "Via Fields",
+  :rootnodes #{:hpt-31},
+  :type :htn-network,
+  :uid :net-43},
+ :network :net-33}

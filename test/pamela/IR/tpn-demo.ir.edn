@@ -214,7 +214,13 @@
      :temporal-constraints [{:type :bounds, :value [10 20]}]}]},
   :type :pclass},
  tpn
- {:args [plant],
+ {:args [],
+  :fields
+  {plant
+   {:access :private,
+    :initial
+    {:args [], :pclass plant, :plant-id "100", :type :pclass-ctor},
+    :observable false}},
   :meta {:doc "TPN Demo", :version "0.2.0"},
   :methods
   {elephant
@@ -224,8 +230,7 @@
      [{:type :parallel,
        :body
        [{:type :method-fn,
-         :method-ref
-         {:type :pclass-arg-ref, :names [plant track-elephant]},
+         :method-ref {:type :field-ref, :names [plant track-elephant]},
          :args [],
          :temporal-constraints [{:type :bounds, :value [160 170]}]}
         {:type :parallel,
@@ -234,13 +239,11 @@
            :body
            [{:type :method-fn,
              :method-ref
-             {:type :pclass-arg-ref,
-              :names [plant watch-right-hemisphere]},
+             {:type :field-ref, :names [plant watch-right-hemisphere]},
              :args []}
             {:type :method-fn,
              :method-ref
-             {:type :pclass-arg-ref,
-              :names [plant watch-left-hemisphere]},
+             {:type :field-ref, :names [plant watch-left-hemisphere]},
              :args []}],
            :temporal-constraints [{:type :bounds, :value [20 25]}]}
           {:type :sequence,
@@ -253,14 +256,14 @@
                  :body
                  [{:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant take-high-res-images]},
                    :args [],
                    :temporal-constraints
                    [{:type :bounds, :value [0 3]}]}
                   {:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant move-high-res-images]},
                    :args [],
                    :temporal-constraints
@@ -269,7 +272,7 @@
                :body
                [{:type :method-fn,
                  :method-ref
-                 {:type :pclass-arg-ref,
+                 {:type :field-ref,
                   :names [plant take-move-low-res-images]},
                  :args [],
                  :temporal-constraints
@@ -280,14 +283,14 @@
                  :body
                  [{:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant take-medium-res-images]},
                    :args [],
                    :temporal-constraints
                    [{:type :bounds, :value [0 3]}]}
                   {:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant move-medium-res-images]},
                    :args [],
                    :temporal-constraints
@@ -296,14 +299,14 @@
                [{:type :bounds, :value [78 90]}]}]}
             {:type :method-fn,
              :method-ref
-             {:type :pclass-arg-ref,
+             {:type :field-ref,
               :names [plant pre-picture-distribution]},
              :args []}
             {:type :parallel,
              :body
              [{:type :method-fn,
                :method-ref
-               {:type :pclass-arg-ref,
+               {:type :field-ref,
                 :names [plant picture-analysis-type-1]},
                :args [],
                :temporal-constraints [{:type :bounds, :value [0 6]}]}
@@ -313,7 +316,7 @@
                  :body
                  [{:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant picture-analysis-type-2-slow]},
                    :args [],
                    :temporal-constraints
@@ -322,21 +325,20 @@
                  :body
                  [{:type :method-fn,
                    :method-ref
-                   {:type :pclass-arg-ref,
+                   {:type :field-ref,
                     :names [plant picture-analysis-type-2-fast]},
                    :args [],
                    :temporal-constraints
                    [{:type :bounds, :value [0 10]}]}]}]}
               {:type :method-fn,
                :method-ref
-               {:type :pclass-arg-ref,
+               {:type :field-ref,
                 :names [plant picture-analysis-type-3]},
                :args [],
                :temporal-constraints [{:type :bounds, :value [0 7]}]}]}
             {:type :method-fn,
              :method-ref
-             {:type :pclass-arg-ref,
-              :names [plant picture-distribution]},
+             {:type :field-ref, :names [plant picture-distribution]},
              :args [],
              :temporal-constraints [{:type :bounds, :value [0 5]}]}],
            :temporal-constraints

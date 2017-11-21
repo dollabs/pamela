@@ -69,7 +69,7 @@
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
  example
- {:args [camera],
+ {:args [],
   :fields
   {imager
    {:access :private,

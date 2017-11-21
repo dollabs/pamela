@@ -71,9 +71,13 @@
               [])
             ])
 
-(defpclass tpn [plant]
+;; NOTE: the tpn pclass no longer takes an argument with the assumption
+;; that another zero-arg class will be the plant: instead an explicit
+;; plant pclass is instanciated as a field.
+(defpclass tpn []
   :meta {:version "0.2.0"
          :doc "TPN Demo"}
+  :fields {plant (plant :id "100")}
   :methods [(defpmethod elephant
               {:doc "the tpn"}
               []

@@ -292,8 +292,10 @@
        [:symbol "bulb"]
        [:pclass-ctor-arg [:symbol-ref [:symbol "source"]]]
        [:pclass-ctor-arg [:symbol-ref [:symbol "drain"]]]
-       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
-       [:pclass-ctor-option [:plant-part [:string "Bulb1"]]]]]]
+       [:pclass-ctor-option
+        [:id [:argval [:string "switchedcircuit"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "Bulb1"]]]]]]]
     [:field
      [:symbol "switchedpower"]
      [:field-type
@@ -301,6 +303,8 @@
        [:symbol "psw"]
        [:pclass-ctor-arg [:symbol-ref [:symbol "source"]]]
        [:pclass-ctor-arg [:symbol-ref [:symbol "drain"]]]
-       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
-       [:pclass-ctor-option [:plant-part [:string "PSW1"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]]]
+       [:pclass-ctor-option
+        [:id [:argval [:string "switchedcircuit"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "PSW1"]]]]
+       [:pclass-ctor-option
+        [:interface [:argval [:string "RMQ"]]]]]]]]]]]

@@ -1,0 +1,87 @@
+{main
+ {:args [],
+  :fields
+  {unit
+   {:access :private,
+    :initial
+    {:args ["foo"], :pclass unit, :plant-id "foo", :type :pclass-ctor},
+    :observable false}},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [unit foo]},
+         :args [5]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ subunit
+ {:args [],
+  :methods
+  {bar
+   [{:args [arg],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [arg],
+     :display-name "Bar",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ unit
+ {:args [id],
+  :fields
+  {left
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass subunit,
+     :plant-id {:names [id], :type :pclass-arg-ref},
+     :plant-part "left",
+     :type :pclass-ctor},
+    :observable false},
+   right
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass subunit,
+     :plant-id {:names [id], :type :pclass-arg-ref},
+     :plant-part "right",
+     :type :pclass-ctor},
+    :observable false}},
+  :methods
+  {foo
+   [{:args [arg],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [left bar]},
+       :args [{:type :method-arg-ref, :names [arg]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [arg],
+     :display-name "Foo",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass}}

@@ -1,141 +1,134 @@
-{:hedge-63 {:end-node :hem-31, :type :edge, :uid :hedge-63},
- :hedge-65
- {:display-name "1", :end-node :hem-34, :type :edge, :uid :hedge-65},
- :hedge-67
- {:display-name "1", :end-node :hem-42, :type :edge, :uid :hedge-67},
- :hedge-69 {:end-node :hem-44, :type :edge, :uid :hedge-69},
- :hedge-71 {:end-node :hem-46, :type :edge, :uid :hedge-71},
- :hedge-73 {:end-node :hem-48, :type :edge, :uid :hedge-73},
- :hedge-75 {:end-node :hem-50, :type :edge, :uid :hedge-75},
- :hedge-77 {:end-node :hem-52, :type :edge, :uid :hedge-77},
- :hedge-79 {:end-node :hem-54, :type :edge, :uid :hedge-79},
- :hedge-81 {:end-node :henpt-33, :type :edge, :uid :hedge-81},
- :hedge-82
- {:display-name "2", :end-node :hem-61, :type :edge, :uid :hedge-82},
- :hem-31
+{:hedge-64 {:end-node :hem-32, :type :edge, :uid :hedge-64},
+ :hedge-66
+ {:display-name "1", :end-node :hem-35, :type :edge, :uid :hedge-66},
+ :hedge-68
+ {:display-name "1", :end-node :hem-43, :type :edge, :uid :hedge-68},
+ :hedge-70 {:end-node :hem-45, :type :edge, :uid :hedge-70},
+ :hedge-72 {:end-node :hem-47, :type :edge, :uid :hedge-72},
+ :hedge-74 {:end-node :hem-49, :type :edge, :uid :hedge-74},
+ :hedge-76 {:end-node :hem-51, :type :edge, :uid :hedge-76},
+ :hedge-78 {:end-node :hem-53, :type :edge, :uid :hedge-78},
+ :hedge-80 {:end-node :hem-55, :type :edge, :uid :hedge-80},
+ :hedge-82 {:end-node :henpt-34, :type :edge, :uid :hedge-82},
+ :hedge-83
+ {:display-name "2", :end-node :hem-62, :type :edge, :uid :hedge-83},
+ :hem-32
  {:args [],
   :display-args [],
   :display-name "Top-Level Activity",
-  :edges [:hedge-65],
-  :incidence-set #{:hedge-63},
-  :network :net-64,
+  :edges [:hedge-66],
+  :incidence-set #{:hedge-64},
+  :network :net-65,
   :type :htn-expanded-method,
-  :uid :hem-31},
- :hem-34
+  :uid :hem-32},
+ :hem-35
  {:args ["host0101" "host0301" "host0501" "host0701"],
   :display-args ["host0101" "host0301" "host0501" "host0701"],
   :display-name "Top Level Sequence",
-  :edges [:hedge-67 :hedge-82],
+  :edges [:hedge-68 :hedge-83],
   :incidence-set #{},
-  :network :net-66,
+  :network :net-67,
   :type :htn-expanded-method,
-  :uid :hem-34},
- :hem-42
+  :uid :hem-35},
+ :hem-43
  {:args ["host0101" "host0301" "host0501" "host0701"],
   :display-args ["host0101" "host0301" "host0501" "host0701"],
   :display-name "Coordination 1",
-  :edges [:hedge-69 :hedge-71 :hedge-73 :hedge-75 :hedge-77 :hedge-79],
+  :edges [:hedge-70 :hedge-72 :hedge-74 :hedge-76 :hedge-78 :hedge-80],
   :incidence-set #{},
-  :network :net-68,
+  :network :net-69,
   :type :htn-expanded-method,
-  :uid :hem-42},
- :hem-44
+  :uid :hem-43},
+ :hem-45
  {:args ["host0101" "host0301"],
   :display-args ["host0101" "host0301"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-70,
+  :network :net-71,
   :type :htn-expanded-method,
-  :uid :hem-44},
- :hem-46
+  :uid :hem-45},
+ :hem-47
  {:args ["host0101" "host0501"],
   :display-args ["host0101" "host0501"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-72,
+  :network :net-73,
   :type :htn-expanded-method,
-  :uid :hem-46},
- :hem-48
+  :uid :hem-47},
+ :hem-49
  {:args ["host0101" "host0701"],
   :display-args ["host0101" "host0701"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-74,
+  :network :net-75,
   :type :htn-expanded-method,
-  :uid :hem-48},
- :hem-50
+  :uid :hem-49},
+ :hem-51
  {:args ["host0301" "host0501"],
   :display-args ["host0301" "host0501"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-76,
+  :network :net-77,
   :type :htn-expanded-method,
-  :uid :hem-50},
- :hem-52
+  :uid :hem-51},
+ :hem-53
  {:args ["host0301" "host0701"],
   :display-args ["host0301" "host0701"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-78,
+  :network :net-79,
   :type :htn-expanded-method,
-  :uid :hem-52},
- :hem-54
+  :uid :hem-53},
+ :hem-55
  {:args ["host0501" "host0701"],
   :display-args ["host0501" "host0701"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
-  :network :net-80,
+  :network :net-81,
   :type :htn-expanded-method,
-  :uid :hem-54},
- :hem-61
+  :uid :hem-55},
+ :hem-62
  {:args ["host0101" "host0301" "host0501" "host0701"],
   :display-args ["host0101" "host0301" "host0501" "host0701"],
   :display-name "Coordination 2",
   :edges [],
   :incidence-set #{},
-  :network :net-83,
+  :network :net-84,
   :type :htn-expanded-method,
-  :uid :hem-61},
- :henpt-29
+  :uid :hem-62},
+ :henpt-30
  {:display-name "parallel-constraints",
-  :edges [:hedge-63],
+  :edges [:hedge-64],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-29},
- :henpt-30
+  :uid :henpt-30},
+ :henpt-31
  {:display-name "Top Level Sequence",
   :edges [],
   :incidence-set #{},
   :name "top-level-sequence",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-30},
- :henpt-32
+  :uid :henpt-31},
+ :henpt-33
  {:display-name "Coordination 1",
-  :edges [:hedge-81],
+  :edges [:hedge-82],
   :incidence-set #{},
   :name "coordination1",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-32},
- :henpt-33
+  :uid :henpt-33},
+ :henpt-34
  {:display-name "Coordination 2",
   :edges [],
-  :incidence-set #{:hedge-81},
+  :incidence-set #{:hedge-82},
   :name "coordination2",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-33},
- :henpt-36
- {:display-name "Video Flow",
-  :edges [],
-  :incidence-set #{},
-  :name "video-flow",
-  :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-36},
+  :uid :henpt-34},
  :henpt-37
  {:display-name "Video Flow",
   :edges [],
@@ -171,7 +164,14 @@
   :name "video-flow",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-41},
- :hpt-43
+ :henpt-42
+ {:display-name "Video Flow",
+  :edges [],
+  :incidence-set #{},
+  :name "video-flow",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-42},
+ :hpt-44
  {:args ["host0101" "host0301" "1"],
   :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
   :display-args ["host0101" "host0301" "1"],
@@ -180,8 +180,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-43},
- :hpt-45
+  :uid :hpt-44},
+ :hpt-46
  {:args ["host0101" "host0501" "1"],
   :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
   :display-args ["host0101" "host0501" "1"],
@@ -190,8 +190,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-45},
- :hpt-47
+  :uid :hpt-46},
+ :hpt-48
  {:args ["host0101" "host0701" "1"],
   :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
   :display-args ["host0101" "host0701" "1"],
@@ -200,8 +200,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-47},
- :hpt-49
+  :uid :hpt-48},
+ :hpt-50
  {:args ["host0301" "host0501" "1"],
   :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
   :display-args ["host0301" "host0501" "1"],
@@ -210,8 +210,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-49},
- :hpt-51
+  :uid :hpt-50},
+ :hpt-52
  {:args ["host0301" "host0701" "1"],
   :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
   :display-args ["host0301" "host0701" "1"],
@@ -220,8 +220,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-51},
- :hpt-53
+  :uid :hpt-52},
+ :hpt-54
  {:args ["host0501" "host0701" "1"],
   :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
   :display-args ["host0501" "host0701" "1"],
@@ -230,21 +230,11 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-53},
- :hpt-55
+  :uid :hpt-54},
+ :hpt-56
  {:args ["host0101" "host0301" "1"],
   :argsmap {"client" "host0101", "display" "1", "server" "host0301"},
   :display-args ["host0101" "host0301" "1"],
-  :display-name "Video",
-  :edges [],
-  :incidence-set #{},
-  :name "video",
-  :type :htn-primitive-task,
-  :uid :hpt-55},
- :hpt-56
- {:args ["host0101" "host0501" "1"],
-  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
-  :display-args ["host0101" "host0501" "1"],
   :display-name "Video",
   :edges [],
   :incidence-set #{},
@@ -252,6 +242,16 @@
   :type :htn-primitive-task,
   :uid :hpt-56},
  :hpt-57
+ {:args ["host0101" "host0501" "1"],
+  :argsmap {"client" "host0101", "display" "1", "server" "host0501"},
+  :display-args ["host0101" "host0501" "1"],
+  :display-name "Video",
+  :edges [],
+  :incidence-set #{},
+  :name "video",
+  :type :htn-primitive-task,
+  :uid :hpt-57},
+ :hpt-58
  {:args ["host0101" "host0701" "1"],
   :argsmap {"client" "host0101", "display" "1", "server" "host0701"},
   :display-args ["host0101" "host0701" "1"],
@@ -260,8 +260,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-57},
- :hpt-58
+  :uid :hpt-58},
+ :hpt-59
  {:args ["host0301" "host0501" "1"],
   :argsmap {"client" "host0301", "display" "1", "server" "host0501"},
   :display-args ["host0301" "host0501" "1"],
@@ -270,8 +270,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-58},
- :hpt-59
+  :uid :hpt-59},
+ :hpt-60
  {:args ["host0301" "host0701" "1"],
   :argsmap {"client" "host0301", "display" "1", "server" "host0701"},
   :display-args ["host0301" "host0701" "1"],
@@ -280,8 +280,8 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-59},
- :hpt-60
+  :uid :hpt-60},
+ :hpt-61
  {:args ["host0501" "host0701" "1"],
   :argsmap {"client" "host0501", "display" "1", "server" "host0701"},
   :display-args ["host0501" "host0701" "1"],
@@ -290,61 +290,61 @@
   :incidence-set #{},
   :name "video",
   :type :htn-primitive-task,
-  :uid :hpt-60},
- :net-62
+  :uid :hpt-61},
+ :net-63
  {:display-name "parallel-constraints",
-  :rootnodes #{:henpt-29},
-  :type :htn-network,
-  :uid :net-62},
- :net-64
- {:display-name "Top-Level Activity",
   :rootnodes #{:henpt-30},
   :type :htn-network,
-  :uid :net-64},
- :net-66
- {:display-name "Top Level Sequence",
-  :rootnodes #{:henpt-32},
+  :uid :net-63},
+ :net-65
+ {:display-name "Top-Level Activity",
+  :rootnodes #{:henpt-31},
   :type :htn-network,
-  :uid :net-66},
- :net-68
+  :uid :net-65},
+ :net-67
+ {:display-name "Top Level Sequence",
+  :rootnodes #{:henpt-33},
+  :type :htn-network,
+  :uid :net-67},
+ :net-69
  {:display-name "Coordination 1",
   :rootnodes
-  #{:henpt-40 :henpt-38 :henpt-37 :henpt-36 :henpt-41 :henpt-39},
+  #{:henpt-40 :henpt-38 :henpt-37 :henpt-42 :henpt-41 :henpt-39},
   :type :htn-network,
-  :uid :net-68},
- :net-70
+  :uid :net-69},
+ :net-71
  {:display-name "Video",
-  :rootnodes #{:hpt-43},
+  :rootnodes #{:hpt-44},
   :type :htn-network,
-  :uid :net-70},
- :net-72
+  :uid :net-71},
+ :net-73
  {:display-name "Video",
-  :rootnodes #{:hpt-45},
+  :rootnodes #{:hpt-46},
   :type :htn-network,
-  :uid :net-72},
- :net-74
+  :uid :net-73},
+ :net-75
  {:display-name "Video",
-  :rootnodes #{:hpt-47},
+  :rootnodes #{:hpt-48},
   :type :htn-network,
-  :uid :net-74},
- :net-76
+  :uid :net-75},
+ :net-77
  {:display-name "Video",
-  :rootnodes #{:hpt-49},
+  :rootnodes #{:hpt-50},
   :type :htn-network,
-  :uid :net-76},
- :net-78
+  :uid :net-77},
+ :net-79
  {:display-name "Video",
-  :rootnodes #{:hpt-51},
+  :rootnodes #{:hpt-52},
   :type :htn-network,
-  :uid :net-78},
- :net-80
+  :uid :net-79},
+ :net-81
  {:display-name "Video",
-  :rootnodes #{:hpt-53},
+  :rootnodes #{:hpt-54},
   :type :htn-network,
-  :uid :net-80},
- :net-83
+  :uid :net-81},
+ :net-84
  {:display-name "Coordination 2",
-  :rootnodes #{:hpt-55 :hpt-56 :hpt-58 :hpt-60 :hpt-59 :hpt-57},
+  :rootnodes #{:hpt-56 :hpt-61 :hpt-58 :hpt-60 :hpt-59 :hpt-57},
   :type :htn-network,
-  :uid :net-83},
- :network :net-62}
+  :uid :net-84},
+ :network :net-63}
