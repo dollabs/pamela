@@ -11,30 +11,21 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-;; inheritance example: inheriting modes
+;; inheritance example: inheriting modes. a precedes b
 
 (defpclass a []
-           :fields {:breathing "true"}
-           :modes {:alive (= :breathing true)
-                   :dead  (= :breathing false)})
+           :fields {breathing "true"}
+           :modes {:alive (= breathing true)
+                   :dead  (= breathing false)})
 
 (defpclass b []
-           :fields {:temperature 25}
+           :fields {temperature 25}
            ;; NOTE the grammar currently doesn't have comparison ops like < or >
            ;;  {:alive (> :temperature 0)}
-           :modes {:alive (not (= :temperature 0))
-                   :dead  (= :temperature 0)})
+           :modes {:alive (not (= temperature 0))
+                   :dead  (= temperature 0)})
 
 (defpclass c []
            :inherit [a b]
-
-           ;; inherited fields
-           ;; :fields {:breathing true
-           ;;          :temperature 25}
-
-           ;; inherited modes
-           ;; :modes {:alive (or (= :breathing true) (> :temperature 0))
-           ;;   NOTE: for :alive (and ...) may be better, but how could we tell
-           ;;   automatically?
-           ;;         :dead (or (= :breathing false) (= :temperature 0))}
+           ; see inherit2.expected.pamela
            )

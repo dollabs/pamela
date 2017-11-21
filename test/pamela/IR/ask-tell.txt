@@ -1,0 +1,125 @@
+[:pamela
+ [:defpclass
+  [:symbol "main-with-modes"]
+  [:args]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":running"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "door"]]]
+        [:cond-operand [:literal [:string "open"]]]]]]
+     [:mode-init
+      [:keyword ":stopped"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "door"]]]
+        [:cond-operand [:literal [:string "closed"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn [:method-fn [:symbol-ref [:symbol "ask-branch"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
+    [:defpmethod
+     [:symbol "ask-branch"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:ask
+         [:cond-expr
+          [:and-expr
+           [:cond-expr
+            [:equal-expr
+             [:cond-operand [:symbol-ref [:symbol "door"]]]
+             [:cond-operand [:literal [:string "open"]]]]]
+           [:cond-operand [:literal [:keyword ":running"]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "5"]]
+            [:number [:integer "30"]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "delayed-gratification"]]]]]]]
+    [:defpmethod
+     [:symbol "tell-branch"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "10"]]
+               [:number [:integer "10"]]]]]]]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "door"]]]
+           [:cond-operand [:literal [:string "open"]]]]]]]]]]
+    [:defpmethod [:symbol "delayed-gratification"] [:args]]]]]
+ [:defpclass
+  [:symbol "main-no-modes"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:parallel
+       [:fn [:method-fn [:symbol-ref [:symbol "ask-branch"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "tell-branch"]]]]]]]
+    [:defpmethod
+     [:symbol "ask-branch"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:ask
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "door"]]]
+           [:cond-operand [:literal [:string "open"]]]]]
+         [:opt-bounds
+          [:bounds
+           [:bounds-literal
+            [:number [:integer "5"]]
+            [:number [:integer "30"]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "delayed-gratification"]]]]]]]
+    [:defpmethod
+     [:symbol "tell-branch"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:delay
+         [:delay-opt
+          [:fn-opt
+           [:between-opt
+            [:opt-bounds
+             [:bounds
+              [:bounds-literal
+               [:number [:integer "10"]]
+               [:number [:integer "10"]]]]]]]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "door"]]]
+           [:cond-operand [:literal [:string "open"]]]]]]]]]]
+    [:defpmethod [:symbol "delayed-gratification"] [:args]]]]]]

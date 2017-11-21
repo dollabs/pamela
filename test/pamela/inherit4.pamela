@@ -1,0 +1,38 @@
+;; Copyright © 2016 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; inheritance example: inheriting methods (different signatures)
+
+(defpclass a []
+  :modes [:on :off]
+  :methods [(defpmethod turn-on
+              {:pre :off :post :on :bounds [1 3]
+               :cost 2 :reward 5 :controllable true
+               :doc "turns on the power supply type a"
+               :display-name "turn-on/a"}
+              [])])
+
+(defpclass b []
+  :modes [:on :off]
+  :methods [(defpmethod turn-on
+              {:pre :off :post :on :bounds [1 3]
+               :cost 2 :reward 5 :controllable false
+               :doc "turns on the power supply type b"
+               :display-name "turn-on/b"}
+              [])])
+
+(defpclass c []
+  :inherit [a b]
+  ; see expected version of this file
+
+  )

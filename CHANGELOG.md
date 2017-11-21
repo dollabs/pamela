@@ -9,6 +9,7 @@ Changes
 * Fixed argument values with field references (Closes #150)
 * Fixed method-opts in plant function invocations (Closes #151)
 * Added probability to defpmethod (Closes #148)
+* dbg-println level now controlled by pamela.utils/set-dbg-println-level (Closes #117)
 * Create pclass-instance data structure for HTN's
   - Fixes #146 Extend pclass-ctor-options to be strings OR references
   - Fixes #111 0-Arg main method not correctly used as the default root task

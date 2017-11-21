@@ -1,0 +1,190 @@
+{door {:type :state-variable},
+ main-no-modes
+ {:args [],
+  :methods
+  {ask-branch
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :ask,
+         :condition
+         {:type :equal,
+          :args [{:type :state-variable, :name door} "open"]},
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [5 30]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this delayed-gratification]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Ask Branch",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   delayed-gratification
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Delayed Gratification",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ask-branch]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this tell-branch]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   tell-branch
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :delay,
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [10 10]}]}
+        {:type :tell,
+         :condition
+         {:type :equal,
+          :args [{:type :state-variable, :name door} "open"]}}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Tell Branch",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ main-with-modes
+ {:args [],
+  :methods
+  {ask-branch
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :ask,
+         :condition
+         {:type :and,
+          :args
+          [{:type :equal,
+            :args [{:type :state-variable, :name door} "open"]}
+           {:type :mode-ref,
+            :mode-ref {:type :symbol-ref, :names [this]},
+            :mode :running}]},
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [5 30]}]}
+        {:type :method-fn,
+         :method-ref
+         {:type :symbol-ref, :names [this delayed-gratification]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Ask Branch",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   delayed-gratification
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Delayed Gratification",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this ask-branch]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this tell-branch]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   tell-branch
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :delay,
+         :body nil,
+         :temporal-constraints [{:type :bounds, :value [10 10]}]}
+        {:type :tell,
+         :condition
+         {:type :equal,
+          :args [{:type :state-variable, :name door} "open"]}}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Tell Branch",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes
+  {:running
+   {:args [{:type :state-variable, :name door} "open"], :type :equal},
+   :stopped
+   {:args [{:type :state-variable, :name door} "closed"],
+    :type :equal}},
+  :type :pclass}}

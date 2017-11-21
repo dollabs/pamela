@@ -140,10 +140,23 @@
 
 (def ^{:doc
        "The highest level, where higher = lower severity, at which println will be called
- when in :println mode"
-       :dynamic true}
-  *dbg-println-level*
-  3)
+ when in :println mode"}
+  dbg-println-level
+  (atom 3))
+
+(defn set-dbg-println-level
+  "Set the level for dbg-println. The highest level, where higher =
+  lower severity (max is 6), at which println will be called when
+  in :println mode"
+  [new-level]
+  (reset! dbg-println-level new-level))
+
+(defn get-dbg-println-level
+  "Get the level for dbg-println. The highest level, where higher =
+  lower severity (max is 6), at which println will be called when
+  in :println mode"
+  []
+  @dbg-println-level)
 
 ;;For internal use only.  The order matters.
 (def dbg-println-levels [:fatal :error :warn :info :debug :trace])
@@ -162,7 +175,7 @@
     :println (let [level (if (integer? level)
                            level
                            (inc (.indexOf dbg-println-levels level)))]
-               `(if (<= ~level *dbg-println-level*)
+               `(if (<= ~level @dbg-println-level)
                   (println ~@more)))))
 
 ;; Placeholder, until we move to Clojure 1.9

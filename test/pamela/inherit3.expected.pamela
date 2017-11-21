@@ -11,7 +11,7 @@
 ;; in this material are those of the author(s) and do necessarily reflect the
 ;; views of the Army Contracting Command and DARPA.
 
-;; inheritance example: inheriting methods (different signatures)
+;; inheritance example: inheriting methods (same signatures)
 
 (defpclass a []
   :modes [:on :off]
@@ -26,31 +26,20 @@
   :modes [:on :off]
   :methods [(defpmethod turn-on
               {:pre :off :post :on :bounds [1 3]
-               :cost 2 :reward 5 :controllable false
+               :cost 2 :reward 5 :controllable true
                :doc "turns on the power supply type b"
                :display-name "turn-on/b"}
               [])])
 
 (defpclass c []
-  :inherit [a b]
 
   ;; inherited modes
-  ;; :modes [:on :off]
+   :modes [:on :off]
 
-  ;; inherited methods (signatures different)
-  ;;    NOTE multiple methods of same name distinguished by signature
-  ;;    which includes metadata (except for :doc :display-name)
-  ;; :methods [(defpmethod turn-on
-  ;;             {:pre :off :post :on :bounds [1 3]
-  ;;              :cost 2 :reward 5 :controllable true
-  ;;              :doc "turns on the power supply type a"
-  ;;              :display-name "turn-on/a"}
-  ;;             [])
-  ;;           (defpmethod turn-on
-  ;;             {:pre :off :post :on :bounds [1 3]
-  ;;              :cost 2 :reward 5 :controllable false
-  ;;              :doc "turns on the power supply type b"
-  ;;              :display-name "turn-on/b"}
-  ;;             [])
-  ;;           ]
-  )
+  ;; inherited method from a (because it appears first, signature same)
+   :methods [(defpmethod turn-on
+               {:pre :off :post :on :bounds [1 3]
+                :cost 2 :reward 5 :controllable true
+                :doc "turns on the power supply type a"
+                :display-name "turn-on/a"}
+               [])])

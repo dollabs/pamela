@@ -1,0 +1,70 @@
+{a
+ {:args [],
+  :modes {:fail true, :off true, :on true},
+  :transitions
+  {:*:fail
+   {:doc "a spontaneous failure",
+    :probability {:default 0.01, :name "pfa", :type :lvar}},
+   :off:on
+   {:doc "turning a on",
+    :post
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}},
+   :on:off
+   {:doc "turning a off",
+    :post
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}}},
+  :type :pclass},
+ b
+ {:args [],
+  :fields
+  {brand {:access :private, :initial "DOLL", :observable false}},
+  :modes {:fail true, :off true, :on true},
+  :transitions
+  {:*:fail
+   {:doc "b spontaneous failure",
+    :probability {:default 1.0E-7, :name "pfb", :type :lvar}},
+   :off:on
+   {:doc "turning b on",
+    :post
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}},
+   :on:off
+   {:doc "turning b off",
+    :post
+    {:mode :off,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref},
+    :pre
+    {:mode :on,
+     :mode-ref {:names [this], :type :symbol-ref},
+     :type :mode-ref}}},
+  :type :pclass},
+ c
+ {:args [],
+  :inherit [a b],
+  :transitions
+  {:*:fail
+   {:doc "c spontaneous failure",
+    :probability {:name "pfc", :type :lvar}},
+   :off:on {:doc "turning c on", :post :on, :pre :off},
+   :on:off {:doc "turning c off", :post :off, :pre :on}},
+  :type :pclass},
+ pamela/lvars
+ {:lvars {"pfa" 0.01, "pfb" 1.0E-7, "pfc" :unset}, :type :lvars}}

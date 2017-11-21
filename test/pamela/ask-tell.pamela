@@ -12,41 +12,49 @@
 ;;; views of the Army Contracting Command and DARPA.
 
 ;; Suggested use:
-;; pamela -v -i ask-tell.pamela -o ask-tell -t "(main-no-modes.main)" htn
+;; pamela -v -i ask-tell.pamela -o ask-tell-with-modes -t "(main-with-modes.main)" htn
+;; pamela -v -i ask-tell.pamela -o ask-tell-no-modes -t "(main-no-modes.main)" htn
 
-;; NOTE: Conditions with Modes aren't yet supported
-;; So, use main-no-modes for now.
 (defpclass main-with-modes []
   :modes {:running (= door "open")
           :stopped (= door "closed")}
   :methods [(defpmethod main []
               (parallel
-               (ask (or (and (= door "open") :running)
-                        (and (= door "closed") :stopped))
-                    :bounds [5 30])
-               (foo)
+               (ask-branch)
+               (tell-branch)
                ))
 
-            ;; I would have liked to name this "tell-branch", but Issue #121 prevents this
-            (defpmethod foo []
+            (defpmethod ask-branch []
               (sequence
-               (delay :bounds [6 6])
+               (ask (and (= door "open") :running)
+                    :bounds [5 30])
+               (delayed-gratification)))
+
+            (defpmethod tell-branch []
+              (sequence
+               (delay :bounds [10 10])
                (tell (= door "open"))))
+
+            (defpmethod delayed-gratification [])
             ])
 
 (defpclass main-no-modes []
   :methods [(defpmethod main []
               (parallel
-               ;; Simply wait until the state variable "door" is set
-               (ask (or (= door "open")
-                        (= door "closed"))
-                    :bounds [5 30])
-               (foo)
+               (ask-branch)
+               (tell-branch)
                ))
 
-            ;; I would have liked to name this "tell-branch", but Issue #121 prevents this
-            (defpmethod foo []
+            (defpmethod ask-branch []
               (sequence
-               (delay :bounds [6 6])
+               (ask (= door "open")
+                    :bounds [5 30])
+               (delayed-gratification)))
+
+            (defpmethod tell-branch []
+              (sequence
+               (delay :bounds [10 10])
                (tell (= door "open"))))
+
+            (defpmethod delayed-gratification [])
             ])
