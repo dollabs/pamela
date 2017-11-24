@@ -1,0 +1,83 @@
+{a
+ {:args [],
+  :methods
+  {do-a
+   [{:args [ccc],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :method-arg-ref, :names [ccc do-c]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [ccc],
+     :display-name "Do A",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ c
+ {:args [],
+  :methods
+  {do-c
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Do C",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ demo
+ {:args [],
+  :fields
+  {a1
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass a,
+     :plant-id "000",
+     :plant-part "a-one",
+     :type :pclass-ctor},
+    :observable false},
+   c1
+   {:access :private,
+    :initial
+    {:args [],
+     :pclass c,
+     :plant-id "111",
+     :plant-part "part-1",
+     :type :pclass-ctor},
+    :observable false}},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :field-ref, :names [a1 do-a]},
+         :args [{:type :field-ref, :names [c1]}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass}}

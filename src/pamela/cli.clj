@@ -20,6 +20,7 @@
             [clojure.pprint :as pp :refer [pprint]]
             [me.raynes.fs :as fs]
             [pamela.utils :refer [repl? set-cwd!
+                                  set-dbg-println-level
                                   input-file output-file]]
             [plan-schema.utils :refer [fs-get-path]]
             [pamela.parser :as parser]
@@ -198,6 +199,13 @@
                   level
                   (throw (Exception. (str "\nlog-level must be one of: "
                                        log-levels)))))]
+   ["-d" "--dbg-level LEVEL" "Debugging level"
+    :default "warn"
+    :parse-fn (fn [level]
+                (if (log-levels level)
+                  level
+                  (throw (Exception. (str "\ndbg-level must be one of: "
+                                       log-levels)))))]
    ["-o" "--output OUTPUT" "Output file (or - for STDOUT)"
     :default "-"]
    ["-s" "--source PAMELA" "source as reconstructed from IR"]
@@ -264,10 +272,12 @@
   (let [{:keys [options arguments errors summary]}
         (parse-opts args cli-options)
         {:keys [help version verbose construct-tpn
-                file-format input log-level output root-task
+                file-format input log-level dbg-level output root-task
                 source magic output-magic]} options
         log-level (keyword (or log-level "warn"))
         _ (plog/initialize log-level (apply pr-str args))
+        dbg-level (keyword (or dbg-level "warn"))
+        _ (set-dbg-println-level dbg-level)
         cmd (first arguments)
         action (get actions cmd)
         root-task (if (and root-task
@@ -294,6 +304,7 @@
         (println "version:" (:pamela-version env)))
       (println "verbosity level:" verbose)
       (println "log level:" log-level)
+      (println "debug level:" dbg-level)
       (println "construct-tpn:" construct-tpn)
       (println "file-format:" file-format)
       (println "input:" input)

@@ -23,7 +23,7 @@
             [environ.core :refer [env]]
             [clojure.data.json :as json]
             [camel-snake-kebab.core :as translate]
-            [avenir.utils :refer [str-append]]
+            [avenir.utils :refer [str-append vec-index-of]]
             [clojure.tools.logging :as log]
             [plan-schema.sorting :refer [sort-map sort-mixed-map]]))
 
@@ -144,12 +144,24 @@
   dbg-println-level
   (atom 3))
 
+;;For internal use only.  The order matters.
+(def dbg-println-levels [:fatal :error :warn :info :debug :trace])
+
 (defn set-dbg-println-level
   "Set the level for dbg-println. The highest level, where higher =
   lower severity (max is 6), at which println will be called when
   in :println mode"
   [new-level]
-  (reset! dbg-println-level new-level))
+  (let [new-level (if (keyword? new-level)
+                    (inc (or (vec-index-of dbg-println-levels new-level) 2))
+                    new-level)
+        new-level (if (and (integer? new-level)
+                        (>= new-level 1)
+                        (<= new-level 6))
+                    new-level
+                    3)]
+    (log/info "setting dbg-println-level to" new-level)
+    (reset! dbg-println-level new-level)))
 
 (defn get-dbg-println-level
   "Get the level for dbg-println. The highest level, where higher =
@@ -157,9 +169,6 @@
   in :println mode"
   []
   @dbg-println-level)
-
-;;For internal use only.  The order matters.
-(def dbg-println-levels [:fatal :error :warn :info :debug :trace])
 
 (defmacro dbg-println "Configurable alternative to using println for debugging."
     [level & more]

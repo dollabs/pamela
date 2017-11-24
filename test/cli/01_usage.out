@@ -12,6 +12,7 @@ Options:
   -h, --help                              Print usage
   -i, --input INPUT                ["-"]  Input file(s) (or - for STDIN)
   -l, --log-level LEVEL            warn   Logging level
+  -d, --dbg-level LEVEL            warn   Debugging level
   -o, --output OUTPUT              -      Output file (or - for STDOUT)
   -s, --source PAMELA                     source as reconstructed from IR
   -t, --root-task ROOTTASK                Label for HTN root-task [main]

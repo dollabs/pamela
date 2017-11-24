@@ -1455,12 +1455,27 @@
     (if-not (tpn/default-bounds? bounds)
       bounds)))
 
+;; starting at pca try to find the field reference
+;; on success return the pclass-ctor_ and ancestry for that pclass instance
+(defn resolve-field-ref [f pca]
+  (dbg-println :trace "RFR" f "PCA" pca)
+  (let [[[pci-uid pci-field] & more] pca
+        pci (if pci-uid (get-pclass-instance pci-uid))
+        fpc_ (if pci (get-in pci [:fields f :initial]))
+        rv (if (= :pclass-ctor (:type fpc_))
+             [fpc_ (:ancestry fpc_)]
+             (if-not (empty? more)
+               (resolve-field-ref f more)))]
+    (dbg-println :trace "  RFR rv =>" rv)
+    rv))
+
 ;; The purpose of this function is to resolve method arguments.
 ;; Future versions of this function certainly want to take advantage
 ;; of the new pci/pca infrastructure which should, beyond providing
 ;; direct instance information, facilitate nested field derefencing.
 ;; Currently supports one level of dereferencing.
-(defn resolve-to-plant-instance [ir caller-pclass hem-pclass pargs args subtask_]
+(defn resolve-to-plant-instance [ir caller-pclass hem-pclass pargs args
+                                 subtask_ pca]
   (dbg-println :debug "RTPI caller-pclass" caller-pclass "hem-pclass" hem-pclass)
   (loop [rargs [] a (first args) more (rest args)]
     (if (nil? a)
@@ -1522,15 +1537,19 @@
                      :plant-part plant-part
                      :plant-interface plant-interface))
                  (= :field-ref type)
-                 (let [this-initial_ (get-in ir
+                 (let [[fpc_ fpca] (resolve-field-ref n0 (rest pca))
+                       this-initial_ (get-in ir
                                        [caller-pclass :fields n0 :initial])
                        caller-initial_ (get-in ir
                                          [caller-pclass :fields n0 :initial])
-                       _ (dbg-println :debug "RTPI :field-ref this-initial_"
-                           this-initial_ "caller-initial_" caller-initial_)
+                       _ (dbg-println :debug "RTPI :field-ref fpc_" fpc_
+                           "\n  this-initial_" this-initial_
+                           "\n  caller-initial_" caller-initial_)
                        ;; {:keys [type names]} initial_
                        {:keys [pclass plant-id plant-part plant-interface]}
                        (cond
+                         (= :pclass-ctor (:type fpc_))
+                         fpc_
                          (= :pclass-ctor (:type this-initial_))
                          this-initial_
                          (= :pclass-ctor (:type caller-initial_))
@@ -1558,7 +1577,7 @@
 ;; returns plant details map with keys
 ;;   name display-name plant-id plant-part plant-interface args argvals
 (defn plant-details [ir hem-pclass pargs subtask_ pclass-ctor_ primitive?
-                     method-opts]
+                     method-opts pca]
   (let [method-opts (select-keys method-opts ;; from call site
                       [:label :cost :reward :controllable])
         {:keys [type name arguments ancestry-path]} subtask_
@@ -1586,7 +1605,7 @@
             args (resolve-arguments pargs arguments nil ancestry-path)
             display-args (mapv display-argument args)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
-                   pargs args subtask_)
+                   pargs args subtask_ pca)
             _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
@@ -1661,16 +1680,7 @@
           (and (= type :method-arg-ref) n0)
           (let [mval (get argument-mappings n0)]
             (cond
-              (= :pclass-ctor (:type mval))
-              [mval pca]
-              (= :pclass-arg-ref (:type mval))
-              (let [[n0 n1] (:names mval)
-                    parg (first (filter #(= n0 (:param %)) pargs))]
-                (if (not= :pclass-ctor (:type parg))
-                  (fatal-error "pclass argument"
-                    n0 "is not a pamela class constructor" )
-                  [(dissoc parg :fields) (prepend-pca parg)]))
-              :else
+              (symbol? mval)
               (let [arg (-> mval :names first)
                     _ (dbg-println :debug "N0" n0 "MVAL" mval "ARG" arg)
                     caller-subtask (second ancestry-path)
@@ -1681,7 +1691,37 @@
                         caller-argument-mappings)
                     pc_ (get caller-argument-mappings (or arg mval))]
                 (dbg-println :debug "CALLER result" pc_)
-                [pc_ (prepend-pca pc_)])))
+                (if (not= :pclass-ctor (:type pc_))
+                  (fatal-error "the method call using the argument"
+                    n0 "is not a pamela class constructor" ))
+                [pc_ (prepend-pca pc_)])
+              (not (map? mval))
+              (fatal-error "the method call using argument" n0
+                (str "which evaluates to '" mval
+                  "' (calling the function ") n1
+                ") is not a pamela class constructor")
+              (= :pclass-ctor (:type mval))
+              [mval pca]
+              (= :pclass-arg-ref (:type mval))
+              (let [[n0 n1] (:names mval)
+                    parg (first (filter #(= n0 (:param %)) pargs))]
+                (if (not= :pclass-ctor (:type parg))
+                  (fatal-error "pclass argument"
+                    n0 "is not a pamela class constructor" )
+                  [(dissoc parg :fields) (prepend-pca parg)]))
+              (= :field-ref (:type mval))
+              (let [[fpc_ fpca] (resolve-field-ref
+                                  (-> mval :names first) (rest pca))]
+                (if (not= :pclass-ctor (:type fpc_))
+                  (fatal-error "pclass argument"
+                    n0 "is not a pamela class constructor" ))
+                [fpc_ fpca])
+              :else
+              (fatal-error "the method call using argument" n0
+                (str "which evaluates to '" mval
+                  "' (calling the function ") n1
+                ") is not a pamela class constructor (unexpected type)")
+              ))
           :else
           (fatal-error "RM do not know how to handle method-ref type" type)))
       ;; for built-in conditional expressions or delay there are
@@ -1735,7 +1775,6 @@
         ;; we are "guessing" at the positions of the arg values here:
         args (if (empty? argument-mappings)
                []
-               ;; WAS (vec (to-pamela (vals argument-mappings)))
                (mapv unparse-arg-kv (seq argument-mappings)))
         _ (dbg-println :debug "CHPM 2.2 args" args)
         hem-map (assoc
@@ -1869,7 +1908,7 @@
             _ (dbg-println :debug "Resolved method PCA" pca
                 "\n  pclass-ctor_" pclass-ctor_)
             details_ (plant-details ir hem-pclass pargs subtask_
-                       pclass-ctor_ primitive? method-fn_)
+                       pclass-ctor_ primitive? method-fn_ pca)
             _ (dbg-println :trace "DETAILS_" (with-out-str (pprint details_)))
             {:keys [name display-name args display-args argsmap
                     plant-part plant-id plant-interface
