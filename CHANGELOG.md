@@ -15,6 +15,7 @@ Changes
   - Fixes #111 0-Arg main method not correctly used as the default root task
 * Further handle field-refs as part of the fix for #146
 * Add a command line option to set the dbg-println-level
+* Fixed some complex dereferencing cases for HTN generation.
 
 ### [0.6.2] - 2017-08-28
 

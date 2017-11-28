@@ -555,7 +555,8 @@
   [ir object]
   (let [task object
         methods (find-methods-that-expand-task ir task)]
-    (dbg-println :debug "PHT-TASK" (with-out-str (pprint task)))
+    (dbg-println :trace "PHT-TASK"
+      (with-out-str (pprint (dissoc task :irks :ancestry-path))))
     (binding [*htn-plan-ancestry* (cons task *htn-plan-ancestry*)]
       (doseq [method methods]
         (dbg-println :debug "PHT METHOD" (:name method)
@@ -1457,16 +1458,47 @@
 
 ;; starting at pca try to find the field reference
 ;; on success return the pclass-ctor_ and ancestry for that pclass instance
-(defn resolve-field-ref [f pca]
+(defn resolve-field-ref [ir f pca]
   (dbg-println :trace "RFR" f "PCA" pca)
   (let [[[pci-uid pci-field] & more] pca
         pci (if pci-uid (get-pclass-instance pci-uid))
         fpc_ (if pci (get-in pci [:fields f :initial]))
-        rv (if (= :pclass-ctor (:type fpc_))
+        rv (cond
+             (string? fpc_) ;; handle all literals?
+             [fpc_ pca]
+             (= :pclass-ctor (:type fpc_))
              [fpc_ (:ancestry fpc_)]
-             (if-not (empty? more)
-               (resolve-field-ref f more)))]
-    (dbg-println :trace "  RFR rv =>" rv)
+             (= :pclass-arg-ref (:type fpc_))
+             ;; find first of (:names initial) in formal
+             ;; args and then take that one from actual args
+             ;; (get
+             ;;   (:args pci)
+             ;;   (vec-index-of
+             ;;     (get-in ir [(:pclass pci) :args])
+             ;;     (-> fpc_ :names first)))
+             (let [actual-args (:args pci)
+                   formal-args (get-in ir [(:pclass pci) :args])
+                   formal-arg (-> fpc_ :names first)
+                   actual-arg (get actual-args
+                                (vec-index-of formal-args formal-arg))]
+               (dbg-println :trace "  RFR :pclass-arg-ref PCLASS" (:pclass pci)
+                 "\n    ACTUAL-ARGS" actual-args
+                 "\n    FORMAL-ARGS" formal-args
+                 "\n    FORMAL-ARG" formal-arg
+                 "\n    ACTUAL-ARG" actual-arg)
+               [actual-arg pca])
+             ;; NOTE :field-ref NOT handled here yet
+             :else
+             ;; get initial for types OTHER than pclass-ctor_ from the IR
+             (let [initial (get-in ir [(:pclass pci) :fields f :initial])]
+               (if initial ;; not nil value, e.g. string
+                 [initial pca]
+                 (if-not (empty? more)
+                   (resolve-field-ref ir f more)))))]
+    (dbg-println :trace "  RFR rv =>"
+      (if (map? rv)
+        (dissoc rv :fields)
+        rv))
     rv))
 
 ;; The purpose of this function is to resolve method arguments.
@@ -1476,7 +1508,8 @@
 ;; Currently supports one level of dereferencing.
 (defn resolve-to-plant-instance [ir caller-pclass hem-pclass pargs args
                                  subtask_ pca]
-  (dbg-println :debug "RTPI caller-pclass" caller-pclass "hem-pclass" hem-pclass)
+  (dbg-println :debug "RTPI caller-pclass" caller-pclass "hem-pclass" hem-pclass
+    "PCA" pca)
   (loop [rargs [] a (first args) more (rest args)]
     (if (nil? a)
       rargs
@@ -1485,92 +1518,126 @@
             _ (dbg-println :debug "RTPI A" a)
             ra (cond
                  (= :pclass-arg-ref type)
-                 (let [parg (first (filter #(= n0 (:param %)) pargs))
-                       {:keys [pclass plant-id plant-part plant-interface]}
-                       (if (= :pclass-ctor (:type parg))
-                         parg
-                         (fatal-error "pclass argument"
-                           n0 "is not a pamela class constructor" ))]
-                   (assoc-if a
-                     :pclass pclass
-                     :plant-id plant-id
-                     :plant-part plant-part
-                     :plant-interface plant-interface))
+                 (let [parg (first (filter #(= n0 (:param %)) pargs))]
+                   (if (= :pclass-ctor (:type parg))
+                     (assoc-if a
+                       :pclass (:pclass parg)
+                       :plant-id (:plant-id parg)
+                       :plant-part (:plant-part parg)
+                       :plant-interface (:plant-interface parg))
+                     a))
                  (= :method-arg-ref type)
                  (let [{:keys [ancestry-path]} subtask_
                        hem (get-htn-object (first ancestry-path))
                        {:keys [argument-mappings]} hem
                        mval (get argument-mappings n0)
-                       {:keys [pclass plant-id plant-part plant-interface]}
-                       (cond
-                         (= :pclass-ctor (:type mval))
-                         mval
-                         (= :pclass-arg-ref (:type mval))
-                         (let [[n0 n1] (:names mval)
-                               parg (first (filter #(= n0 (:param %)) pargs))
-                               {:keys [pclass plant-id plant-part plant-interface]}
-                               (if (= :pclass-ctor (:type parg))
-                                 parg
-                                 (fatal-error "pclass argument"
-                                   n0 "is not a pamela class constructor" ))]
+                       _ (dbg-println :debug "  RTPI :method-arg-ref N0"
+                           n0 "-> mval" mval "N1" n1)]
+                   (cond
+                     (= :pclass-ctor (:type mval))
+                     (assoc-if a
+                       :pclass (:pclass mval)
+                       :plant-id (:plant-id mval)
+                       :plant-part (:plant-part mval)
+                       :plant-interface (:plant-interface mval))
+                     (= :pclass-arg-ref (:type mval))
+                     (let [[n0 n1] (:names mval)
+                           parg (first (filter #(= n0 (:param %)) pargs))]
+                       (if (= :pclass-ctor (:type parg))
+                         (assoc-if a
+                           :pclass (:pclass parg)
+                           :plant-id (:plant-id parg)
+                           :plant-part (:plant-part parg)
+                           :plant-interface (:plant-interface parg))
+                         a))
+                     (= :field-ref (:type mval))
+                     (let [arg (-> mval :names first)
+                           _ (dbg-println :debug "  RTPI MARG" n0
+                               "MVAL" mval "ARG" arg)
+                           ;; caller-subtask (second ancestry-path)
+                           ;; caller-ancestry-path (:ancestry-path
+                           ;;                       caller-subtask)
+                           ;; caller-hem (get-htn-object
+                           ;;              (first caller-ancestry-path))
+                           ;; caller-argument-mappings (:argument-mappings
+                           ;;                           caller-hem)
+                           ;; aval (get caller-argument-mappings (or arg mval))
+                           [aval _] (resolve-field-ref ir arg (rest pca))
+                           _ (dbg-println :debug "  AVAL"
+                               (if (map? aval)
+                                 (dissoc aval :fields)
+                                 aval))]
+                       (if (= :pclass-ctor (:type aval))
+                         (if n1 ;; dereference
+                           (let [initial
+                                 (get-in ir
+                                   [(:pclass aval) :fields n1 :initial])]
+                             (dbg-println :debug "    INITIAL" initial)
+                             (cond
+                               (= :pclass-arg-ref (:type initial))
+                               ;; find first of (:names initial) in formal
+                               ;; args and then take that one from actual args
+                               (get
+                                 (:args aval)
+                                 (vec-index-of
+                                   (get-in ir [(:pclass aval) :args])
+                                   (-> initial :names first)))
+                               :else ;; NOT handled yet :field-ref
+                               initial))
                            (assoc-if a
-                             :pclass pclass
-                             :plant-id plant-id
-                             :plant-part plant-part
-                             :plant-interface plant-interface))
-                         :else
-                         (let [arg (-> mval :names first)
-                               _ (dbg-println :debug "RTPI MARG" n0
-                                   "MVAL" mval "ARG" arg)
-                               caller-subtask (second ancestry-path)
-                               caller-ancestry-path (:ancestry-path
-                                                     caller-subtask)
-                               caller-hem (get-htn-object
-                                            (first caller-ancestry-path))
-                               caller-argument-mappings (:argument-mappings
-                                                         caller-hem)
-                               pc_ (get caller-argument-mappings (or arg mval))]
-                           pc_))]
-                   (assoc-if a
-                     :pclass pclass
-                     :plant-id plant-id
-                     :plant-part plant-part
-                     :plant-interface plant-interface))
+                             :pclass (:pclass aval)
+                             :plant-id (:plant-id aval)
+                             :plant-part (:plant-part aval)
+                             :plant-interface (:plant-interface aval)))
+                         a))
+                     :else
+                     mval))
                  (= :field-ref type)
-                 (let [[fpc_ fpca] (resolve-field-ref n0 (rest pca))
+                 (let [[fpc_ fpca] (resolve-field-ref ir n0 pca)
                        this-initial_ (get-in ir
                                        [caller-pclass :fields n0 :initial])
                        caller-initial_ (get-in ir
                                          [caller-pclass :fields n0 :initial])
                        _ (dbg-println :debug "RTPI :field-ref fpc_" fpc_
                            "\n  this-initial_" this-initial_
-                           "\n  caller-initial_" caller-initial_)
-                       ;; {:keys [type names]} initial_
-                       {:keys [pclass plant-id plant-part plant-interface]}
-                       (cond
-                         (= :pclass-ctor (:type fpc_))
-                         fpc_
-                         (= :pclass-ctor (:type this-initial_))
-                         this-initial_
-                         (= :pclass-ctor (:type caller-initial_))
-                         caller-initial_
-                         (= :pclass-arg-ref (:type this-initial_))
-                         (let [param (-> this-initial_ :names first)
-                               parg (first (filter #(= param (:param %)) pargs))]
-                           (if (= :pclass-ctor (:type parg))
-                             parg
-                             (fatal-error "pclass argument" param
-                               "is not a pamela class constructor" )))
-                         :else
-                         (fatal-error
-                           "RTPI not implemented yet: non :pclass-ctor field-ref"))]
-                   (assoc-if a
-                     :pclass pclass
-                     :plant-id plant-id
-                     :plant-part plant-part
-                     :plant-interface plant-interface))
+                           "\n  caller-initial_" caller-initial_)]
+                   (cond
+                     (= :pclass-ctor (:type fpc_))
+                     (assoc-if a
+                       :pclass (:pclass fpc_)
+                       :plant-id (:plant-id fpc_)
+                       :plant-part (:plant-part fpc_)
+                       :plant-interface (:plant-interface fpc_))
+                     fpc_
+                     fpc_
+                     (= :pclass-ctor (:type this-initial_))
+                     (assoc-if a
+                       :pclass (:pclass this-initial_)
+                       :plant-id (:plant-id this-initial_)
+                       :plant-part (:plant-part this-initial_)
+                       :plant-interface (:plant-interface this-initial_))
+                     (= :pclass-ctor (:type caller-initial_))
+                     (assoc-if a
+                       :pclass (:pclass caller-initial_)
+                       :plant-id (:plant-id caller-initial_)
+                       :plant-part (:plant-part caller-initial_)
+                       :plant-interface (:plant-interface caller-initial_))
+                     (= :pclass-arg-ref (:type this-initial_))
+                     (let [param (-> this-initial_ :names first)
+                           parg (first (filter #(= param (:param %)) pargs))]
+                       (if (= :pclass-ctor (:type parg))
+                         (assoc-if a
+                           :pclass (:pclass parg)
+                           :plant-id (:plant-id parg)
+                           :plant-part (:plant-part parg)
+                           :plant-interface (:plant-interface parg))
+                         parg))
+                     :else
+                     (fatal-error
+                       "RTPI not implemented yet: non :pclass-ctor field-ref")))
                  :else
                  a)
+            _ (dbg-println :debug "  RTPI RA =>" ra)
             rargs (conj rargs ra)]
         (recur rargs (first more) (rest more))))))
 
@@ -1600,12 +1667,12 @@
       "caller-pclass" caller-pclass)
     (if (or (not primitive?) (= name 'delay))
       details_
-      (let [arguments (or arguments [])
-            _ (dbg-println :trace "PD args before" arguments)
-            args (resolve-arguments pargs arguments nil ancestry-path)
-            display-args (mapv display-argument args)
+      (let [args (or arguments [])
+            _ (dbg-println :trace "PD args before" args)
+            args (resolve-arguments pargs args nil ancestry-path)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
                    pargs args subtask_ pca)
+            display-args (mapv display-argument args)
             _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
@@ -1653,7 +1720,7 @@
 
 ;; given the method function
 ;; return the apropos [pclass-ctor_ pca]
-(defn resolve-method [method-fn_ pca pci argument-mappings pargs
+(defn resolve-method [ir method-fn_ pca pci argument-mappings pargs
                       ancestry-path]
   (dbg-println :debug "method-fn_ (w/o body)" (dissoc method-fn_ :body))
   (let [m-type (:type method-fn_)]
@@ -1710,7 +1777,7 @@
                     n0 "is not a pamela class constructor" )
                   [(dissoc parg :fields) (prepend-pca parg)]))
               (= :field-ref (:type mval))
-              (let [[fpc_ fpca] (resolve-field-ref
+              (let [[fpc_ fpca] (resolve-field-ref ir
                                   (-> mval :names first) (rest pca))]
                 (if (not= :pclass-ctor (:type fpc_))
                   (fatal-error "pclass argument"
@@ -1903,7 +1970,7 @@
                                (pprint
                                  (dissoc subtask_
                                    :ancestry-path :task-expansions))))
-            [pclass-ctor_ pca] (resolve-method method-fn_ pca pci
+            [pclass-ctor_ pca] (resolve-method ir method-fn_ pca pci
                                  argument-mappings pargs ancestry-path)
             _ (dbg-println :debug "Resolved method PCA" pca
                 "\n  pclass-ctor_" pclass-ctor_)
