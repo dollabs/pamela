@@ -1,40 +1,40 @@
-{:hedge-17 {:end-node :hem-11, :type :edge, :uid :hedge-17},
- :hedge-19 {:end-node :hem-13, :type :edge, :uid :hedge-19},
- :hedge-21 {:end-node :hem-15, :type :edge, :uid :hedge-21},
- :hem-11
+{:hedge-18 {:end-node :hem-12, :type :edge, :uid :hedge-18},
+ :hedge-20 {:end-node :hem-14, :type :edge, :uid :hedge-20},
+ :hedge-22 {:end-node :hem-16, :type :edge, :uid :hedge-22},
+ :hem-12
  {:args [],
   :display-args [],
   :display-name "Main-0",
   :edges [],
-  :incidence-set #{:hedge-17},
-  :network :net-18,
+  :incidence-set #{:hedge-18},
+  :network :net-19,
   :type :htn-expanded-method,
-  :uid :hem-11},
- :hem-13
+  :uid :hem-12},
+ :hem-14
  {:args [],
   :display-args [],
   :display-name "Main-1",
   :edges [],
-  :incidence-set #{:hedge-19},
-  :network :net-20,
+  :incidence-set #{:hedge-20},
+  :network :net-21,
   :type :htn-expanded-method,
-  :uid :hem-13},
- :hem-15
+  :uid :hem-14},
+ :hem-16
  {:args [],
   :display-args [],
   :display-name "Main-2",
   :edges [],
-  :incidence-set #{:hedge-21},
-  :network :net-22,
+  :incidence-set #{:hedge-22},
+  :network :net-23,
   :type :htn-expanded-method,
-  :uid :hem-15},
- :henpt-9
+  :uid :hem-16},
+ :henpt-10
  {:display-name "choice-feasible",
-  :edges [:hedge-17 :hedge-19 :hedge-21],
+  :edges [:hedge-18 :hedge-20 :hedge-22],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-9},
- :hpt-10
+  :uid :henpt-10},
+ :hpt-11
  {:args [],
   :argsmap {},
   :display-args [],
@@ -43,8 +43,8 @@
   :incidence-set #{},
   :name "option",
   :type :htn-primitive-task,
-  :uid :hpt-10},
- :hpt-12
+  :uid :hpt-11},
+ :hpt-13
  {:args [],
   :argsmap {},
   :display-args [],
@@ -53,8 +53,8 @@
   :incidence-set #{},
   :name "option",
   :type :htn-primitive-task,
-  :uid :hpt-12},
- :hpt-14
+  :uid :hpt-13},
+ :hpt-15
  {:args [],
   :argsmap {},
   :display-args [],
@@ -63,25 +63,25 @@
   :incidence-set #{},
   :name "option",
   :type :htn-primitive-task,
-  :uid :hpt-14},
- :net-16
+  :uid :hpt-15},
+ :net-17
  {:display-name "choice-feasible",
-  :rootnodes #{:henpt-9},
+  :rootnodes #{:henpt-10},
   :type :htn-network,
-  :uid :net-16},
- :net-18
+  :uid :net-17},
+ :net-19
  {:display-name "Main-0",
-  :rootnodes #{:hpt-10},
+  :rootnodes #{:hpt-11},
   :type :htn-network,
-  :uid :net-18},
- :net-20
+  :uid :net-19},
+ :net-21
  {:display-name "Main-1",
-  :rootnodes #{:hpt-12},
+  :rootnodes #{:hpt-13},
   :type :htn-network,
-  :uid :net-20},
- :net-22
+  :uid :net-21},
+ :net-23
  {:display-name "Main-2",
-  :rootnodes #{:hpt-14},
+  :rootnodes #{:hpt-15},
   :type :htn-network,
-  :uid :net-22},
- :network :net-16}
+  :uid :net-23},
+ :network :net-17}

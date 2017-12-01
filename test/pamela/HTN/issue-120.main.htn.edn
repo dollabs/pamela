@@ -1,191 +1,191 @@
-{:hedge-68 {:end-node :hem-39, :type :edge, :uid :hedge-68},
- :hedge-70
- {:display-name "1", :end-node :hem-44, :type :edge, :uid :hedge-70},
- :hedge-72
+{:hedge-69 {:end-node :hem-40, :type :edge, :uid :hedge-69},
+ :hedge-71
+ {:display-name "1", :end-node :hem-45, :type :edge, :uid :hedge-71},
+ :hedge-73
  {:display-name "1",
   :edge-type :choice,
-  :end-node :hem-47,
+  :end-node :hem-48,
   :type :edge,
-  :uid :hedge-72},
- :hedge-74
+  :uid :hedge-73},
+ :hedge-75
  {:display-name "1",
   :edge-type :choice,
-  :end-node :hem-49,
+  :end-node :hem-50,
   :type :edge,
-  :uid :hedge-74},
- :hedge-76
+  :uid :hedge-75},
+ :hedge-77
  {:display-name "1",
   :edge-type :choice,
-  :end-node :hem-51,
+  :end-node :hem-52,
   :type :edge,
-  :uid :hedge-76},
- :hedge-78 {:end-node :henpt-41, :type :edge, :uid :hedge-78},
- :hedge-79
+  :uid :hedge-77},
+ :hedge-79 {:end-node :henpt-42, :type :edge, :uid :hedge-79},
+ :hedge-80
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-53,
+  :end-node :hem-54,
   :type :edge,
-  :uid :hedge-79},
- :hedge-81
+  :uid :hedge-80},
+ :hedge-82
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-55,
+  :end-node :hem-56,
   :type :edge,
-  :uid :hedge-81},
- :hedge-83
+  :uid :hedge-82},
+ :hedge-84
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-57,
+  :end-node :hem-58,
   :type :edge,
-  :uid :hedge-83},
- :hedge-85 {:end-node :henpt-42, :type :edge, :uid :hedge-85},
- :hedge-86
- {:display-name "3", :end-node :hem-61, :type :edge, :uid :hedge-86},
- :hedge-88 {:end-node :henpt-43, :type :edge, :uid :hedge-88},
- :hedge-89
- {:display-name "4", :end-node :hem-65, :type :edge, :uid :hedge-89},
- :hedge-91 {:end-node :hpt-63, :type :edge, :uid :hedge-91},
+  :uid :hedge-84},
+ :hedge-86 {:end-node :henpt-43, :type :edge, :uid :hedge-86},
+ :hedge-87
+ {:display-name "3", :end-node :hem-62, :type :edge, :uid :hedge-87},
+ :hedge-89 {:end-node :henpt-44, :type :edge, :uid :hedge-89},
+ :hedge-90
+ {:display-name "4", :end-node :hem-66, :type :edge, :uid :hedge-90},
  :hedge-92 {:end-node :hpt-64, :type :edge, :uid :hedge-92},
- :hem-39
+ :hedge-93 {:end-node :hpt-65, :type :edge, :uid :hedge-93},
+ :hem-40
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-70],
-  :incidence-set #{:hedge-68},
-  :network :net-69,
+  :edges [:hedge-71],
+  :incidence-set #{:hedge-69},
+  :network :net-70,
   :type :htn-expanded-method,
-  :uid :hem-39},
- :hem-44
+  :uid :hem-40},
+ :hem-45
  {:args [],
   :display-args [],
   :display-name "Top Level",
   :edges
-  [:hedge-72
-   :hedge-74
-   :hedge-76
-   :hedge-79
-   :hedge-81
-   :hedge-83
-   :hedge-86
-   :hedge-89],
+  [:hedge-73
+   :hedge-75
+   :hedge-77
+   :hedge-80
+   :hedge-82
+   :hedge-84
+   :hedge-87
+   :hedge-90],
   :incidence-set #{},
-  :network :net-71,
+  :network :net-72,
   :type :htn-expanded-method,
-  :uid :hem-44},
- :hem-47
+  :uid :hem-45},
+ :hem-48
  {:args [],
   :display-args [],
   :display-name "Ex Choose 1-0",
   :edges [],
   :incidence-set #{},
-  :network :net-73,
+  :network :net-74,
   :type :htn-expanded-method,
-  :uid :hem-47},
- :hem-49
+  :uid :hem-48},
+ :hem-50
  {:args [],
   :display-args [],
   :display-name "Ex Choose 1-1",
   :edges [],
   :incidence-set #{},
-  :network :net-75,
+  :network :net-76,
   :type :htn-expanded-method,
-  :uid :hem-49},
- :hem-51
+  :uid :hem-50},
+ :hem-52
  {:args [],
   :display-args [],
   :display-name "Ex Choose 1-2",
   :edges [],
   :incidence-set #{},
-  :network :net-77,
+  :network :net-78,
   :type :htn-expanded-method,
-  :uid :hem-51},
- :hem-53
+  :uid :hem-52},
+ :hem-54
  {:args [],
   :display-args [],
   :display-name "Ex Choose 2-0",
   :edges [],
   :incidence-set #{},
-  :network :net-80,
+  :network :net-81,
   :type :htn-expanded-method,
-  :uid :hem-53},
- :hem-55
+  :uid :hem-54},
+ :hem-56
  {:args [],
   :display-args [],
   :display-name "Ex Choose 2-1",
   :edges [],
   :incidence-set #{},
-  :network :net-82,
+  :network :net-83,
   :type :htn-expanded-method,
-  :uid :hem-55},
- :hem-57
+  :uid :hem-56},
+ :hem-58
  {:args [],
   :display-args [],
   :display-name "Ex Choose 2-2",
   :edges [],
   :incidence-set #{},
-  :network :net-84,
+  :network :net-85,
   :type :htn-expanded-method,
-  :uid :hem-57},
- :hem-61
+  :uid :hem-58},
+ :hem-62
  {:args [],
   :display-args [],
   :display-name "Ex Parallel",
   :edges [],
   :incidence-set #{},
-  :network :net-87,
+  :network :net-88,
   :type :htn-expanded-method,
-  :uid :hem-61},
- :hem-65
+  :uid :hem-62},
+ :hem-66
  {:args [],
   :display-args [],
   :display-name "Ex Sequence",
   :edges [],
   :incidence-set #{},
-  :network :net-90,
+  :network :net-91,
   :type :htn-expanded-method,
-  :uid :hem-65},
- :henpt-37
+  :uid :hem-66},
+ :henpt-38
  {:display-name "issue-120",
-  :edges [:hedge-68],
+  :edges [:hedge-69],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-37},
- :henpt-38
+  :uid :henpt-38},
+ :henpt-39
  {:display-name "Top Level",
   :edges [],
   :incidence-set #{},
   :name "top-level",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-38},
- :henpt-40
+  :uid :henpt-39},
+ :henpt-41
  {:display-name "Ex Choose 1",
-  :edges [:hedge-78],
+  :edges [:hedge-79],
   :incidence-set #{},
   :name "ex-choose-1",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-40},
- :henpt-41
- {:display-name "Ex Choose 2",
-  :edges [:hedge-85],
-  :incidence-set #{:hedge-78},
-  :name "ex-choose-2",
-  :type :htn-expanded-nonprimitive-task,
   :uid :henpt-41},
  :henpt-42
- {:display-name "Ex Parallel",
-  :edges [:hedge-88],
-  :incidence-set #{:hedge-85},
-  :name "ex-parallel",
+ {:display-name "Ex Choose 2",
+  :edges [:hedge-86],
+  :incidence-set #{:hedge-79},
+  :name "ex-choose-2",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-42},
  :henpt-43
- {:display-name "Ex Sequence",
-  :edges [],
-  :incidence-set #{:hedge-88},
-  :name "ex-sequence",
+ {:display-name "Ex Parallel",
+  :edges [:hedge-89],
+  :incidence-set #{:hedge-86},
+  :name "ex-parallel",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-43},
- :hpt-46
+ :henpt-44
+ {:display-name "Ex Sequence",
+  :edges [],
+  :incidence-set #{:hedge-89},
+  :name "ex-sequence",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-44},
+ :hpt-47
  {:args [],
   :argsmap {},
   :display-args [],
@@ -194,8 +194,8 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-46},
- :hpt-48
+  :uid :hpt-47},
+ :hpt-49
  {:args [],
   :argsmap {},
   :display-args [],
@@ -204,8 +204,8 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-48},
- :hpt-50
+  :uid :hpt-49},
+ :hpt-51
  {:args [],
   :argsmap {},
   :display-args [],
@@ -214,8 +214,8 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-50},
- :hpt-52
+  :uid :hpt-51},
+ :hpt-53
  {:args [],
   :argsmap {},
   :display-args [],
@@ -224,8 +224,8 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-52},
- :hpt-54
+  :uid :hpt-53},
+ :hpt-55
  {:args [],
   :argsmap {},
   :display-args [],
@@ -234,8 +234,8 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-54},
- :hpt-56
+  :uid :hpt-55},
+ :hpt-57
  {:args [],
   :argsmap {},
   :display-args [],
@@ -244,17 +244,7 @@
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-56},
- :hpt-58
- {:args [],
-  :argsmap {},
-  :display-args [],
-  :display-name "Action",
-  :edges [],
-  :incidence-set #{},
-  :name "action",
-  :type :htn-primitive-task,
-  :uid :hpt-58},
+  :uid :hpt-57},
  :hpt-59
  {:args [],
   :argsmap {},
@@ -275,23 +265,23 @@
   :name "action",
   :type :htn-primitive-task,
   :uid :hpt-60},
- :hpt-62
+ :hpt-61
  {:args [],
   :argsmap {},
   :display-args [],
   :display-name "Action",
-  :edges [:hedge-91],
+  :edges [],
   :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
-  :uid :hpt-62},
+  :uid :hpt-61},
  :hpt-63
  {:args [],
   :argsmap {},
   :display-args [],
   :display-name "Action",
   :edges [:hedge-92],
-  :incidence-set #{:hedge-91},
+  :incidence-set #{},
   :name "action",
   :type :htn-primitive-task,
   :uid :hpt-63},
@@ -300,64 +290,74 @@
   :argsmap {},
   :display-args [],
   :display-name "Action",
-  :edges [],
+  :edges [:hedge-93],
   :incidence-set #{:hedge-92},
   :name "action",
   :type :htn-primitive-task,
   :uid :hpt-64},
- :net-67
+ :hpt-65
+ {:args [],
+  :argsmap {},
+  :display-args [],
+  :display-name "Action",
+  :edges [],
+  :incidence-set #{:hedge-93},
+  :name "action",
+  :type :htn-primitive-task,
+  :uid :hpt-65},
+ :net-68
  {:display-name "issue-120",
-  :rootnodes #{:henpt-37},
-  :type :htn-network,
-  :uid :net-67},
- :net-69
- {:display-name "Main",
   :rootnodes #{:henpt-38},
   :type :htn-network,
-  :uid :net-69},
- :net-71
+  :uid :net-68},
+ :net-70
+ {:display-name "Main",
+  :rootnodes #{:henpt-39},
+  :type :htn-network,
+  :uid :net-70},
+ :net-72
  {:display-name "Top Level",
-  :rootnodes #{:henpt-40},
+  :rootnodes #{:henpt-41},
   :type :htn-network,
-  :uid :net-71},
- :net-73
+  :uid :net-72},
+ :net-74
  {:display-name "Ex Choose 1-0",
-  :rootnodes #{:hpt-46},
+  :rootnodes #{:hpt-47},
   :type :htn-network,
-  :uid :net-73},
- :net-75
+  :uid :net-74},
+ :net-76
  {:display-name "Ex Choose 1-1",
-  :rootnodes #{:hpt-48},
+  :rootnodes #{:hpt-49},
   :type :htn-network,
-  :uid :net-75},
- :net-77
+  :uid :net-76},
+ :net-78
  {:display-name "Ex Choose 1-2",
-  :rootnodes #{:hpt-50},
+  :rootnodes #{:hpt-51},
   :type :htn-network,
-  :uid :net-77},
- :net-80
+  :uid :net-78},
+ :net-81
  {:display-name "Ex Choose 2-0",
-  :rootnodes #{:hpt-52},
+  :rootnodes #{:hpt-53},
   :type :htn-network,
-  :uid :net-80},
- :net-82
+  :uid :net-81},
+ :net-83
  {:display-name "Ex Choose 2-1",
-  :rootnodes #{:hpt-54},
+  :rootnodes #{:hpt-55},
   :type :htn-network,
-  :uid :net-82},
- :net-84
+  :uid :net-83},
+ :net-85
  {:display-name "Ex Choose 2-2",
-  :rootnodes #{:hpt-56},
+  :rootnodes #{:hpt-57},
   :type :htn-network,
-  :uid :net-84},
- :net-87
+  :uid :net-85},
+ :net-88
  {:display-name "Ex Parallel",
-  :rootnodes #{:hpt-58 :hpt-60 :hpt-59},
+  :rootnodes #{:hpt-61 :hpt-60 :hpt-59},
   :type :htn-network,
-  :uid :net-87},
- :net-90
+  :uid :net-88},
+ :net-91
  {:display-name "Ex Sequence",
-  :rootnodes #{:hpt-62},
+  :rootnodes #{:hpt-63},
   :type :htn-network,
-  :uid :net-90},
- :network :net-67}
+  :uid :net-91},
+ :network :net-68}

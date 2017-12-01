@@ -8,7 +8,7 @@
   :display-args ["A"],
   :display-name "Aquire",
   :end-node :node-1,
-  :htn-node :hem-8,
+  :htn-node :hem-10,
   :name "Aquire(\"A\")",
   :plant-id "Camera 1",
   :reward 6,
@@ -30,7 +30,7 @@
  {:activities #{:act-5},
   :constraints #{},
   :end-node :node-1,
-  :htn-node :hem-8,
+  :htn-node :hem-10,
   :incidence-set #{},
   :tpn-type :state,
   :uid :node-6}}

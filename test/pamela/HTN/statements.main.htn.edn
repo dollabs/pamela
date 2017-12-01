@@ -1,43 +1,43 @@
-{:hedge-26 {:end-node :hem-16, :type :edge, :uid :hedge-26},
- :hedge-28
- {:display-name "1", :end-node :hem-23, :type :edge, :uid :hedge-28},
- :hedge-30 {:end-node :hpt-18, :type :edge, :uid :hedge-30},
- :hedge-31 {:end-node :hpt-19, :type :edge, :uid :hedge-31},
+{:hedge-28 {:end-node :hem-18, :type :edge, :uid :hedge-28},
+ :hedge-30
+ {:display-name "1", :end-node :hem-25, :type :edge, :uid :hedge-30},
  :hedge-32 {:end-node :hpt-20, :type :edge, :uid :hedge-32},
  :hedge-33 {:end-node :hpt-21, :type :edge, :uid :hedge-33},
  :hedge-34 {:end-node :hpt-22, :type :edge, :uid :hedge-34},
- :hem-16
+ :hedge-35 {:end-node :hpt-23, :type :edge, :uid :hedge-35},
+ :hedge-36 {:end-node :hpt-24, :type :edge, :uid :hedge-36},
+ :hem-18
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-28],
-  :incidence-set #{:hedge-26},
-  :network :net-27,
+  :edges [:hedge-30],
+  :incidence-set #{:hedge-28},
+  :network :net-29,
   :type :htn-expanded-method,
-  :uid :hem-16},
- :hem-23
+  :uid :hem-18},
+ :hem-25
  {:args [],
   :display-args [],
   :display-name "Test Of Various Statements",
   :edges [],
   :incidence-set #{},
-  :network :net-29,
+  :network :net-31,
   :type :htn-expanded-method,
-  :uid :hem-23},
- :henpt-14
+  :uid :hem-25},
+ :henpt-16
  {:display-name "main",
-  :edges [:hedge-26],
+  :edges [:hedge-28],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-14},
- :henpt-15
+  :uid :henpt-16},
+ :henpt-17
  {:display-name "Test Of Various Statements",
   :edges [],
   :incidence-set #{},
   :name "test-of-various-statements",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-15},
- :hpt-17
+  :uid :henpt-17},
+ :hpt-19
  {:args
   [{:type :field-ref, :names [field1 simple2], :pclass simple-pclass}],
   :argsmap
@@ -45,12 +45,12 @@
    {:names [field1 simple2], :pclass simple-pclass, :type :field-ref}},
   :display-args [field1.simple2],
   :display-name "One Arg Method",
-  :edges [:hedge-30],
+  :edges [:hedge-32],
   :incidence-set #{},
   :name "one-arg-method",
   :type :htn-primitive-task,
-  :uid :hpt-17},
- :hpt-18
+  :uid :hpt-19},
+ :hpt-20
  {:args
   [{:type :equal,
     :args [{:type :state-variable, :name foo} :illuminated]}],
@@ -60,13 +60,13 @@
     :type :equal}},
   :display-args [(= foo :illuminated)],
   :display-name "Assert",
-  :edges [:hedge-31],
-  :incidence-set #{:hedge-30},
+  :edges [:hedge-33],
+  :incidence-set #{:hedge-32},
   :name "assert",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-18},
- :hpt-19
+  :uid :hpt-20},
+ :hpt-21
  {:args
   [{:type :equal, :args [{:type :state-variable, :name bar} :dead]}],
   :argsmap
@@ -74,13 +74,13 @@
    {:args [{:type :state-variable, :name bar} :dead], :type :equal}},
   :display-args [(= bar :dead)],
   :display-name "Ask",
-  :edges [:hedge-32],
-  :incidence-set #{:hedge-31},
+  :edges [:hedge-34],
+  :incidence-set #{:hedge-33},
   :name "ask",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-19},
- :hpt-20
+  :uid :hpt-21},
+ :hpt-22
  {:args
   [{:type :equal,
     :args [{:type :field-ref, :names [field1 simple2]} "white"]}],
@@ -90,13 +90,13 @@
     :type :equal}},
   :display-args [(= field1.simple2 "white")],
   :display-name "Ask",
-  :edges [:hedge-33],
-  :incidence-set #{:hedge-32},
+  :edges [:hedge-35],
+  :incidence-set #{:hedge-34},
   :name "ask",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-20},
- :hpt-21
+  :uid :hpt-22},
+ :hpt-23
  {:args
   [{:type :equal, :args [{:type :state-variable, :name door} :open]}],
   :argsmap
@@ -104,35 +104,35 @@
    {:args [{:type :state-variable, :name door} :open], :type :equal}},
   :display-args [(= door :open)],
   :display-name "Tell",
-  :edges [:hedge-34],
-  :incidence-set #{:hedge-33},
+  :edges [:hedge-36],
+  :incidence-set #{:hedge-35},
   :name "tell",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-21},
- :hpt-22
+  :uid :hpt-23},
+ :hpt-24
  {:args [],
   :argsmap {},
   :display-args [],
   :display-name "Initialize",
   :edges [],
-  :incidence-set #{:hedge-34},
+  :incidence-set #{:hedge-36},
   :name "initialize",
   :type :htn-primitive-task,
-  :uid :hpt-22},
- :net-25
- {:display-name "main",
-  :rootnodes #{:henpt-14},
-  :type :htn-network,
-  :uid :net-25},
+  :uid :hpt-24},
  :net-27
- {:display-name "Main",
-  :rootnodes #{:henpt-15},
+ {:display-name "main",
+  :rootnodes #{:henpt-16},
   :type :htn-network,
   :uid :net-27},
  :net-29
- {:display-name "Test Of Various Statements",
-  :rootnodes #{:hpt-17},
+ {:display-name "Main",
+  :rootnodes #{:henpt-17},
   :type :htn-network,
   :uid :net-29},
- :network :net-25}
+ :net-31
+ {:display-name "Test Of Various Statements",
+  :rootnodes #{:hpt-19},
+  :type :htn-network,
+  :uid :net-31},
+ :network :net-27}

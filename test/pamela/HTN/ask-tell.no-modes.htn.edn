@@ -1,56 +1,56 @@
-{:hedge-43 {:end-node :hem-33, :type :edge, :uid :hedge-43},
- :hedge-45 {:end-node :hem-36, :type :edge, :uid :hedge-45},
- :hedge-47 {:end-node :hpt-35, :type :edge, :uid :hedge-47},
- :hedge-48 {:end-node :hem-40, :type :edge, :uid :hedge-48},
- :hedge-50 {:end-node :hpt-39, :type :edge, :uid :hedge-50},
- :hem-33
+{:hedge-44 {:end-node :hem-34, :type :edge, :uid :hedge-44},
+ :hedge-46 {:end-node :hem-37, :type :edge, :uid :hedge-46},
+ :hedge-48 {:end-node :hpt-36, :type :edge, :uid :hedge-48},
+ :hedge-49 {:end-node :hem-41, :type :edge, :uid :hedge-49},
+ :hedge-51 {:end-node :hpt-40, :type :edge, :uid :hedge-51},
+ :hem-34
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-45 :hedge-48],
-  :incidence-set #{:hedge-43},
-  :network :net-44,
+  :edges [:hedge-46 :hedge-49],
+  :incidence-set #{:hedge-44},
+  :network :net-45,
   :type :htn-expanded-method,
-  :uid :hem-33},
- :hem-36
+  :uid :hem-34},
+ :hem-37
  {:args [],
   :display-args [],
   :display-name "Ask Branch",
   :edges [],
   :incidence-set #{},
-  :network :net-46,
+  :network :net-47,
   :type :htn-expanded-method,
-  :uid :hem-36},
- :hem-40
+  :uid :hem-37},
+ :hem-41
  {:args [],
   :display-args [],
   :display-name "Tell Branch",
   :edges [],
   :incidence-set #{},
-  :network :net-49,
+  :network :net-50,
   :type :htn-expanded-method,
-  :uid :hem-40},
- :henpt-30
+  :uid :hem-41},
+ :henpt-31
  {:display-name "main-no-modes",
-  :edges [:hedge-43],
+  :edges [:hedge-44],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-30},
- :henpt-31
+  :uid :henpt-31},
+ :henpt-32
  {:display-name "Ask Branch",
   :edges [],
   :incidence-set #{},
   :name "ask-branch",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-31},
- :henpt-32
+  :uid :henpt-32},
+ :henpt-33
  {:display-name "Tell Branch",
   :edges [],
   :incidence-set #{},
   :name "tell-branch",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-32},
- :hpt-34
+  :uid :henpt-33},
+ :hpt-35
  {:args
   [{:type :equal, :args [{:type :state-variable, :name door} "open"]}],
   :argsmap
@@ -58,30 +58,30 @@
    {:args [{:type :state-variable, :name door} "open"], :type :equal}},
   :display-args [(= door "open")],
   :display-name "Ask",
-  :edges [:hedge-47],
+  :edges [:hedge-48],
   :incidence-set #{},
   :name "ask",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-34},
- :hpt-35
+  :uid :hpt-35},
+ :hpt-36
  {:args [],
   :argsmap {},
   :display-args [],
   :display-name "Delayed Gratification",
   :edges [],
-  :incidence-set #{:hedge-47},
+  :incidence-set #{:hedge-48},
   :name "delayed-gratification",
   :type :htn-primitive-task,
-  :uid :hpt-35},
- :hpt-38
+  :uid :hpt-36},
+ :hpt-39
  {:display-name "Delay",
-  :edges [:hedge-50],
+  :edges [:hedge-51],
   :incidence-set #{},
   :name "delay",
   :type :htn-primitive-task,
-  :uid :hpt-38},
- :hpt-39
+  :uid :hpt-39},
+ :hpt-40
  {:args
   [{:type :equal, :args [{:type :state-variable, :name door} "open"]}],
   :argsmap
@@ -90,29 +90,29 @@
   :display-args [(= door "open")],
   :display-name "Tell",
   :edges [],
-  :incidence-set #{:hedge-50},
+  :incidence-set #{:hedge-51},
   :name "tell",
   :plant-id "bsm1",
   :type :htn-primitive-task,
-  :uid :hpt-39},
- :net-42
+  :uid :hpt-40},
+ :net-43
  {:display-name "main-no-modes",
-  :rootnodes #{:henpt-30},
+  :rootnodes #{:henpt-31},
   :type :htn-network,
-  :uid :net-42},
- :net-44
+  :uid :net-43},
+ :net-45
  {:display-name "Main",
-  :rootnodes #{:henpt-32 :henpt-31},
+  :rootnodes #{:henpt-32 :henpt-33},
   :type :htn-network,
-  :uid :net-44},
- :net-46
+  :uid :net-45},
+ :net-47
  {:display-name "Ask Branch",
-  :rootnodes #{:hpt-34},
+  :rootnodes #{:hpt-35},
   :type :htn-network,
-  :uid :net-46},
- :net-49
+  :uid :net-47},
+ :net-50
  {:display-name "Tell Branch",
-  :rootnodes #{:hpt-38},
+  :rootnodes #{:hpt-39},
   :type :htn-network,
-  :uid :net-49},
- :network :net-42}
+  :uid :net-50},
+ :network :net-43}

@@ -1,207 +1,207 @@
-{:hedge-125 {:end-node :hem-30, :type :edge, :uid :hedge-125},
- :hedge-127
- {:display-name "1", :end-node :hem-36, :type :edge, :uid :hedge-127},
- :hedge-129
- {:display-name "1", :end-node :hem-47, :type :edge, :uid :hedge-129},
- :hedge-131 {:end-node :henpt-33, :type :edge, :uid :hedge-131},
- :hedge-132
- {:display-name "2", :end-node :hem-57, :type :edge, :uid :hedge-132},
- :hedge-134 {:end-node :henpt-34, :type :edge, :uid :hedge-134},
- :hedge-135
- {:display-name "3", :end-node :hem-67, :type :edge, :uid :hedge-135},
- :hedge-137 {:end-node :henpt-35, :type :edge, :uid :hedge-137},
- :hedge-138
- {:display-name "4", :end-node :hem-77, :type :edge, :uid :hedge-138},
- :hedge-140 {:end-node :hpt-28, :type :edge, :uid :hedge-140},
- :hedge-141 {:end-node :henpt-29, :type :edge, :uid :hedge-141},
- :hedge-142
- {:display-name "3", :end-node :hem-82, :type :edge, :uid :hedge-142},
- :hedge-144
- {:display-name "1", :end-node :hem-93, :type :edge, :uid :hedge-144},
- :hedge-146 {:end-node :henpt-79, :type :edge, :uid :hedge-146},
- :hedge-147
- {:display-name "2", :end-node :hem-103, :type :edge, :uid :hedge-147},
- :hedge-149 {:end-node :henpt-80, :type :edge, :uid :hedge-149},
- :hedge-150
- {:display-name "3", :end-node :hem-113, :type :edge, :uid :hedge-150},
- :hedge-152 {:end-node :henpt-81, :type :edge, :uid :hedge-152},
- :hedge-153
- {:display-name "4", :end-node :hem-123, :type :edge, :uid :hedge-153},
- :hem-103
+{:hedge-126 {:end-node :hem-31, :type :edge, :uid :hedge-126},
+ :hedge-128
+ {:display-name "1", :end-node :hem-37, :type :edge, :uid :hedge-128},
+ :hedge-130
+ {:display-name "1", :end-node :hem-48, :type :edge, :uid :hedge-130},
+ :hedge-132 {:end-node :henpt-34, :type :edge, :uid :hedge-132},
+ :hedge-133
+ {:display-name "2", :end-node :hem-58, :type :edge, :uid :hedge-133},
+ :hedge-135 {:end-node :henpt-35, :type :edge, :uid :hedge-135},
+ :hedge-136
+ {:display-name "3", :end-node :hem-68, :type :edge, :uid :hedge-136},
+ :hedge-138 {:end-node :henpt-36, :type :edge, :uid :hedge-138},
+ :hedge-139
+ {:display-name "4", :end-node :hem-78, :type :edge, :uid :hedge-139},
+ :hedge-141 {:end-node :hpt-29, :type :edge, :uid :hedge-141},
+ :hedge-142 {:end-node :henpt-30, :type :edge, :uid :hedge-142},
+ :hedge-143
+ {:display-name "3", :end-node :hem-83, :type :edge, :uid :hedge-143},
+ :hedge-145
+ {:display-name "1", :end-node :hem-94, :type :edge, :uid :hedge-145},
+ :hedge-147 {:end-node :henpt-80, :type :edge, :uid :hedge-147},
+ :hedge-148
+ {:display-name "2", :end-node :hem-104, :type :edge, :uid :hedge-148},
+ :hedge-150 {:end-node :henpt-81, :type :edge, :uid :hedge-150},
+ :hedge-151
+ {:display-name "3", :end-node :hem-114, :type :edge, :uid :hedge-151},
+ :hedge-153 {:end-node :henpt-82, :type :edge, :uid :hedge-153},
+ :hedge-154
+ {:display-name "4", :end-node :hem-124, :type :edge, :uid :hedge-154},
+ :hem-104
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-148,
+  :network :net-149,
   :type :htn-expanded-method,
-  :uid :hem-103},
- :hem-113
+  :uid :hem-104},
+ :hem-114
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-151,
+  :network :net-152,
   :type :htn-expanded-method,
-  :uid :hem-113},
- :hem-123
+  :uid :hem-114},
+ :hem-124
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-154,
+  :network :net-155,
   :type :htn-expanded-method,
-  :uid :hem-123},
- :hem-30
+  :uid :hem-124},
+ :hem-31
  {:args [],
   :display-args [],
   :display-name "Main",
-  :edges [:hedge-127 :hedge-142],
-  :incidence-set #{:hedge-125},
-  :network :net-126,
+  :edges [:hedge-128 :hedge-143],
+  :incidence-set #{:hedge-126},
+  :network :net-127,
   :type :htn-expanded-method,
-  :uid :hem-30},
- :hem-36
+  :uid :hem-31},
+ :hem-37
  {:args [],
   :display-args [],
   :display-name "Perform Activities",
-  :edges [:hedge-129 :hedge-132 :hedge-135 :hedge-138],
+  :edges [:hedge-130 :hedge-133 :hedge-136 :hedge-139],
   :incidence-set #{},
-  :network :net-128,
+  :network :net-129,
   :type :htn-expanded-method,
-  :uid :hem-36},
- :hem-47
+  :uid :hem-37},
+ :hem-48
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-130,
+  :network :net-131,
   :type :htn-expanded-method,
-  :uid :hem-47},
- :hem-57
+  :uid :hem-48},
+ :hem-58
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-133,
+  :network :net-134,
   :type :htn-expanded-method,
-  :uid :hem-57},
- :hem-67
+  :uid :hem-58},
+ :hem-68
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-136,
+  :network :net-137,
   :type :htn-expanded-method,
-  :uid :hem-67},
- :hem-77
+  :uid :hem-68},
+ :hem-78
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-139,
+  :network :net-140,
   :type :htn-expanded-method,
-  :uid :hem-77},
- :hem-82
+  :uid :hem-78},
+ :hem-83
  {:args [],
   :display-args [],
   :display-name "Perform Activities",
-  :edges [:hedge-144 :hedge-147 :hedge-150 :hedge-153],
+  :edges [:hedge-145 :hedge-148 :hedge-151 :hedge-154],
   :incidence-set #{},
-  :network :net-143,
+  :network :net-144,
   :type :htn-expanded-method,
-  :uid :hem-82},
- :hem-93
+  :uid :hem-83},
+ :hem-94
  {:args [],
   :display-args [],
   :display-name "Perform 15 Minutes Of Activities",
   :edges [],
   :incidence-set #{},
-  :network :net-145,
+  :network :net-146,
   :type :htn-expanded-method,
-  :uid :hem-93},
- :henpt-26
- {:display-name "test",
-  :edges [:hedge-125],
-  :incidence-set #{},
-  :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-26},
+  :uid :hem-94},
  :henpt-27
- {:display-name "Perform Activities",
-  :edges [:hedge-140],
+ {:display-name "test",
+  :edges [:hedge-126],
   :incidence-set #{},
-  :name "perform-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-27},
- :henpt-29
+ :henpt-28
  {:display-name "Perform Activities",
-  :edges [],
-  :incidence-set #{:hedge-141},
+  :edges [:hedge-141],
+  :incidence-set #{},
   :name "perform-activities",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-29},
- :henpt-32
- {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-131],
-  :incidence-set #{},
-  :name "perform-15-minutes-of-activities",
+  :uid :henpt-28},
+ :henpt-30
+ {:display-name "Perform Activities",
+  :edges [],
+  :incidence-set #{:hedge-142},
+  :name "perform-activities",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-32},
+  :uid :henpt-30},
  :henpt-33
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-134],
-  :incidence-set #{:hedge-131},
+  :edges [:hedge-132],
+  :incidence-set #{},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-33},
  :henpt-34
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-137],
-  :incidence-set #{:hedge-134},
+  :edges [:hedge-135],
+  :incidence-set #{:hedge-132},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-34},
  :henpt-35
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [],
-  :incidence-set #{:hedge-137},
+  :edges [:hedge-138],
+  :incidence-set #{:hedge-135},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-35},
- :henpt-78
+ :henpt-36
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-146],
-  :incidence-set #{},
+  :edges [],
+  :incidence-set #{:hedge-138},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-78},
+  :uid :henpt-36},
  :henpt-79
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-149],
-  :incidence-set #{:hedge-146},
+  :edges [:hedge-147],
+  :incidence-set #{},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-79},
  :henpt-80
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [:hedge-152],
-  :incidence-set #{:hedge-149},
+  :edges [:hedge-150],
+  :incidence-set #{:hedge-147},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-80},
  :henpt-81
  {:display-name "Perform 15 Minutes Of Activities",
-  :edges [],
-  :incidence-set #{:hedge-152},
+  :edges [:hedge-153],
+  :incidence-set #{:hedge-150},
   :name "perform-15-minutes-of-activities",
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-81},
+ :henpt-82
+ {:display-name "Perform 15 Minutes Of Activities",
+  :edges [],
+  :incidence-set #{:hedge-153},
+  :name "perform-15-minutes-of-activities",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-82},
  :hpt-100
  {:args [],
   :argsmap {},
@@ -232,7 +232,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-102},
- :hpt-104
+ :hpt-103
  {:args [],
   :argsmap {},
   :display-args [],
@@ -241,7 +241,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-104},
+  :uid :hpt-103},
  :hpt-105
  {:args [],
   :argsmap {},
@@ -322,7 +322,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-112},
- :hpt-114
+ :hpt-113
  {:args [],
   :argsmap {},
   :display-args [],
@@ -331,7 +331,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-114},
+  :uid :hpt-113},
  :hpt-115
  {:args [],
   :argsmap {},
@@ -412,14 +412,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-122},
- :hpt-28
- {:display-name "Delay",
-  :edges [:hedge-141],
-  :incidence-set #{:hedge-140},
-  :name "delay",
-  :type :htn-primitive-task,
-  :uid :hpt-28},
- :hpt-38
+ :hpt-123
  {:args [],
   :argsmap {},
   :display-args [],
@@ -428,7 +421,14 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-38},
+  :uid :hpt-123},
+ :hpt-29
+ {:display-name "Delay",
+  :edges [:hedge-142],
+  :incidence-set #{:hedge-141},
+  :name "delay",
+  :type :htn-primitive-task,
+  :uid :hpt-29},
  :hpt-39
  {:args [],
   :argsmap {},
@@ -509,7 +509,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-46},
- :hpt-48
+ :hpt-47
  {:args [],
   :argsmap {},
   :display-args [],
@@ -518,7 +518,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-48},
+  :uid :hpt-47},
  :hpt-49
  {:args [],
   :argsmap {},
@@ -599,7 +599,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-56},
- :hpt-58
+ :hpt-57
  {:args [],
   :argsmap {},
   :display-args [],
@@ -608,7 +608,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-58},
+  :uid :hpt-57},
  :hpt-59
  {:args [],
   :argsmap {},
@@ -689,7 +689,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-66},
- :hpt-68
+ :hpt-67
  {:args [],
   :argsmap {},
   :display-args [],
@@ -698,7 +698,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-68},
+  :uid :hpt-67},
  :hpt-69
  {:args [],
   :argsmap {},
@@ -779,7 +779,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-76},
- :hpt-84
+ :hpt-77
  {:args [],
   :argsmap {},
   :display-args [],
@@ -788,7 +788,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-84},
+  :uid :hpt-77},
  :hpt-85
  {:args [],
   :argsmap {},
@@ -869,7 +869,7 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-92},
- :hpt-94
+ :hpt-93
  {:args [],
   :argsmap {},
   :display-args [],
@@ -878,7 +878,7 @@
   :incidence-set #{},
   :name "something-simple",
   :type :htn-primitive-task,
-  :uid :hpt-94},
+  :uid :hpt-93},
  :hpt-95
  {:args [],
   :argsmap {},
@@ -929,80 +929,80 @@
   :name "something-simple",
   :type :htn-primitive-task,
   :uid :hpt-99},
- :net-124
+ :net-125
  {:display-name "test",
-  :rootnodes #{:henpt-26},
-  :type :htn-network,
-  :uid :net-124},
- :net-126
- {:display-name "Main",
   :rootnodes #{:henpt-27},
   :type :htn-network,
-  :uid :net-126},
- :net-128
- {:display-name "Perform Activities",
-  :rootnodes #{:henpt-32},
+  :uid :net-125},
+ :net-127
+ {:display-name "Main",
+  :rootnodes #{:henpt-28},
   :type :htn-network,
-  :uid :net-128},
- :net-130
+  :uid :net-127},
+ :net-129
+ {:display-name "Perform Activities",
+  :rootnodes #{:henpt-33},
+  :type :htn-network,
+  :uid :net-129},
+ :net-131
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-44 :hpt-38 :hpt-46 :hpt-39 :hpt-42 :hpt-43 :hpt-40 :hpt-45
+  #{:hpt-44 :hpt-46 :hpt-39 :hpt-47 :hpt-42 :hpt-43 :hpt-40 :hpt-45
     :hpt-41},
   :type :htn-network,
-  :uid :net-130},
- :net-133
+  :uid :net-131},
+ :net-134
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-54 :hpt-49 :hpt-53 :hpt-50 :hpt-51 :hpt-48 :hpt-55 :hpt-56
-    :hpt-52},
+  #{:hpt-54 :hpt-49 :hpt-53 :hpt-50 :hpt-51 :hpt-55 :hpt-56 :hpt-52
+    :hpt-57},
   :type :htn-network,
-  :uid :net-133},
- :net-136
+  :uid :net-134},
+ :net-137
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-66 :hpt-61 :hpt-58 :hpt-62 :hpt-63 :hpt-65 :hpt-60 :hpt-59
+  #{:hpt-66 :hpt-67 :hpt-61 :hpt-62 :hpt-63 :hpt-65 :hpt-60 :hpt-59
     :hpt-64},
   :type :htn-network,
-  :uid :net-136},
- :net-139
+  :uid :net-137},
+ :net-140
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
   #{:hpt-69 :hpt-70 :hpt-71 :hpt-75 :hpt-76 :hpt-73 :hpt-72 :hpt-74
-    :hpt-68},
+    :hpt-77},
   :type :htn-network,
-  :uid :net-139},
- :net-143
+  :uid :net-140},
+ :net-144
  {:display-name "Perform Activities",
-  :rootnodes #{:henpt-78},
+  :rootnodes #{:henpt-79},
   :type :htn-network,
-  :uid :net-143},
- :net-145
+  :uid :net-144},
+ :net-146
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
   #{:hpt-85 :hpt-91 :hpt-89 :hpt-88 :hpt-87 :hpt-86 :hpt-90 :hpt-92
-    :hpt-84},
+    :hpt-93},
   :type :htn-network,
-  :uid :net-145},
- :net-148
+  :uid :net-146},
+ :net-149
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-102 :hpt-96 :hpt-95 :hpt-99 :hpt-97 :hpt-98 :hpt-101 :hpt-100
-    :hpt-94},
+  #{:hpt-102 :hpt-96 :hpt-95 :hpt-99 :hpt-103 :hpt-97 :hpt-98 :hpt-101
+    :hpt-100},
   :type :htn-network,
-  :uid :net-148},
- :net-151
+  :uid :net-149},
+ :net-152
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-105 :hpt-104 :hpt-112 :hpt-108 :hpt-106 :hpt-111 :hpt-110
+  #{:hpt-105 :hpt-112 :hpt-108 :hpt-106 :hpt-111 :hpt-113 :hpt-110
     :hpt-109 :hpt-107},
   :type :htn-network,
-  :uid :net-151},
- :net-154
+  :uid :net-152},
+ :net-155
  {:display-name "Perform 15 Minutes Of Activities",
   :rootnodes
-  #{:hpt-118 :hpt-116 :hpt-114 :hpt-115 :hpt-119 :hpt-121 :hpt-122
+  #{:hpt-118 :hpt-116 :hpt-115 :hpt-119 :hpt-121 :hpt-122 :hpt-123
     :hpt-120 :hpt-117},
   :type :htn-network,
-  :uid :net-154},
- :network :net-124}
+  :uid :net-155},
+ :network :net-125}

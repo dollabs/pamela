@@ -1,126 +1,126 @@
-{:hedge-55 {:end-node :hem-37, :type :edge, :uid :hedge-55},
- :hedge-57 {:end-node :hem-40, :type :edge, :uid :hedge-57},
- :hedge-59
- {:display-name "1", :end-node :hem-43, :type :edge, :uid :hedge-59},
- :hedge-61 {:end-node :henpt-39, :type :edge, :uid :hedge-61},
+{:hedge-58 {:end-node :hem-40, :type :edge, :uid :hedge-58},
+ :hedge-60 {:end-node :hem-43, :type :edge, :uid :hedge-60},
  :hedge-62
+ {:display-name "1", :end-node :hem-46, :type :edge, :uid :hedge-62},
+ :hedge-64 {:end-node :henpt-42, :type :edge, :uid :hedge-64},
+ :hedge-65
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-45,
+  :end-node :hem-48,
   :type :edge,
-  :uid :hedge-62},
- :hedge-64
+  :uid :hedge-65},
+ :hedge-67
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-47,
+  :end-node :hem-50,
   :type :edge,
-  :uid :hedge-64},
- :hedge-66
+  :uid :hedge-67},
+ :hedge-69
  {:display-name "2",
   :edge-type :choice,
-  :end-node :hem-49,
+  :end-node :hem-52,
   :type :edge,
-  :uid :hedge-66},
- :hedge-68 {:end-node :hem-52, :type :edge, :uid :hedge-68},
- :hedge-70 {:end-node :hpt-51, :type :edge, :uid :hedge-70},
- :hem-37
+  :uid :hedge-69},
+ :hedge-71 {:end-node :hem-55, :type :edge, :uid :hedge-71},
+ :hedge-73 {:end-node :hpt-54, :type :edge, :uid :hedge-73},
+ :hem-40
  {:args ["A" "B"],
   :display-args ["A" "B"],
   :display-name "Get Data And Interpret",
-  :edges [:hedge-57 :hedge-68],
-  :incidence-set #{:hedge-55},
-  :network :net-56,
-  :type :htn-expanded-method,
-  :uid :hem-37},
- :hem-40
- {:args ["A"],
-  :display-args ["A"],
-  :display-name "Evidence And Interpret",
-  :edges [:hedge-59 :hedge-62 :hedge-64 :hedge-66],
-  :incidence-set #{},
-  :network :net-58,
+  :edges [:hedge-60 :hedge-71],
+  :incidence-set #{:hedge-58},
+  :network :net-59,
   :type :htn-expanded-method,
   :uid :hem-40},
  :hem-43
  {:args ["A"],
   :display-args ["A"],
+  :display-name "Evidence And Interpret",
+  :edges [:hedge-62 :hedge-65 :hedge-67 :hedge-69],
+  :incidence-set #{},
+  :network :net-61,
+  :type :htn-expanded-method,
+  :uid :hem-43},
+ :hem-46
+ {:args ["A"],
+  :display-args ["A"],
   :display-name "Evidence",
   :edges [],
   :incidence-set #{},
-  :network :net-60,
+  :network :net-63,
   :type :htn-expanded-method,
-  :uid :hem-43},
- :hem-45
+  :uid :hem-46},
+ :hem-48
  {:args ["A"],
   :display-args ["A"],
   :display-name "Interpret-0",
   :edges [],
   :incidence-set #{},
-  :network :net-63,
+  :network :net-66,
   :type :htn-expanded-method,
-  :uid :hem-45},
- :hem-47
+  :uid :hem-48},
+ :hem-50
  {:args ["A"],
   :display-args ["A"],
   :display-name "Interpret-1",
   :edges [],
   :incidence-set #{},
-  :network :net-65,
+  :network :net-68,
   :type :htn-expanded-method,
-  :uid :hem-47},
- :hem-49
+  :uid :hem-50},
+ :hem-52
  {:args ["A"],
   :display-args ["A"],
   :display-name "Interpret-2",
   :edges [],
   :incidence-set #{},
-  :network :net-67,
+  :network :net-70,
   :type :htn-expanded-method,
-  :uid :hem-49},
- :hem-52
+  :uid :hem-52},
+ :hem-55
  {:args ["B"],
   :display-args ["B"],
   :display-name "Get Data At",
   :edges [],
   :incidence-set #{},
-  :network :net-69,
+  :network :net-72,
   :type :htn-expanded-method,
-  :uid :hem-52},
- :henpt-34
+  :uid :hem-55},
+ :henpt-37
  {:display-name "isr-htn",
-  :edges [:hedge-55],
+  :edges [:hedge-58],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-34},
- :henpt-35
+  :uid :henpt-37},
+ :henpt-38
  {:display-name "Evidence And Interpret",
   :edges [],
   :incidence-set #{},
   :name "evidence-and-interpret",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-35},
- :henpt-36
+  :uid :henpt-38},
+ :henpt-39
  {:display-name "Get Data At",
   :edges [],
   :incidence-set #{},
   :name "get-data-at",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-36},
- :henpt-38
+  :uid :henpt-39},
+ :henpt-41
  {:display-name "Evidence",
-  :edges [:hedge-61],
+  :edges [:hedge-64],
   :incidence-set #{},
   :name "evidence",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-38},
- :henpt-39
+  :uid :henpt-41},
+ :henpt-42
  {:display-name "Interpret",
   :edges [],
-  :incidence-set #{:hedge-61},
+  :incidence-set #{:hedge-64},
   :name "interpret",
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-39},
- :hpt-42
+  :uid :henpt-42},
+ :hpt-45
  {:args ["A"],
   :argsmap {"location" "A"},
   :display-args ["A"],
@@ -132,8 +132,8 @@
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-42},
- :hpt-44
+  :uid :hpt-45},
+ :hpt-47
  {:args ["A"],
   :argsmap {"location" "A"},
   :display-args ["A"],
@@ -145,8 +145,8 @@
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-44},
- :hpt-46
+  :uid :hpt-47},
+ :hpt-49
  {:args ["A"],
   :argsmap {"location" "A"},
   :display-args ["A"],
@@ -158,8 +158,8 @@
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-46},
- :hpt-48
+  :uid :hpt-49},
+ :hpt-51
  {:args ["A"],
   :argsmap {"location" "A"},
   :display-args ["A"],
@@ -171,71 +171,71 @@
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-48},
- :hpt-50
+  :uid :hpt-51},
+ :hpt-53
  {:args ["B"],
   :argsmap {"location" "B"},
   :display-args ["B"],
   :display-name "Go To",
-  :edges [:hedge-70],
+  :edges [:hedge-73],
   :incidence-set #{},
   :name "go-to",
   :plant-id "sensor1",
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-50},
- :hpt-51
+  :uid :hpt-53},
+ :hpt-54
  {:args ["B"],
   :argsmap {"location" "B"},
   :display-args ["B"],
   :display-name "Capture",
   :edges [],
-  :incidence-set #{:hedge-70},
+  :incidence-set #{:hedge-73},
   :name "capture",
   :plant-id "sensor1",
   :plant-interface "RMQ",
   :plant-part "isr1",
   :type :htn-primitive-task,
-  :uid :hpt-51},
- :net-54
+  :uid :hpt-54},
+ :net-57
  {:display-name "isr-htn",
-  :rootnodes #{:henpt-34},
+  :rootnodes #{:henpt-37},
   :type :htn-network,
-  :uid :net-54},
- :net-56
+  :uid :net-57},
+ :net-59
  {:display-name "Get Data And Interpret",
-  :rootnodes #{:henpt-35 :henpt-36},
+  :rootnodes #{:henpt-38 :henpt-39},
   :type :htn-network,
-  :uid :net-56},
- :net-58
+  :uid :net-59},
+ :net-61
  {:display-name "Evidence And Interpret",
-  :rootnodes #{:henpt-38},
+  :rootnodes #{:henpt-41},
   :type :htn-network,
-  :uid :net-58},
- :net-60
- {:display-name "Evidence",
-  :rootnodes #{:hpt-42},
-  :type :htn-network,
-  :uid :net-60},
+  :uid :net-61},
  :net-63
- {:display-name "Interpret-0",
-  :rootnodes #{:hpt-44},
+ {:display-name "Evidence",
+  :rootnodes #{:hpt-45},
   :type :htn-network,
   :uid :net-63},
- :net-65
+ :net-66
+ {:display-name "Interpret-0",
+  :rootnodes #{:hpt-47},
+  :type :htn-network,
+  :uid :net-66},
+ :net-68
  {:display-name "Interpret-1",
-  :rootnodes #{:hpt-46},
+  :rootnodes #{:hpt-49},
   :type :htn-network,
-  :uid :net-65},
- :net-67
+  :uid :net-68},
+ :net-70
  {:display-name "Interpret-2",
-  :rootnodes #{:hpt-48},
+  :rootnodes #{:hpt-51},
   :type :htn-network,
-  :uid :net-67},
- :net-69
+  :uid :net-70},
+ :net-72
  {:display-name "Get Data At",
-  :rootnodes #{:hpt-50},
+  :rootnodes #{:hpt-53},
   :type :htn-network,
-  :uid :net-69},
- :network :net-54}
+  :uid :net-72},
+ :network :net-57}

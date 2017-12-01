@@ -104,23 +104,29 @@
 (defmethod unparse-field-type :method-arg-ref [field-type]
   (unparse-symbol-ref field-type))
 
-(declare  unparse-argvals)
+(declare unparse-argvals)
+(declare unparse-cond-expr)
 
 (defmethod unparse-field-type :pclass-ctor [field-type]
   (let [{:keys [pclass args plant-id plant-interface plant-part]} field-type
         pclass-ctor '()
         pclass-ctor (if plant-part
-                      (cons :plant-part (cons plant-part pclass-ctor))
+                      (cons :plant-part
+                        (cons
+                          (unparse-cond-expr plant-part)
+                          pclass-ctor))
                       pclass-ctor)
         pclass-ctor (if plant-interface
-                      ;; future
-                      ;; (cons :plant-interface (cons plant-interface pclass-ctor))
-                      (cons :interface (cons plant-interface pclass-ctor))
+                      (cons :interface
+                        (cons
+                          (unparse-cond-expr plant-interface)
+                          pclass-ctor))
                       pclass-ctor)
         pclass-ctor (if plant-id
-                      ;; future
-                      ;; (cons :plant-id (cons plant-id pclass-ctor))
-                      (cons :id (cons plant-id pclass-ctor))
+                      (cons :id
+                        (cons
+                          (unparse-cond-expr plant-id)
+                          pclass-ctor))
                       pclass-ctor)
         pclass-ctor (if (empty? args)
                       (cons pclass pclass-ctor)

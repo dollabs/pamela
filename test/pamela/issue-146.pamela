@@ -1,0 +1,41 @@
+;; Copyright © 2017 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+;; Acknowledgement and Disclaimer:
+;; This material is based upon work supported by the Army Contracting
+;; and DARPA under contract No. W911NF-15-C-0005.
+;; Any opinions, findings and conclusions or recommendations expressed
+;; in this material are those of the author(s) and do necessarily reflect the
+;; views of the Army Contracting Command and DARPA.
+
+;; This is an example for Issue #146
+
+(defpclass c []
+  :methods [(defpmethod do-c [])])
+
+(defpclass b [id]
+  :fields {c1 (c :id id :plant-part "part-1")
+           c2 (c :id id :plant-part "part-2")}
+  :methods [(defpmethod do-b []
+              (sequence
+                (c1.do-c)
+                (c2.do-c)))])
+
+(defpclass a [id1 id2]
+  :fields {b1 (b id1 :id id1 :plant-part "b-one")
+           b2 (b id2 :id id2 :plant-part "b-two")}
+  :methods [(defpmethod do-a []
+              (sequence
+                (b1.do-b)
+                (b2.do-b)))])
+
+;; root-task (demo.main)
+(defpclass demo []
+  :fields {a1 (a "111" "222" :id "000" :plant-part "a-one")}
+  :methods [(defpmethod main []
+              (sequence
+               (a1.do-a)))
+            ])

@@ -1,0 +1,17 @@
+(defpclass c []
+  :methods [(defpmethod do-c [])])
+
+(defpclass a []
+  :methods [(defpmethod do-a [ccc]
+              (sequence
+                (ccc.do-c))
+              )])
+
+;; root-task (demo.main)
+(defpclass demo []
+  :fields {a1 (a :id "000" :plant-part "a-one")
+           c1 (c :id "111" :plant-part "part-1")}
+  :methods [(defpmethod main []
+              (sequence
+               (a1.do-a c1)))
+            ])

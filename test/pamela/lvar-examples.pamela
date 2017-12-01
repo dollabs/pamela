@@ -28,5 +28,5 @@
                 (choice :bounds (lvar "med-res-bounds" [3 6])
                   (take-medium-res-images))))])
 
-(defpclass example [camera]
+(defpclass example []
   :fields {imager (camera)})

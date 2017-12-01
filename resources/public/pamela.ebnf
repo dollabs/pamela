@@ -122,9 +122,9 @@ pclass-ctor-arg = ( string | number | pclass-arg-keyword | boolean | symbol-ref 
 pclass-ctor-option = ( id | plant-part | interface )
 pclass-arg-keyword = !reserved-pclass-ctor-keyword keyword
 reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> | <PLANT_PART> ) stop-token
-id = <ID> string
-plant-part = <PLANT_PART> string
-interface = <INTERFACE> string
+id = <ID> argval
+plant-part = <PLANT_PART> argval
+interface = <INTERFACE> argval
 
 bounds = bounds-literal | lvar-ctor
 bounds-literal = <LB> number ( number | INFINITY ) <RB>

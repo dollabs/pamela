@@ -1,33 +1,26 @@
-{:hedge-17 {:end-node :hem-14, :type :edge, :uid :hedge-17},
- :hedge-19 {:end-node :hpt-11, :type :edge, :uid :hedge-19},
+{:hedge-18 {:end-node :hem-15, :type :edge, :uid :hedge-18},
  :hedge-20 {:end-node :hpt-12, :type :edge, :uid :hedge-20},
  :hedge-21 {:end-node :hpt-13, :type :edge, :uid :hedge-21},
- :hem-14
+ :hedge-22 {:end-node :hpt-14, :type :edge, :uid :hedge-22},
+ :hem-15
  {:args [],
   :display-args [],
   :display-name "Example",
   :edges [],
-  :incidence-set #{:hedge-17},
-  :network :net-18,
+  :incidence-set #{:hedge-18},
+  :network :net-19,
   :type :htn-expanded-method,
-  :uid :hem-14},
- :henpt-9
+  :uid :hem-15},
+ :henpt-10
  {:display-name "sequence-bounds",
-  :edges [:hedge-17],
+  :edges [:hedge-18],
   :incidence-set #{},
   :type :htn-expanded-nonprimitive-task,
-  :uid :henpt-9},
- :hpt-10
- {:display-name "Delay",
-  :edges [:hedge-19],
-  :incidence-set #{},
-  :name "delay",
-  :type :htn-primitive-task,
-  :uid :hpt-10},
+  :uid :henpt-10},
  :hpt-11
  {:display-name "Delay",
   :edges [:hedge-20],
-  :incidence-set #{:hedge-19},
+  :incidence-set #{},
   :name "delay",
   :type :htn-primitive-task,
   :uid :hpt-11},
@@ -40,19 +33,26 @@
   :uid :hpt-12},
  :hpt-13
  {:display-name "Delay",
-  :edges [],
+  :edges [:hedge-22],
   :incidence-set #{:hedge-21},
   :name "delay",
   :type :htn-primitive-task,
   :uid :hpt-13},
- :net-16
+ :hpt-14
+ {:display-name "Delay",
+  :edges [],
+  :incidence-set #{:hedge-22},
+  :name "delay",
+  :type :htn-primitive-task,
+  :uid :hpt-14},
+ :net-17
  {:display-name "sequence-bounds",
-  :rootnodes #{:henpt-9},
+  :rootnodes #{:henpt-10},
   :type :htn-network,
-  :uid :net-16},
- :net-18
+  :uid :net-17},
+ :net-19
  {:display-name "Example",
-  :rootnodes #{:hpt-10},
+  :rootnodes #{:hpt-11},
   :type :htn-network,
-  :uid :net-18},
- :network :net-16}
+  :uid :net-19},
+ :network :net-17}
