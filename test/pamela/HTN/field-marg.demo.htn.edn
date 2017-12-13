@@ -26,7 +26,27 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-13},
  :henpt-14
- {:display-name "Do A",
+ {:args
+  [{:type :pclass-ctor,
+    :uid :pclass-3,
+    :pclass c,
+    :args [],
+    :plant-id "111",
+    :plant-part "part-1",
+    :fields {},
+    :ancestry [[:pclass-1 c1]]}],
+  :argsmap
+  {"ccc"
+   {:ancestry [[:pclass-1 c1]],
+    :args [],
+    :fields {},
+    :pclass c,
+    :plant-id "111",
+    :plant-part "part-1",
+    :type :pclass-ctor,
+    :uid :pclass-3}},
+  :display-args [(nil)],
+  :display-name "Do A",
   :edges [],
   :incidence-set #{},
   :name "do-a",

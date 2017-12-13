@@ -1562,7 +1562,7 @@
                            ;; caller-argument-mappings (:argument-mappings
                            ;;                           caller-hem)
                            ;; aval (get caller-argument-mappings (or arg mval))
-                           [aval _] (resolve-field-ref ir arg (rest pca))
+                           [aval _] (resolve-field-ref ir arg (vec (rest pca)))
                            _ (dbg-println :debug "  AVAL"
                                (if (map? aval)
                                  (dissoc aval :fields)
@@ -1602,12 +1602,6 @@
                            "\n  this-initial_" this-initial_
                            "\n  caller-initial_" caller-initial_)]
                    (cond
-                     (= :pclass-ctor (:type fpc_))
-                     (assoc-if a
-                       :pclass (:pclass fpc_)
-                       :plant-id (:plant-id fpc_)
-                       :plant-part (:plant-part fpc_)
-                       :plant-interface (:plant-interface fpc_))
                      fpc_
                      fpc_
                      (= :pclass-ctor (:type this-initial_))
@@ -1665,9 +1659,9 @@
     (dbg-println :trace "PD primitive?" primitive?
       "ancestry-path" (print-ancestry-path ancestry-path)
       "caller-pclass" caller-pclass)
-    (if (or (not primitive?) (= name 'delay))
+    (if (= name 'delay)
       details_
-      (let [args (or arguments [])
+      (let [args (or arguments []) ;; now resolve args for non primitive?
             _ (dbg-println :trace "PD args before" args)
             args (resolve-arguments pargs args nil ancestry-path)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
@@ -1718,11 +1712,18 @@
   (let [{:keys [uid ancestry]} pclass-ctor_]
     (vec (conj (seq ancestry) [uid])))) ;; prepend
 
+;; if we call a method in this class we NEED to re-add this pclass
+;; instance to the PCA
+(defn local-method-pca [pca]
+  (let [[pca0 & more] pca]
+    (vec (conj (seq pca) pca0)))) ;; prepend
+
 ;; given the method function
 ;; return the apropos [pclass-ctor_ pca]
 (defn resolve-method [ir method-fn_ pca pci argument-mappings pargs
                       ancestry-path]
-  (dbg-println :debug "method-fn_ (w/o body)" (dissoc method-fn_ :body))
+  (dbg-println :debug "RM method-fn_ (w/o body)" (dissoc method-fn_ :body)
+    "\n  PCA" pca)
   (let [m-type (:type method-fn_)]
     (cond
       (= m-type :method-fn) ;; this is a pclass method invocation
@@ -1737,7 +1738,7 @@
             [pc_ (prepend-pca pc_)])
           ;; is this a function of this pclass? where n1 is the function
           (and (= type :symbol-ref) (= n0 'this))
-          [(dissoc pci :fields) pca]
+          [(dissoc pci :fields) (local-method-pca pca)]
           (and (= type :pclass-arg-ref) n0)
           (let [parg (first (filter #(= n0 (:param %)) pargs))]
             (if (not= :pclass-ctor (:type parg))
@@ -1746,6 +1747,7 @@
               [(dissoc parg :fields) (prepend-pca parg)]))
           (and (= type :method-arg-ref) n0)
           (let [mval (get argument-mappings n0)]
+            (dbg-println :debug "  :method-arg-ref N0" n0 "MVAL" mval)
             (cond
               (symbol? mval)
               (let [arg (-> mval :names first)
@@ -1778,7 +1780,7 @@
                   [(dissoc parg :fields) (prepend-pca parg)]))
               (= :field-ref (:type mval))
               (let [[fpc_ fpca] (resolve-field-ref ir
-                                  (-> mval :names first) (rest pca))]
+                                  (-> mval :names first) (vec (rest pca)))]
                 (if (not= :pclass-ctor (:type fpc_))
                   (fatal-error "pclass argument"
                     n0 "is not a pamela class constructor" ))

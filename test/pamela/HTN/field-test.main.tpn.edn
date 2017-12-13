@@ -1,27 +1,33 @@
 {:act-9
  {:args
-  [{:type :field-ref,
-    :names [requesting-unit1 field1],
+  [{:type :pclass-ctor,
+    :uid :pclass-3,
     :pclass requesting-unit,
-    :plant-id "RequestingUnit1"}
+    :args [],
+    :plant-id "RequestingUnit1",
+    :fields {},
+    :ancestry [[:pclass-1 requesting-unit1]]}
    "100MB"],
   :argsmap
   {"destination"
-   {:names [requesting-unit1 field1],
+   {:ancestry [[:pclass-1 requesting-unit1]],
+    :args [],
+    :fields {},
     :pclass requesting-unit,
     :plant-id "RequestingUnit1",
-    :type :field-ref},
+    :type :pclass-ctor,
+    :uid :pclass-3},
    "size" "100MB"},
   :command "ftp-to",
   :constraints #{},
   :controllable false,
   :cost 0,
-  :display-args [requesting-unit1.field1 "100MB"],
+  :display-args [(nil) "100MB"],
   :display-name "FTP to",
   :end-node :node-1,
   :htn-node :hem-22,
   :name
-  "FTP to({:type :field-ref, :names [requesting-unit1 field1], :pclass requesting-unit, :plant-id \"RequestingUnit1\"} \"100MB\")",
+  "FTP to({:type :pclass-ctor, :uid :pclass-3, :pclass requesting-unit, :args [], :plant-id \"RequestingUnit1\", :fields {}, :ancestry [[:pclass-1 requesting-unit1]]} \"100MB\")",
   :plant-id "AOC",
   :reward 0,
   :tpn-type :activity,
