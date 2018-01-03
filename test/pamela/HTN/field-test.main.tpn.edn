@@ -22,7 +22,7 @@
   :constraints #{},
   :controllable false,
   :cost 0,
-  :display-args [(nil) "100MB"],
+  :display-args [requesting-unit1.field1 "100MB"],
   :display-name "FTP to",
   :end-node :node-1,
   :htn-node :hem-22,

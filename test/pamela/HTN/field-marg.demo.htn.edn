@@ -45,7 +45,7 @@
     :plant-part "part-1",
     :type :pclass-ctor,
     :uid :pclass-3}},
-  :display-args [(nil)],
+  :display-args [c1],
   :display-name "Do A",
   :edges [],
   :incidence-set #{},

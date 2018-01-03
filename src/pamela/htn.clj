@@ -264,7 +264,8 @@
    (let [rv (cond
               (symbol? v)
               v
-              (and (map? v) (= :pclass-ctor (:type v)) (symbol? k))
+              (and (map? v) (symbol? k)
+                (or (= :pclass-ctor (:type v)) (= :field-ref (:type v))))
               v
               :else
               v ;; (unparser/unparse-cond-expr v)
@@ -275,8 +276,15 @@
 (defn unparse-arg-v [v]
   (unparse-arg-kv nil v))
 
+;; symbols is a vector of one or more symbols
+;; returns one symbol with all symbols combined with "."
+(defn coalesce-symbols [symbols]
+  (apply str (interpose "." (map str symbols))))
+
 (defn display-argument [arg]
-  (let [new-arg (unparser/unparse-cond-expr arg)
+  (let [new-arg (if (:field-ref arg)
+                  (coalesce-symbols (:names arg))
+                  (unparser/unparse-cond-expr arg))
         _ (dbg-println :trace "  DA new-arg" (pr-str new-arg))
         new-arg (if (and (= new-arg '(nil)) (:param arg))
                   (:param arg)
@@ -1664,9 +1672,17 @@
       (let [args (or arguments []) ;; now resolve args for non primitive?
             _ (dbg-println :trace "PD args before" args)
             args (resolve-arguments pargs args nil ancestry-path)
+            display-args-before (mapv display-argument args)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
                    pargs args subtask_ pca)
-            display-args (mapv display-argument args)
+            display-args (mapv
+                           (fn [before-arg arg]
+                             (let [da (display-argument arg)]
+                               (if (= da '(nil))
+                                 before-arg
+                                 da)))
+                           display-args-before
+                           args)
             _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
