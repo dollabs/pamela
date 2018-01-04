@@ -58,7 +58,7 @@
     :pclass simple-pclass,
     :type :pclass-ctor,
     :uid :pclass-2}},
-  :display-args [(nil "black")],
+  :display-args [field1.simple2],
   :display-name "One Arg Method",
   :edges [:hedge-32],
   :incidence-set #{},

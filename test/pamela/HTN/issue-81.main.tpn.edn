@@ -44,48 +44,17 @@
   :tpn-type :activity,
   :uid :act-17},
  :act-27
- {:args
-  ["echo"
-   :myoptions
-   {:type :field-ref,
-    :names [p1 data1],
-    :pclass simpleplant,
-    :plant-id "sp1",
-    :plant-part "mypart",
-    :plant-interface "RMQ"}
-   {:type :field-ref,
-    :names [p2 data2],
-    :pclass simpleplant,
-    :plant-id "sp2",
-    :plant-part "mypart2",
-    :plant-interface "RMQ"}],
-  :argsmap
-  {"arg1" :myoptions,
-   "arg2"
-   {:names [p1 data1],
-    :pclass simpleplant,
-    :plant-id "sp1",
-    :plant-interface "RMQ",
-    :plant-part "mypart",
-    :type :field-ref},
-   "arg3"
-   {:names [p2 data2],
-    :pclass simpleplant,
-    :plant-id "sp2",
-    :plant-interface "RMQ",
-    :plant-part "mypart2",
-    :type :field-ref},
-   "cmd" "echo"},
+ {:args ["echo" :myoptions p1 p2],
+  :argsmap {"arg1" :myoptions, "arg2" p1, "arg3" p2, "cmd" "echo"},
   :command "shell",
   :constraints #{:tc-26},
   :controllable false,
   :cost 0,
-  :display-args ["echo" :myoptions p1.data1 p2.data2],
+  :display-args ["echo" :myoptions p1 p2],
   :display-name "Shell",
   :end-node :node-1,
   :htn-node :hem-32,
-  :name
-  "Shell(\"echo\" :myoptions {:type :field-ref, :names [p1 data1], :pclass simpleplant, :plant-id \"sp1\", :plant-part \"mypart\", :plant-interface \"RMQ\"} {:type :field-ref, :names [p2 data2], :pclass simpleplant, :plant-id \"sp2\", :plant-part \"mypart2\", :plant-interface \"RMQ\"})",
+  :name "Shell(\"echo\" :myoptions p1 p2)",
   :plant-id "sp2",
   :plant-interface "RMQ",
   :plant-part "mypart2",

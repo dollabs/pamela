@@ -111,7 +111,7 @@
   :constraints #{},
   :controllable false,
   :cost 0,
-  :display-args [(nil "black")],
+  :display-args [field1.simple2],
   :display-name "One Arg Method",
   :end-node :node-15,
   :htn-node :hem-25,

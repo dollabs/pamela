@@ -1,37 +1,12 @@
-{simple-pclass
- {:type :pclass,
-  :args [simple2-initial],
+{example
+ {:args [pclass-arg],
   :fields
-  {simple1 {:access :private, :observable true, :initial "white"},
-   simple2
-   {:access :private,
-    :observable true,
-    :initial {:type :pclass-arg-ref, :names [simple2-initial]}}},
-  :methods
-  {simple-method
-   [{:args [],
-     :betweens [],
-     :body nil,
-     :controllable false,
-     :cost 0,
-     :display-args [],
-     :display-name "Simple Method",
-     :post true,
-     :pre true,
-     :primitive true,
-     :probability 1.0,
-     :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]}},
- example
- {:type :pclass,
-  :args [pclass-arg],
-  :fields
-  {field1 {:access :private, :observable false, :initial 3.14},
+  {field1 {:access :private, :initial 3.14, :observable false},
    field2
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor, :pclass simple-pclass, :args ["black"]}}},
+    {:args ["black"], :pclass simple-pclass, :type :pclass-ctor},
+    :observable false}},
   :methods
   {main
    [{:args [],
@@ -66,105 +41,36 @@
      :primitive true,
      :probability 1.0,
      :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]}},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
  locations
- {:type :pclass,
-  :args [],
+ {:args [],
   :meta {:doc "Enumeration of locations"},
-  :modes {:land true, :sea true, :air true}},
- pclass1
- {:type :pclass,
-  :args [p-arg1],
-  :meta {:doc "Within this example, field1-1 is a number"},
-  :fields
-  {field1-1
-   {:access :private,
-    :observable false,
-    :initial {:type :pclass-arg-ref, :names [p-arg1]}}},
-  :methods
-  {method1
-   [{:args [x y],
-     :betweens [],
-     :body nil,
-     :controllable false,
-     :cost 0,
-     :display-args [x y],
-     :display-name "Method 1",
-     :post true,
-     :pre true,
-     :primitive true,
-     :probability 1.0,
-     :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]}},
- pclass2
- {:type :pclass,
-  :args [p-arg2],
-  :meta
-  {:doc "Within this example, field2-1 is an instance of pclass1"},
-  :fields
-  {field2-1
-   {:access :private,
-    :observable false,
-    :initial {:type :pclass-arg-ref, :names [p-arg2]}}},
-  :methods
-  {method2
-   [{:args [x y],
-     :betweens [],
-     :body nil,
-     :controllable false,
-     :cost 0,
-     :display-args [x y],
-     :display-name "Method 2",
-     :post true,
-     :pre true,
-     :primitive true,
-     :probability 1.0,
-     :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
-   method3
-   [{:args [a b c],
-     :betweens [],
-     :body
-     [{:type :method-fn,
-       :method-ref {:type :pclass-arg-ref, :names [p-arg2 method1]},
-       :args
-       [{:type :method-arg-ref, :names [a]}
-        {:type :method-arg-ref, :names [b]}]}],
-     :controllable false,
-     :cost 0,
-     :display-args [a b c],
-     :display-name "Method 3",
-     :post true,
-     :pre true,
-     :primitive false,
-     :probability 1.0,
-     :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]}},
+  :modes {:air true, :land true, :sea true},
+  :type :pclass},
  main
- {:type :pclass,
-  :args [],
+ {:args [],
   :fields
   {field1
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass pclass1, :args [42]}},
+    :initial {:args [42], :pclass pclass1, :type :pclass-ctor},
+    :observable false},
    field2
    {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass pclass1, :args [43]}},
-   field3 {:access :private, :observable false, :initial 100},
-   pclass1-44
-   {:access :private,
-    :observable false,
-    :initial {:type :pclass-ctor, :pclass pclass1, :args [44]}},
+    :initial {:args [43], :pclass pclass1, :type :pclass-ctor},
+    :observable false},
+   field3 {:access :private, :initial 100, :observable false},
    field4
    {:access :private,
-    :observable false,
     :initial
-    {:type :pclass-ctor,
+    {:args [{:type :field-ref, :names [pclass1-44]}],
      :pclass pclass2,
-     :args [{:type :field-ref, :names [pclass1-44]}]}}},
-  :modes {:running true, :stopped true},
+     :type :pclass-ctor},
+    :observable false},
+   pclass1-44
+   {:access :private,
+    :initial {:args [44], :pclass pclass1, :type :pclass-ctor},
+    :observable false}},
   :methods
   {main
    [{:args [],
@@ -278,5 +184,99 @@
      :primitive true,
      :probability 1.0,
      :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]}},
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes {:running true, :stopped true},
+  :type :pclass},
+ pclass1
+ {:args [p-arg1],
+  :fields
+  {field1-1
+   {:access :private,
+    :initial {:names [p-arg1], :type :pclass-arg-ref},
+    :observable false}},
+  :meta {:doc "Within this example, field1-1 is a number"},
+  :methods
+  {method1
+   [{:args [x y],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [x y],
+     :display-name "Method 1",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ pclass2
+ {:args [p-arg2],
+  :fields
+  {field2-1
+   {:access :private,
+    :initial {:names [p-arg2], :type :pclass-arg-ref},
+    :observable false}},
+  :meta
+  {:doc "Within this example, field2-1 is an instance of pclass1"},
+  :methods
+  {method2
+   [{:args [x y],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [x y],
+     :display-name "Method 2",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   method3
+   [{:args [a b c],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :pclass-arg-ref, :names [p-arg2 method1]},
+       :args
+       [{:type :method-arg-ref, :names [a]}
+        {:type :method-arg-ref, :names [b]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [a b c],
+     :display-name "Method 3",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ simple-pclass
+ {:args [simple2-initial],
+  :fields
+  {simple1 {:access :private, :initial "white", :observable true},
+   simple2
+   {:access :private,
+    :initial {:names [simple2-initial], :type :pclass-arg-ref},
+    :observable true}},
+  :methods
+  {simple-method
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Simple Method",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
  state-var {:type :state-variable}}

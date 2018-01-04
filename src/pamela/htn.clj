@@ -1472,8 +1472,11 @@
         pci (if pci-uid (get-pclass-instance pci-uid))
         fpc_ (if pci (get-in pci [:fields f :initial]))
         rv (cond
-             (string? fpc_) ;; handle all literals?
-             [fpc_ pca]
+             ;; do NOT dereference fields here!
+             ;; (string? fpc_) ;; handle all literals?
+             ;; [fpc_ pca]
+             (nil? (:type fpc_))
+             [f pca] ;; maintain as field reference
              (= :pclass-ctor (:type fpc_))
              [fpc_ (:ancestry fpc_)]
              (= :pclass-arg-ref (:type fpc_))
@@ -1678,7 +1681,7 @@
             display-args (mapv
                            (fn [before-arg arg]
                              (let [da (display-argument arg)]
-                               (if (= da '(nil))
+                               (if (and da (seq? da) (nil? (first da)))
                                  before-arg
                                  da)))
                            display-args-before
