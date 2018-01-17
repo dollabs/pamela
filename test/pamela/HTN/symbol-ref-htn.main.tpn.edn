@@ -101,8 +101,15 @@
   :tpn-type :activity,
   :uid :act-29},
  :act-33
- {:args [field3],
-  :argsmap {"arg" field3},
+ {:args
+  [{:type :field-ref,
+    :names [field3],
+    :ancestry [[:pclass-1] [:pclass-1] [:pclass-1]]}],
+  :argsmap
+  {"arg"
+   {:ancestry [[:pclass-1] [:pclass-1] [:pclass-1]],
+    :names [field3],
+    :type :field-ref}},
   :command "simple-method",
   :constraints #{},
   :controllable false,
@@ -111,7 +118,8 @@
   :display-name "Simple Method",
   :end-node :node-38,
   :htn-node :hem-52,
-  :name "Simple Method(field3)",
+  :name
+  "Simple Method({:type :field-ref, :names [field3], :ancestry [[:pclass-1] [:pclass-1] [:pclass-1]]})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-33},
@@ -121,15 +129,11 @@
     :uid :pclass-3,
     :pclass pclass1,
     :args [43],
-    :fields
-    {field1-1 {:access :private, :observable false, :initial 43}},
     :ancestry [[:pclass-1 field2]]}],
   :argsmap
   {"arg"
    {:ancestry [[:pclass-1 field2]],
     :args [43],
-    :fields
-    {field1-1 {:access :private, :initial 43, :observable false}},
     :pclass pclass1,
     :type :pclass-ctor,
     :uid :pclass-3}},
@@ -142,7 +146,7 @@
   :end-node :node-42,
   :htn-node :hem-52,
   :name
-  "Simple Method({:type :pclass-ctor, :uid :pclass-3, :pclass pclass1, :args [43], :fields {field1-1 {:access :private, :observable false, :initial 43}}, :ancestry [[:pclass-1 field2]]})",
+  "Simple Method({:type :pclass-ctor, :uid :pclass-3, :pclass pclass1, :args [43], :ancestry [[:pclass-1 field2]]})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-37},

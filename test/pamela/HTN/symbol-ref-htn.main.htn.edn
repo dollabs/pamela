@@ -82,8 +82,6 @@
     :uid :pclass-2,
     :pclass pclass1,
     :args [42],
-    :fields
-    {field1-1 {:access :private, :observable false, :initial 42}},
     :ancestry [[:pclass-1 field1]]}
    42],
   :argsmap
@@ -91,8 +89,6 @@
    "pclass-instance-arg"
    {:ancestry [[:pclass-1 field1]],
     :args [42],
-    :fields
-    {field1-1 {:access :private, :initial 42, :observable false}},
     :pclass pclass1,
     :type :pclass-ctor,
     :uid :pclass-2}},
@@ -245,8 +241,15 @@
   :type :htn-primitive-task,
   :uid :hpt-43},
  :hpt-44
- {:args [field3],
-  :argsmap {"arg" field3},
+ {:args
+  [{:type :field-ref,
+    :names [field3],
+    :ancestry [[:pclass-1] [:pclass-1] [:pclass-1]]}],
+  :argsmap
+  {"arg"
+   {:ancestry [[:pclass-1] [:pclass-1] [:pclass-1]],
+    :names [field3],
+    :type :field-ref}},
   :display-args [field3],
   :display-name "Simple Method",
   :edges [:hedge-71],
@@ -260,15 +263,11 @@
     :uid :pclass-3,
     :pclass pclass1,
     :args [43],
-    :fields
-    {field1-1 {:access :private, :observable false, :initial 43}},
     :ancestry [[:pclass-1 field2]]}],
   :argsmap
   {"arg"
    {:ancestry [[:pclass-1 field2]],
     :args [43],
-    :fields
-    {field1-1 {:access :private, :initial 43, :observable false}},
     :pclass pclass1,
     :type :pclass-ctor,
     :uid :pclass-3}},

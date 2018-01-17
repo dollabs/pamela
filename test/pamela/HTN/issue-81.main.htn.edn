@@ -202,9 +202,27 @@
   :type :htn-primitive-task,
   :uid :hpt-29},
  :hpt-31
- {:args ["echo" :myoptions p1 p2],
-  :argsmap {"arg1" :myoptions, "arg2" p1, "arg3" p2, "cmd" "echo"},
-  :display-args ["echo" :myoptions p1 p2],
+ {:args
+  ["echo"
+   :myoptions
+   {:type :field-ref,
+    :names [p1 data1],
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}
+   {:type :field-ref,
+    :names [p2 data2],
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}],
+  :argsmap
+  {"arg1" :myoptions,
+   "arg2"
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p1 data1],
+    :type :field-ref},
+   "arg3"
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p2 data2],
+    :type :field-ref},
+   "cmd" "echo"},
+  :display-args ["echo" :myoptions p1.data1 p2.data2],
   :display-name "Shell",
   :edges [],
   :incidence-set #{},

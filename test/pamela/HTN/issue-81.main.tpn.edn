@@ -44,17 +44,36 @@
   :tpn-type :activity,
   :uid :act-17},
  :act-27
- {:args ["echo" :myoptions p1 p2],
-  :argsmap {"arg1" :myoptions, "arg2" p1, "arg3" p2, "cmd" "echo"},
+ {:args
+  ["echo"
+   :myoptions
+   {:type :field-ref,
+    :names [p1 data1],
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}
+   {:type :field-ref,
+    :names [p2 data2],
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}],
+  :argsmap
+  {"arg1" :myoptions,
+   "arg2"
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p1 data1],
+    :type :field-ref},
+   "arg3"
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p2 data2],
+    :type :field-ref},
+   "cmd" "echo"},
   :command "shell",
   :constraints #{:tc-26},
   :controllable false,
   :cost 0,
-  :display-args ["echo" :myoptions p1 p2],
+  :display-args ["echo" :myoptions p1.data1 p2.data2],
   :display-name "Shell",
   :end-node :node-1,
   :htn-node :hem-32,
-  :name "Shell(\"echo\" :myoptions p1 p2)",
+  :name
+  "Shell(\"echo\" :myoptions {:type :field-ref, :names [p1 data1], :ancestry [[:pclass-3] [:pclass-1 sp2]]} {:type :field-ref, :names [p2 data2], :ancestry [[:pclass-3] [:pclass-1 sp2]]})",
   :plant-id "sp2",
   :plant-interface "RMQ",
   :plant-part "mypart2",

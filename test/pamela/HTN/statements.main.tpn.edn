@@ -95,15 +95,11 @@
     :uid :pclass-2,
     :pclass simple-pclass,
     :args ["black"],
-    :fields
-    {simple2 {:access :private, :observable true, :initial "black"}},
     :ancestry [[:pclass-1 field1]]}],
   :argsmap
   {"x"
    {:ancestry [[:pclass-1 field1]],
     :args ["black"],
-    :fields
-    {simple2 {:access :private, :initial "black", :observable true}},
     :pclass simple-pclass,
     :type :pclass-ctor,
     :uid :pclass-2}},
@@ -116,7 +112,7 @@
   :end-node :node-15,
   :htn-node :hem-25,
   :name
-  "One Arg Method({:type :pclass-ctor, :uid :pclass-2, :pclass simple-pclass, :args [\"black\"], :fields {simple2 {:access :private, :observable true, :initial \"black\"}}, :ancestry [[:pclass-1 field1]]})",
+  "One Arg Method({:type :pclass-ctor, :uid :pclass-2, :pclass simple-pclass, :args [\"black\"], :ancestry [[:pclass-1 field1]]})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-9},

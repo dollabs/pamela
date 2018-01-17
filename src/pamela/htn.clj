@@ -1471,41 +1471,42 @@
   (let [[[pci-uid pci-field] & more] pca
         pci (if pci-uid (get-pclass-instance pci-uid))
         fpc_ (if pci (get-in pci [:fields f :initial]))
-        rv (cond
-             ;; do NOT dereference fields here!
-             ;; (string? fpc_) ;; handle all literals?
-             ;; [fpc_ pca]
-             (nil? (:type fpc_))
-             [f pca] ;; maintain as field reference
-             (= :pclass-ctor (:type fpc_))
-             [fpc_ (:ancestry fpc_)]
-             (= :pclass-arg-ref (:type fpc_))
-             ;; find first of (:names initial) in formal
-             ;; args and then take that one from actual args
-             ;; (get
-             ;;   (:args pci)
-             ;;   (vec-index-of
-             ;;     (get-in ir [(:pclass pci) :args])
-             ;;     (-> fpc_ :names first)))
-             (let [actual-args (:args pci)
-                   formal-args (get-in ir [(:pclass pci) :args])
-                   formal-arg (-> fpc_ :names first)
-                   actual-arg (get actual-args
-                                (vec-index-of formal-args formal-arg))]
-               (dbg-println :trace "  RFR :pclass-arg-ref PCLASS" (:pclass pci)
-                 "\n    ACTUAL-ARGS" actual-args
-                 "\n    FORMAL-ARGS" formal-args
-                 "\n    FORMAL-ARG" formal-arg
-                 "\n    ACTUAL-ARG" actual-arg)
-               [actual-arg pca])
-             ;; NOTE :field-ref NOT handled here yet
-             :else
-             ;; get initial for types OTHER than pclass-ctor_ from the IR
-             (let [initial (get-in ir [(:pclass pci) :fields f :initial])]
-               (if initial ;; not nil value, e.g. string
-                 [initial pca]
-                 (if-not (empty? more)
-                   (resolve-field-ref ir f more)))))]
+        [c_ a_] (cond
+                  ;; do NOT dereference fields here!
+                  ;; (string? fpc_) ;; handle all literals?
+                  ;; [fpc_ pca]
+                  (nil? (:type fpc_))
+                  [f pca] ;; maintain as field reference
+                  (= :pclass-ctor (:type fpc_))
+                  [fpc_ (:ancestry fpc_)]
+                  (= :pclass-arg-ref (:type fpc_))
+                  ;; find first of (:names initial) in formal
+                  ;; args and then take that one from actual args
+                  ;; (get
+                  ;;   (:args pci)
+                  ;;   (vec-index-of
+                  ;;     (get-in ir [(:pclass pci) :args])
+                  ;;     (-> fpc_ :names first)))
+                  (let [actual-args (:args pci)
+                        formal-args (get-in ir [(:pclass pci) :args])
+                        formal-arg (-> fpc_ :names first)
+                        actual-arg (get actual-args
+                                     (vec-index-of formal-args formal-arg))]
+                    (dbg-println :trace "  RFR :pclass-arg-ref PCLASS" (:pclass pci)
+                      "\n    ACTUAL-ARGS" actual-args
+                      "\n    FORMAL-ARGS" formal-args
+                      "\n    FORMAL-ARG" formal-arg
+                      "\n    ACTUAL-ARG" actual-arg)
+                    [actual-arg pca])
+                  ;; NOTE :field-ref NOT handled here yet
+                  :else
+                  ;; get initial for types OTHER than pclass-ctor_ from the IR
+                  (let [initial (get-in ir [(:pclass pci) :fields f :initial])]
+                    (if initial ;; not nil value, e.g. string
+                      [initial pca]
+                      (if-not (empty? more)
+                        (resolve-field-ref ir f more)))))
+        rv [(if (map? c_) (dissoc c_ :fields) c_) a_]]
     (dbg-println :trace "  RFR rv =>"
       (if (map? rv)
         (dissoc rv :fields)
@@ -1613,6 +1614,8 @@
                            "\n  this-initial_" this-initial_
                            "\n  caller-initial_" caller-initial_)]
                    (cond
+                     (symbol? fpc_) ;; preserve field-ref
+                     (assoc a :ancestry fpca)
                      fpc_
                      fpc_
                      (= :pclass-ctor (:type this-initial_))

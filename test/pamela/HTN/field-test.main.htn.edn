@@ -26,9 +26,16 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-17},
  :henpt-18
- {:args [requesting-unit1],
-  :argsmap {"unit" requesting-unit1},
-  :display-args [requesting-unit1],
+ {:args
+  [{:type :field-ref,
+    :names [requesting-unit1 field1],
+    :ancestry [[:pclass-2] [:pclass-1 aocf]]}],
+  :argsmap
+  {"unit"
+   {:ancestry [[:pclass-2] [:pclass-1 aocf]],
+    :names [requesting-unit1 field1],
+    :type :field-ref}},
+  :display-args [requesting-unit1.field1],
   :display-name "Send It To",
   :edges [],
   :incidence-set #{},
@@ -37,9 +44,18 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-18},
  :hpt-21
- {:args [requesting-unit1 "100MB"],
-  :argsmap {"destination" requesting-unit1, "size" "100MB"},
-  :display-args [requesting-unit1 "100MB"],
+ {:args
+  [{:type :field-ref,
+    :names [requesting-unit1 field1],
+    :ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]]}
+   "100MB"],
+  :argsmap
+  {"destination"
+   {:ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]],
+    :names [requesting-unit1 field1],
+    :type :field-ref},
+   "size" "100MB"},
+  :display-args [requesting-unit1.field1 "100MB"],
   :display-name "FTP to",
   :edges [],
   :incidence-set #{},

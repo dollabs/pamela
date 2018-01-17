@@ -26,8 +26,15 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-13},
  :henpt-14
- {:args [c1],
-  :argsmap {"ccc" c1},
+ {:args
+  [{:type :field-ref,
+    :names [c1],
+    :ancestry [[:pclass-2] [:pclass-1 a1]]}],
+  :argsmap
+  {"ccc"
+   {:ancestry [[:pclass-2] [:pclass-1 a1]],
+    :names [c1],
+    :type :field-ref}},
   :display-args [c1],
   :display-name "Do A",
   :edges [],

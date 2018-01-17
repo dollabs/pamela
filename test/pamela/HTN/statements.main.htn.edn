@@ -46,15 +46,11 @@
     :uid :pclass-2,
     :pclass simple-pclass,
     :args ["black"],
-    :fields
-    {simple2 {:access :private, :observable true, :initial "black"}},
     :ancestry [[:pclass-1 field1]]}],
   :argsmap
   {"x"
    {:ancestry [[:pclass-1 field1]],
     :args ["black"],
-    :fields
-    {simple2 {:access :private, :initial "black", :observable true}},
     :pclass simple-pclass,
     :type :pclass-ctor,
     :uid :pclass-2}},
