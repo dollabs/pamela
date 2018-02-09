@@ -91,10 +91,18 @@
   :uid :act-32},
  :act-9
  {:args
-  [{:type :field-ref, :names [field1 simple2], :pclass simple-pclass}],
+  [{:type :pclass-ctor,
+    :uid :pclass-2,
+    :pclass simple-pclass,
+    :args ["black"],
+    :ancestry [[:pclass-1 field1]]}],
   :argsmap
   {"x"
-   {:names [field1 simple2], :pclass simple-pclass, :type :field-ref}},
+   {:ancestry [[:pclass-1 field1]],
+    :args ["black"],
+    :pclass simple-pclass,
+    :type :pclass-ctor,
+    :uid :pclass-2}},
   :command "one-arg-method",
   :constraints #{},
   :controllable false,
@@ -104,7 +112,7 @@
   :end-node :node-15,
   :htn-node :hem-25,
   :name
-  "One Arg Method({:type :field-ref, :names [field1 simple2], :pclass simple-pclass})",
+  "One Arg Method({:type :pclass-ctor, :uid :pclass-2, :pclass simple-pclass, :args [\"black\"], :ancestry [[:pclass-1 field1]]})",
   :reward 0,
   :tpn-type :activity,
   :uid :act-9},

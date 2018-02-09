@@ -1,0 +1,371 @@
+{:hedge-61 {:end-node :hem-36, :type :edge, :uid :hedge-61},
+ :hedge-63
+ {:display-name "1", :end-node :hem-52, :type :edge, :uid :hedge-63},
+ :hedge-65 {:end-node :hpt-39, :type :edge, :uid :hedge-65},
+ :hedge-66 {:end-node :hpt-40, :type :edge, :uid :hedge-66},
+ :hedge-67 {:end-node :hpt-41, :type :edge, :uid :hedge-67},
+ :hedge-68 {:end-node :hpt-42, :type :edge, :uid :hedge-68},
+ :hedge-69 {:end-node :hpt-43, :type :edge, :uid :hedge-69},
+ :hedge-70 {:end-node :hpt-44, :type :edge, :uid :hedge-70},
+ :hedge-71 {:end-node :hpt-45, :type :edge, :uid :hedge-71},
+ :hedge-72 {:end-node :hpt-46, :type :edge, :uid :hedge-72},
+ :hedge-73 {:end-node :hpt-47, :type :edge, :uid :hedge-73},
+ :hedge-74 {:end-node :hpt-48, :type :edge, :uid :hedge-74},
+ :hedge-75 {:end-node :henpt-49, :type :edge, :uid :hedge-75},
+ :hedge-76
+ {:display-name "12", :end-node :hem-55, :type :edge, :uid :hedge-76},
+ :hedge-78 {:end-node :henpt-50, :type :edge, :uid :hedge-78},
+ :hedge-79
+ {:display-name "13", :end-node :hem-57, :type :edge, :uid :hedge-79},
+ :hedge-81 {:end-node :henpt-51, :type :edge, :uid :hedge-81},
+ :hedge-82
+ {:display-name "14", :end-node :hem-59, :type :edge, :uid :hedge-82},
+ :hem-36
+ {:args [],
+  :display-args [],
+  :display-name "Main",
+  :edges [:hedge-63],
+  :incidence-set #{:hedge-61},
+  :network :net-62,
+  :type :htn-expanded-method,
+  :uid :hem-36},
+ :hem-52
+ {:args [{:type :field-ref, :names [field1]} 42],
+  :display-args [field1 42],
+  :display-name "Reference Tests",
+  :edges [:hedge-76 :hedge-79 :hedge-82],
+  :incidence-set #{},
+  :network :net-64,
+  :type :htn-expanded-method,
+  :uid :hem-52},
+ :hem-55
+ {:args [4 5 :running],
+  :display-args [4 5 :running],
+  :display-name "Method 3",
+  :edges [],
+  :incidence-set #{},
+  :network :net-77,
+  :type :htn-expanded-method,
+  :uid :hem-55},
+ :hem-57
+ {:args [4 5 :stopped],
+  :display-args [4 5 :stopped],
+  :display-name "Method 3",
+  :edges [],
+  :incidence-set #{},
+  :network :net-80,
+  :type :htn-expanded-method,
+  :uid :hem-57},
+ :hem-59
+ {:args
+  [4
+   5
+   {:type :mode-ref,
+    :mode-ref {:type :symbol-ref, :names [locations]},
+    :mode :sea}],
+  :display-args [4 5 (mode-of locations :sea)],
+  :display-name "Method 3",
+  :edges [],
+  :incidence-set #{},
+  :network :net-83,
+  :type :htn-expanded-method,
+  :uid :hem-59},
+ :henpt-34
+ {:display-name "main",
+  :edges [:hedge-61],
+  :incidence-set #{},
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-34},
+ :henpt-35
+ {:args
+  [{:type :pclass-ctor,
+    :uid :pclass-2,
+    :pclass pclass1,
+    :args [42],
+    :ancestry [[:pclass-1 field1]]}
+   42],
+  :argsmap
+  {"method-arg" 42,
+   "pclass-instance-arg"
+   {:ancestry [[:pclass-1 field1]],
+    :args [42],
+    :pclass pclass1,
+    :type :pclass-ctor,
+    :uid :pclass-2}},
+  :display-args [field1 42],
+  :display-name "Reference Tests",
+  :edges [],
+  :incidence-set #{},
+  :name "reference-tests",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-35},
+ :henpt-49
+ {:args [4 5 :running],
+  :argsmap {"a" 4, "b" 5, "c" :running},
+  :display-args [4 5 :running],
+  :display-name "Method 3",
+  :edges [:hedge-78],
+  :incidence-set #{:hedge-75},
+  :name "method3",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-49},
+ :henpt-50
+ {:args [4 5 :stopped],
+  :argsmap {"a" 4, "b" 5, "c" :stopped},
+  :display-args [4 5 :stopped],
+  :display-name "Method 3",
+  :edges [:hedge-81],
+  :incidence-set #{:hedge-78},
+  :name "method3",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-50},
+ :henpt-51
+ {:args
+  [4
+   5
+   {:type :mode-ref,
+    :mode-ref {:type :symbol-ref, :names [locations]},
+    :mode :sea}],
+  :argsmap
+  {"a" 4,
+   "b" 5,
+   "c"
+   {:mode :sea,
+    :mode-ref {:names [locations], :type :symbol-ref},
+    :type :mode-ref}},
+  :display-args [4 5 (mode-of locations :sea)],
+  :display-name "Method 3",
+  :edges [],
+  :incidence-set #{:hedge-81},
+  :name "method3",
+  :type :htn-expanded-nonprimitive-task,
+  :uid :henpt-51},
+ :hpt-38
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :state-variable, :name state-var}
+     {:type :method-arg-ref, :names [method-arg]}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :state-variable, :name state-var}
+     {:type :method-arg-ref, :names [method-arg]}],
+    :type :equal}},
+  :display-args [(= state-var method-arg)],
+  :display-name "Tell",
+  :edges [:hedge-65],
+  :incidence-set #{},
+  :name "tell",
+  :plant-id "bsm1",
+  :type :htn-primitive-task,
+  :uid :hpt-38},
+ :hpt-39
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :field-ref, :names [field3]}
+     {:type :method-arg-ref, :names [method-arg]}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :field-ref, :names [field3]}
+     {:type :method-arg-ref, :names [method-arg]}],
+    :type :equal}},
+  :display-args [(= field3 method-arg)],
+  :display-name "Tell",
+  :edges [:hedge-66],
+  :incidence-set #{:hedge-65},
+  :name "tell",
+  :plant-id "bsm1",
+  :type :htn-primitive-task,
+  :uid :hpt-39},
+ :hpt-40
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :field-ref, :names [field2 field1-1]}
+     {:type :method-arg-ref, :names [method-arg]}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :field-ref, :names [field2 field1-1]}
+     {:type :method-arg-ref, :names [method-arg]}],
+    :type :equal}},
+  :display-args [(= field2.field1-1 method-arg)],
+  :display-name "Tell",
+  :edges [:hedge-67],
+  :incidence-set #{:hedge-66},
+  :name "tell",
+  :plant-id "bsm1",
+  :type :htn-primitive-task,
+  :uid :hpt-40},
+ :hpt-41
+ {:args
+  [{:type :equal,
+    :args
+    [{:type :method-arg-ref, :names [pclass-instance-arg field1-1]}
+     {:type :method-arg-ref, :names [method-arg]}]}],
+  :argsmap
+  {"condition"
+   {:args
+    [{:type :method-arg-ref, :names [pclass-instance-arg field1-1]}
+     {:type :method-arg-ref, :names [method-arg]}],
+    :type :equal}},
+  :display-args [(= pclass-instance-arg.field1-1 method-arg)],
+  :display-name "Tell",
+  :edges [:hedge-68],
+  :incidence-set #{:hedge-67},
+  :name "tell",
+  :plant-id "bsm1",
+  :type :htn-primitive-task,
+  :uid :hpt-41},
+ :hpt-42
+ {:args [42],
+  :argsmap {"arg" 42},
+  :display-args [42],
+  :display-name "Simple Method",
+  :edges [:hedge-69],
+  :incidence-set #{:hedge-68},
+  :name "simple-method",
+  :type :htn-primitive-task,
+  :uid :hpt-42},
+ :hpt-43
+ {:args [{:type :state-variable, :name state-var}],
+  :argsmap {"arg" {:name state-var, :type :state-variable}},
+  :display-args [state-var],
+  :display-name "Simple Method",
+  :edges [:hedge-70],
+  :incidence-set #{:hedge-69},
+  :name "simple-method",
+  :type :htn-primitive-task,
+  :uid :hpt-43},
+ :hpt-44
+ {:args
+  [{:type :field-ref,
+    :names [field3],
+    :ancestry [[:pclass-1] [:pclass-1] [:pclass-1]]}],
+  :argsmap
+  {"arg"
+   {:ancestry [[:pclass-1] [:pclass-1] [:pclass-1]],
+    :names [field3],
+    :type :field-ref}},
+  :display-args [field3],
+  :display-name "Simple Method",
+  :edges [:hedge-71],
+  :incidence-set #{:hedge-70},
+  :name "simple-method",
+  :type :htn-primitive-task,
+  :uid :hpt-44},
+ :hpt-45
+ {:args
+  [{:type :pclass-ctor,
+    :uid :pclass-3,
+    :pclass pclass1,
+    :args [43],
+    :ancestry [[:pclass-1 field2]]}],
+  :argsmap
+  {"arg"
+   {:ancestry [[:pclass-1 field2]],
+    :args [43],
+    :pclass pclass1,
+    :type :pclass-ctor,
+    :uid :pclass-3}},
+  :display-args [field2.field1-1],
+  :display-name "Simple Method",
+  :edges [:hedge-72],
+  :incidence-set #{:hedge-71},
+  :name "simple-method",
+  :type :htn-primitive-task,
+  :uid :hpt-45},
+ :hpt-46
+ {:args [42],
+  :argsmap {"arg" 42},
+  :display-args [42],
+  :display-name "Simple Method",
+  :edges [:hedge-73],
+  :incidence-set #{:hedge-72},
+  :name "simple-method",
+  :type :htn-primitive-task,
+  :uid :hpt-46},
+ :hpt-47
+ {:args [1 2],
+  :argsmap {"x" 1, "y" 2},
+  :display-args [1 2],
+  :display-name "Method 1",
+  :edges [:hedge-74],
+  :incidence-set #{:hedge-73},
+  :name "method1",
+  :type :htn-primitive-task,
+  :uid :hpt-47},
+ :hpt-48
+ {:args [1 2],
+  :argsmap {"x" 1, "y" 2},
+  :display-args [1 2],
+  :display-name "Method 1",
+  :edges [:hedge-75],
+  :incidence-set #{:hedge-74},
+  :name "method1",
+  :type :htn-primitive-task,
+  :uid :hpt-48},
+ :hpt-54
+ {:args [4 5],
+  :argsmap {"x" 4, "y" 5},
+  :display-args [4 5],
+  :display-name "Method 1",
+  :edges [],
+  :incidence-set #{},
+  :name "method1",
+  :type :htn-primitive-task,
+  :uid :hpt-54},
+ :hpt-56
+ {:args [4 5],
+  :argsmap {"x" 4, "y" 5},
+  :display-args [4 5],
+  :display-name "Method 1",
+  :edges [],
+  :incidence-set #{},
+  :name "method1",
+  :type :htn-primitive-task,
+  :uid :hpt-56},
+ :hpt-58
+ {:args [4 5],
+  :argsmap {"x" 4, "y" 5},
+  :display-args [4 5],
+  :display-name "Method 1",
+  :edges [],
+  :incidence-set #{},
+  :name "method1",
+  :type :htn-primitive-task,
+  :uid :hpt-58},
+ :net-60
+ {:display-name "main",
+  :rootnodes #{:henpt-34},
+  :type :htn-network,
+  :uid :net-60},
+ :net-62
+ {:display-name "Main",
+  :rootnodes #{:henpt-35},
+  :type :htn-network,
+  :uid :net-62},
+ :net-64
+ {:display-name "Reference Tests",
+  :rootnodes #{:hpt-38},
+  :type :htn-network,
+  :uid :net-64},
+ :net-77
+ {:display-name "Method 3",
+  :rootnodes #{:hpt-54},
+  :type :htn-network,
+  :uid :net-77},
+ :net-80
+ {:display-name "Method 3",
+  :rootnodes #{:hpt-56},
+  :type :htn-network,
+  :uid :net-80},
+ :net-83
+ {:display-name "Method 3",
+  :rootnodes #{:hpt-58},
+  :type :htn-network,
+  :uid :net-83},
+ :network :net-60}

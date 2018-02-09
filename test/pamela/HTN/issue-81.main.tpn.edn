@@ -49,31 +49,19 @@
    :myoptions
    {:type :field-ref,
     :names [p1 data1],
-    :pclass simpleplant,
-    :plant-id "sp1",
-    :plant-part "mypart",
-    :plant-interface "RMQ"}
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}
    {:type :field-ref,
     :names [p2 data2],
-    :pclass simpleplant,
-    :plant-id "sp2",
-    :plant-part "mypart2",
-    :plant-interface "RMQ"}],
+    :ancestry [[:pclass-3] [:pclass-1 sp2]]}],
   :argsmap
   {"arg1" :myoptions,
    "arg2"
-   {:names [p1 data1],
-    :pclass simpleplant,
-    :plant-id "sp1",
-    :plant-interface "RMQ",
-    :plant-part "mypart",
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p1 data1],
     :type :field-ref},
    "arg3"
-   {:names [p2 data2],
-    :pclass simpleplant,
-    :plant-id "sp2",
-    :plant-interface "RMQ",
-    :plant-part "mypart2",
+   {:ancestry [[:pclass-3] [:pclass-1 sp2]],
+    :names [p2 data2],
     :type :field-ref},
    "cmd" "echo"},
   :command "shell",
@@ -85,7 +73,7 @@
   :end-node :node-1,
   :htn-node :hem-32,
   :name
-  "Shell(\"echo\" :myoptions {:type :field-ref, :names [p1 data1], :pclass simpleplant, :plant-id \"sp1\", :plant-part \"mypart\", :plant-interface \"RMQ\"} {:type :field-ref, :names [p2 data2], :pclass simpleplant, :plant-id \"sp2\", :plant-part \"mypart2\", :plant-interface \"RMQ\"})",
+  "Shell(\"echo\" :myoptions {:type :field-ref, :names [p1 data1], :ancestry [[:pclass-3] [:pclass-1 sp2]]} {:type :field-ref, :names [p2 data2], :ancestry [[:pclass-3] [:pclass-1 sp2]]})",
   :plant-id "sp2",
   :plant-interface "RMQ",
   :plant-part "mypart2",

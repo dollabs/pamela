@@ -26,7 +26,17 @@
   :type :htn-expanded-nonprimitive-task,
   :uid :henpt-17},
  :henpt-18
- {:display-name "Send It To",
+ {:args
+  [{:type :field-ref,
+    :names [requesting-unit1 field1],
+    :ancestry [[:pclass-2] [:pclass-1 aocf]]}],
+  :argsmap
+  {"unit"
+   {:ancestry [[:pclass-2] [:pclass-1 aocf]],
+    :names [requesting-unit1 field1],
+    :type :field-ref}},
+  :display-args [requesting-unit1.field1],
+  :display-name "Send It To",
   :edges [],
   :incidence-set #{},
   :name "send-it-to",
@@ -37,14 +47,12 @@
  {:args
   [{:type :field-ref,
     :names [requesting-unit1 field1],
-    :pclass requesting-unit,
-    :plant-id "RequestingUnit1"}
+    :ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]]}
    "100MB"],
   :argsmap
   {"destination"
-   {:names [requesting-unit1 field1],
-    :pclass requesting-unit,
-    :plant-id "RequestingUnit1",
+   {:ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]],
+    :names [requesting-unit1 field1],
     :type :field-ref},
    "size" "100MB"},
   :display-args [requesting-unit1.field1 "100MB"],

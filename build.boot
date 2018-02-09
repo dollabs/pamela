@@ -108,6 +108,7 @@
 ;; This task is commented out here for users that have not copied
 ;; a profile.boot file to ~/.boot/ which defines the cider task:
 ;;
+
 ;; (deftask cider-boot
 ;;   "Cider boot params task"
 ;;   []

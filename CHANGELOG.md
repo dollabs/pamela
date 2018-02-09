@@ -16,6 +16,7 @@ Changes
 * Further handle field-refs as part of the fix for #146
 * Add a command line option to set the dbg-println-level
 * Fixed some complex dereferencing cases for HTN generation.
+* Added rubric symbol-ref-htn.pamela
 
 ### [0.6.2] - 2017-08-28
 

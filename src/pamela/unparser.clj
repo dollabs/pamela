@@ -204,6 +204,10 @@
     cond-expr
     (cond-operand? cond-expr)
     (unparse-cond-operand cond-expr)
+    ;; NOTE this would only provide the first field name, not the
+    ;; whole dereferencing chain
+    ;; (= :pclass-ctor (:type cond-expr)) ;; helper for display-argument
+    ;; (-> cond-expr :ancestry first last)
     (map? cond-expr)
     (let [{:keys [type args]} cond-expr]
       (apply list

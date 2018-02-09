@@ -264,7 +264,8 @@
    (let [rv (cond
               (symbol? v)
               v
-              (and (map? v) (= :pclass-ctor (:type v)) (symbol? k))
+              (and (map? v) (symbol? k)
+                (or (= :pclass-ctor (:type v)) (= :field-ref (:type v))))
               v
               :else
               v ;; (unparser/unparse-cond-expr v)
@@ -275,8 +276,15 @@
 (defn unparse-arg-v [v]
   (unparse-arg-kv nil v))
 
+;; symbols is a vector of one or more symbols
+;; returns one symbol with all symbols combined with "."
+(defn coalesce-symbols [symbols]
+  (apply str (interpose "." (map str symbols))))
+
 (defn display-argument [arg]
-  (let [new-arg (unparser/unparse-cond-expr arg)
+  (let [new-arg (if (:field-ref arg)
+                  (coalesce-symbols (:names arg))
+                  (unparser/unparse-cond-expr arg))
         _ (dbg-println :trace "  DA new-arg" (pr-str new-arg))
         new-arg (if (and (= new-arg '(nil)) (:param arg))
                   (:param arg)
@@ -1463,38 +1471,42 @@
   (let [[[pci-uid pci-field] & more] pca
         pci (if pci-uid (get-pclass-instance pci-uid))
         fpc_ (if pci (get-in pci [:fields f :initial]))
-        rv (cond
-             (string? fpc_) ;; handle all literals?
-             [fpc_ pca]
-             (= :pclass-ctor (:type fpc_))
-             [fpc_ (:ancestry fpc_)]
-             (= :pclass-arg-ref (:type fpc_))
-             ;; find first of (:names initial) in formal
-             ;; args and then take that one from actual args
-             ;; (get
-             ;;   (:args pci)
-             ;;   (vec-index-of
-             ;;     (get-in ir [(:pclass pci) :args])
-             ;;     (-> fpc_ :names first)))
-             (let [actual-args (:args pci)
-                   formal-args (get-in ir [(:pclass pci) :args])
-                   formal-arg (-> fpc_ :names first)
-                   actual-arg (get actual-args
-                                (vec-index-of formal-args formal-arg))]
-               (dbg-println :trace "  RFR :pclass-arg-ref PCLASS" (:pclass pci)
-                 "\n    ACTUAL-ARGS" actual-args
-                 "\n    FORMAL-ARGS" formal-args
-                 "\n    FORMAL-ARG" formal-arg
-                 "\n    ACTUAL-ARG" actual-arg)
-               [actual-arg pca])
-             ;; NOTE :field-ref NOT handled here yet
-             :else
-             ;; get initial for types OTHER than pclass-ctor_ from the IR
-             (let [initial (get-in ir [(:pclass pci) :fields f :initial])]
-               (if initial ;; not nil value, e.g. string
-                 [initial pca]
-                 (if-not (empty? more)
-                   (resolve-field-ref ir f more)))))]
+        [c_ a_] (cond
+                  ;; do NOT dereference fields here!
+                  ;; (string? fpc_) ;; handle all literals?
+                  ;; [fpc_ pca]
+                  (nil? (:type fpc_))
+                  [f pca] ;; maintain as field reference
+                  (= :pclass-ctor (:type fpc_))
+                  [fpc_ (:ancestry fpc_)]
+                  (= :pclass-arg-ref (:type fpc_))
+                  ;; find first of (:names initial) in formal
+                  ;; args and then take that one from actual args
+                  ;; (get
+                  ;;   (:args pci)
+                  ;;   (vec-index-of
+                  ;;     (get-in ir [(:pclass pci) :args])
+                  ;;     (-> fpc_ :names first)))
+                  (let [actual-args (:args pci)
+                        formal-args (get-in ir [(:pclass pci) :args])
+                        formal-arg (-> fpc_ :names first)
+                        actual-arg (get actual-args
+                                     (vec-index-of formal-args formal-arg))]
+                    (dbg-println :trace "  RFR :pclass-arg-ref PCLASS" (:pclass pci)
+                      "\n    ACTUAL-ARGS" actual-args
+                      "\n    FORMAL-ARGS" formal-args
+                      "\n    FORMAL-ARG" formal-arg
+                      "\n    ACTUAL-ARG" actual-arg)
+                    [actual-arg pca])
+                  ;; NOTE :field-ref NOT handled here yet
+                  :else
+                  ;; get initial for types OTHER than pclass-ctor_ from the IR
+                  (let [initial (get-in ir [(:pclass pci) :fields f :initial])]
+                    (if initial ;; not nil value, e.g. string
+                      [initial pca]
+                      (if-not (empty? more)
+                        (resolve-field-ref ir f more)))))
+        rv [(if (map? c_) (dissoc c_ :fields) c_) a_]]
     (dbg-println :trace "  RFR rv =>"
       (if (map? rv)
         (dissoc rv :fields)
@@ -1562,7 +1574,7 @@
                            ;; caller-argument-mappings (:argument-mappings
                            ;;                           caller-hem)
                            ;; aval (get caller-argument-mappings (or arg mval))
-                           [aval _] (resolve-field-ref ir arg (rest pca))
+                           [aval _] (resolve-field-ref ir arg (vec (rest pca)))
                            _ (dbg-println :debug "  AVAL"
                                (if (map? aval)
                                  (dissoc aval :fields)
@@ -1602,12 +1614,8 @@
                            "\n  this-initial_" this-initial_
                            "\n  caller-initial_" caller-initial_)]
                    (cond
-                     (= :pclass-ctor (:type fpc_))
-                     (assoc-if a
-                       :pclass (:pclass fpc_)
-                       :plant-id (:plant-id fpc_)
-                       :plant-part (:plant-part fpc_)
-                       :plant-interface (:plant-interface fpc_))
+                     (symbol? fpc_) ;; preserve field-ref
+                     (assoc a :ancestry fpca)
                      fpc_
                      fpc_
                      (= :pclass-ctor (:type this-initial_))
@@ -1665,14 +1673,22 @@
     (dbg-println :trace "PD primitive?" primitive?
       "ancestry-path" (print-ancestry-path ancestry-path)
       "caller-pclass" caller-pclass)
-    (if (or (not primitive?) (= name 'delay))
+    (if (= name 'delay)
       details_
-      (let [args (or arguments [])
+      (let [args (or arguments []) ;; now resolve args for non primitive?
             _ (dbg-println :trace "PD args before" args)
             args (resolve-arguments pargs args nil ancestry-path)
+            display-args-before (mapv display-argument args)
             args (resolve-to-plant-instance ir caller-pclass hem-pclass
                    pargs args subtask_ pca)
-            display-args (mapv display-argument args)
+            display-args (mapv
+                           (fn [before-arg arg]
+                             (let [da (display-argument arg)]
+                               (if (and da (seq? da) (nil? (first da)))
+                                 before-arg
+                                 da)))
+                           display-args-before
+                           args)
             _ (dbg-println :trace "PD args after" args)
             _ (dbg-println :trace "PD display-args" display-args)
             _ (dbg-println :debug "PD pclass-ctor_" pclass-ctor_)
@@ -1718,11 +1734,18 @@
   (let [{:keys [uid ancestry]} pclass-ctor_]
     (vec (conj (seq ancestry) [uid])))) ;; prepend
 
+;; if we call a method in this class we NEED to re-add this pclass
+;; instance to the PCA
+(defn local-method-pca [pca]
+  (let [[pca0 & more] pca]
+    (vec (conj (seq pca) pca0)))) ;; prepend
+
 ;; given the method function
 ;; return the apropos [pclass-ctor_ pca]
 (defn resolve-method [ir method-fn_ pca pci argument-mappings pargs
                       ancestry-path]
-  (dbg-println :debug "method-fn_ (w/o body)" (dissoc method-fn_ :body))
+  (dbg-println :debug "RM method-fn_ (w/o body)" (dissoc method-fn_ :body)
+    "\n  PCA" pca)
   (let [m-type (:type method-fn_)]
     (cond
       (= m-type :method-fn) ;; this is a pclass method invocation
@@ -1737,7 +1760,7 @@
             [pc_ (prepend-pca pc_)])
           ;; is this a function of this pclass? where n1 is the function
           (and (= type :symbol-ref) (= n0 'this))
-          [(dissoc pci :fields) pca]
+          [(dissoc pci :fields) (local-method-pca pca)]
           (and (= type :pclass-arg-ref) n0)
           (let [parg (first (filter #(= n0 (:param %)) pargs))]
             (if (not= :pclass-ctor (:type parg))
@@ -1746,6 +1769,7 @@
               [(dissoc parg :fields) (prepend-pca parg)]))
           (and (= type :method-arg-ref) n0)
           (let [mval (get argument-mappings n0)]
+            (dbg-println :debug "  :method-arg-ref N0" n0 "MVAL" mval)
             (cond
               (symbol? mval)
               (let [arg (-> mval :names first)
@@ -1778,7 +1802,7 @@
                   [(dissoc parg :fields) (prepend-pca parg)]))
               (= :field-ref (:type mval))
               (let [[fpc_ fpca] (resolve-field-ref ir
-                                  (-> mval :names first) (rest pca))]
+                                  (-> mval :names first) (vec (rest pca)))]
                 (if (not= :pclass-ctor (:type fpc_))
                   (fatal-error "pclass argument"
                     n0 "is not a pamela class constructor" ))

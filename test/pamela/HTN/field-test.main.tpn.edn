@@ -2,14 +2,12 @@
  {:args
   [{:type :field-ref,
     :names [requesting-unit1 field1],
-    :pclass requesting-unit,
-    :plant-id "RequestingUnit1"}
+    :ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]]}
    "100MB"],
   :argsmap
   {"destination"
-   {:names [requesting-unit1 field1],
-    :pclass requesting-unit,
-    :plant-id "RequestingUnit1",
+   {:ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]],
+    :names [requesting-unit1 field1],
     :type :field-ref},
    "size" "100MB"},
   :command "ftp-to",
@@ -21,7 +19,7 @@
   :end-node :node-1,
   :htn-node :hem-22,
   :name
-  "FTP to({:type :field-ref, :names [requesting-unit1 field1], :pclass requesting-unit, :plant-id \"RequestingUnit1\"} \"100MB\")",
+  "FTP to({:type :field-ref, :names [requesting-unit1 field1], :ancestry [[:pclass-2] [:pclass-2] [:pclass-1 aocf]]} \"100MB\")",
   :plant-id "AOC",
   :reward 0,
   :tpn-type :activity,
