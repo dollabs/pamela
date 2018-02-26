@@ -13,6 +13,12 @@
 
 ;; A feasible sequence of few activities
 
+;; Compile as:
+;; TPN only
+;; pamela -i sequence.feasible.pamela -o sequence.feasible.cfm.tpn.json -c htn-main:sf:main tpn
+;; HTN and TPN:
+;; pamela -i sequence.feasible.pamela -o sequence.feasible -t "(htn-main.main)" htn
+
 (defpclass plant []
   :meta {:doc "The Plant API"}
   :methods [(defpmethod do-a {:bounds [2 4]} [])
@@ -23,7 +29,9 @@
 
 (defpclass sequence-feasible [plnt]
   :meta {:doc "An example of infeasible sequence of activties"}
-  :fields {main (sequence-feasible)}
+  :fields {plnt (plant)
+           ;main (sequence-feasible plnt)
+           }
   :methods [(defpmethod main
               {:doc "Simple TPN with constraints"}
               []
@@ -33,3 +41,10 @@
                 (plnt.do-c)
                 (plnt.do-d)
                 (plnt.do-e)))])
+
+(defpclass htn-main []
+           :meta {:doc "Main class for HTN"}
+           :fields {plnt (plant)
+                    sf (sequence-feasible plnt)}
+           :methods [(defpmethod main []
+                          (sf.main))])
