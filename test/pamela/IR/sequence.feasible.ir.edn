@@ -1,4 +1,38 @@
-{plant
+{htn-main
+ {:args [],
+  :fields
+  {plnt
+   {:access :private,
+    :initial {:args [], :pclass plant, :type :pclass-ctor},
+    :observable false},
+   sf
+   {:access :private,
+    :initial
+    {:args [{:type :field-ref, :names [plnt]}],
+     :pclass sequence-feasible,
+     :type :pclass-ctor},
+    :observable false}},
+  :meta {:doc "Main class for HTN"},
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :field-ref, :names [sf main]},
+       :args []}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ plant
  {:args [],
   :meta {:doc "The Plant API"},
   :methods
@@ -75,11 +109,6 @@
   :type :pclass},
  sequence-feasible
  {:args [plnt],
-  :fields
-  {main
-   {:access :private,
-    :initial {:args [], :pclass sequence-feasible, :type :pclass-ctor},
-    :observable false}},
   :meta {:doc "An example of infeasible sequence of activties"},
   :methods
   {main
@@ -103,7 +132,7 @@
         {:type :method-fn,
          :method-ref {:type :pclass-arg-ref, :names [plnt do-e]},
          :args []}],
-       :temporal-constraints [{:type :bounds, :value [10 30]}]}],
+       :temporal-constraints [{:type :bounds, :value [15 30]}]}],
      :controllable false,
      :cost 0,
      :display-args [],

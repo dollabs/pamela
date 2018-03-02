@@ -20,31 +20,33 @@
 ;; pamela -i sequence.feasible.pamela -o sequence.feasible -t "(htn-main.main)" htn
 
 (defpclass plant []
-  :meta {:doc "The Plant API"}
-  :methods [(defpmethod do-a {:bounds [2 4]} [])
-            (defpmethod do-b {:bounds [3 6]} [])
-            (defpmethod do-c {:bounds [4 8]} [])
-            (defpmethod do-d {:bounds [1 2]} [])
-            (defpmethod do-e {:bounds [5 10]} [])])
+           :meta {:doc "The Plant API"}
+           :methods [(defpmethod do-a {:bounds [2 4]} [])
+                     (defpmethod do-b {:bounds [3 6]} [])
+                     (defpmethod do-c {:bounds [4 8]} [])
+                     (defpmethod do-d {:bounds [1 2]} [])
+                     (defpmethod do-e {:bounds [5 10]} [])])
 
 (defpclass sequence-feasible [plnt]
-  :meta {:doc "An example of infeasible sequence of activties"}
-  :fields {plnt (plant)
-           ;main (sequence-feasible plnt)
-           }
-  :methods [(defpmethod main
-              {:doc "Simple TPN with constraints"}
-              []
-              (sequence :bounds [10 30]
-                (plnt.do-a)
-                (plnt.do-b)
-                (plnt.do-c)
-                (plnt.do-d)
-                (plnt.do-e)))])
+           :meta {:doc "An example of infeasible sequence of activties"}
+           ;:fields {
+           ;         ;plnt (plant)
+           ;         ;main (sequence-feasible plnt); TODO This does not compile
+           ;         }
+           ;:fields {} ; TODO this does not compile
+           :methods [(defpmethod main
+                                 {:doc "Simple TPN with constraints"}
+                                 []
+                                 (sequence :bounds [15 30]
+                                           (plnt.do-a)
+                                           (plnt.do-b)
+                                           (plnt.do-c)
+                                           (plnt.do-d)
+                                           (plnt.do-e)))])
 
 (defpclass htn-main []
            :meta {:doc "Main class for HTN"}
            :fields {plnt (plant)
                     sf (sequence-feasible plnt)}
            :methods [(defpmethod main []
-                          (sf.main))])
+                                 (sf.main))])
