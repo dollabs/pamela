@@ -70,14 +70,15 @@
   "Load model(s) and build intermediate representation (IR)"
   {:added "0.3.0"}
   [options]
-  (let [{:keys [input output source]} options
-        ir (parser/parse options)]
+  (let [{:keys [input output source json-ir]} options
+        ir (parser/parse options)
+        file-format (if-not json-ir "edn-mixed" "json")]
     (if (:error ir)
       (do
         (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
         1)
       (do
-        (output-file output "edn-mixed" ir)
+        (output-file output file-format ir)
         (when source
           (output-file source "raw" (unparser/unparse ir)))
         0))))
@@ -182,6 +183,7 @@
     :validate [#(contains? output-formats %)
                (str "FORMAT not supported, must be one of "
                  (vec output-formats))]]
+   [nil "--json-ir" "Generate IR in json form" :default false]
    ["-h" "--help" "Print usage"]
    ["-i" "--input INPUT" "Input file(s) (or - for STDIN)"
     :default ["-"]
