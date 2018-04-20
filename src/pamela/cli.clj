@@ -57,13 +57,13 @@
         (log/error "check action does not accept magic output")
         1)
       :else
-      (let [tree (parser/parse (assoc options :check-only? true))]
+      (let [tree (parser/parse-pamela-file (first input)) #_(parser/parse (assoc options :check-only? true))]
         (if (:error tree)
           (do
             (log/errorf "unable to parse: %s\nerror: %s" input (:error tree))
             1)
           (do
-            (output-file output "edn" (:tree tree))
+            (output-file output "edn" tree)
             0))))))
 
 (defn build-model
