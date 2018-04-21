@@ -22,4 +22,15 @@
    :dead
    {:args [{:type :field-ref, :names [temperature]} 0], :type :equal}},
   :type :pclass},
- c {:args [], :inherit [a b], :type :pclass}}
+ c
+ {:args [],
+  :fields
+  {breathing {:access :private, :initial "true", :observable false},
+   temperature {:access :private, :initial 25, :observable false}},
+  :modes
+  {:alive
+   {:args [{:type :field-ref, :names [breathing]} true], :type :equal},
+   :dead
+   {:args [{:type :field-ref, :names [breathing]} false],
+    :type :equal}},
+  :type :pclass}}
