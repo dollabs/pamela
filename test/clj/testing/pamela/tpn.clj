@@ -13,7 +13,7 @@
 
 (ns testing.pamela.tpn
   (:require [clojure.test :refer :all]
-            [pamela.tpn :refer :all]))
+            [pamela.utils :refer :all]))
 
 (deftest testing-pamela-tpn
   (testing "testing-pamela-tpn"
