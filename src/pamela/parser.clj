@@ -1211,70 +1211,93 @@
               (recur (assoc mir name (or default :unset))
                 (first more) (rest more)))))))))
 
+(defn parse-pamela-file
+  "Parses input-filename using instaparse
+  Returns :error or the instaparse tree"
+  [input-filename & [insta-parser-obj]]
+  (if (fs/exists? input-filename)
+    (let [tree (insta/parses (or insta-parser-obj (build-parser)) (slurp input-filename))]
+      (cond (insta/failure? tree)
+            (let [msg (str "parse: invalid input file: "
+                           input-filename)]
+              (log/error msg)
+              (log/error (with-out-str (pprint (insta/get-failure tree))))
+              {:error msg})
+            (not= 1 (count tree))
+            (let [msg (str "parse: grammar is ambiguous for input file: "
+                           input-filename)]
+              (log/error msg)
+              (log/error (with-out-str (pprint tree)))
+              {:error msg})
+            :else                                           ; All is well
+            (first tree)))
+    (let [msg (str "parse: input file not found: "
+                   input-filename)]
+      (log/error msg)
+      {:error msg})))
+
+(defn transform-pamela-files
+  "input is a list of pamela files
+   parse and transform pamela files
+   Return {input-filename transformed-ir}"
+  [input parser]
+  (reduce (fn [result input-filename]
+            (log/info "parse" input-filename)
+            (let [parsed-tree (parse-pamela-file input-filename parser)
+                  parse-error? (contains? parsed-tree :error)]
+              (conj result {input-filename (if parse-error? parsed-tree
+                                                            (insta/transform pamela-ir parsed-tree))})
+              ))
+          {} input))
+
+(defn do-magic-processing
+  "Add lvars to transformed IR"
+  [ir input output-magic]
+  (let [lvars @pamela-lvars
+        input-names (mapv fs-basename input)
+        out-magic (if (pos? (count lvars))
+                    (apply str
+                           ";; -*- Mode: clojure; coding: utf-8  -*-\n"
+                           ";; magic file corresponding to:\n"
+                           ";; " input-names "\n"
+                           (for [k (keys lvars)]
+                             (str "(lvar \"" k "\" " (get lvars k) ")\n"))))]
+    (if out-magic
+      (do
+        (if output-magic
+          (output-file output-magic "string" out-magic))
+        (assoc ir
+          'pamela/lvars
+          {:type :lvars
+           :lvars lvars}))
+      ir)))
+
 ;; Will parse the pamela input file(s)
 ;; and return {:error "message"} on errors
 ;; else the PAMELA IR
-;;   unless check-only? in which case it will return the parse
-;;   tree as txt
 (defn parse [options]
   ;; (log/warn "PARSE" options)
-  (let [{:keys [input magic output-magic check-only? do-not-validate]} options
+  (let [{:keys [input magic output-magic do-not-validate]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
       ;; (println "Magic" magic "MIR" mir)  ;; DEBUG
       (log/debug "MAGIC input\n" (with-out-str (pprint mir))))
     (reset! pamela-lvars mir)
-    (loop [ir {} input-filename (first input) more (rest input)]
-      (if (or (:error ir) (not input-filename))
-        (let [lvars (if check-only? [] @pamela-lvars)
-              input-names (mapv fs-basename input)
-              out-magic (if (pos? (count lvars))
-                          (apply str
-                            ";; -*- Mode: clojure; coding: utf-8  -*-\n"
-                            ";; magic file corresponding to:\n"
-                            ";; " input-names "\n"
-                            (for [k (keys lvars)]
-                              (str "(lvar \"" k "\" " (get lvars k) ")\n"))))]
-          (if out-magic
-            (do
-              (if output-magic
-                (output-file output-magic "string" out-magic))
-              (assoc ir
-                'pamela/lvars
-                {:type :lvars
-                 :lvars lvars}))
-            ir))
-        (let [tree (if (fs/exists? input-filename)
-                     (insta/parses parser (slurp input-filename)))
-              ir (cond
-                   (not (fs/exists? input-filename))
-                   (let [msg (str "parse: input file not found: "
-                               input-filename)]
-                     (log/error msg)
-                     {:error msg})
-                   (insta/failure? tree)
-                   (let [msg (str "parse: invalid input file: "
-                               input-filename)]
-                     (log/error msg)
-                     (log/error (with-out-str (pprint (insta/get-failure tree))))
-                     {:error msg})
-                   (not= 1 (count tree))
-                   (let [msg (str "parse: grammar is ambiguous for input file: "
-                               input-filename)]
-                     (log/error msg)
-                     (log/error (with-out-str (pprint tree)))
-                     {:error msg})
-                   :else
-                   (let [tree0 (first tree)
-                         ;; _ (log/warn "PRE-VALIDATE")
-                         pir (if check-only?
-                               {:tree tree0}
-                               (if do-not-validate
-                                 (insta/transform pamela-ir tree0)
-                                 (validate-pamela
-                                   (insta/transform pamela-ir tree0))))]
-                     (if (:error pir)
-                       pir
-                       (merge ir pir))))]
-          (recur ir (first more) (rest more)))))))
+    ; TODO
+    ; Iterate over all input files
+    ;   For each file, create IR and merge with final-IR
+    ;   collecting errors in a vector
+    ; when no errors, validate before returning final-IR
+    ; otherwise return {:error []} only
+    (let [transformed (transform-pamela-files input parser)
+          fnil-conj (fnil conj [])
+          ir (reduce (fn [ir [_ tir]]
+                       (if (contains? tir :error)
+                         (update ir :error fnil-conj (:error tir))
+                         (merge ir tir)))
+                     {} transformed)
+          final-ir (if (contains? ir :error)
+                     {:error (:error ir)}                   ;if there are any errors, return only errors
+                     (validate-pamela ir))]
+      (do-magic-processing final-ir input output-magic))))
