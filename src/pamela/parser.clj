@@ -1285,14 +1285,9 @@
       ;; (println "Magic" magic "MIR" mir)  ;; DEBUG
       (log/debug "MAGIC input\n" (with-out-str (pprint mir))))
     (reset! pamela-lvars mir)
-    ; TODO
-    ; Iterate over all input files
-    ;   For each file, create IR and merge with final-IR
-    ;   collecting errors in a vector
-    ; when no errors, validate before returning final-IR
-    ; otherwise return {:error []} only
     (let [transformed (transform-pamela-files input parser)
           fnil-conj (fnil conj [])
+          ;; Collect errors if any.
           ir (reduce (fn [ir [_ tir]]
                        (if (contains? tir :error)
                          (update ir :error fnil-conj (:error tir))
