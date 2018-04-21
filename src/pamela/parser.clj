@@ -1243,7 +1243,7 @@
    Return {input-filename transformed-ir}"
   [input parser]
   (reduce (fn [result input-filename]
-            (log/info "parse" input-filename)
+            #_(log/info "parse" input-filename)
             (let [parsed-tree (parse-pamela-file input-filename parser)
                   parse-error? (contains? parsed-tree :error)]
               (conj result {input-filename (if parse-error? parsed-tree
@@ -1278,7 +1278,7 @@
 ;; else the PAMELA IR
 (defn parse [options]
   ;; (log/warn "PARSE" options)
-  (let [{:keys [input magic output-magic do-not-validate]} options
+  (let [{:keys [input magic output-magic do-not-apply-inheritance]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
@@ -1298,8 +1298,12 @@
                          (update ir :error fnil-conj (:error tir))
                          (merge ir tir)))
                      {} transformed)
-          final-ir (if (contains? ir :error)
+          final-ir (cond
+                     (contains? ir :error)
                      {:error (:error ir)}                   ;if there are any errors, return only errors
+                     do-not-apply-inheritance
+                     (validate-pamela ir)
+                     :else
                      (validate-pamela (pamela.inheritance/flatten-inheritance ir))
-                     #_(validate-pamela ir))]
+                     )]
       (do-magic-processing final-ir input output-magic))))
