@@ -23,6 +23,7 @@
             [camel-snake-kebab.core :as translate]
             [pamela.utils :refer [output-file display-name-string dbg-println
                                   clj19-boolean?]]
+            [pamela.inheritance]
             [avenir.utils :refer [and-fn assoc-if vec-index-of concatv]]
             [instaparse.core :as insta]
             [plan-schema.utils :refer [fs-basename]]
@@ -1299,5 +1300,6 @@
                      {} transformed)
           final-ir (if (contains? ir :error)
                      {:error (:error ir)}                   ;if there are any errors, return only errors
-                     (validate-pamela ir))]
+                     (validate-pamela (pamela.inheritance/flatten-inheritance ir))
+                     #_(validate-pamela ir))]
       (do-magic-processing final-ir input output-magic))))
