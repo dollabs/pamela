@@ -2622,7 +2622,7 @@
   (tpn/reinitialize-tpn-plan-map)
   (reinitialize-pclass-instances)
   (let [[pclass pargs method mi args pca] (identify-root-task ir root-task)
-        _ (dbg-println :info "PAMELA" pclass pargs "METHOD" method mi
+        _ (dbg-println :info "PAMIA" pclass pargs "METHOD" method mi
             "\n  ARGS" (with-out-str (pprint args))
             "\n  PCA" pca)
         _ (dbg-println :trace "PCLASS-INSTANCES===\n"
