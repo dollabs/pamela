@@ -26,6 +26,7 @@
            )
 
 (defpclass a []
+           :inherit [a1]
            :fields {fa "fa"}
            :modes {:moa1 (= fa "fa")
                    :moa2 (= fa false)}
@@ -49,6 +50,7 @@
            :methods [(defpmethod ma [arg1 arg2])])
 
 (defpclass c []
+           :inherit [a b]
            :fields {fa "fa"}
            :modes {:moa1 (= fa "fa")
                    :moa2 (= fa false)}

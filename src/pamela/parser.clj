@@ -1278,7 +1278,7 @@
 ;; else the PAMELA IR
 (defn parse [options]
   ;; (log/warn "PARSE" options)
-  (let [{:keys [input magic output-magic do-not-apply-inheritance]} options
+  (let [{:keys [input magic output-magic]} options
         parser (build-parser)
         mir (if magic (parse-magic magic) {})]
     (when magic
@@ -1296,8 +1296,6 @@
           final-ir (cond
                      (contains? ir :error)
                      {:error (:error ir)}                   ;if there are any errors, return only errors
-                     do-not-apply-inheritance
-                     (validate-pamela ir)
                      :else
                      (validate-pamela (pamela.inheritance/flatten-inheritance ir))
                      )]

@@ -33,8 +33,7 @@
                                  main [main a a1 a11 a12 a13 a2 a3 b]})
 (deftest test-class-precedence
   []
-  (let [ir (parser/parse {:input [(clojure.java.io/file "test/pamela/inheritance-hierarchy.pamela")]
-                          :do-not-apply-inheritance true})
+  (let [ir (parser/parse {:input [(clojure.java.io/file "test/pamela/inheritance-hierarchy.pamela")]})
         flat (pamela.inheritance/create-class-precedence ir)]
     ;(println "Got IR")
     ;(pprint ir)

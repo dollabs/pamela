@@ -12,6 +12,7 @@
  {:args [],
   :fields
   {temperature {:access :private, :initial 25, :observable false}},
+  :inherit [a b],
   :methods
   {print
    [{:args [label value],

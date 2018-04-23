@@ -164,9 +164,7 @@
         modes (merge-modes clist ir)
         new-class-ir (if (pos? (count modes))
                        (assoc new-class-ir :modes modes)
-                       new-class-ir)
-
-        new-class-ir (dissoc new-class-ir :inherit)]
+                       new-class-ir)]
     ;(println "modes")
     ;(pprint modes)
     new-class-ir))

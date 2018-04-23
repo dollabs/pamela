@@ -60,6 +60,7 @@
  {:args [],
   :fields
   {brand {:access :private, :initial "DOLL", :observable false}},
+  :inherit [a b],
   :modes {:fail true, :off true, :on true},
   :transitions
   {:*:fail

@@ -1,6 +1,7 @@
 {a
  {:args [],
   :fields {fa {:access :private, :initial "fa", :observable false}},
+  :inherit [a1],
   :methods
   {ma
    [{:args [arg1 arg2],
@@ -132,6 +133,7 @@
  c
  {:args [],
   :fields {fa {:access :private, :initial "fa", :observable false}},
+  :inherit [a b],
   :methods
   {ma
    [{:args [arg1 arg2],
