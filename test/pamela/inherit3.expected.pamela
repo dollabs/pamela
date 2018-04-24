@@ -33,6 +33,7 @@
 
 (defpclass c []
 
+  :inherit [a b]
   ;; inherited modes
    :modes [:on :off]
 

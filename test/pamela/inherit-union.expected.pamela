@@ -51,6 +51,7 @@
            :methods [(defpmethod mb [arg1 arg2])])
 
 (defpclass c []
+           :inherit [a b]
            :fields {fa "fa" fb "fb" x 1}
            :modes {:moa1 (= fa "fa")
                    :moa2 (= fa false)

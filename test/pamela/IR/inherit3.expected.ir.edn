@@ -52,6 +52,7 @@
   :type :pclass},
  c
  {:args [],
+  :inherit [a b],
   :methods
   {turn-on
    [{:args [],

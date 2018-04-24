@@ -122,6 +122,7 @@
   {fa {:access :private, :initial "fa", :observable false},
    fb {:access :private, :initial "fb", :observable false},
    x {:access :private, :initial 1, :observable false}},
+  :inherit [a b],
   :methods
   {ma
    [{:args [arg1 arg2],

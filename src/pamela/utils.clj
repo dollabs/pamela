@@ -191,3 +191,57 @@
 (defn clj19-boolean?
   "Return true if x is a Boolean"
   [x] (instance? Boolean x))
+
+(defn default-bounds?
+  "Return true of bounds are [0 :infinity]"
+  {:added "0.2.0"}
+  [bounds]
+  (and (vector? bounds)
+       (or (zero? (count bounds))
+           (and
+             (= 2 (count bounds))
+             (= 0 (first bounds))
+             (= :infinity (second bounds))))))
+
+(defn remove-default-bounds [bounds]
+  (if (default-bounds? bounds)
+    nil
+    bounds))
+
+;; returns the narrowest bounds
+;; if a is an lvar {:type :lvar ...} then use a,
+;; else if b is an lvar then use b
+;; else expect both are bounds vectors
+(defn merge-bounds [a b]
+  (cond
+    (and (map? a) (= (:type a) :lvar))
+    a
+    (and (map? b) (= (:type b) :lvar))
+    b
+    (map? a)
+    (remove-default-bounds b)
+    (map? b)
+    (remove-default-bounds a)
+    :else
+    (let [[a-lb a-ub] (remove-default-bounds a)
+          [b-lb b-ub] (remove-default-bounds b)
+          lb (if a-lb
+               (if b-lb
+                 (min a-lb b-lb)
+                 a-lb)
+               (if b-lb
+                 b-lb
+                 0))
+          ub (if a-ub
+               (if b-ub
+                 (if (or (= a-ub :infinity) (= b-ub :infinity))
+                   :infinity
+                   (max a-ub b-ub))
+                 a-ub)
+               (if b-ub
+                 b-ub
+                 :infinity))
+          rv (if (and (= lb 0) (= ub :infinity))
+               nil ;; do NOT explicitly return default bounds
+               [lb ub])]
+      rv)))
