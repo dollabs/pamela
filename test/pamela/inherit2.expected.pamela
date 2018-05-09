@@ -26,7 +26,7 @@
                    :dead  (= temperature 0)})
 
 (defpclass c []
-
+           :inherit [a b]
            ;; inherited fields
             :fields {breathing "true"
                      temperature 25}

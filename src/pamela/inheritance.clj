@@ -14,8 +14,7 @@
 
 (ns pamela.inheritance
   (:require [clojure.pprint :refer :all]
-            [pamela.utils :as putils]
-            [pamela.tpn]))
+            [pamela.utils :as putils]))
 
 
 (defn get-parents [clas ir]
@@ -108,7 +107,7 @@
   (let [has-tc? (or (:temporal-constraints specific) (:temporal-constraints more-specific))
         trans (or more-specific specific)]
     (if has-tc?
-      (conj trans {:temporal-constraints [{:type :bounds :value (pamela.tpn/merge-bounds (-> specific :temporal-constraints first :value)
+      (conj trans {:temporal-constraints [{:type :bounds :value (putils/merge-bounds (-> specific :temporal-constraints first :value)
                                                                               (-> more-specific :temporal-constraints first :value))}]
                    })
       trans)))
@@ -165,9 +164,7 @@
         modes (merge-modes clist ir)
         new-class-ir (if (pos? (count modes))
                        (assoc new-class-ir :modes modes)
-                       new-class-ir)
-
-        new-class-ir (dissoc new-class-ir :inherit)]
+                       new-class-ir)]
     ;(println "modes")
     ;(pprint modes)
     new-class-ir))

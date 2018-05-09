@@ -57,13 +57,13 @@
         (log/error "check action does not accept magic output")
         1)
       :else
-      (let [tree (parser/parse (assoc options :check-only? true))]
+      (let [tree (parser/parse-pamela-file (first input))]
         (if (:error tree)
           (do
             (log/errorf "unable to parse: %s\nerror: %s" input (:error tree))
             1)
           (do
-            (output-file output "edn" (:tree tree))
+            (output-file output "edn" tree)
             0))))))
 
 (defn build-model
@@ -75,7 +75,7 @@
         file-format (if-not json-ir "edn-mixed" "json")]
     (if (:error ir)
       (do
-        (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+        (log/errorf "unable to parse: %s\nerror: %s" input (with-out-str (pprint (:error ir))))
         1)
       (do
         (output-file output file-format ir)
@@ -114,7 +114,7 @@
         tpn (cond
               (:error ir)
               (do
-                (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+                (log/errorf "unable to parse: %s\nerror: %s" input (with-out-str (pprint (:error ir))))
                 ir)
               :else
               (tpn/load-tpn ir options))]
@@ -140,7 +140,7 @@
         ir (parser/parse options)]
     (if (:error ir)
       (do
-        (log/errorf "unable to parse: %s\nerror: %s" input (:error ir))
+        (log/errorf "unable to parse: %s\nerror: %s" input (with-out-str (pprint (:error ir))))
         1)
       (if-not (#{"edn" "json"} file-format)
         (do

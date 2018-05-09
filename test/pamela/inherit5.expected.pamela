@@ -34,7 +34,7 @@
 
 (defpclass c []
 
-
+  :inherit [a b]
   ;; inherited fields
    :fields {brand "DOLL"}
 

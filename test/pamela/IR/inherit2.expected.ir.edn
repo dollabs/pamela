@@ -27,6 +27,7 @@
   :fields
   {breathing {:access :private, :initial "true", :observable false},
    temperature {:access :private, :initial 25, :observable false}},
+  :inherit [a b],
   :modes
   {:alive
    {:args [{:type :field-ref, :names [breathing]} true], :type :equal},

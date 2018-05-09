@@ -10,6 +10,8 @@
   :type :pclass},
  c
  {:args [],
+  :fields
+  {temperature {:access :private, :initial 25, :observable false}},
   :inherit [a b],
   :methods
   {print
@@ -36,8 +38,7 @@
        [{:type :method-fn,
          :method-ref {:type :symbol-ref, :names [this print]},
          :args
-         ["temperature"
-          {:type :state-variable, :name temperature}]}]}],
+         ["temperature" {:type :field-ref, :names [temperature]}]}]}],
      :controllable false,
      :cost 0,
      :display-args [],
@@ -49,5 +50,4 @@
      :probability 1.0,
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
-  :type :pclass},
- temperature {:type :state-variable}}
+  :type :pclass}}

@@ -23,7 +23,7 @@
             [camel-snake-kebab.core :as translate]
             [instaparse.core :as insta]
             [pamela.utils :refer [stdout? output-file display-name-string
-                                  dbg-println clj19-boolean?]]
+                                  dbg-println clj19-boolean? default-bounds? merge-bounds]]
             [pamela.parser :as parser]
             [pamela.unparser :as unparser]
             [pamela.tpn :as tpn]))
@@ -1461,7 +1461,7 @@
                 (first
                   (filter #(= (:type %) :bounds)
                     (:temporal-constraints mdef))))]
-    (if-not (tpn/default-bounds? bounds)
+    (if-not (default-bounds? bounds)
       bounds)))
 
 ;; starting at pca try to find the field reference
@@ -1895,7 +1895,7 @@
                    [pclass kw-methods method mi])
         top-bounds (irks->bounds ir top-irks)
         bounds (irks->bounds ir hem-irks)
-        hem-bounds (tpn/merge-bounds top-bounds bounds)
+        hem-bounds (merge-bounds top-bounds bounds)
         _ (dbg-println :debug "CHPM 2.5 top-irks" top-irks
             "top-bounds" top-bounds
             "hem-irks" hem-irks "bounds" bounds
@@ -1969,7 +1969,7 @@
                             (irks->bounds ir (vec (take 8 hem-irks))))
             bounds (if (and irks (not= irks hem-irks))
                      (irks->bounds ir irks))
-            bounds (tpn/merge-bounds choice-bounds bounds)
+            bounds (merge-bounds choice-bounds bounds)
             m-task-expansions (count task-expansions)
 
             _ (dbg-println :debug "ST#" i "of" n-subtasks "IRKS" irks
