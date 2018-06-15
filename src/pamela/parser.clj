@@ -109,7 +109,7 @@
 (defn build-parser [& [ebnf-filename]]
   (let [ebnf-filename (or ebnf-filename "pamela.ebnf")
         ebnf (slurp (resource (str "public/" ebnf-filename)))
-        whitespace (insta/parser "whitespace = #'([,\\s]+|;.*\\n)+'")
+        whitespace (insta/parser "whitespace = #'([,\\s]+|;.*\\s)+'")
         parser (insta/parser ebnf
                  :input-format :ebnf
                  :auto-whitespace whitespace)]
