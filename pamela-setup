@@ -1,0 +1,145 @@
+#!/bin/sh
+# pamela-setup
+# PAMELA installation script
+#
+# Copyright © 2016 Dynamic Object Language Labs Inc.
+#
+# This software is licensed under the terms of the
+# Apache License, Version 2.0 which can be found in
+# the file LICENSE at the root of this distribution.
+
+# Acknowledgement and Disclaimer:
+# This material is based upon work supported by the Army Contracting
+# and DARPA under contract No. W911NF-15-C-0005.
+# Any opinions, findings and conclusions or recommendations expressed
+# in this material are those of the author(s) and do necessarily reflect the
+# views of the Army Contracting Command and DARPA.
+
+program="$(basename $0)"
+dir="$(dirname $0)"
+cwd="$(pwd -P)"
+
+verbose=${PAMELA_VERBOSE:-1}
+bin="$HOME/bin"
+# URL for DOLL labs repos on github
+giturl="https://github.com/dollabs"
+# location for local github repos
+github="$HOME/src/github"
+# location of local DOLL labs repos
+dollabs="$github/dollabs"
+
+# functions ------------------------------------------
+log() {
+  echo $*
+}
+
+vlog() {
+    [ $verbose -eq 0 ] || log "$@"
+}
+
+vvlog() {
+    [ $verbose -lt 2 ] || log "$@"
+}
+
+err() {
+  echo >&2 "${program}: $*"
+}
+
+usage() {
+    err "invalid command line"
+    exit 1
+}
+
+# main program -----------------------------------------------
+
+javapath="$(which java)"
+if [ -z "$javapath" ]; then
+    err "java not found: please install the JDK (and update your PATH)"
+    echo "open http://www.oracle.com/technetwork/java/javase/downloads/index.html"
+    exit 1
+else
+    vlog "OK java is installed"
+fi
+
+gitpath="$(which git)"
+if [ -z "$gitpath" ]; then
+    err "git not found: please install git (and update your PATH)"
+    exit 1
+else
+    vlog "OK git is installed"
+fi
+
+if [ ! -d "$bin" ]; then
+    vlog "making a ~/bin/ directory for your executables"
+    mkdir "$bin"
+else
+    vlog "OK user directory exists: $bin"
+fi
+
+binpath="$(echo $PATH | tr ':' '\n' | grep $bin)"
+
+if [ -z "$binpath" ]; then
+    vlog "be sure to add your ~/bin/ directory to your PATH"
+    vlog "for example add the following to your ~/.bashrc"
+    vlog "export PATH=$bin:\$PATH"
+else
+    vlog "OK user ~/bin/ directory is in PATH"
+fi
+
+bootpath="$(which boot)"
+if [ -z "$bootpath" ]; then
+    vlog "boot not found, installing..."
+    curl -fsSLo "$bin/boot" https://github.com/boot-clj/boot-bin/releases/download/latest/boot.sh
+    chmod 755 "$bin/boot"
+fi
+
+vlog "OK boot is installed"
+
+echo "boot --version"
+boot --version
+
+if [ ! -d "$github" ]; then
+    vlog "making a local directory for github repos in $github"
+    mkdir -p "$github"
+else
+    vlog "OK local github directory exists: $github"
+fi
+
+if [ ! -d "$dollabs" ]; then
+    vlog "making a local directory for dollabs repos in $dollabs"
+    mkdir -p "$dollabs"
+else
+    vlog "OK local dollabs directory exists: $dollabs"
+fi
+
+repos="webkeys webtasks plan-schema planviz pamela"
+
+for repo in $repos; do
+    echo $repo
+    dollrepo="$dollabs/$repo"
+    gitrepo="$giturl/$repo"
+    if [ ! -d "$dollrepo" ]; then
+        vlog "cloning the $repo repo now..."
+        cd "$dollabs"
+        git clone $gitrepo
+        cd "$dollrepo"
+    else
+        vlog "updating the $repo repo now..."
+        cd "$dollrepo"
+        git pull
+    fi
+    case $repo in
+        (webkeys|webtasks|plan-schema)
+            vlog "installing current version of $repo locally..."
+            boot local
+            ;;
+        (planviz)
+            vlog "building PLANVIZ jar for $repo..."
+            boot build-jar
+            ;;
+        (pamela)
+            vlog "building jar and testing $repo..."
+            boot all-tests
+            ;;
+    esac
+done
