@@ -1,0 +1,59 @@
+; A choice TPN for collecting data for paper
+
+(defpclass plant []
+           :meta {:doc "The Plant API"}
+           :methods [(defpmethod activity {:controllable true} [])])
+
+
+(defpclass tpn [plnt]
+           :methods [(defpmethod choic                      ;Note. Method name cannot be choice. Why?
+                                 []
+                                 (choose :bounds [16 25]
+                                         :reward>= 5
+                                         :cost<= 5
+                                         (choice (plnt.activity :bounds [11 20]))
+                                         (choice (plnt.activity :bounds [21 30]))))
+
+                     (defpmethod paralle                    ;Note. Method name cannot be parallel. Why?
+                                 []
+                                 (parallel :bounds [16 25]
+                                           :reward>= 5
+                                           :cost<= 5
+                                           (plnt.activity :bounds [11 20])
+                                           (plnt.activity :bounds [21 30])))
+
+                     (defpmethod sequenc                    ;Note. Method name cannot be sequence. Why?
+                                 []
+                                 (sequence :bounds [16 25]
+                                           :reward>= 5
+                                           :cost<= 5
+                                           (plnt.activity :bounds [11 20])
+                                           (plnt.activity :bounds [21 30])))
+
+                     ])
+
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-choice.tpn.json -c main:tpn:choic tpn
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-choice-htn -t "(main.main-choice)" htn
+
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-parallel.tpn.json -c main:tpn:paralle tpn
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-parallel-htn -t "(main.main-parallel)" htn
+
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-sequence.tpn.json -c main:tpn:sequenc tpn
+; pamela -i over-arching-constraints.pamela -o over-arching-constraints-sequence-htn -t "(main.main-sequence)" htn
+
+; Display tpn files created using tpn action
+; planviz -p 8081 -i over-arching-constraints-choice.tpn.json -i over-arching-constraints-parallel.tpn.json -i over-arching-constraints-sequence.tpn.json
+
+; Display tpn files created using htn action
+; planviz -i over-arching-constraints-choice-htn.tpn.json -i over-arching-constraints-parallel-htn.tpn.json -i over-arching-constraints-sequence-htn.tpn.json
+
+(defpclass main []
+           :fields {plnt (plant)
+                    tpn  (tpn plnt)}
+           :methods [(defpmethod main-choice []
+                                 (tpn.choic))
+                     (defpmethod main-parallel []
+                                 (tpn.paralle))
+                     (defpmethod main-sequence []
+                                 (tpn.sequenc))
+                     ])
