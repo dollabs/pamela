@@ -43,6 +43,30 @@
 (defn get-cwd []
   @cwd)
 
+(defn encode-ir-tokens-as-strings
+  "Encode string/symbol/keyword distinction as strings that can re reversed simply after reading"
+  [ir]
+  (cond (string? ir) (str "\"" ir "\"")
+        (keyword? ir) (str ir)
+        (symbol? ir) ir
+        ;; Recursive data structures
+        (list? ir) (map (fn [sir] (encode-ir-tokens-as-strings sir)) ir)
+        (vector? ir) (seq (map (fn [sir] (encode-ir-tokens-as-strings sir)) ir))
+        (set? ir) (set (map (fn [sir] (encode-ir-tokens-as-strings sir)) ir))
+        (map? ir) (into {} (map (fn [[key val]] {(encode-ir-tokens-as-strings key) (encode-ir-tokens-as-strings val)}) ir))
+        :else ir))                                ; All other cases remain unchanged.
+
+(defn unencode-ir-strings
+  "Unencode string/symbol/keyword encoded as readable strings"
+  [ir]
+  (cond (string? ir) (read-string ir)
+        ;; Recursive data structures
+        (list? ir) (map (fn [sir] (unencode-ir-strings sir)) ir)
+        (vector? ir) (seq (map (fn [sir] (unencode-ir-strings sir)) ir))
+        (set? ir) (set (map (fn [sir] (unencode-ir-strings sir)) ir))
+        (map? ir) (into {} (map (fn [[key val]] {(unencode-ir-strings key) (unencode-ir-strings val)}) ir))
+        :else ir))                                ; All other cases remain unchanged.
+
 ;; file-format's supported: edn edn-mixed json string
 ;; if input is a map, sort it as a homogeneous key map
 ;;    unless the format is edn-mixed = sort as heterogeneous keymap
@@ -56,6 +80,7 @@
                             (if (fs/absolute? filename)
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
+          data (encode-ir-tokens-as-strings data)
           data (if (map? data)
                  ;; (if (= file-format "edn-mixed")
                  ;;   (sort-mixed-map data)
