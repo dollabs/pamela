@@ -1,0 +1,63 @@
+{main
+ {:args [],
+  :methods
+  {main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this method-1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this method-2]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   method-1
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Method 1",
+     :post true,
+     :pre
+     {:type :not,
+      :args
+      [{:type :mode-ref,
+        :mode-ref {:type :symbol-ref, :names [this]},
+        :mode :left}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   method-2
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Method 2",
+     :post true,
+     :pre
+     {:type :mode-ref,
+      :mode-ref {:type :symbol-ref, :names [this]},
+      :mode :right},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes {:left true, :right true},
+  :type :pclass}}
