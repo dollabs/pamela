@@ -80,7 +80,7 @@
                             (if (fs/absolute? filename)
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
-          data (encode-ir-tokens-as-strings data)
+          data (if (= file-format "json") (encode-ir-tokens-as-strings data) data) ; Only for JSON files
           data (if (map? data)
                  ;; (if (= file-format "edn-mixed")
                  ;;   (sort-mixed-map data)
