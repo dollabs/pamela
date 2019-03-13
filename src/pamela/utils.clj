@@ -80,7 +80,7 @@
                             (if (fs/absolute? filename)
                               (fs/file filename)
                               (fs/file (get-cwd) filename)))
-          data (if (= file-format "json") (encode-ir-tokens-as-strings data) data) ; Only for JSON files
+          data (if (= file-format "json-ir") (encode-ir-tokens-as-strings data) data) ; Only for JSON files
           data (if (map? data)
                  ;; (if (= file-format "edn-mixed")
                  ;;   (sort-mixed-map data)
@@ -90,7 +90,8 @@
           out (cond
                 (#{"edn" "edn-mixed"} file-format)
                 (with-out-str (pprint data))
-                (= file-format "json")
+                (or (= file-format "json")
+                    (= file-format "json-ir"))
                 (with-out-str (json/pprint data))
                 :else
                 data)]
