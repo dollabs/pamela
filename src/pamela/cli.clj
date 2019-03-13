@@ -72,7 +72,7 @@
   [options]
   (let [{:keys [input output source json-ir]} options
         ir (parser/parse options)
-        file-format (if-not json-ir "edn-mixed" "json")]
+        file-format (if-not json-ir "edn-mixed" "json-ir")] ; +++ undo this when we have a combined JSON format for Pamela
     (if (:error ir)
       (do
         (log/errorf "unable to parse: %s\nerror: %s" input (with-out-str (pprint (:error ir))))
@@ -142,7 +142,7 @@
       (do
         (log/errorf "unable to parse: %s\nerror: %s" input (with-out-str (pprint (:error ir))))
         1)
-      (if-not (#{"edn" "json"} file-format)
+      (if-not (#{"edn" "json" "json-ir"} file-format) ;+++ remove json-ir when we have a single integrated json format
         (do
           (log/errorf "illegal file-format for htn: %s" file-format)
           1)
