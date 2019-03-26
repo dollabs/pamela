@@ -79,6 +79,16 @@
       (jar :file (str (name project) ".jar"))
       (target :dir dir))))
 
+(deftask local
+  "Build jar and install to local repo."
+  []
+  (comp
+    (sift :include #{#"~$"} :invert true) ;; don't include emacs backups
+    (aot)
+    (pom)
+    (jar)
+    (install)))
+
 ;; NOTE: Requires PAMELA_MODE=prod (or unset)
 (deftask cli-test
   "Run the command line tests."

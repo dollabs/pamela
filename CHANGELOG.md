@@ -17,6 +17,7 @@ Changes
 * Add a command line option to set the dbg-println-level
 * Fixed some complex dereferencing cases for HTN generation.
 * Added rubric symbol-ref-htn.pamela
+* Add `boot local` task so local projects can use Pamela as a dependency
 
 ### [0.6.2] - 2017-08-28
 
