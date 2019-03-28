@@ -1,40 +1,40 @@
-PAMELA grammar
+Pamela grammar
 ==============
 
-This repository comprises the PAMELA grammar in EBNF format
+This repository comprises the Pamela grammar in EBNF format
 as well as tooling based on [instaparse](https://github.com/Engelberg/instaparse)
 
 Please see
-* The [PAMELA Language Manual](PAMELA.md)
+* The [Pamela Language Manual](PAMELA.md)
 
 ## Syntactic analysis
 
-The `pamela` command line can run a simple syntactic check on your pamela source file(s). For example:
+The `pamela` command line can run a simple syntactic check on your Pamela source file(s). For example:
 
 ```
 pamela -i test/pamela/circuit.pamela -o circuit.txt
 ```
 
-If the PAMELA source file parses correctly the parse tree will
+If the Pamela source file parses correctly the parse tree will
 be saved in the output file, else the source of the error
 will be shown.
 
 ## insta2w3c
 
-It may be useful to convert from the flavor of EBNF used by
-Instaparse to the flavor used by the [W3C](https://www.w3.org/TR/xquery/#EBNFNotation). The script `insta2w3c` will convert the PAMELA EBNF
+There are multiple variants of EBNF in use [[See XKCD on standards]](https://xkcd.com/927/).  It may be useful to convert from the flavor of EBNF used by
+Instaparse to the flavor used by the [W3C](https://www.w3.org/TR/xquery/#EBNFNotation). The script `insta2w3c` will convert the Pamela Instaparse EBNF
 (or another Instaparse EBNF file given as an argument)
-to the w3c flavor of EBNF.
+to the W3C flavor of EBNF.
 
-For example this w3c EBNF flavor is useful in generating
+For example this W3C EBNF flavor is useful in generating
 a "railroad diagram" using the
 [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui).
 
-In the case of PAMELA this conversion has already been done:
+In the case of Pamela this conversion has already been done:
 
-* [pamela.ebnf](../resources/public/pamela.ebnf) PAMELA Instaparse EBNF
-* [pamela.ebnf.w3c](../resources/public/pamela.ebnf.w3c) PAMELA w3c EBNF
-* [pamela.railroad.xhtml](http://dollabs.github.io/pamela/doc/pamela.railroad.xhtml) PAMELA Railroad Diagram
+* [pamela.ebnf](../resources/public/pamela.ebnf) Pamela Instaparse EBNF
+* [pamela.ebnf.w3c](../resources/public/pamela.ebnf.w3c) Pamela W3C EBNF
+* [pamela.railroad.xhtml](../resources/public/pamela.railroad.xhtml) Pamela Railroad Diagram
 
 ### Acknowledgement and Disclaimer:
 This material is based upon work supported by the Army Contracting
