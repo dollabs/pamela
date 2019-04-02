@@ -24,9 +24,9 @@
          :doc "A light bulb"
          :icon "bulb.svg"}
 
-  :fields {:anode vcc
-           :cathode vdd
-           :illumination {:initial (mode-of lightvals :dark)
+  :fields {anode vcc
+           cathode vdd
+           illumination {:initial (mode-of lightvals :dark)
                           :access :public}}
   :modes {:on (= :illumination (mode-of lightvals :bright))
           :off (= :illumination (mode-of lightvals :dark))
@@ -60,7 +60,7 @@
            ;; :cathode vdd ;; INHERITED
            ;; :illumination {:initial (mode-of lightvals :dark)
            ;;                :access :public} ;; INHERITED
-           :sensed-illumination {:initial (mode-of lightvals :dark)
+           sensed-illumination {:initial (mode-of lightvals :dark)
                                  :access :public
                                  :observable true}}
   :modes {:on (and
