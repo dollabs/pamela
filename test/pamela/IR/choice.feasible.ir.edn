@@ -13,20 +13,28 @@
          [{:type :method-fn,
            :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
-           :temporal-constraints [{:type :bounds, :value [55 65]}]}]}
+           :temporal-constraints [{:type :bounds, :value [55 65]}],
+           :cost 1,
+           :reward 1}]}
         {:type :choice,
          :body
          [{:type :method-fn,
            :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
-           :temporal-constraints [{:type :bounds, :value [65 75]}]}]}
+           :temporal-constraints [{:type :bounds, :value [65 75]}],
+           :cost 2,
+           :reward 2}]}
         {:type :choice,
          :body
          [{:type :method-fn,
            :method-ref {:type :symbol-ref, :names [this option]},
            :args [],
-           :temporal-constraints [{:type :bounds, :value [75 85]}]}]}],
-       :temporal-constraints [{:type :bounds, :value [50 100]}]}],
+           :temporal-constraints [{:type :bounds, :value [75 85]}],
+           :cost 3,
+           :reward 3}]}],
+       :temporal-constraints [{:type :bounds, :value [50 100]}],
+       :reward>= 2,
+       :cost<= 2}],
      :controllable false,
      :cost 0,
      :display-args [],

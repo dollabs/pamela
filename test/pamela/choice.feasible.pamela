@@ -10,15 +10,15 @@
            :methods [(defpmethod main
                                  {:doc "Entry point"}
                                  []
-                                 (choose :bounds [50 100]
+                                 (choose :bounds [50 100] :reward>= 2 :cost<= 2
 
                                          (choice
-                                           (option :bounds [55 65]))
+                                           (option :bounds [55 65] :cost 1 :reward 1))
 
                                          (choice
-                                           (option :bounds [65 75]))
+                                           (option :bounds [65 75] :cost 2 :reward 2))
 
                                          (choice
-                                           (option :bounds [75 85]))))
+                                           (option :bounds [75 85] :cost 3 :reward 3))))
                      (defpmethod option [])
                      ])
