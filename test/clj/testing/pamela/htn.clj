@@ -115,6 +115,8 @@
               ;; [example-tpn-only specimen-tpn-only tpn-both]
               ;; (diff example-tpn specimen-tpn)
               ]
+             (println "comparing:" specimen-htn-path example-htn-path)
+             (println "comparing:" specimen-tpn-path example-tpn-path)
           (is (= 0 exit-code))
           (is (= example-htn specimen-htn))
           (is (= example-tpn specimen-tpn))
