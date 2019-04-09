@@ -16,14 +16,14 @@
 ;;; In the near future, Pamela will fully support HTN/TPN creation of all Pamela statements types.
 
 (defpclass simple-pclass [simple2-initial]
-  :fields {:simple1 {:observable true :initial "white"}
-           :simple2 {:observable true :initial simple2-initial}}
+  :fields {simple1 {:observable true :initial "white"}
+           simple2 {:observable true :initial simple2-initial}}
   :methods [(defpmethod simple-method []
               )]
   )
 
 (defpclass main []
-  :fields {:field1 (simple-pclass "black")}
+  :fields {field1 (simple-pclass "black")}
   :methods [(defpmethod main []
               (test-of-various-statements))
 

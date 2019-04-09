@@ -13,10 +13,10 @@
 
 ;; inheritance example: syntax for passing superclass args
 
-(defpclass camera [range]
+(defpclass camera [range-val]
   :meta {:version "0.1.0"
          :doc "The camera API"}
-  :fields {:range range}
+  :fields {range range-val}
   :methods [(defpmethod take-snapshopt
               {:doc    "Record a still image"}
               [])
@@ -25,7 +25,7 @@
 (defpclass qc [capacity]
   :meta {:version "0.3.0"
          :doc "The Plant API"}
-  :fields {:capacity capacity}
+  :fields {capacity capacity}
   :methods [(defpmethod location
               {:doc    "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)"}
               [lat lon alt yaw])
@@ -100,9 +100,9 @@
          :depends [[qc "0.3.0"]
                    [qc-waypoints "0.3.0"]]
          :doc "Quadcopter test waypoints"}
-  :fields {:qc1 (qc-cam :id "qc1" :plant-part "pp1" :interface "RMQ")
-           :qc2 (qc-cam :id "qc2" :plant-part "pp2" :interface "ZMQ")}
+  :fields {qc1 (qc-cam :id "qc1" :plant-part "pp1" :interface "RMQ")
+           qc2 (qc-cam :id "qc2" :plant-part "pp2" :interface "ZMQ")}
   :methods [(defpmethod main
               {:doc "Two quadcopter demo"}
               []
-              (qc-waypoints.waypoints :qc1 :qc2))])
+              (qc-waypoints.waypoints qc1 qc2))])
