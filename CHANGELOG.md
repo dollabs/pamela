@@ -18,6 +18,7 @@ Changes
 * Fixed some complex dereferencing cases for HTN generation.
 * Added rubric symbol-ref-htn.pamela
 * Add `boot local` task so local projects can use Pamela as a dependency
+* Add support for new `call` conditional expression in pre and post conditions in pmethods.
 
 ### [0.6.2] - 2017-08-28
 
