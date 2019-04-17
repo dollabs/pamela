@@ -1,0 +1,85 @@
+{main
+ {:args [],
+  :fields {field-1 {:access :private, :initial 99, :observable false}},
+  :methods
+  {combo-test1
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Combo Test 1",
+     :post
+     {:type :or,
+      :args
+      [{:type :function-call, :args ["foo/bar" 1 2]}
+       {:type :equal,
+        :args [{:type :state-variable, :name state-v1} 5]}]},
+     :pre
+     {:type :function-call,
+      :args ["foo/baz" {:type :field-ref, :names [field-1]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   main
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :sequence,
+       :body
+       [{:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this pre-test1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this post-test1]},
+         :args []}
+        {:type :method-fn,
+         :method-ref {:type :symbol-ref, :names [this combo-test1]},
+         :args []}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Main",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   post-test1
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Post Test 1",
+     :post
+     {:type :or,
+      :args
+      [{:type :function-call, :args ["foo/bar" 1 2]}
+       {:type :equal,
+        :args [{:type :state-variable, :name state-v1} 5]}]},
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   pre-test1
+   [{:args [],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Pre Test 1",
+     :post true,
+     :pre {:type :function-call, :args ["foo/bar" 1 2]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :type :pclass},
+ state-v1 {:type :state-variable}}

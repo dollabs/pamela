@@ -39,10 +39,13 @@
                     ;; testing
                     [adzerk/boot-test          "1.1.2" :scope "test"]
                     [criterium                 "0.4.4" :scope "test"]
+                    [adzerk/bootlaces "0.2.0" :scope "test"]
                     ])
 
 (require
-  '[adzerk.boot-test :refer [test]])
+ '[adzerk.boot-test :refer [test]])
+(require
+ '[adzerk.bootlaces :refer [push-snapshot push-release]])
 
 (task-options!
   pom {:project     project

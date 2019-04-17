@@ -1,0 +1,70 @@
+[:pamela
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field-1"]
+     [:field-type [:literal [:number [:integer "99"]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "pre-test1"]
+     [:cond-map
+      [:cond
+       [:pre
+        [:cond-expr
+         [:call-expr
+          [:cond-operand [:literal [:string "foo/bar"]]]
+          [:cond-operand [:literal [:number [:integer "1"]]]]
+          [:cond-operand [:literal [:number [:integer "2"]]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "post-test1"]
+     [:cond-map
+      [:cond
+       [:post
+        [:cond-expr
+         [:or-expr
+          [:cond-expr
+           [:call-expr
+            [:cond-operand [:literal [:string "foo/bar"]]]
+            [:cond-operand [:literal [:number [:integer "1"]]]]
+            [:cond-operand [:literal [:number [:integer "2"]]]]]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "state-v1"]]]
+            [:cond-operand [:literal [:number [:integer "5"]]]]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "combo-test1"]
+     [:cond-map
+      [:cond
+       [:post
+        [:cond-expr
+         [:or-expr
+          [:cond-expr
+           [:call-expr
+            [:cond-operand [:literal [:string "foo/bar"]]]
+            [:cond-operand [:literal [:number [:integer "1"]]]]
+            [:cond-operand [:literal [:number [:integer "2"]]]]]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "state-v1"]]]
+            [:cond-operand [:literal [:number [:integer "5"]]]]]]]]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:call-expr
+          [:cond-operand [:literal [:string "foo/baz"]]]
+          [:cond-operand [:symbol-ref [:symbol "field-1"]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "pre-test1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "post-test1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "combo-test1"]]]]]]]]]]]

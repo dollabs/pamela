@@ -22,12 +22,13 @@ mode-enum ::= LB keyword* RB
 mode-map ::= LM mode-init+ RM
 mode-init ::= keyword cond-expr
 cond-expr ::= ( TRUE | FALSE | and-expr | or-expr | implies-expr |
-              not-expr | equal-expr )
+              not-expr | equal-expr | call-expr )
 and-expr ::= LP AND ( cond-expr | cond-operand )+ RP
 or-expr ::= LP OR ( cond-expr | cond-operand )+ RP
 implies-expr ::= LP IMPLIES ( cond-expr | cond-operand )+ RP
 not-expr ::= LP NOT ( cond-expr | cond-operand )+ RP
 equal-expr ::= LP EQUAL cond-operand+ RP
+call-expr ::= LP CALL cond-operand+ RP
 cond-operand ::= ( literal | mode-ref | symbol-ref )
 mode-ref ::= LP MODE_OF symbol-ref keyword RP
 
@@ -165,6 +166,7 @@ BETWEEN ::= 'between'
 BETWEEN_ENDS ::= 'between-ends'
 BETWEEN_STARTS ::= 'between-starts'
 BOUNDS ::= ':bounds'
+CALL ::= 'call'
 CATCH ::= 'catch'
 CHOICE ::= 'choice'
 CHOOSE ::= 'choose'
