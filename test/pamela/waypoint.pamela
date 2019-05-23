@@ -53,3 +53,11 @@
                                    (quadcopter-plant.wp5)
                                    )
                                  )])
+
+;; Compile to create htn and tpn files
+;; pamela -i test/pamela/waypoint.pamela -o waypoint -t "(main.main)" htn
+(defpclass main []
+          :fields {qc (quadcopter-plant)
+                   wp (waypoints-test qc)}
+          :methods [(defpmethod main []
+                                (sequence (wp.waypoints)))])

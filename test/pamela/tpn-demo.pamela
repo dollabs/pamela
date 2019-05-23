@@ -105,3 +105,8 @@
                          (choice (plant.picture-analysis-type-2-fast :bounds [0 10])))
                        (plant.picture-analysis-type-3 :bounds [0 7]))
                      (plant.picture-distribution :bounds [0 5])))))])
+
+; Create TPN using tpn command
+; ./bin/pamela -i test/pamela/tpn-demo.pamela -o tpn-demo.tpn.json -c main:tpn:elephant tpn
+(defpclass main []
+           :fields {tpn (tpn :id "100")})
