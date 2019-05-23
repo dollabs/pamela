@@ -68,9 +68,8 @@
                             {:error (str "Specimen does not exist: "
                                       specimen-ir-path)})]
           (println "BUILD" example-name
-            ;; "\n  RUBRIC" example-ir-path
-            ;; "\n  SPECIMEN" specimen-ir-path
-            )
+             "\n  RUBRIC" example-ir-path
+             "\n  SPECIMEN" specimen-ir-path)
           (is (= example-ir specimen-ir))))
       ;; Negative examples that are *expected* to FAIL
       (doseq [neg-example neg-examples]

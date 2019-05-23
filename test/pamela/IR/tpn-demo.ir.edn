@@ -1,4 +1,13 @@
-{plant
+{main
+ {:args [],
+  :fields
+  {tpn
+   {:access :private,
+    :initial
+    {:args [], :pclass tpn, :plant-id "100", :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
+ plant
  {:args [],
   :meta {:doc "The Plant API", :version "0.2.0"},
   :methods
