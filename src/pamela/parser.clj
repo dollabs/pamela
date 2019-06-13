@@ -521,6 +521,7 @@
                 :boolean ir-boolean
                 :bounds identity
                 :bounds-literal ir-bounds-literal
+                :call-expr (partial ir-cond-expr :function-call)
                 :choice ir-choice
                 ;; :choice-opt handled by ir-choice
                 :choose (partial ir-choose :choose)
@@ -701,7 +702,7 @@
         {:type :pclass-arg-ref :names names}
         (not (empty? more))
         {:error
-         (str "cannot derefence a state variable (undefined symbol): "
+         (str "cannot dereference a state variable (undefined symbol): "
            operand)}
         :else
         (do
@@ -838,10 +839,12 @@
           ;; (= type :literal)
           (clj19-boolean? condition)
           condition ;; literal boolean condition
+
           (or (nil? type) (symbol-ref? condition) (mode-ref? condition))
           (validate-cond-operand ir state-vars pclass fields modes context
-            pclass-args method-args condition)
-          (= type :equal)
+                                 pclass-args method-args condition)
+
+          (#{:equal :function-call} type)
           (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
             (if (nil? a)
               (assoc-if vcond :args vargs)
@@ -857,8 +860,9 @@
                 :else ;; must be a literal
                 ;; (recur vcond (conj vargs {:type :literal :value a})
                 (recur vcond (conj vargs a)
-                  (first more) (rest more)))))
-          :else ;; :and :or :not :implies => recurse on args
+                       (first more) (rest more)))))
+
+          (#{:and :or :not :implies} type)  ;; => recurse on args
           (let [vargs (mapv
                         (partial validate-condition ir state-vars
                           pclass fields modes (conj context type))
@@ -867,7 +871,10 @@
             (if error
               error
               {:type type
-               :args vargs})))]
+               :args vargs}))
+
+          :else
+          {:error (str "Unknown type (" type ") in condition")})]
     (dbg-println :debug  "  VALIDATE-CONDITION =>" (pr-str rv))
     rv))
 

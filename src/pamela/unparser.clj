@@ -211,7 +211,13 @@
     (map? cond-expr)
     (let [{:keys [type args]} cond-expr]
       (apply list
-        (get {:and 'and :equal '= :implies 'implies :not 'not :or 'or} type)
+             (get {:and 'and
+                   :equal '=
+                   :implies 'implies
+                   :not 'not
+                   :or 'or
+                   :function-call 'call}
+                  type)
         (map unparse-cond-expr args)))
     :else ;; default
     true-type))

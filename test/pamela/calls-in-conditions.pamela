@@ -1,0 +1,33 @@
+;; Copyright © 2019 Dynamic Object Language Labs Inc.
+;;
+;; This software is licensed under the terms of the
+;; Apache License, Version 2.0 which can be found in
+;; the file LICENSE at the root of this distribution.
+
+
+;;; Test of including Clojure function calls from within pmethod pre/post-conditions
+
+
+(defpclass main []
+  :fields {field-1 99}
+  :methods [(defpmethod pre-test1
+              {:pre (call "foo/bar" 1 2)}
+              [])
+
+            (defpmethod post-test1
+              {:post (or (call "foo/bar" 1 2)
+                         (= state-v1 5))}
+              [])
+
+            (defpmethod combo-test1
+              {:post (or (call "foo/bar" 1 2)
+                         (= state-v1 5))
+               :pre (call "foo/baz" field-1)}
+              [])
+
+            (defpmethod main []
+              (sequence
+               (pre-test1)
+               (post-test1)
+               (combo-test1)))
+            ])

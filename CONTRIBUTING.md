@@ -42,9 +42,9 @@ This is an overview of the contribution workflow:
 
 ## Emacs
 
-Are you an Emacs user? If so you can use `magit-commit-popup`
-(from [magit](https://magit.vc/)) to add these
+Are you an Emacs user? If so you can use [**Magit**](https://magit.vc/) to add these
 commit options for you:
+
  * **-s** Add Signed-off-by line (--signoff)
  * **=S** Sign using gpg (--gpg-sign="0xCAFED00D") -- *this is extra credit*
 
@@ -77,3 +77,4 @@ gpg --output 0xCAFED00D.asc --armor --export-options export-clean,export-minimal
 ````
 
 Simply paste the contents of that file in the **SSH and GPG keys** section of your [Github settings](https://help.github.com/articles/adding-a-new-gpg-key-to-your-github-account/).
+`

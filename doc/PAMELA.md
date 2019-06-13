@@ -40,9 +40,9 @@ bound to a the class constructor method.
          :depends [[pwrvals "0.2.0"]]
          :doc "Power Switch"}
 
-  :fields {:TP1 gnd
-           :TP2 pwr
-           :pwr (mode-of pwrvals :none)}
+  :fields {TP1 gnd
+           TP2 pwr
+           pwr (mode-of pwrvals :none)}
   :modes {:on (= :pwr :high)
           :off (= :pwr :none)
           :fail true}
@@ -147,11 +147,16 @@ A conditional expression may be comprised, recursively, of the following:
 * `(implies a b c...)`
 * `(not a)`
 * `(= d e)`
+* `(call "foo/bar" d e)`
+
+In the case of `call` conditional expressions, the first argument (`"foo/bar"` in this example) specifies the name of a Clojure (or Java) function that can be dynamically called with the remaining arguments, in order to determine the *truthy* value of the condition.
+
+* For `:pre` conditions of a pmethod, the condition is implicitly `assert`ed to be true prior to the actual invocation of the method.
+* For `:post` conditions of a pmethod, the condition is implicitly tested at the end of the actual invocation of the method.  If the condition is false, then the method invocation should be treated as a failed invocation.
 
 Each operand is disambiguated based on type as follows:
 
-  * *Operand is a keyword*: First, it is checked to see if the keyword is a field name. If so the field reference is made explicit with `(:fieldname this)`.
-  * *Operand is a keyword (but not a field name)*: If it is a mode name, then the mode reference is made explicit with `(mode-of this :mode-name)`.
+  * *Operand is a keyword*: If it is a mode name, then the mode reference is made explicit with `(mode-of this :mode-name)`.
   * The operand may be an explicit field reference `(:fieldname pclass)` where **pclass** may be `this` or one of the formal arguments to *defpclass*. When a field is a *pclass* the field reference is understood to return the mode of that *pclass instance*.
 	  * **TODO**: *Can `pclass` refer to a literal pclass name (in addition to a pclass formal argument)?*
   * The operand may be an explicit mode reference `(mode-of pclass :mode-name)` where **pclass** may be `this` or the symbol for a previously defined *pclass* and **:mode-name** is one of the modes of that *pclass*.
