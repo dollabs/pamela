@@ -12,7 +12,7 @@ Please see
 The `pamela` command line can run a simple syntactic check on your Pamela source file(s). For example:
 
 ```
-pamela -i test/pamela/circuit.pamela -o circuit.txt
+pamela -i test/pamela/circuit.pamela -o circuit.txt check
 ```
 
 If the Pamela source file parses correctly the parse tree will

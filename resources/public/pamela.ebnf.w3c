@@ -36,11 +36,13 @@ fields ::= FIELDS LM field+ RM
 field ::= symbol ( LM field-init+ RM | field-type )
 field-type ::= ( literal | lvar-ctor |  pclass-ctor |
                mode-ref | symbol-ref )
-field-init ::= ( initial | access | observable )
+field-init ::= ( initial | access | observable | consumer | producer )
 
 initial ::= INITIAL field-type
 access ::= ACCESS keyword
 observable ::= OBSERVABLE boolean
+consumer ::= CONSUMER boolean
+producer ::= PRODUCER boolean
 
 methods ::= METHODS LB defpmethod* RB
 defpmethod ::= LP DEFPMETHOD symbol cond-map? args fn? between-stmt* RP
@@ -171,6 +173,7 @@ CATCH ::= 'catch'
 CHOICE ::= 'choice'
 CHOOSE ::= 'choose'
 CHOOSE_WHENEVER ::= 'choose-whenever'
+CONSUMER ::= ':consumer'
 CONTROLLABLE ::= ':controllable'
 COST ::= ':cost'
 COST_LE ::= ':cost<='
@@ -214,6 +217,7 @@ POST ::= ':post'
 PRE ::= ':pre'
 PRIMITIVE ::= ':primitive'
 PROBABILITY ::= ':probability'
+PRODUCER ::= ':producer'
 REWARD ::= ':reward'
 REWARD_GE ::= ':reward>='
 SEQUENCE ::= 'sequence'

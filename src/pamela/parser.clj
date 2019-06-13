@@ -199,7 +199,7 @@
    :names (vec symbols)})
 
 ;; field = symbol ( <LM> field-init+ <RM> | field-type )
-;; field-init = ( initial | access | observable )
+;; field-init = ( initial | access | observable | consumer | producer )
 (defn ir-field [field & field-inits]
   (loop [field-map {:access :private :observable false}
          field-init (first field-inits) more (rest field-inits)]
@@ -220,12 +220,20 @@
             observable (if (and (vector? fi)
                              (= :observable (first fi)))
                          (second fi))
+            consumer (if (and (vector? fi)
+                             (= :consumer (first fi)))
+                         (second fi))
+            producer (if (and (vector? fi)
+                             (= :producer (first fi)))
+                         (second fi))
             field-map (assoc-if
                         (if (or initial (false? initial))
                           (assoc field-map :initial initial)
                           field-map)
                         :access access
-                        :observable observable)]
+                        :observable observable
+                        :consumer consumer
+                        :producer producer)]
         (recur field-map (first more) (rest more))))))
 
 (defn ir-mode-enum [& modes]
