@@ -1,0 +1,12 @@
+;; Add a reference to self/this, available as a pclass-ctor-arg
+
+(defpclass finger [my-hand]
+  :fields {hand my-hand})
+
+(defpclass hand []
+  ;; A two-digit hand...
+  :fields {finger1 (finger this)
+           finger2 (finger this)
+           }
+  :methods [(defpmethod main []
+              )])
