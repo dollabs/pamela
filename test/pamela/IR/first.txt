@@ -76,6 +76,10 @@
           [:number [:integer "5"]]]]]]]
      [:args]]]]]
  [:defpclass
+  [:symbol "first-tpn"]
+  [:args [:symbol "plnt"]]
+  [:option [:meta [:meta-entry [:doc [:string "Placeholder. "]]]]]]
+ [:defpclass
   [:symbol "first-tpn-htn"]
   [:args [:symbol "plnt"]]
   [:option

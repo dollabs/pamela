@@ -1,4 +1,5 @@
-{first-tpn-htn
+{first-tpn {:args [plnt], :meta {:doc "Placeholder. "}, :type :pclass},
+ first-tpn-htn
  {:args [plnt],
   :meta {:doc "A example with constraints. "},
   :methods
