@@ -1,8 +1,23 @@
 {four
  {:args [],
   :meta
-  {:depends {one "0.2.0", three "0.2.0"},
+  {:depends {one "0.2.0", three "0.2.0", two "0.2.0"},
    :doc "Forth",
    :version "0.2.0"},
   :modes {:g true, :i true},
+  :type :pclass},
+ one
+ {:args [],
+  :meta {:doc "First", :version "0.2.0"},
+  :modes {:a true, :b true},
+  :type :pclass},
+ three
+ {:args [],
+  :meta {:depends {two "0.2.0"}, :doc "Third", :version "0.2.0"},
+  :modes {:e true, :f true},
+  :type :pclass},
+ two
+ {:args [],
+  :meta {:doc "Second", :version "0.2.0"},
+  :modes {:c true, :d true},
   :type :pclass}}

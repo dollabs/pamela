@@ -1,4 +1,97 @@
-{qc-demo
+{qc
+ {:args [],
+  :meta {:doc "The Plant API", :version "0.2.1"},
+  :methods
+  {location
+   [{:args [lat lon alt yaw],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [lat lon alt yaw],
+     :display-name "Location",
+     :doc
+     "Move quadcopter to location lat (WGS84), lon (WGS84), alt (meters), yaw (degrees from north)",
+     :post true,
+     :pre true,
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   wp1
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
+       :args [42.44537 -71.227891 1.0 80]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Wp 1",
+     :doc "Waypoint 1",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [10 50]}]}],
+   wp2
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
+       :args [42.445435 -71.227843 2.0 170]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Wp 2",
+     :doc "Waypoint 2",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [10 50]}]}],
+   wp3
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
+       :args [42.445389 -71.227734 3.0 260]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Wp 3",
+     :doc "Waypoint 3",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [10 50]}]}],
+   wp4
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :method-fn,
+       :method-ref {:type :symbol-ref, :names [this location]},
+       :args [42.445327 -71.227788 4.0 350]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Wp 4",
+     :doc "Waypoint 4",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [10 50]}]}]},
+  :type :pclass},
+ qc-demo
  {:args [],
   :fields
   {qc-waypoints
@@ -38,4 +131,89 @@
   {:depends {qc "0.2.1", qc-waypoints "0.2.1"},
    :doc "Quadcopter test waypoints",
    :version "0.2.1"},
+  :type :pclass},
+ qc-waypoints
+ {:args [qc1 qc2 qc3],
+  :meta {:doc "Quadcopter test waypoints", :version "0.2.1"},
+  :methods
+  {waypoints
+   [{:args [],
+     :betweens [],
+     :body
+     [{:type :parallel,
+       :body
+       [{:type :sequence,
+         :body
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
+           :args [42.44537 -71.227891 1.0 80],
+           :temporal-constraints [{:type :bounds, :value [5 20]}]}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
+           :args [42.445435 -71.227843 2.0 170],
+           :temporal-constraints [{:type :bounds, :value [6 20]}]}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
+           :args [42.445389 -71.227734 3.0 260],
+           :temporal-constraints [{:type :bounds, :value [7 20]}]}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
+           :args [42.445327 -71.227788 4.0 350],
+           :temporal-constraints [{:type :bounds, :value [8 20]}]}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc1 location]},
+           :args [42.44537 -71.227891 1.0 80],
+           :temporal-constraints [{:type :bounds, :value [9 20]}]}]}
+        {:type :sequence,
+         :body
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc2 wp2]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc2 wp3]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc2 wp4]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc2 wp1]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc2 wp2]},
+           :args []}]}
+        {:type :sequence,
+         :body
+         [{:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc3 wp3]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc3 wp4]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc3 wp1]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc3 wp2]},
+           :args []}
+          {:type :method-fn,
+           :method-ref {:type :pclass-arg-ref, :names [qc3 wp3]},
+           :args []}]}
+        {:type :choose,
+         :body
+         [{:type :choice, :body [{:type :delay, :body nil}]}
+          {:type :choice, :body [{:type :delay, :body nil}]}]}
+        {:type :parallel,
+         :body
+         [{:type :delay, :body nil} {:type :delay, :body nil}]}]}],
+     :controllable false,
+     :cost 0,
+     :display-args [],
+     :display-name "Waypoints",
+     :doc "QC waypoints for 3 quad copters",
+     :post true,
+     :pre true,
+     :primitive false,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass}}

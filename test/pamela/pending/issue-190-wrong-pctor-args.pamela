@@ -1,0 +1,8 @@
+(defpclass finger []
+  :fields {foo 3})
+
+(defpclass hand []
+  :fields {finger1 (finger 1)
+           }
+  :methods [(defpmethod main []
+              )])

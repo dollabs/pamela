@@ -17,6 +17,10 @@
                      ])
 
 ; pamela -i first.pamela -o first.cfm.tpn.json -c main:tpn:start tpn
+;; This is a placeholder for the more complete, TPN-centric version:
+(defpclass first-tpn [plnt]
+  :meta {:doc "Placeholder. "})
+;; Uncomment the following if you'd like to generate the TPN
 ;; (defpclass first-tpn [plnt]
 ;;            :meta {:doc "A example with constraints. "}
 

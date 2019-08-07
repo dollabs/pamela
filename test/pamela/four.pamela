@@ -15,5 +15,7 @@
   :meta {:version "0.2.0"
          :doc "Forth"
          :depends [[one "0.2.0"]
+                   ;; Comment out the "two" dependency when we support recursive :depends
+                   [two "0.2.0"]
                    [three "0.2.0"]]}
   :modes [:g :i])

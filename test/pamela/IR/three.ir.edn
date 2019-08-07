@@ -2,4 +2,9 @@
  {:args [],
   :meta {:depends {two "0.2.0"}, :doc "Third", :version "0.2.0"},
   :modes {:e true, :f true},
+  :type :pclass},
+ two
+ {:args [],
+  :meta {:doc "Second", :version "0.2.0"},
+  :modes {:c true, :d true},
   :type :pclass}}

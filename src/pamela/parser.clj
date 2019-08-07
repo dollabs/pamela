@@ -940,7 +940,7 @@
 ;; validate just one argval in the context of a scope-pclass
 ;; while evaluating the initializer of field
 (defn validate-argval [ir scope-pclass field fields argval]
-  (dbg-println :trace "    VALIDATE-ARGVAL" argval)
+  (dbg-println :trace "    VALIDATE-ARGVAL" argval scope-pclass field fields)
   (let [{:keys [type names]} (if (map? argval) argval)
         n0 (first names)
         rv (cond
@@ -968,18 +968,32 @@
 ;; return Validated args or {:error "message"}
 (defn validate-pclass-ctor-args [ir scope-pclass field fields pclass args]
   (dbg-println :trace "    VALIDATE-PCLASS-CTOR-ARGS for pclass:" pclass
-    "args:" (pr-str args))
-  (loop [vargs [] a (first args) more (rest args)]
-    (if (or (not a) (:error vargs))
-      vargs
-      (let [{:keys [type names]} (if (map? a) a)
-            n0 (first names)
-            ;; _ (dbg-println :trace "    pclass-ctor-arg for" field "=" a)
-            a (validate-argval ir scope-pclass field fields a)
-            vargs (if (and (map? a) (:error a))
-                    a
-                    (conj vargs a))]
-        (recur vargs (first more) (rest more))))))
+               "args:" (pr-str args))
+  (let [pclass-args (get-in ir [pclass :args])]
+
+    (cond
+      ;;Is the pclass defined??
+      (not (= (get-in ir [pclass :type]) :pclass))
+      {:error (str "Pclass constructor call to undefined undefined pclass: " pclass)}
+
+      ;;Correct number of args?
+      (not (= (count pclass-args) (count args)))
+      {:error (str "Incorrect number of arguments passed to pclass constructor '" pclass "': " (count args)
+                   " argument(s) when expecting " (count pclass-args)
+                   " (i.e., " (pr-str args) " instead of " (pr-str pclass-args)")")}
+
+      :else
+      (loop [vargs [] a (first args) more (rest args)]
+        (if (or (not a) (:error vargs))
+          vargs
+          (let [{:keys [type names]} (if (map? a) a)
+                n0 (first names)
+                ;; _ (dbg-println :trace "    pclass-ctor-arg for" field "=" a)
+                a (validate-argval ir scope-pclass field fields a)
+                vargs (if (and (map? a) (:error a))
+                        a
+                        (conj vargs a))]
+            (recur vargs (first more) (rest more))))))))
 
 ;; return Validated fields or {:error "message"}
 (defn validate-fields [ir state-vars pclass fields]
@@ -1252,19 +1266,50 @@
       (log/error msg)
       {:error msg})))
 
+(defn get-dependent-inputs
+  "Based on the :depends declarations, determines the list of input files that will provide
+  those dependencies"
+  [irs-for-direct-inputs]
+  ;;TODO: Deal with version dependencies
+  ;;TODO: Support a PATH for looking for dependency files.  Currently, just look in the same
+  ;;  directory as the dependent
+  ;;TODO: Support recursive dependencies
+  (mapcat (fn [[f ir]]
+            (mapcat (fn [[pclass pclass-ir]]
+                      (keep (fn [[dep-name dep-version]]
+                              (let [dependency-in-ir? (= (get-in ir [dep-name :type]) :pclass)
+                                    dep-filename
+                                    (fs/file (fs/parent f) (str dep-name ".pamela"))]
+                                (if (and (not dependency-in-ir?)
+                                         (not (fs/exists? dep-filename)))
+                                  (log/warn "File for dependency " dep-name " does not exist"))
+                                (if dependency-in-ir?
+                                  nil
+                                  (list dep-name dep-version pclass dep-filename))))
+                            (get-in pclass-ir [:meta :depends])))
+                    ir))
+          irs-for-direct-inputs))
+
 (defn transform-pamela-files
   "input is a list of pamela files
    parse and transform pamela files
    Return {input-filename transformed-ir}"
   [input parser]
-  (reduce (fn [result input-filename]
-            #_(log/info "parse" input-filename)
-            (let [parsed-tree (parse-pamela-file input-filename parser)
-                  parse-error? (contains? parsed-tree :error)]
-              (conj result {input-filename (if parse-error? parsed-tree
-                                                            (insta/transform pamela-ir parsed-tree))})
-              ))
-          {} input))
+  (let [transform-files
+        (fn [input-files transformed]
+          (reduce (fn [result input-filename]
+                  #_(log/info "parse" input-filename)
+                  (let [parsed-tree (parse-pamela-file input-filename parser)
+                        parse-error? (contains? parsed-tree :error)]
+                    (conj result {input-filename (if parse-error? parsed-tree
+                                                     (insta/transform pamela-ir parsed-tree))})
+                    ))
+                  transformed input-files))
+        irs-for-direct-inputs (transform-files input {})
+        dependent-inputs (get-dependent-inputs irs-for-direct-inputs)
+        irs-for-all-inputs (transform-files (map #(nth % 3) dependent-inputs)
+                                                  irs-for-direct-inputs)]
+    irs-for-all-inputs))
 
 (defn do-magic-processing
   "Add lvars to transformed IR"

@@ -22,6 +22,9 @@ Changes
 	conditions in pmethods.
 * Extend field-inits to include :producer and :consumer options (in the
 	future, we may allow any keyword option for user extensibility)
+* Instantiating an unknown class now produces an error. (Closes #133).
+* Implement :depends meta declaration (Closes #180).
+* Incorrect arity of pclass-ctor call now errors at `build` (Closes #190).
 
 ### [0.6.2] - 2017-08-28
 
