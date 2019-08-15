@@ -20,7 +20,7 @@
             [me.raynes.fs :as fs]
             [avenir.utils :refer [concatv assoc-if keywordize vec-index-of]]
             [pamela.unparser :as unparser]
-            [pamela.utils :refer [output-file dbg-println default-bounds?]]))
+            [pamela.utils :refer [output-file dbg-println default-bounds? display-name-string]]))
 
 ;; local implementation of gensym so that we get predictable uids in
 ;; generated plans.
@@ -875,6 +875,7 @@
                      {:plant (if (and (not delay-fn?) plant-sym) (str plant-sym))
                       :plant-id plant-id
                       :command command
+                      :display-name (display-name-string command)
                       :args (if-not delay-fn? args)
                       :argsmap (if-not delay-fn? argsmap)
                       :label label
