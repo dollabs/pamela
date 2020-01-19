@@ -564,6 +564,7 @@
                 ;; :guard handled in ir-choice
                 :icon (partial hash-map :icon)
                 :id ir-id
+                :same-expr (partial ir-cond-expr :same)
                 :implies-expr (partial ir-cond-expr :implies)
                 :inherit ir-inherit
                 :initial identity
@@ -608,6 +609,7 @@
                 :pre (partial hash-map :pre)
                 :primitive (partial hash-map :primitive)
                 :probability (partial hash-map :probability)
+                :propositions-expr (partial ir-cond-expr :propositions)
                 ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
                 ;; reserved-string only for grammer disambiguation
@@ -852,7 +854,7 @@
           (validate-cond-operand ir state-vars pclass fields modes context
                                  pclass-args method-args condition)
 
-          (#{:equal :function-call} type)
+          (#{:equal :same :function-call} type)
           (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
             (if (nil? a)
               (assoc-if vcond :args vargs)
@@ -869,6 +871,12 @@
                 ;; (recur vcond (conj vargs {:type :literal :value a})
                 (recur vcond (conj vargs a)
                        (first more) (rest more)))))
+
+          (#{:propositions} type)
+          (let []
+            (println "In validate-condition for :propositions with :args=")
+            (pprint args)
+            nil)
 
           (#{:and :or :not :implies} type)  ;; => recurse on args
           (let [vargs (mapv

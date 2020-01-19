@@ -213,6 +213,7 @@
       (apply list
              (get {:and 'and
                    :equal '=
+                   :same 'same
                    :implies 'implies
                    :not 'not
                    :or 'or
