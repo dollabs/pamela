@@ -873,10 +873,20 @@
                        (first more) (rest more)))))
 
           (#{:propositions} type)
-          (let []
-            (println "In validate-condition for :propositions with :args=")
-            (pprint args)
-            nil)
+          (let [- (println "In validate-condition for :propositions with :args=")
+                -(pprint args)
+                result (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
+                         (cond (nil? a)
+                               (merge vcond vargs)
+
+                               (and (vector? a) (= (first a) :prop-search))
+                               (recur vcond (conj vargs a) (first more) (rest more))
+
+                               :else
+                               (merge vcond vargs a))) ; +++ need to validate a?
+                - (println "yields:")
+                - (pprint result)]
+            result)
 
           (#{:and :or :not :implies} type)  ;; => recurse on args
           (let [vargs (mapv
