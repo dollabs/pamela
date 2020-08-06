@@ -19,7 +19,7 @@ inherit ::= INHERIT LB symbol+ RB
 
 modes ::= MODES ( mode-enum | mode-map )
 mode-enum ::= LB keyword* RB
-mode-map ::= LM mode-init+ RM
+mode-map ::= LM mode-init* RM
 mode-init ::= keyword cond-expr
 cond-expr ::= ( TRUE | FALSE | and-expr | or-expr | implies-expr |
               not-expr | equal-expr | call-expr )
@@ -32,7 +32,7 @@ call-expr ::= LP CALL cond-operand+ RP
 cond-operand ::= ( literal | mode-ref | symbol-ref )
 mode-ref ::= LP MODE_OF symbol-ref keyword RP
 
-fields ::= FIELDS LM field+ RM
+fields ::= FIELDS LM field* RM
 field ::= symbol ( LM field-init+ RM | field-type )
 field-type ::= ( literal | lvar-ctor |  pclass-ctor |
                mode-ref | symbol-ref )

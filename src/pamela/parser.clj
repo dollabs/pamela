@@ -248,7 +248,9 @@
     (apply merge ms)))
 
 (defn ir-k-merge [k & ms]
-  {k (apply merge ms)})
+  {k (if (empty? ms)
+       {}
+       (apply merge ms))})
 
 (defn ir-methods [& methods]
   {:methods (if (empty? methods)
