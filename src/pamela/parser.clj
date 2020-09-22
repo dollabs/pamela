@@ -248,7 +248,9 @@
     (apply merge ms)))
 
 (defn ir-k-merge [k & ms]
-  {k (apply merge ms)})
+  {k (if (empty? ms)
+       {}
+       (apply merge ms))})
 
 (defn ir-methods [& methods]
   {:methods (if (empty? methods)
@@ -511,6 +513,13 @@
   {:type :sequence
    :body (vec (repeat times fn))})
 
+(defn propositions-ref?
+  [operand]
+  (= (first operand) :propositions-expr))
+
+(defn search-constraints?
+  [operand]
+  (and (vector? operand) (= (first operand) :search-constraints)))
 
 ;; If you're doing some REPL-based development, and change any of the above
 ;; helper functions: Don't forget to re-eval pamela-ir !!!
@@ -564,7 +573,6 @@
                 ;; :guard handled in ir-choice
                 :icon (partial hash-map :icon)
                 :id ir-id
-                :same-expr (partial ir-cond-expr :same)
                 :implies-expr (partial ir-cond-expr :implies)
                 :inherit ir-inherit
                 :initial identity
@@ -609,7 +617,7 @@
                 :pre (partial hash-map :pre)
                 :primitive (partial hash-map :primitive)
                 :probability (partial hash-map :probability)
-                :propositions-expr (partial ir-cond-expr :propositions)
+                :propositions-expr (partial ir-cond-expr :propositions-expr)
                 ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
                 ;; reserved-string only for grammer disambiguation
@@ -623,6 +631,7 @@
                 :soft-parallel (partial ir-slack-fn :soft-parallel)
                 :soft-sequence (partial ir-slack-fn :soft-sequence)
                 ;; stop-token only for grammer disambiguation
+                :same-expr (partial ir-cond-expr :same)
                 :string identity
                 :symbol symbol
                 :symbol-ref ir-symbol-ref
@@ -661,10 +670,12 @@
       {:type :mode-ref
        :mode-ref {:type :symbol-ref :names ['this]}
        :mode operand})
+
     (and (mode-ref? operand)
       (= (get-in operand [:mode-ref :names]) '[this])
       (not (get modes (:mode operand))))
     {:error (str "mode " (:mode operand) " is not defined in pclass " pclass)}
+
     (mode-ref? operand)
     (let [{:keys [mode-ref]} operand
           {:keys [names]} mode-ref
@@ -695,6 +706,7 @@
       (if (:error vmode-ref)
         vmode-ref
         (assoc operand :mode-ref vmode-ref)))
+
     (symbol-ref? operand)
     (let [{:keys [names]} operand
           [n0 & more] names
@@ -718,6 +730,7 @@
         (do
           (swap! state-vars assoc n0 {:type :state-variable})
           {:type :state-variable :name n0})))
+
     :else
     {:error (str "unknown conditional operand: " operand)}
     ))
@@ -872,21 +885,33 @@
                 (recur vcond (conj vargs a)
                        (first more) (rest more)))))
 
-          (#{:propositions} type)
-          (let [- (println "In validate-condition for :propositions with :args=")
-                -(pprint args)
-                result (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
-                         (cond (nil? a)
-                               (merge vcond vargs)
+          (#{:propositions-expr} type)
+          (do
+            (let [propositions (if (vector? (last args)) args (butlast args))
+                  where (if (vector? (last args)) nil (last args))]
+              (let [result
+                    {:type :lookup-propositions
+                     :where (if where (validate-condition ir state-vars pclass fields modes context where))
+                     :propositions (into []
+                                         (map (fn [pp]
+                                                (let [search (if (search-constraints? (second pp)) (rest (second pp)) [])
+                                                      proppart (if (search-constraints? (second pp)) (rest (rest pp)) (rest pp))]
+                                                  {:type :proposition-pattern
+                                                   :look-where (into [] (map (fn [sc]
+                                                                               (case (first sc)
+                                                                                 :wm {:type :wm}
+                                                                                 :ltm {:type :ltm}
+                                                                                 :recency {:type :recency :value (second sc)}
 
-                               (and (vector? a) (= (first a) :prop-search))
-                               (recur vcond (conj vargs a) (first more) (rest more))
-
-                               :else
-                               (merge vcond vargs a))) ; +++ need to validate a?
-                - (println "yields:")
-                - (pprint result)]
-            result)
+                                                                                 (log/error "Invalid search constraint: %s" (first sc))))
+                                                                             search))
+                                                   :prop-name (first proppart)
+                                                   :args (into [] (map (fn [anarg]
+                                                                         (validate-cond-operand ir state-vars pclass fields modes
+                                                                                                context pclass-args method-args anarg))
+                                                                       (rest proppart)))}))
+                                              propositions))}]
+                result)))
 
           (#{:and :or :not :implies} type)  ;; => recurse on args
           (let [vargs (mapv

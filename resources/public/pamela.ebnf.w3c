@@ -22,7 +22,7 @@ mode-enum ::= LB keyword* RB
 mode-map ::= LM mode-init+ RM
 mode-init ::= keyword cond-expr
 cond-expr ::= ( TRUE | FALSE | and-expr | or-expr | implies-expr |
-              not-expr | equal-expr | same-expr | call-expr | propositions-expr )
+              not-expr | call-expr | equal-expr | same-expr | propositions-expr )
 and-expr ::= LP AND ( cond-expr | cond-operand )+ RP
 or-expr ::= LP OR ( cond-expr | cond-operand )+ RP
 implies-expr ::= LP IMPLIES ( cond-expr | cond-operand )+ RP
@@ -32,9 +32,10 @@ same-expr ::= LP SAME cond-operand+ RP
 call-expr ::= LP CALL cond-operand+ RP
 propositions-expr ::= LP PROPOSITIONS LB prop-search+ RB (WHERE cond-expr)? RP
 prop-search ::= LP search-constraints? keyword cond-operand+ RP
-search-constraints ::= LB (WM  | LTM | LP RECENCY number-ref RP)* RB
+search-constraints ::= LB (wm  | ltm | LP recency RP)* RB
 cond-operand ::= ( literal | mode-ref | symbol-ref )
 mode-ref ::= LP MODE_OF symbol-ref keyword RP
+recency ::= ':recency' number-ref
 
 fields ::= FIELDS LM field+ RM
 field ::= symbol ( LM field-init+ RM | field-type )
@@ -204,7 +205,7 @@ INITIAL ::= ':initial'
 INTERFACE ::= ':interface'
 LABEL ::= ':label'
 LEAVE ::= ':leave'
-LTM ::= 'LTM'
+ltm ::= 'LTM'
 LVAR ::= 'lvar'
 MAINTAIN ::= 'maintain'
 MAX ::= ':max'
@@ -225,7 +226,6 @@ PRIMITIVE ::= ':primitive'
 PROBABILITY ::= ':probability'
 PRODUCER ::= ':producer'
 PROPOSITIONS ::= 'propositions'
-RECENCY ::= ':recency'
 REWARD ::= ':reward'
 REWARD_GE ::= ':reward>='
 SEQUENCE ::= 'sequence'
@@ -242,7 +242,7 @@ VERSION ::= ':version'
 WHEN ::= 'when'
 WHENEVER ::= 'whenever'
 WHERE ::= 'where'
-WM ::= 'WM'
+wm ::= 'WM'
 
 LP ::= '('
 RP ::= ')'
