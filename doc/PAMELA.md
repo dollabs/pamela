@@ -150,7 +150,7 @@ A conditional expression may be comprised, recursively, of the following:
 * `(same f g)`
 * `(call "foo/bar" d e)`
 * `(propositions [(WM LTM (recency 5)) :is-connected-to a b) ...] 
-* `   where conditional-expression)`
+   where conditional-expression)`
 
 In the case of `call` conditional expressions, the first argument (`"foo/bar"` in this example) specifies the name of a Clojure (or Java) function that can be dynamically called with the remaining arguments, in order to determine the *truthy* value of the condition.
 
@@ -171,7 +171,7 @@ Note that in this case if city-of-birth is a simple string, like "Boston", `(= X
 
 Cities tend not to be very dynamic, but let's say that the mode of a city were to represent whether the city was dry or not, let's say that cities were modeled to be :dry :wet :dry-on-weekends.  The law could change based on voting of the local government.  
 
-In this case using `(= X.city-of-birth Y.city-of-birth)` would be true for any two cities that were both dry, wet, or dry-on-weekends.  (same ...) would be true if and only if the X and Y were the same object -- and hence the same city.  Propositions, listed within square brackets, can be proceeded with advice on where to find the proposition.  Three constraints can be provided, WM indicating working memory, LTM indicating long-term memory, perhaps inplemented in an object base, and (recency n) which limits the search to propositions that are no older than `n`, so to match a man in long-term memory which proposition is no older than `n` one would write: `(propositionsn[(LTM (recency n)) :is-a X man] ...)`.  
+In this case using `(= X.city-of-birth Y.city-of-birth)` would be true for any two cities that were both dry, wet, or dry-on-weekends.  (same ...) would be true if and only if the X and Y were the same object -- and hence the same city.  Propositions, listed within square brackets, can be proceeded with advice on where to find the proposition.  Three constraints can be provided, WM indicating working memory, LTM indicating long-term memory, perhaps implemented in an object base, and (recency n) which limits the search to propositions that are no older than `n`, so to match a man in long-term memory which proposition is no older than `n` one would write: `(propositions [(LTM (recency n)) :is-a X man] ...)`.  
 
 The proposition form returns `true` or `false` but any LVARS bound in the process remain bound for the duration of the method.  In the above examples, if the class definition that contained the method had a field `[... X (lvar "a man") ...]` the LVAR `X`would be bound to one such instance found in memory that satisfies any `where` condition.  If multiple matching propositions are found, one will be chosen randomly.
 
@@ -181,7 +181,7 @@ The proposition form returns `true` or `false` but any LVARS bound in the proces
 Each operand is disambiguated based on type as follows:
 
   * *Operand is a keyword*: If it is a mode name, then the mode reference is made explicit with `(mode-of this :mode-name)`.
-  * The operand may be an explicit field reference `(:fieldname pclass)` where **pclass** may be `this` or one of the formal arguments to *defpclass*. When a field is a *pclass* the field reference is understood to return the mode of that *pclass instance*.
+  * The operand may be an explicit field reference `X.fieldname1` where **X** may be one of the formal arguments to *defpclass*. When a field is a *pclass* the field reference is understood to return the mode of that *pclass instance*.
 	  * **TODO**: *Can `pclass` refer to a literal pclass name (in addition to a pclass formal argument)?*
   * The operand may be an explicit mode reference `(mode-of pclass :mode-name)` where **pclass** may be `this` or the symbol for a previously defined *pclass* and **:mode-name** is one of the modes of that *pclass*.
      * **TODO**: *The use of `pclass` here is different than for `:fieldname` just above.  Can `pclass` refer to a pclass formal argument (in addition to a literal pclass name)?*
