@@ -54,6 +54,9 @@
        :method-arg-ref :pclass-arg-ref}
       (:type v))))
 
+(defn proposition-operand? [v]
+  (and (map? v) (= (:type v) :lookup-propositions)))
+
 (defn remove-first-this [names]
   (if (= (first names) 'this)
     (vec (rest names))
@@ -194,25 +197,63 @@
 (defmethod unparse-cond-operand :pclass-arg-ref [cond-operand]
   (unparse-symbol-ref cond-operand))
 
+;; unparse-propositions-expr --------------------
+
+(defn unparse-look-where [lws]
+  (let [result (into [] (map (fn [lw]
+                               (case (:type lw)
+                                 :wm 'wm
+                                 :ltm 'ltm
+                                 :recency (list 'recency (:value lw))
+                                 (do
+                                   (log/error "Unable to unparse search constraint:" (:type lw) " raw IR inserted in place")
+                                   lw)))
+                             lws))]
+    result))
+
+(declare unparse-cond-expr)
+
+(defn unparse-proposition-operand [prop-expr]
+  (let [{typ :type
+         where :where
+         propositions :propositions} prop-expr
+        lookwhere (map (fn [p] (if (not (empty? (:look-where p))) (unparse-look-where (:look-where p)))) propositions)
+        propname  (map (fn [p] (:prop-name p)) propositions)
+        args      (map (fn [p] (into [] (map unparse-cond-operand (:args p)))) propositions)]
+    (concat '(propositions)
+            (list (into [] (map (fn [lw pn args]
+                                  (if lw
+                                    (cons lw  (cons pn args))
+                                    (cons pn args)))
+                                lookwhere propname args)))
+            (if where (list 'where (unparse-cond-expr where)) ()))))
+
 ;; unparse-cond-expr -------------------------
 
 (defn unparse-cond-expr [cond-expr]
   (cond
     (nil? cond-expr)
     true-type ;; default for unspecified conditions
+
     (or (symbol? cond-expr) (literal? cond-expr))
     cond-expr
+
+    (proposition-operand? cond-expr)
+    (unparse-proposition-operand cond-expr)
+
     (cond-operand? cond-expr)
     (unparse-cond-operand cond-expr)
     ;; NOTE this would only provide the first field name, not the
     ;; whole dereferencing chain
     ;; (= :pclass-ctor (:type cond-expr)) ;; helper for display-argument
     ;; (-> cond-expr :ancestry first last)
+
     (map? cond-expr)
     (let [{:keys [type args]} cond-expr]
       (apply list
              (get {:and 'and
                    :equal '=
+                   :same 'same
                    :implies 'implies
                    :not 'not
                    :or 'or
