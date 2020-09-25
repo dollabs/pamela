@@ -18,7 +18,7 @@
               [newloc])
             (defpmethod down
               {:doc "Single proposition with search constraints"
-               :pre (propositions [([WM LTM (:recency 5)] :is-part-of newloc p2)]
+               :pre (propositions [([wm ltm (recency 5)] :is-part-of newloc p2)]
                      where (= TA-location newloc))
                :post (= TA-location newloc)}
               [newloc])

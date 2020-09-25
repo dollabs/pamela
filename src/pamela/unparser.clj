@@ -202,9 +202,9 @@
 (defn unparse-look-where [lws]
   (let [result (into [] (map (fn [lw]
                                (case (:type lw)
-                                 :wm 'WM
-                                 :ltm 'LTM
-                                 :recency (list :recency (:value lw))
+                                 :wm 'wm
+                                 :ltm 'ltm
+                                 :recency (list 'recency (:value lw))
                                  (do
                                    (log/error "Unable to unparse search constraint:" (:type lw) " raw IR inserted in place")
                                    lw)))
