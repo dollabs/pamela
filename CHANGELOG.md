@@ -25,6 +25,7 @@ Changes
 * Instantiating an unknown class now produces an error. (Closes #133).
 * Implement :depends meta declaration (Closes #180).
 * Incorrect arity of pclass-ctor call now errors at `build` (Closes #190).
+* Allow empty maps to be specified for defpclass :fields and :modes (Closes #175).
 
 ### [0.6.2] - 2017-08-28
 

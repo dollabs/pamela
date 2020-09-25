@@ -1,0 +1,6 @@
+[:pamela
+ [:defpclass
+  [:symbol "myClass"]
+  [:args]
+  [:option [:modes [:mode-map]]]
+  [:option [:fields]]]]
