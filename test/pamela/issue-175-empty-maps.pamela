@@ -1,0 +1,5 @@
+
+(defpclass myClass []
+  :modes {}
+  :fields {}
+)

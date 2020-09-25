@@ -34,3 +34,7 @@
                                    (choice (plant.unbounded)))
                                  )]
            )
+
+(defpclass main []
+  :fields {p (plant)
+           tpn (choice-tpn p)})

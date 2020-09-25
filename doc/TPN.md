@@ -7,7 +7,7 @@ The following assumes that the `bin` directory has been added to your `PATH`.
 Given a PAMELA source file with a TPN such as [choice-tpn.pamela](../test/pamela/choice-tpn.pamela) you can generate the TPN as JSON with this command:
 
 ````
-pamela -i test/pamela/plant.pamela -i test/pamela/choice-tpn.pamela -f json -o choice-tpn.tpn.json tpn
+pamela -i test/pamela/choice.pamela -c main:tpn:simple-choice-tpn -o choice.tpn.json tpn
 ````
 
 For a more complete example see [tpn-demo.pamela](../test/pamela/tpn-demo.pamela)
