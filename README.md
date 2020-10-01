@@ -1,3 +1,6 @@
+[![Clojars Project](https://img.shields.io/clojars/v/dollabs/pamela.svg)](https://clojars.org/dollabs/pamela)
+
+
 # PAMELA
 
 Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA).
