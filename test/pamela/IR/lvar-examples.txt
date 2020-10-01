@@ -46,7 +46,7 @@
           [:symbol-ref [:symbol "take-medium-res-images"]]]]]]]]]]]
  [:defpclass
   [:symbol "example"]
-  [:args [:symbol "camera"]]
+  [:args]
   [:option
    [:fields
     [:field

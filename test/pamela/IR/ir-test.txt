@@ -149,8 +149,8 @@
      [:field-type
       [:pclass-ctor
        [:symbol "cannon"]
-       [:pclass-ctor-option [:id [:string "first-cannon"]]]
-       [:pclass-ctor-option [:interface [:string "ZMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "first-cannon"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "ZMQ"]]]]]]]
     [:field
      [:symbol "box-f"]
      [:field-type [:pclass-ctor [:symbol "box"]]]]]]

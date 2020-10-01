@@ -107,9 +107,9 @@
      [:field-type
       [:pclass-ctor
        [:symbol "plant"]
-       [:pclass-ctor-option [:id [:string "p1"]]]
-       [:pclass-ctor-option [:plant-part [:string "t1"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "p1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "t1"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "run"]
      [:field-type

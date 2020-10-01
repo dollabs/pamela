@@ -1,0 +1,9 @@
+[:pamela
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "breathing"]
+     [:field-type [:literal [:boolean [:TRUE]]]]]]]]]

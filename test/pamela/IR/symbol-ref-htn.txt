@@ -183,32 +183,6 @@
              [:symbol "field1-1"]]]
            [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
        [:fn
-        [:tell
-         [:cond-expr
-          [:equal-expr
-           [:cond-operand
-            [:symbol-ref
-             [:symbol "field4"]
-             [:symbol "field2-1"]
-             [:symbol "field1-1"]]]
-           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
-       [:fn
-        [:tell
-         [:cond-expr
-          [:equal-expr
-           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]
-           [:cond-operand [:literal [:number [:integer "101"]]]]]]]]
-       [:fn
-        [:when
-         [:cond-expr
-          [:equal-expr
-           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]
-           [:cond-operand [:literal [:number [:integer "101"]]]]]]
-         [:fn
-          [:method-fn
-           [:symbol-ref [:symbol "simple-method"]]
-           [:argval [:number [:integer "101"]]]]]]]
-       [:fn
         [:method-fn
          [:symbol-ref [:symbol "simple-method"]]
          [:argval [:symbol-ref [:symbol "method-arg"]]]]]
@@ -234,23 +208,7 @@
            [:symbol "field1-1"]]]]]
        [:fn
         [:method-fn
-         [:symbol-ref [:symbol "simple-method"]]
-         [:argval
-          [:symbol-ref
-           [:symbol "field4"]
-           [:symbol "field2-1"]
-           [:symbol "field1-1"]]]]]
-       [:fn
-        [:method-fn
          [:symbol-ref [:symbol "field2"] [:symbol "method1"]]
-         [:argval [:number [:integer "1"]]]
-         [:argval [:number [:integer "2"]]]]]
-       [:fn
-        [:method-fn
-         [:symbol-ref
-          [:symbol "field4"]
-          [:symbol "field2-1"]
-          [:symbol "method1"]]
          [:argval [:number [:integer "1"]]]
          [:argval [:number [:integer "2"]]]]]
        [:fn

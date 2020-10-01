@@ -233,21 +233,22 @@
      [:field-type
       [:pclass-ctor
        [:symbol "qc"]
-       [:pclass-ctor-option [:id [:string "qc1"]]]
-       [:pclass-ctor-option [:plant-part [:string "pp1"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "qc1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "pp1"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "qc2"]
      [:field-type
       [:pclass-ctor
        [:symbol "qc"]
-       [:pclass-ctor-option [:id [:string "qc2"]]]
-       [:pclass-ctor-option [:plant-part [:string "pp2"]]]
-       [:pclass-ctor-option [:interface [:string "ZMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "qc2"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "pp2"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "ZMQ"]]]]]]]
     [:field
      [:symbol "qc3"]
      [:field-type
       [:pclass-ctor
        [:symbol "qc"]
-       [:pclass-ctor-option [:id [:string "qc3"]]]
-       [:pclass-ctor-option [:plant-part [:string "pp3"]]]]]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "qc3"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "pp3"]]]]]]]]]]]

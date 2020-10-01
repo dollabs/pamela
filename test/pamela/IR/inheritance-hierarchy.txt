@@ -1,0 +1,19 @@
+[:pamela
+ [:defpclass [:symbol "a11"] [:args]]
+ [:defpclass [:symbol "a12"] [:args]]
+ [:defpclass [:symbol "a13"] [:args]]
+ [:defpclass
+  [:symbol "a1"]
+  [:args]
+  [:option [:inherit [:symbol "a11"] [:symbol "a12"] [:symbol "a13"]]]]
+ [:defpclass [:symbol "a2"] [:args]]
+ [:defpclass [:symbol "a3"] [:args]]
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option [:inherit [:symbol "a1"] [:symbol "a2"] [:symbol "a3"]]]]
+ [:defpclass [:symbol "b"] [:args]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]]]

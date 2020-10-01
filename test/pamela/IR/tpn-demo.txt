@@ -157,11 +157,19 @@
      [:args]]]]]
  [:defpclass
   [:symbol "tpn"]
-  [:args [:symbol "plant"]]
+  [:args]
   [:option
    [:meta
     [:meta-entry [:version [:string "0.2.0"]]]
     [:meta-entry [:doc [:string "TPN Demo"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "plant"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant"]
+       [:pclass-ctor-option [:id [:argval [:string "100"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -344,4 +352,15 @@
                [:bounds
                 [:bounds-literal
                  [:number [:integer "0"]]
-                 [:number [:integer "5"]]]]]]]]]]]]]]]]]]]
+                 [:number [:integer "5"]]]]]]]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "tpn"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "tpn"]
+       [:pclass-ctor-option [:id [:argval [:string "100"]]]]]]]]]]]

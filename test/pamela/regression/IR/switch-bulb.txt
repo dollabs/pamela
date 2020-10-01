@@ -22,8 +22,10 @@
      [:field-type
       [:pclass-ctor
        [:symbol "psw"]
-       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
-       [:pclass-ctor-option [:plant-part [:string "psw1"]]]]]]]]
+       [:pclass-ctor-option
+        [:id [:argval [:string "switchedcircuit"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "psw1"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod

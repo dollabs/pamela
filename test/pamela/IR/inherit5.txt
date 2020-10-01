@@ -1,0 +1,68 @@
+[:pamela
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option
+   [:modes
+    [:mode-enum
+     [:keyword ":on"]
+     [:keyword ":off"]
+     [:keyword ":fail"]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword ":off:on"]
+     [:trans-map
+      [:trans [:pre [:keyword ":off"]]]
+      [:trans [:post [:keyword ":on"]]]
+      [:trans [:doc [:string "turning a on"]]]]]
+    [:transition
+     [:keyword ":on:off"]
+     [:trans-map
+      [:trans [:pre [:keyword ":on"]]]
+      [:trans [:post [:keyword ":off"]]]
+      [:trans [:doc [:string "turning a off"]]]]]
+    [:transition
+     [:keyword ":*:fail"]
+     [:trans-map
+      [:trans
+       [:probability [:number-ref [:number [:float "0.0000001"]]]]]
+      [:trans [:doc [:string "spontaneous failure"]]]]]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "brand"]
+     [:field-type [:literal [:string "DOLL"]]]]]]
+  [:option
+   [:modes
+    [:mode-enum
+     [:keyword ":on"]
+     [:keyword ":off"]
+     [:keyword ":fail"]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword ":off:on"]
+     [:trans-map
+      [:trans [:pre [:keyword ":off"]]]
+      [:trans [:post [:keyword ":on"]]]
+      [:trans [:doc [:string "turning b on"]]]]]
+    [:transition
+     [:keyword ":on:off"]
+     [:trans-map
+      [:trans [:pre [:keyword ":on"]]]
+      [:trans [:post [:keyword ":off"]]]
+      [:trans [:doc [:string "turning b off"]]]]]
+    [:transition
+     [:keyword ":*:fail"]
+     [:trans-map
+      [:trans
+       [:probability [:number-ref [:number [:float "0.00000001"]]]]]
+      [:trans [:doc [:string "spontaneous failure"]]]]]]]]
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]]]

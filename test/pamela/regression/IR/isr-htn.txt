@@ -181,9 +181,9 @@
      [:field-type
       [:pclass-ctor
        [:symbol "sensor"]
-       [:pclass-ctor-option [:id [:string "sensor1"]]]
-       [:pclass-ctor-option [:plant-part [:string "isr1"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "sensor1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "isr1"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "htn"]
      [:field-type

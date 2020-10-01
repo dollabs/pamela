@@ -82,13 +82,13 @@
      [:field-type
       [:pclass-ctor
        [:symbol "plant-methods"]
-       [:pclass-ctor-option [:id [:string "qc1"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "qc1"]]]]]]]
     [:field
      [:symbol "qc2"]
      [:field-type
       [:pclass-ctor
        [:symbol "plant-methods"]
-       [:pclass-ctor-option [:id [:string "qc2"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "qc2"]]]]]]]
     [:field
      [:symbol "go"]
      [:field-type

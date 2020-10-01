@@ -316,9 +316,9 @@
      [:field-type
       [:pclass-ctor
        [:symbol "simpleplant"]
-       [:pclass-ctor-option [:id [:string "sp1"]]]
-       [:pclass-ctor-option [:plant-part [:string "mypart"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "sp1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "mypart"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "run"]
      [:field-type

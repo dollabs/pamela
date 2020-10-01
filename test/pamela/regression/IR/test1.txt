@@ -65,15 +65,17 @@
      [:field-type
       [:pclass-ctor
        [:symbol "host"]
-       [:pclass-ctor-option [:id [:string "actuator"]]]
-       [:pclass-ctor-option [:plant-part [:string "host0101"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "actuator"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "host0101"]]]]]]]
     [:field
      [:symbol "e7h1"]
      [:field-type
       [:pclass-ctor
        [:symbol "host"]
-       [:pclass-ctor-option [:id [:string "actuator"]]]
-       [:pclass-ctor-option [:plant-part [:string "host0701"]]]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "actuator"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "host0701"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod

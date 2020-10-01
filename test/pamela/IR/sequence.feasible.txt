@@ -64,11 +64,6 @@
      [:doc
       [:string "An example of infeasible sequence of activties"]]]]]
   [:option
-   [:fields
-    [:field
-     [:symbol "main"]
-     [:field-type [:pclass-ctor [:symbol "sequence-feasible"]]]]]]
-  [:option
    [:methods
     [:defpmethod
      [:symbol "main"]
@@ -81,7 +76,7 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "10"]]
+            [:number [:integer "15"]]
             [:number [:integer "30"]]]]]]]
        [:fn
         [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]]]
@@ -93,4 +88,26 @@
         [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-d"]]]]
        [:fn
         [:method-fn
-         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]]]
+         [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]]]]]]]]]
+ [:defpclass
+  [:symbol "htn-main"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "Main class for HTN"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "plnt"]
+     [:field-type [:pclass-ctor [:symbol "plant"]]]]
+    [:field
+     [:symbol "sf"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "sequence-feasible"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "plnt"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:method-fn [:symbol-ref [:symbol "sf"] [:symbol "main"]]]]]]]]]

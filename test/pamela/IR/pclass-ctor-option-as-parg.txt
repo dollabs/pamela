@@ -1,0 +1,61 @@
+[:pamela
+ [:defpclass
+  [:symbol "subunit"]
+  [:args]
+  [:option
+   [:methods [:defpmethod [:symbol "bar"] [:args [:symbol "arg"]]]]]]
+ [:defpclass
+  [:symbol "unit"]
+  [:args [:symbol "id"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "left"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "subunit"]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "left"]]]]]]]
+    [:field
+     [:symbol "right"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "subunit"]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "right"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "foo"]
+     [:args [:symbol "arg"]]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "left"] [:symbol "bar"]]
+       [:argval [:symbol-ref [:symbol "arg"]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "unit"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "unit"]
+       [:pclass-ctor-arg [:string "foo"]]
+       [:pclass-ctor-option [:id [:argval [:string "foo"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "unit"] [:symbol "foo"]]
+         [:argval [:number [:integer "5"]]]]]]]]]]]]

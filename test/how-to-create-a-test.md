@@ -3,9 +3,14 @@
 Whenever we add a new feature to Pamela or whenever we make a bug fix for a Pamela issue, we should create a test for that particular feature.
 
 ## Steps to create a new Pamela IR test:
-All Pamela tests should include a test of IR generation (and indirectly, of unparsing).
+All Pamela tests should include a test of parse tree generation (`check`) and IR generation (`build`) (and indirectly, of unparsing).
 
 * Create a new Pamela file in `test/pamela` that tests the Pamela feature (e.g., `test/pamela/foo.pamela`)
+* Compile that Pamela file into an parse tree `check` file with the same filename as the Pamela file, but with the filename suffix of `txt`, and copy this file into the `test/pamela/IR` directory (e.g., `test/pamela/IR/foo.txt`).  
+	* To create this:
+```
+pamela -i test/pamela/foo.pamela -o test/pamela/IR/foo.txt check
+```
 * Compile that Pamela file into an EDN IR with the same filename as the Pamela file, but with the filename suffix of `ir.edn`, and copy this file into the `test/pamela/IR` directory (e.g., `test/pamela/IR/foo.ir.edn`).  
 	* To create this:
 ```

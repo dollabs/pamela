@@ -1,0 +1,27 @@
+[:pamela
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:modes [:mode-enum [:keyword ":left"] [:keyword ":right"]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "method-1"]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "method-2"]]]]]]]
+    [:defpmethod
+     [:symbol "method-1"]
+     [:cond-map
+      [:cond
+       [:pre
+        [:cond-expr
+         [:not-expr [:cond-operand [:literal [:keyword ":left"]]]]]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "method-2"]
+     [:cond-map [:cond [:pre [:keyword ":right"]]]]
+     [:args]]]]]]

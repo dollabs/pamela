@@ -167,9 +167,11 @@
      [:field-type
       [:pclass-ctor
        [:symbol "coin"]
-       [:pclass-ctor-option [:id [:string "penny"]]]
-       [:pclass-ctor-option [:plant-part [:string "coin-fsm"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "penny"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "coin-fsm"]]]]
+       [:pclass-ctor-option
+        [:interface [:argval [:string "RMQ"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod

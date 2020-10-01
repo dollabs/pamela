@@ -1,0 +1,50 @@
+[:pamela
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:methods [:defpmethod [:symbol "do-c"] [:args]]]]]
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-a"]
+     [:args [:symbol "ccc"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "ccc"] [:symbol "do-c"]]]]]]]]]]
+ [:defpclass
+  [:symbol "demo"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "a1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "a"]
+       [:pclass-ctor-option [:id [:argval [:string "000"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "a-one"]]]]]]]
+    [:field
+     [:symbol "c1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "c"]
+       [:pclass-ctor-option [:id [:argval [:string "111"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "part-1"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "a1"] [:symbol "do-a"]]
+         [:argval [:symbol-ref [:symbol "c1"]]]]]]]]]]]]

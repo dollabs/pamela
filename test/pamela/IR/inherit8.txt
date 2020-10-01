@@ -1,0 +1,39 @@
+[:pamela
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "temperature"]
+     [:field-type [:literal [:number [:integer "25"]]]]]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "temperature"]
+     [:field-type [:literal [:number [:integer "20"]]]]]]]]
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "print-temperature"]
+     [:cond-map
+      [:cond [:doc [:string "Displays the current temperature"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "print"]]
+         [:argval [:string "temperature"]]
+         [:argval [:symbol-ref [:symbol "temperature"]]]]]]]]
+    [:defpmethod
+     [:symbol "print"]
+     [:cond-map [:cond [:doc [:string "Displays label and value"]]]]
+     [:args [:symbol "label"] [:symbol "value"]]]]]]]

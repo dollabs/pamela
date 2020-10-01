@@ -1,0 +1,87 @@
+[:pamela
+ [:defpclass
+  [:symbol "aoc-pclass"]
+  [:args]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "ftp-to"]
+     [:cond-map [:cond [:display-name [:string "FTP to"]]]]
+     [:args [:symbol "destination"] [:symbol "size"]]]
+    [:defpmethod
+     [:symbol "send-it-to"]
+     [:args [:symbol "unit"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "ftp-to"]]
+         [:argval [:symbol-ref [:symbol "unit"]]]
+         [:argval [:string "100MB"]]]]]]]]]]
+ [:defpclass
+  [:symbol "requesting-unit"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field1"]
+     [:field-type [:literal [:string "me"]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "aocf"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "aoc-pclass"]
+       [:pclass-ctor-option [:id [:argval [:string "AOC"]]]]]]]
+    [:field
+     [:symbol "requesting-unit1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "requesting-unit"]
+       [:pclass-ctor-option
+        [:id [:argval [:string "RequestingUnit1"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "aocf"] [:symbol "send-it-to"]]
+         [:argval
+          [:symbol-ref
+           [:symbol "requesting-unit1"]
+           [:symbol "field1"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main2"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "requesting-unit1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "requesting-unit"]
+       [:pclass-ctor-option
+        [:id [:argval [:string "RequestingUnit1"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod [:symbol "do-it"] [:args [:symbol "x"]]]
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "do-it"]]
+         [:argval
+          [:symbol-ref
+           [:symbol "requesting-unit1"]
+           [:symbol "field1"]]]]]]]]]]]]
