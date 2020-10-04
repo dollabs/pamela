@@ -5,12 +5,14 @@
    {:access :private,
     :initial {:names [pos], :type :pclass-arg-ref},
     :observable false},
+   bar {:access :private, :initial 43, :observable false},
    connected
    {:access :private, :initial "Unconnected", :observable false},
    dmcp
    {:access :private,
     :initial {:names [dmcpobj], :type :pclass-arg-ref},
     :observable false},
+   foo {:access :private, :initial 42, :observable false},
    p1
    {:access :private,
     :initial {:name "Proposition-arg1", :type :lvar},
@@ -53,6 +55,31 @@
         :args
         [{:type :method-arg-ref, :names [newloc]}
          {:type :field-ref, :names [p2]}]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   inequalities
+   [{:args [newloc],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [newloc],
+     :display-name "Inequalities",
+     :doc "Single proposition without 'where'",
+     :post
+     {:type :equal,
+      :args
+      [{:type :field-ref, :names [TA-location]}
+       {:type :method-arg-ref, :names [newloc]}]},
+     :pre
+     {:type :or,
+      :args
+      [{:type :gr, :args [{:type :field-ref, :names [foo]} 41]}
+       {:type :ge, :args [{:type :field-ref, :names [bar]} 42]}
+       {:type :lt, :args [{:type :field-ref, :names [foo]} 50]}
+       {:type :le, :args [{:type :field-ref, :names [bar]} 51]}]},
      :primitive true,
      :probability 1.0,
      :reward 0,

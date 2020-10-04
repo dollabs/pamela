@@ -20,13 +20,19 @@ modes = <MODES> ( mode-enum | mode-map )
 mode-enum = <LB> keyword* <RB>
 mode-map = <LM> mode-init* <RM>
 mode-init = keyword cond-expr
-cond-expr = ( TRUE | FALSE | and-expr | or-expr | implies-expr |
-              not-expr | call-expr | equal-expr | same-expr | propositions-expr )
+cond-expr = ( TRUE | FALSE |
+              not-expr | and-expr | or-expr | implies-expr |
+              equal-expr | gr-expr | ge-expr | lt-expr | le-expr |
+              call-expr | same-expr | propositions-expr )
 and-expr = <LP> <AND> ( cond-expr | cond-operand )+ <RP>
 or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> ( cond-expr | cond-operand )+ <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
+gr-expr = <LP> <GR> cond-operand+ <RP>
+ge-expr = <LP> <GE> cond-operand+ <RP>
+lt-expr = <LP> <LT> cond-operand+ <RP>
+le-expr = <LP> <LE> cond-operand+ <RP>
 same-expr = <LP> <SAME> cond-operand+ <RP>
 call-expr = <LP> <CALL> cond-operand+ <RP>
 propositions-expr = <LP> <PROPOSITIONS> <LB> prop-search+ <RB> (<WHERE> cond-expr)? <RP>
@@ -192,6 +198,10 @@ DOC = <':doc'>
 DOTIMES = <'dotimes'>
 ENTER = <':enter'>
 EQUAL = <'='>
+GR = <'>'>
+GE = <'>='>
+LT = <'<'>
+LE = <'<='>
 EXACTLY = <':exactly'>
 FALSE = <'false'>
 FIELDS = <':fields'>
