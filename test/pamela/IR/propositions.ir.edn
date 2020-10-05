@@ -76,7 +76,7 @@
      :pre
      {:type :or,
       :args
-      [{:type :gr, :args [{:type :field-ref, :names [foo]} 41]}
+      [{:type :gt, :args [{:type :field-ref, :names [foo]} 41]}
        {:type :ge, :args [{:type :field-ref, :names [bar]} 42]}
        {:type :lt, :args [{:type :field-ref, :names [foo]} 50]}
        {:type :le, :args [{:type :field-ref, :names [bar]} 51]}]},

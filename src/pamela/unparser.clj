@@ -253,7 +253,7 @@
       (apply list
              (get {:and 'and
                    :equal '=
-                   :gr '>
+                   :gt '>
                    :ge '>=
                    :lt '<
                    :le '<=

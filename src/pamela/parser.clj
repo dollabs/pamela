@@ -562,7 +562,7 @@
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
-                :gr-expr (partial ir-cond-expr :gr)
+                :gt-expr (partial ir-cond-expr :gt)
                 :ge-expr (partial ir-cond-expr :ge)
                 :lt-expr (partial ir-cond-expr :lt)
                 :le-expr (partial ir-cond-expr :le)
@@ -735,9 +735,11 @@
           (swap! state-vars assoc n0 {:type :state-variable})
           {:type :state-variable :name n0})))
 
+    (string? operand)
+    {:type :literal, :value operand}
+
     :else
-    {:error (str "unknown conditional operand: " operand)}
-    ))
+    {:error (str "unknown conditional operand: " operand)}))
 
 ;; returns a validated method-ref map
 ;; or an {:error msg}
@@ -871,7 +873,7 @@
           (validate-cond-operand ir state-vars pclass fields modes context
                                  pclass-args method-args condition)
 
-          (#{:equal :gr :ge :lt :le :same :function-call} type)
+          (#{:equal :gt :ge :lt :le :same :function-call} type)
           (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
             (if (nil? a)
               (assoc-if vcond :args vargs)

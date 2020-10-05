@@ -22,14 +22,14 @@ mode-map = <LM> mode-init* <RM>
 mode-init = keyword cond-expr
 cond-expr = ( TRUE | FALSE |
               not-expr | and-expr | or-expr | implies-expr |
-              equal-expr | gr-expr | ge-expr | lt-expr | le-expr |
+              equal-expr | gt-expr | ge-expr | lt-expr | le-expr |
               call-expr | same-expr | propositions-expr )
 and-expr = <LP> <AND> ( cond-expr | cond-operand )+ <RP>
 or-expr = <LP> <OR> ( cond-expr | cond-operand )+ <RP>
 implies-expr = <LP> <IMPLIES> ( cond-expr | cond-operand )+ <RP>
 not-expr = <LP> <NOT> ( cond-expr | cond-operand )+ <RP>
 equal-expr = <LP> <EQUAL> cond-operand+ <RP>
-gr-expr = <LP> <GR> cond-operand+ <RP>
+gt-expr = <LP> <GT> cond-operand+ <RP>
 ge-expr = <LP> <GE> cond-operand+ <RP>
 lt-expr = <LP> <LT> cond-operand+ <RP>
 le-expr = <LP> <LE> cond-operand+ <RP>
@@ -198,7 +198,7 @@ DOC = <':doc'>
 DOTIMES = <'dotimes'>
 ENTER = <':enter'>
 EQUAL = <'='>
-GR = <'>'>
+GT = <'>'>
 GE = <'>='>
 LT = <'<'>
 LE = <'<='>
