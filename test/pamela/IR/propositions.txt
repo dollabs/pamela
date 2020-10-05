@@ -122,7 +122,7 @@
         [:cond-expr
          [:or-expr
           [:cond-expr
-           [:gr-expr
+           [:gt-expr
             [:cond-operand [:symbol-ref [:symbol "foo"]]]
             [:cond-operand [:literal [:number [:integer "41"]]]]]]
           [:cond-expr
