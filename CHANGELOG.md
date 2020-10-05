@@ -29,6 +29,8 @@ All notable ### Changes to this project will be documented in this file. This ch
 * Extend conditions to include search and to add object equality (`same`)
 * Add tests of the 'check' operation for all of the Pamela files.  We had many of the txt file rubrics in place, but there were no tests that previously used them.	
 * Add support for inheritance (`:inherit`)
+* Extend conditions with `same`, `wm`, `ltm`, and `recency`
+* Added inequalities for comparing numbers: >, <=, >, >=  These are added to allow, for example, searching for an object representing a person whose age is between 18 and 21, for example.
 
 
 ## [0.6.2] - 2017-08-28
