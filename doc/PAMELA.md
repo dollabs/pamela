@@ -147,6 +147,10 @@ A conditional expression may be comprised, recursively, of the following:
 * `(implies a b c...)`
 * `(not a)`
 * `(= d e)`
+* `(> h j)`
+* `(>= h j)`
+* `(< h j)`
+* `(<= h j)`
 * `(same f g)`
 * `(call "foo/bar" d e)`
 * `(propositions [(wm ltm (recency 5)) :is-connected-to a b) ...]
@@ -154,7 +158,7 @@ A conditional expression may be comprised, recursively, of the following:
 
 In the case of `call` conditional expressions, the first argument (`"foo/bar"` in this example) specifies the name of a Clojure (or Java) function that can be dynamically called with the remaining arguments, in order to determine the *truthy* value of the condition.
 
-For two objects `d` and `e`, (= d e) is true if the two objects are believed to have the same mode. If `d` and `e` are objects of a switch class that has modes `on` and `off`, (= d e) is true if both switches are on or if both switches are off. (same f g) is true if f and g are the same switch.  This is an essential form of comparison for retrieving objects linked by propositions.
+For two objects `d` and `e`, (= d e) is true if the two objects are believed to have the same mode. If `d` and `e` are objects of a switch class that has modes `on` and `off`, (= d e) is true if both switches are on or if both switches are off. (same f g) is true if f and g are the same switch.  This is an essential form of comparison for retrieving objects linked by propositions.  The inequalities <, <=, >, >= can be used to compare numbers in pre and post conditions.
 
 A proposition has the form (:proposition-type arg1 ... argn), the most common of which is the two argument case. It is useful to lookup propositions in the preconditions to methods.
 
@@ -171,7 +175,7 @@ Note that in this case if city-of-birth is a simple string, like "Boston", `(= X
 
 Cities tend not to be very dynamic, but let's say that the mode of a city were to represent whether the city was dry or not, let's say that cities were modeled to be :dry :wet :dry-on-weekends.  The law could change based on voting of the local government.
 
-In this case using `(= X.city-of-birth Y.city-of-birth)` would be true for any two cities that were both dry, wet, or dry-on-weekends.  (same ...) would be true if and only if the X and Y were the same object -- and hence the same city.  Propositions, listed within square brackets, can be proceeded with advice on where to find the proposition.  Three constraints can be provided, 'wm' indicating working memory, 'ltm' indicating long-term memory, perhaps implemented in an object base, and (recency n) which limits the search to propositions that are no older than `n`, so to match a man, in long-term memory, which proposition is no older than `n` one would write: `(propositions [(ltm (recency n)) :is-a X man] ...)`.
+In this case using `(= X.city-of-birth Y.city-of-birth)` would be true for any two cities that were both dry, wet, or dry-on-weekends.  (same ...) would be true if and only if the X and Y were the same object -- and hence the same city.  Propositions, listed within square brackets, can be proceeded with advice on where to find the proposition.  Three constraints can be provided, 'wm' indicating working memory, 'ltm' indicating long-term memory, perhaps implemented in an object base, and (recency n) which limits the search to propositions that are no older than `n`, so to match a man, in long-term memory, which proposition is no older than `n` one would write: `(propositions [(ltm (recency n)) :is-a X man] ...)`.  It should be noted that the 'where' condition cannot be used to match values other than those in the objects that make up the propositions.  The 'where' is used to narrow the search for propositions and thus must be applied only to proposition objects.
 
 The proposition form returns `true` or `false` but any LVARS bound in the process remain bound for the duration of the method.  In the above examples, if the class definition that contained the method had a field `[... X (lvar "a man") ...]` the LVAR `X`would be bound to one such instance found in memory that satisfies any `where` condition.  If multiple matching propositions are found, one will be chosen randomly.
 

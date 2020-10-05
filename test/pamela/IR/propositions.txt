@@ -15,6 +15,12 @@
      [:symbol "connected"]
      [:field-type [:literal [:string "Unconnected"]]]]
     [:field
+     [:symbol "foo"]
+     [:field-type [:literal [:number [:integer "42"]]]]]
+    [:field
+     [:symbol "bar"]
+     [:field-type [:literal [:number [:integer "43"]]]]]
+    [:field
      [:symbol "p1"]
      [:field-type [:lvar-ctor [:string "Proposition-arg1"]]]]
     [:field
@@ -100,6 +106,37 @@
            [:keyword ":is-part-of"]
            [:cond-operand [:symbol-ref [:symbol "p3"]]]
            [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+      [:cond
+       [:post
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+          [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+     [:args [:symbol "newloc"]]]
+    [:defpmethod
+     [:symbol "inequalities"]
+     [:cond-map
+      [:cond [:doc [:string "Single proposition without 'where'"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:or-expr
+          [:cond-expr
+           [:gr-expr
+            [:cond-operand [:symbol-ref [:symbol "foo"]]]
+            [:cond-operand [:literal [:number [:integer "41"]]]]]]
+          [:cond-expr
+           [:ge-expr
+            [:cond-operand [:symbol-ref [:symbol "bar"]]]
+            [:cond-operand [:literal [:number [:integer "42"]]]]]]
+          [:cond-expr
+           [:lt-expr
+            [:cond-operand [:symbol-ref [:symbol "foo"]]]
+            [:cond-operand [:literal [:number [:integer "50"]]]]]]
+          [:cond-expr
+           [:le-expr
+            [:cond-operand [:symbol-ref [:symbol "bar"]]]
+            [:cond-operand [:literal [:number [:integer "51"]]]]]]]]]]
       [:cond
        [:post
         [:cond-expr
