@@ -60,14 +60,20 @@ echo $heading > $w3c
 
 sed -e 's/(\*.*\*)//' \
     -e 's/\![a-z-]*//g' \
+    -e 's/>=/GE_SYMBOL/g' \
+    -e 's/<=/LE_SYMBOL/g' \
+    -e "s/'>'/QUOTED_GT_SYMBOL/g" \
+    -e "s/'<'/QUOTED_LT_SYMBOL/g" \
     -e 's/<//g' \
     -e 's/>//g' \
     -e 's/\^:/:/g' \
     -e 's/\\//g' \
     -e 's/ = / ::= /g' \
     -e 's/-_/-/g' \
-    -e 's/cost=/cost<=/g' \
-    -e 's/reward=/reward>=/g' \
+    -e 's/GE_SYMBOL/>=/g' \
+    -e 's/LE_SYMBOL/<=/g' \
+    -e "s/QUOTED_GT_SYMBOL/'>'/g" \
+    -e "s/QUOTED_LT_SYMBOL/'<'/g" \
     -e 's/,s\]/, ]/g' \
     -e "s/#'\([^']*\)'/\1/g" \
     -e "s/;\.\*n/ \';\' .*/g" \
