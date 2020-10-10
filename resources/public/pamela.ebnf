@@ -97,7 +97,7 @@ try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
-method-fn = <LP> symbol-ref method-opt* argval* <RP>
+method-fn = <LP> symbol-ref method-opt* expr-argval* <RP>
 
 between-stmt = (between | between-ends | between-starts)
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
@@ -134,7 +134,7 @@ lvar-ctor = ( <LP> <LVAR> <RP> | <LP> <LVAR> string lvar-init? <RP> )
 lvar-init = literal | bounds-literal
 
 pclass-ctor = <LP> symbol pclass-ctor-arg* pclass-ctor-option* <RP>
-pclass-ctor-arg = ( string | number | pclass-arg-keyword | boolean | symbol-ref )
+pclass-ctor-arg = ( string | expr | pclass-arg-keyword | boolean | symbol-ref )
 pclass-ctor-option = ( id | plant-part | interface )
 pclass-arg-keyword = !reserved-pclass-ctor-keyword keyword
 reserved-pclass-ctor-keyword = ( <ID> | <INTERFACE> | <PLANT_PART> ) stop-token
@@ -143,7 +143,7 @@ plant-part = <PLANT_PART> argval
 interface = <INTERFACE> argval
 
 bounds = bounds-literal | lvar-ctor
-bounds-literal = <LB> number ( number | INFINITY ) <RB>
+bounds-literal = <LB> expr ( expr | INFINITY ) <RB>
 
 symbol-ref = symbol ( <'.'> symbol )*
 symbol = !reserved-symbol #'[A-Za-z][A-Za-z0-9-_]*'
@@ -160,6 +160,7 @@ reserved-string = ( <AND> | <ASK> | <ASSERT> | <BETWEEN> | <BETWEEN_ENDS> |
 stop-token = (whitespace | '.' | LP | RP | LB | RB | LM | RM )
 
 literal = ( boolean | string | keyword | number )
+expr-argval = ( string | expr | safe-keyword | boolean | mode-ref | symbol-ref )
 argval = ( string | number | safe-keyword | boolean | mode-ref | symbol-ref )
 safe-keyword = !reserved-keyword keyword
 reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
@@ -167,6 +168,12 @@ reserved-keyword = ( <LABEL> | <BOUNDS> | <COST> | <REWARD> | <CONTROLLABLE> )
 keyword = #'^:[A-Za-z0-9:*._-]+'
 boolean = ( TRUE | FALSE )
 string = <'"'>  #'[^"]*' <'"'>
+expr = number | lvar-ctor | <LP> ( multiply-expr | divide-expr | add-expr | subtract-expr ) <RP>
+multiply-expr = <STAR> expr+
+divide-expr = <DIV> expr+
+add-expr = <PLUS> expr+
+subtract-expr = <MINUS> expr+
+
 number = ( float | integer )
 float = ( #'[-]?[0-9]+\.[0-9]+' | #'[-]?[0-9]\.[0-9]+E[+-][0-9]+')
 integer = #'[-]?[0-9]+'
@@ -262,5 +269,9 @@ LB = <'['>
 RB = <']'>
 LM = <'{'>
 RM = <'}'>
+STAR = <'*'>
+DIV = <'/'>
+PLUS = <'+'>
+MINUS = <'-'>
 
 whitespace = #'([,\\s]+|;.*\\n)+'

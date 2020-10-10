@@ -270,6 +270,14 @@
     {:type op
      :args (vec operands)}))
 
+(defn ir-arith-expr [op & operands]
+  {:type op
+   :args (vec operands)})
+
+(defn arith-expr?
+  [ast]
+  (some #{:add :subtract :multiply :divide} #{(first ast)}))
+
 (defn ir-vec [& vs]
   (if (empty? vs)
     []
@@ -320,6 +328,11 @@
 
 (defn ir-bounds-literal [lb ub]
   [lb (if (= ub [:INFINITY]) :infinity ub)])
+
+;(defn de-expr [aval]
+;  (if (and (vector? aval) (= (first aval) :expr))
+;    (second aval)
+;    aval))
 
 (defn ir-opt-bounds [bounds]
   {:temporal-constraints
@@ -513,6 +526,25 @@
   {:type :sequence
    :body (vec (repeat times fn))})
 
+(declare pamela-ir)
+
+(defn ir-expr [arg]
+  ;; translate ARG to IR here +++
+  (cond (vector? arg)
+        (case (first arg)
+          :number (second arg)
+
+          else {:error (str "ir-expr don't know how to handle:" arg)})
+
+        (number? arg)
+        arg
+
+        (map? arg)
+        arg
+
+        :otherwise
+        {:error (str "ir-expr don't know how to handle:" arg)}))
+
 (defn propositions-ref?
   [operand]
   (= (first operand) :propositions-expr))
@@ -562,6 +594,11 @@
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
+                :expr ir-expr
+                :add-expr (partial ir-arith-expr :add)
+                :subtract-expr (partial ir-arith-expr :subtract)
+                :multiply-expr (partial ir-arith-expr :multply)
+                :divide-expr (partial ir-arith-expr :divide)
                 :gt-expr (partial ir-cond-expr :gt)
                 :ge-expr (partial ir-cond-expr :ge)
                 :lt-expr (partial ir-cond-expr :lt)
@@ -819,10 +856,12 @@
                    (literal? a)
                    ;; {:type :literal, :value a}
                    a
+
                    (mode-ref? a)
                    (validate-cond-operand ir state-vars in-pclass
                      fields modes context
                      pclass-args method-args a)
+
                    (symbol-ref? a)
                    (let [a-names (:names a)
                          [n0 & more] a-names
@@ -845,6 +884,10 @@
                        (do
                          (swap! state-vars assoc n0 {:type :state-variable})
                          {:type :state-variable :name n0})))
+
+                   (map? a)
+                   a
+
                    :else
                    {:error (str "unknown argument type: " a)})
               vargs (if (:error va) va (conj vargs va))]
@@ -994,12 +1037,12 @@
         n0 (first names)
         rv (cond
              (and (= :symbol-ref type)
-               (some #(= n0 %) (get-in ir [scope-pclass :args])))
+                  (some #(= n0 %) (get-in ir [scope-pclass :args])))
              (do
                (dbg-println :trace "    promote to :pclass-arg-ref")
                (assoc argval :type :pclass-arg-ref))
              (and (= :symbol-ref type)
-               (not= n0 field) (get fields n0))
+                  (not= n0 field) (get fields n0))
              (do
                (dbg-println :trace "    promote to :field-ref")
                (assoc argval :type :field-ref))
@@ -1009,6 +1052,7 @@
                 " pamela class constructor arg " n0
                 " is neither a formal argument to, "
                 "nor another field of the pclass " scope-pclass)}
+             ;;+++ validate-arith-expr here +++
              :else
              argval)]
     (dbg-println :trace "    =>" rv)
