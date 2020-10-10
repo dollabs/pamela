@@ -271,7 +271,8 @@
      :args (vec operands)}))
 
 (defn ir-arith-expr [op & operands]
-  {:type op
+  {:type :expr
+   :operation op
    :args (vec operands)})
 
 (defn arith-expr?
@@ -557,6 +558,7 @@
 ;; helper functions: Don't forget to re-eval pamela-ir !!!
 (def pamela-ir {
                 ;; :access handled in ir-field
+                :add-expr (partial ir-arith-expr :add)
                 :and-expr (partial ir-cond-expr :and)
                 :args ir-vec
                 :argval ir-argval
@@ -590,15 +592,12 @@
                 :dep hash-map
                 :depends (partial ir-k-merge :depends)
                 :display-name (partial hash-map :display-name)
+                :divide-expr (partial ir-arith-expr :divide)
                 :doc (partial hash-map :doc)
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
                 :expr ir-expr
-                :add-expr (partial ir-arith-expr :add)
-                :subtract-expr (partial ir-arith-expr :subtract)
-                :multiply-expr (partial ir-arith-expr :multply)
-                :divide-expr (partial ir-arith-expr :divide)
                 :gt-expr (partial ir-cond-expr :gt)
                 :ge-expr (partial ir-cond-expr :ge)
                 :lt-expr (partial ir-cond-expr :lt)
@@ -636,6 +635,7 @@
                 :mode-init ir-mode-init
                 :mode-map ir-merge
                 :modes (partial hash-map :modes)
+                :multiply-expr (partial ir-arith-expr :multiply)
                 :natural ir-integer
                 :not-expr (partial ir-cond-expr :not)
                 :number identity
@@ -666,14 +666,15 @@
                 :reward (partial hash-map :reward)
                 :reward-ge (partial hash-map :reward>=)
                 :safe-keyword identity
+                :same-expr (partial ir-cond-expr :same)
                 :sequence (partial ir-fn :sequence)
                 :slack-parallel (partial ir-slack-fn :slack-parallel)
                 :slack-sequence (partial ir-slack-fn :slack-sequence)
                 :soft-parallel (partial ir-slack-fn :soft-parallel)
                 :soft-sequence (partial ir-slack-fn :soft-sequence)
                 ;; stop-token only for grammer disambiguation
-                :same-expr (partial ir-cond-expr :same)
                 :string identity
+                :subtract-expr (partial ir-arith-expr :subtract)
                 :symbol symbol
                 :symbol-ref ir-symbol-ref
                 :tell ir-tell
@@ -927,8 +928,10 @@
                       vcond (if (:error va) va vcond)
                       vargs (if (:error va) nil (conj vargs va))]
                   (recur vcond vargs (first more) (rest more)))
+
                 (map? a) ;; already specified by instaparse
                 (recur vcond (conj vargs a) (first more) (rest more))
+
                 :else ;; must be a literal
                 ;; (recur vcond (conj vargs {:type :literal :value a})
                 (recur vcond (conj vargs a)
@@ -1021,10 +1024,13 @@
             vmbody (cond
                      error
                      {:error error}
+
                      (:error condition)
                      condition
+
                      (:error body)
                      body
+
                      :else
                      (conj vmbody vb))]
         (recur vmbody (inc bi) (first more) (rest more))))))
@@ -1041,18 +1047,22 @@
              (do
                (dbg-println :trace "    promote to :pclass-arg-ref")
                (assoc argval :type :pclass-arg-ref))
+
              (and (= :symbol-ref type)
                   (not= n0 field) (get fields n0))
              (do
                (dbg-println :trace "    promote to :field-ref")
                (assoc argval :type :field-ref))
+
              (= :symbol-ref type)
              {:error
               (str "Symbol argument to " field
                 " pamela class constructor arg " n0
                 " is neither a formal argument to, "
                 "nor another field of the pclass " scope-pclass)}
+
              ;;+++ validate-arith-expr here +++
+
              :else
              argval)]
     (dbg-println :trace "    =>" rv)

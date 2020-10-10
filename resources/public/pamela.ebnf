@@ -97,7 +97,7 @@ try = <LP> <TRY> opt-bounds? fn <LP> CATCH fn <RP> <RP>
 unless = <LP> <UNLESS> cond-expr opt-bounds? fn <RP>
 when = <LP> <WHEN> cond-expr opt-bounds? fn <RP>
 whenever = <LP> <WHENEVER> cond-expr opt-bounds? fn <RP>
-method-fn = <LP> symbol-ref method-opt* expr-argval* <RP>
+method-fn = <LP> symbol-ref method-opt* argval* <RP>
 
 between-stmt = (between | between-ends | between-starts)
 between = <LP> <BETWEEN> keyword keyword between-opt+ <RP>
