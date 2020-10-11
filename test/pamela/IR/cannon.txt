@@ -75,8 +75,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "1"]]
-            [:number [:integer "60"]]]]]]]
+            [:expr [:number [:integer "1"]]]
+            [:expr [:number [:integer "60"]]]]]]]]
        [:fn
         [:whenever
          [:cond-expr
@@ -111,8 +111,8 @@
              [:opt-bounds
               [:bounds
                [:bounds-literal
-                [:number [:integer "2"]]
-                [:number [:integer "20"]]]]]
+                [:expr [:number [:integer "2"]]]
+                [:expr [:number [:integer "20"]]]]]]
              [:fn
               [:sequence
                [:fn
@@ -144,8 +144,8 @@
                       [:opt-bounds
                        [:bounds
                         [:bounds-literal
-                         [:number [:integer "1"]]
-                         [:number [:integer "7"]]]]]]
+                         [:expr [:number [:integer "1"]]]
+                         [:expr [:number [:integer "7"]]]]]]]
                      [:argval [:number [:integer "123"]]]
                      [:argval [:string "456"]]]]
                    [:fn
@@ -182,5 +182,7 @@
                     [:opt-bounds
                      [:bounds
                       [:bounds-literal
-                       [:number [:integer "30"]]
-                       [:number [:integer "30"]]]]]]]]]]]]]]]]]]]]]]]]]
+                       [:expr [:number [:integer "30"]]]
+                       [:expr
+                        [:number
+                         [:integer "30"]]]]]]]]]]]]]]]]]]]]]]]]]]

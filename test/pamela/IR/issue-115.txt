@@ -18,8 +18,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "10"]]
-               [:number [:integer "10"]]]]]]]]]]
+               [:expr [:number [:integer "10"]]]
+               [:expr [:number [:integer "10"]]]]]]]]]]]
        [:fn
         [:method-fn [:symbol-ref [:symbol "perform-activities"]]]]]]]
     [:defpmethod

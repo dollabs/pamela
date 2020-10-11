@@ -59,8 +59,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "3"]]
-          [:number [:integer "6"]]]]]]
+          [:expr [:number [:integer "3"]]]
+          [:expr [:number [:integer "6"]]]]]]]
       [:trans
        [:doc
         [:string "Same signature, different bounds, class a"]]]]]]]
@@ -128,8 +128,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "2"]]
-          [:number [:integer "8"]]]]]]
+          [:expr [:number [:integer "2"]]]
+          [:expr [:number [:integer "8"]]]]]]]
       [:trans [:probability [:number-ref [:number [:float "0.2"]]]]]
       [:trans [:doc [:string "Same signature, different bounds"]]]]]]]
   [:option

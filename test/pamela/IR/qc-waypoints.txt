@@ -24,8 +24,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "5"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "5"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445370"]]]
            [:argval [:number [:float "-71.227891"]]]
            [:argval [:number [:float "1.0"]]]
@@ -37,8 +37,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "6"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "6"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445435"]]]
            [:argval [:number [:float "-71.227843"]]]
            [:argval [:number [:float "2.0"]]]
@@ -50,8 +50,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "7"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "7"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445389"]]]
            [:argval [:number [:float "-71.227734"]]]
            [:argval [:number [:float "3.0"]]]
@@ -63,8 +63,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "8"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "8"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445327"]]]
            [:argval [:number [:float "-71.227788"]]]
            [:argval [:number [:float "4.0"]]]
@@ -76,8 +76,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "9"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "9"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445370"]]]
            [:argval [:number [:float "-71.227891"]]]
            [:argval [:number [:float "1.0"]]]

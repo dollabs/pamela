@@ -13,8 +13,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "20"]]
-          [:number [:integer "30"]]]]]]]
+          [:expr [:number [:integer "20"]]]
+          [:expr [:number [:integer "30"]]]]]]]]
      [:args [:symbol "location"]]]
     [:defpmethod [:symbol "capture"] [:args [:symbol "location"]]]
     [:defpmethod [:symbol "evidence"] [:args [:symbol "location"]]]
@@ -90,8 +90,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "10"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "10"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc"]]]]]]]]
     [:defpmethod
      [:symbol "get-data-and-interpret"]
@@ -129,8 +129,8 @@
         [:opt-bounds
          [:bounds
           [:bounds-literal
-           [:number [:integer "15"]]
-           [:number [:integer "25"]]]]]]
+           [:expr [:number [:integer "15"]]]
+           [:expr [:number [:integer "25"]]]]]]]
        [:argval [:symbol-ref [:symbol "at"]]]]]]
     [:defpmethod
      [:symbol "interpret"]
@@ -145,8 +145,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "15"]]
-              [:number [:integer "25"]]]]]]
+              [:expr [:number [:integer "15"]]]
+              [:expr [:number [:integer "25"]]]]]]]
           [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
@@ -156,8 +156,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "15"]]
-              [:number [:integer "25"]]]]]]
+              [:expr [:number [:integer "15"]]]
+              [:expr [:number [:integer "25"]]]]]]]
           [:argval [:symbol-ref [:symbol "place"]]]]]]
        [:choice
         [:fn
@@ -167,8 +167,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "15"]]
-              [:number [:integer "25"]]]]]]
+              [:expr [:number [:integer "15"]]]
+              [:expr [:number [:integer "25"]]]]]]]
           [:argval [:symbol-ref [:symbol "place"]]]]]]]]]]]]
  [:defpclass
   [:symbol "isr-htn-demo"]

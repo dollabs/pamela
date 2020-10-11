@@ -29,8 +29,8 @@
         [:opt-bounds
          [:bounds
           [:bounds-literal
-           [:number [:integer "0"]]
-           [:number [:integer "1"]]]]]]
+           [:expr [:number [:integer "0"]]]
+           [:expr [:number [:integer "1"]]]]]]]
        [:method-opt [:label [:keyword ":demo"]]]
        [:method-opt [:cost [:number-ref [:number [:integer "2"]]]]]
        [:method-opt [:reward [:number-ref [:number [:integer "3"]]]]]

@@ -28,8 +28,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -46,8 +46,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -82,8 +82,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn

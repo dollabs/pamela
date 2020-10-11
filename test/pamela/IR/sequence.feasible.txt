@@ -12,8 +12,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "2"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "2"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-b"]
@@ -22,8 +22,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "3"]]
-          [:number [:integer "6"]]]]]]]
+          [:expr [:number [:integer "3"]]]
+          [:expr [:number [:integer "6"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-c"]
@@ -32,8 +32,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "4"]]
-          [:number [:integer "8"]]]]]]]
+          [:expr [:number [:integer "4"]]]
+          [:expr [:number [:integer "8"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-d"]
@@ -42,8 +42,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "2"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "2"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-e"]
@@ -52,8 +52,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "5"]]
-          [:number [:integer "10"]]]]]]]
+          [:expr [:number [:integer "5"]]]
+          [:expr [:number [:integer "10"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "sequence-feasible"]
@@ -76,8 +76,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "15"]]
-            [:number [:integer "30"]]]]]]]
+            [:expr [:number [:integer "15"]]]
+            [:expr [:number [:integer "30"]]]]]]]]
        [:fn
         [:method-fn [:symbol-ref [:symbol "plnt"] [:symbol "do-a"]]]]
        [:fn

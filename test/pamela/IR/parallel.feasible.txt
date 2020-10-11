@@ -21,8 +21,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "50"]]
-            [:number [:integer "100"]]]]]]]
+            [:expr [:number [:integer "50"]]]
+            [:expr [:number [:integer "100"]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "option"]]
@@ -30,8 +30,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "55"]]
-             [:number [:integer "65"]]]]]]]]
+             [:expr [:number [:integer "55"]]]
+             [:expr [:number [:integer "65"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "option"]]
@@ -39,8 +39,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "65"]]
-             [:number [:integer "75"]]]]]]]]
+             [:expr [:number [:integer "65"]]]
+             [:expr [:number [:integer "75"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "option"]]
@@ -48,6 +48,6 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "75"]]
-             [:number [:integer "85"]]]]]]]]]]]
+             [:expr [:number [:integer "75"]]]
+             [:expr [:number [:integer "85"]]]]]]]]]]]]
     [:defpmethod [:symbol "option"] [:args]]]]]]

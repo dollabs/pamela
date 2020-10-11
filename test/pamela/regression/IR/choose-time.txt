@@ -19,22 +19,22 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "1"]]
-            [:number [:integer "100"]]]]]]
+            [:expr [:number [:integer "1"]]]
+            [:expr [:number [:integer "100"]]]]]]]
         [:fn [:delay]]]
        [:choice
         [:choice-opt
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "101"]]
-            [:number [:integer "200"]]]]]]
+            [:expr [:number [:integer "101"]]]
+            [:expr [:number [:integer "200"]]]]]]]
         [:fn [:delay]]]
        [:choice
         [:choice-opt
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "201"]]
-            [:number [:integer "300"]]]]]]
+            [:expr [:number [:integer "201"]]]
+            [:expr [:number [:integer "300"]]]]]]]
         [:fn [:delay]]]]]]]]]]

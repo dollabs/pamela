@@ -28,8 +28,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "11"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "11"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -46,8 +46,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "12"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "12"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "13"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "13"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -82,8 +82,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "14"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "14"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -114,8 +114,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:float "42.445370"]]]
          [:argval [:number [:float "-71.227895"]]]
          [:argval [:number [:float "1.0"]]]
@@ -127,8 +127,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:float "42.445435"]]]
          [:argval [:number [:float "-71.227846"]]]
          [:argval [:number [:float "2.0"]]]
@@ -140,8 +140,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:float "42.445389"]]]
          [:argval [:number [:float "-71.227737"]]]
          [:argval [:number [:float "3.0"]]]
@@ -153,8 +153,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:float "42.445327"]]]
          [:argval [:number [:float "-71.227788"]]]
          [:argval [:number [:float "4.0"]]]
@@ -166,8 +166,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:float "42.445370"]]]
          [:argval [:number [:float "-71.227899"]]]
          [:argval [:number [:float "1.0"]]]

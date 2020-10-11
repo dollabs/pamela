@@ -20,8 +20,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]
      [:fn
       [:method-fn
@@ -53,8 +53,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "5"]]
-               [:number [:integer "20"]]]]]]
+               [:expr [:number [:integer "5"]]]
+               [:expr [:number [:integer "20"]]]]]]]
            [:argval [:number [:float "42.445370"]]]
            [:argval [:number [:float "-71.227891"]]]]]]]
        [:fn

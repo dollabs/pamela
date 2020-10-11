@@ -12,8 +12,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "2"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "2"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-b"]
@@ -22,8 +22,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "3"]]
-          [:number [:integer "6"]]]]]]]
+          [:expr [:number [:integer "3"]]]
+          [:expr [:number [:integer "6"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-c"]
@@ -32,8 +32,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "85"]]
-          [:number [:integer "90"]]]]]]]
+          [:expr [:number [:integer "85"]]]
+          [:expr [:number [:integer "90"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-d"]
@@ -42,8 +42,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "7"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "7"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-e"]
@@ -52,8 +52,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "9"]]
-          [:number [:integer "16"]]]]]]]
+          [:expr [:number [:integer "9"]]]
+          [:expr [:number [:integer "16"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-f"]
@@ -62,8 +62,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "do-g"]
@@ -72,8 +72,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "2"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "2"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "first-tpn"]
@@ -98,8 +98,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "1"]]
-            [:number [:integer "100"]]]]]]]
+            [:expr [:number [:integer "1"]]]
+            [:expr [:number [:integer "100"]]]]]]]]
        [:fn [:method-fn [:symbol-ref [:symbol "do-a-and-b"]]]]
        [:fn [:method-fn [:symbol-ref [:symbol "do-choice-and-c"]]]]]]
      [:between-stmt
@@ -110,8 +110,8 @@
         [:opt-bounds
          [:bounds
           [:bounds-literal
-           [:number [:integer "1"]]
-           [:number [:integer "100"]]]]]]]]]
+           [:expr [:number [:integer "1"]]]
+           [:expr [:number [:integer "100"]]]]]]]]]]
     [:defpmethod
      [:symbol "do-a-and-b"]
      [:args]
@@ -124,8 +124,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "2"]]
-             [:number [:integer "4"]]]]]]]]
+             [:expr [:number [:integer "2"]]]
+             [:expr [:number [:integer "4"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-b"]]
@@ -134,8 +134,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "3"]]
-             [:number [:integer "6"]]]]]]]]]]]
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "6"]]]]]]]]]]]]
     [:defpmethod
      [:symbol "do-choice-and-c"]
      [:args]
@@ -149,8 +149,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "85"]]
-             [:number [:integer "90"]]]]]]]]]]]
+             [:expr [:number [:integer "85"]]]
+             [:expr [:number [:integer "90"]]]]]]]]]]]]
     [:defpmethod
      [:symbol "do-choice"]
      [:args]
@@ -175,8 +175,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "1"]]
-             [:number [:integer "7"]]]]]]]]
+             [:expr [:number [:integer "1"]]]
+             [:expr [:number [:integer "7"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-e"]]
@@ -186,8 +186,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "9"]]
-             [:number [:integer "16"]]]]]]]]]]]
+             [:expr [:number [:integer "9"]]]
+             [:expr [:number [:integer "16"]]]]]]]]]]]]
     [:defpmethod
      [:symbol "do-f-and-g"]
      [:args]
@@ -202,8 +202,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "1"]]
-             [:number [:integer "3"]]]]]]]]
+             [:expr [:number [:integer "1"]]]
+             [:expr [:number [:integer "3"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "plnt"] [:symbol "do-g"]]
@@ -212,8 +212,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "2"]]
-             [:number [:integer "5"]]]]]]]]]]]]]]
+             [:expr [:number [:integer "2"]]]
+             [:expr [:number [:integer "5"]]]]]]]]]]]]]]]
  [:defpclass
   [:symbol "main"]
   [:args]
