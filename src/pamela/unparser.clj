@@ -178,9 +178,17 @@
     (when (and (vector? temporal-constraints)
             (> (count temporal-constraints) 1))
       (log/error "Unable to unparse more than one temporal constraint"
-        temporal-constraints))
-    (when (= type :bounds)
-      (into [] (map compile-tc-value value)))))
+                 temporal-constraints))
+    (if (= type :bounds)
+       (cond (vector? value)
+             (into [] (map compile-tc-value value))
+             (map? value)
+             (compile-tc-value value)
+             (nil? value)
+             value
+             :otherwise
+             (do (log/warn "Suspicious bounds in unparse-temporal-constraints" temporal-constraints)
+                 value)))))
 
 ;; unparse-cond-operand -------------------------
 
