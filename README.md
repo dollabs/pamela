@@ -25,7 +25,7 @@ The [DOLL](http://dollabs.com/) team (including
 [Paul Robertson](https://twitter.com/DrPaulRobertson),
 [Dan Cerys](https://twitter.com/dcerys),
 [Prakash Manghwani](https://twitter.com/manghwani), and
-[Tom Marble](https://twitter.com/tmarble)) recently presented
+[Tom Marble](https://twitter.com/tmarble)) presented
 the talk **In situ model-based learning in PAMELA** at
 [Clojure Conj 2016](http://2016.clojure-conj.org/model-based-learning-in-pamela/).
 Check out the [ClojureTV](https://youtu.be/i84i1X9k8_g) video
@@ -36,7 +36,7 @@ See also our talk **Model based programming in PAMELA** from
 Check out the [ClojureTV](https://youtu.be/WLovW6hlYHM) video
 and the [slides](doc/slides/ClojureWestHelloPamela.pdf).
 
-For more details visit the [PAMELA project page](http://dollabs.com/projects/pamela).
+For more details visit the [PAMELA project page](https://dollabs.com/projects/pamela).
 
 ## TPN Example
 
