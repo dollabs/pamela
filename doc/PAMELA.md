@@ -189,6 +189,10 @@ Each operand is disambiguated based on type as follows:
   * The operand may be an explicit mode reference `(mode-of pclass :mode-name)` where **pclass** may be `this` or the symbol for a previously defined *pclass* and **:mode-name** is one of the modes of that *pclass*.
   * In the future, modes may support differential equations and/or linear equations. This capability is not yet implemented.
 
+#### :bounds
+
+Bounds represent the lower and upper bounds that an activity is expected to take. Bounds are generally represented by numbers that refer to the time units of the model, such as :bounds  [4 8], meaning that the activity in questions is expected to take at least 4 and at most 8 time units.  If the time units for the model wer seconds, that would mean between 4 and 8 seconds.  How tyhese values are arrived at is up to the modeler.  Given historical data, one way would be for the lower bound to be the mean minus two stand deviations and the upper bound being the mean plus txo upper bounds.  Sometimes the bounds  man be learned and read in from a file, for that LVARS can be used in place of the constants.  Furthermore limited arithmetic is permitted.  Expressions using (+ x y) (- x y) (* x y) or (/ x y) may be used and nested as long as x and y are constants or lvars.
+
 #### :transitions
 
 This (optional) section, provides the specifications of the mode transitions for the modes defined within this `defpclass`.
