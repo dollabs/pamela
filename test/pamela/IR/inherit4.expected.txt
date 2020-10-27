@@ -14,8 +14,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
       [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
       [:cond [:controllable [:boolean [:TRUE]]]]
@@ -37,8 +37,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
       [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
       [:cond [:controllable [:boolean [:FALSE]]]]
@@ -61,8 +61,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
       [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
       [:cond [:controllable [:boolean [:FALSE]]]]
@@ -78,8 +78,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
       [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
       [:cond [:controllable [:boolean [:TRUE]]]]

@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:doc [:string "turns on the power supply"]]]]
      [:args]]
     [:defpmethod
@@ -77,8 +77,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:cond [:doc [:string "turns off the power supply"]]]]
      [:args]]
     [:defpmethod
@@ -223,8 +223,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:trans [:doc [:string "turning on bulb"]]]]]
     [:transition
      [:keyword ":on:off"]
@@ -254,8 +254,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "3"]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
       [:trans [:doc [:string "turning off bulb"]]]]]
     [:transition
      [:keyword ":*:fail"]

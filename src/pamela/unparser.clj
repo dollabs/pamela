@@ -146,6 +146,30 @@
                     lvar-ctor)]
     (cons 'lvar lvar-ctor)))
 
+(def arith-op {:add '+,
+               :subtract '-,
+               :multiply '*,
+               :divide '/})
+
+(declare compile-tc-value)
+
+(defn unparse-expr
+  [exprn]
+  (let [{type :type
+         op :operation
+         args :args} exprn
+        cargs (into () (reverse (map compile-tc-value args)))]
+    (cons (get arith-op op) cargs)))
+
+(defn compile-tc-value
+  [value]
+  (if (map? value)
+    (case (:type value)
+      :lvar (unparse-field-type value)
+      :expr (unparse-expr value)
+      value)
+    value))
+
 ;; unparse-temporal-constraints -------------------------
 
 (defn unparse-temporal-constraints [temporal-constraints]
@@ -154,11 +178,17 @@
     (when (and (vector? temporal-constraints)
             (> (count temporal-constraints) 1))
       (log/error "Unable to unparse more than one temporal constraint"
-        temporal-constraints))
-    (when (= type :bounds)
-      (if (map? value) ;; lvar
-        (unparse-field-type value)
-        value))))
+                 temporal-constraints))
+    (if (= type :bounds)
+       (cond (vector? value)
+             (into [] (map compile-tc-value value))
+             (map? value)
+             (compile-tc-value value)
+             (nil? value)
+             value
+             :otherwise
+             (do (log/warn "Suspicious bounds in unparse-temporal-constraints" temporal-constraints)
+                 value)))))
 
 ;; unparse-cond-operand -------------------------
 

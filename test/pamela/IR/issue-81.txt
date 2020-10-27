@@ -36,8 +36,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "time"]]]
     [:defpmethod
      [:symbol "scp"]
@@ -47,8 +47,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "fromfile"] [:symbol "tofile"]]]
     [:defpmethod
      [:symbol "cp"]
@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args
       [:symbol "cmd"]
       [:symbol "arg1"]
@@ -88,8 +88,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "1"]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "1"]]]]]]]
       [:cond [:controllable [:boolean [:TRUE]]]]]
      [:args [:symbol "area"]]]]]]
  [:defpclass

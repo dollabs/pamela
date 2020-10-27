@@ -15,8 +15,8 @@
           [:string "high-res-bounds"]
           [:lvar-init
            [:bounds-literal
-            [:number [:integer "5"]]
-            [:number [:integer "10"]]]]]]]]]
+            [:expr [:number [:integer "5"]]]
+            [:expr [:number [:integer "10"]]]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "take-medium-res-images"]
@@ -39,8 +39,8 @@
             [:string "med-res-bounds"]
             [:lvar-init
              [:bounds-literal
-              [:number [:integer "3"]]
-              [:number [:integer "6"]]]]]]]]
+              [:expr [:number [:integer "3"]]]
+              [:expr [:number [:integer "6"]]]]]]]]]
         [:fn
          [:method-fn
           [:symbol-ref [:symbol "take-medium-res-images"]]]]]]]]]]]

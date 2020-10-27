@@ -127,7 +127,20 @@
      :primitive true,
      :probability 1.0,
      :reward 0,
-     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+     :temporal-constraints
+     [{:type :bounds,
+       :value
+       [{:type :expr,
+         :operation :subtract,
+         :args
+         [6
+          {:type :expr,
+           :operation :add,
+           :args
+           [2 {:type :expr, :operation :multiply, :args [2 2]}]}]}
+        {:type :expr,
+         :operation :divide,
+         :args [8 {:type :lvar, :name "UPBOUND"}]}]}]}],
    up
    [{:args [newloc],
      :betweens [],
@@ -161,6 +174,7 @@
  pamela/lvars
  {:lvars
   {"Proposition-arg1" :unset,
+   "UPBOUND" :unset,
    "proposition-arg2" :unset,
    "proposition-arg3" :unset},
   :type :lvars}}

@@ -38,6 +38,24 @@
        [:doc
         [:string "Multiple propositions, no search constraints."]]]
       [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr
+           [:subtract-expr
+            [:expr [:number [:integer "6"]]]
+            [:expr
+             [:add-expr
+              [:expr [:number [:integer "2"]]]
+              [:expr
+               [:multiply-expr
+                [:expr [:number [:integer "2"]]]
+                [:expr [:number [:integer "2"]]]]]]]]]
+          [:expr
+           [:divide-expr
+            [:expr [:number [:integer "8"]]]
+            [:expr [:lvar-ctor [:string "UPBOUND"]]]]]]]]]
+      [:cond
        [:pre
         [:cond-expr
          [:propositions-expr

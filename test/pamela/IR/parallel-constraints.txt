@@ -31,8 +31,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "20"]]
-             [:number [:integer "30"]]]]]]
+             [:expr [:number [:integer "20"]]]
+             [:expr [:number [:integer "30"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
@@ -44,8 +44,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "15"]]
-             [:number [:integer "25"]]]]]]
+             [:expr [:number [:integer "15"]]]
+             [:expr [:number [:integer "25"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
@@ -66,8 +66,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "10"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "10"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]]]
        [:fn
@@ -77,8 +77,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "11"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "11"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]]]
        [:fn
@@ -88,8 +88,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "12"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "12"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]]]
        [:fn
@@ -99,8 +99,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "13"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "13"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]]]
        [:fn
@@ -110,8 +110,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "14"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "14"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]]]
        [:fn
@@ -121,8 +121,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "15"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "15"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]]]]]]
     [:defpmethod
@@ -141,8 +141,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "10"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "10"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:string "1"]]]]
@@ -153,8 +153,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "11"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "11"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:string "1"]]]]
@@ -165,8 +165,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "12"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "12"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc1"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]
@@ -177,8 +177,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "13"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "13"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:string "1"]]]]
@@ -189,8 +189,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "14"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "14"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc2"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]
@@ -201,8 +201,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "5"]]
-             [:number [:integer "15"]]]]]]
+             [:expr [:number [:integer "5"]]]
+             [:expr [:number [:integer "15"]]]]]]]
          [:argval [:symbol-ref [:symbol "loc3"]]]
          [:argval [:symbol-ref [:symbol "loc4"]]]
          [:argval [:string "1"]]]]]]]

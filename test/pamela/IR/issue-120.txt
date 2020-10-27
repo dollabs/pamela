@@ -30,8 +30,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "1"]]
-              [:number [:integer "10"]]]]]]]]]
+              [:expr [:number [:integer "1"]]]
+              [:expr [:number [:integer "10"]]]]]]]]]]
        [:choice
         [:fn
          [:method-fn
@@ -40,8 +40,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "1"]]
-              [:number [:integer "20"]]]]]]]]]
+              [:expr [:number [:integer "1"]]]
+              [:expr [:number [:integer "20"]]]]]]]]]]
        [:choice
         [:fn
          [:method-fn
@@ -50,8 +50,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "1"]]
-              [:number [:integer "30"]]]]]]]]]]]]
+              [:expr [:number [:integer "1"]]]
+              [:expr [:number [:integer "30"]]]]]]]]]]]]]
     [:defpmethod
      [:symbol "ex-choose-2"]
      [:args]
@@ -62,24 +62,24 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "2"]]
-            [:number [:integer "10"]]]]]]
+            [:expr [:number [:integer "2"]]]
+            [:expr [:number [:integer "10"]]]]]]]
         [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "2"]]
-            [:number [:integer "20"]]]]]]
+            [:expr [:number [:integer "2"]]]
+            [:expr [:number [:integer "20"]]]]]]]
         [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]
        [:choice
         [:choice-opt
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "2"]]
-            [:number [:integer "30"]]]]]]
+            [:expr [:number [:integer "2"]]]
+            [:expr [:number [:integer "30"]]]]]]]
         [:fn [:method-fn [:symbol-ref [:symbol "action"]]]]]]]]
     [:defpmethod
      [:symbol "ex-parallel"]
@@ -93,8 +93,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "3"]]
-             [:number [:integer "10"]]]]]]]]
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "10"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "action"]]
@@ -102,8 +102,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "3"]]
-             [:number [:integer "20"]]]]]]]]
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "20"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "action"]]
@@ -111,8 +111,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "3"]]
-             [:number [:integer "30"]]]]]]]]]]]
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "30"]]]]]]]]]]]]
     [:defpmethod
      [:symbol "ex-sequence"]
      [:args]
@@ -125,8 +125,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "4"]]
-             [:number [:integer "10"]]]]]]]]
+             [:expr [:number [:integer "4"]]]
+             [:expr [:number [:integer "10"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "action"]]
@@ -134,8 +134,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "3"]]
-             [:number [:integer "20"]]]]]]]]
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "20"]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "action"]]
@@ -143,6 +143,6 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "4"]]
-             [:number [:integer "30"]]]]]]]]]]]
+             [:expr [:number [:integer "4"]]]
+             [:expr [:number [:integer "30"]]]]]]]]]]]]
     [:defpmethod [:symbol "action"] [:args]]]]]]

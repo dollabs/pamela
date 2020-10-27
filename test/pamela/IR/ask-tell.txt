@@ -43,8 +43,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "5"]]
-            [:number [:integer "30"]]]]]]]
+            [:expr [:number [:integer "5"]]]
+            [:expr [:number [:integer "30"]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "delayed-gratification"]]]]]]]
@@ -61,8 +61,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "10"]]
-               [:number [:integer "10"]]]]]]]]]]
+               [:expr [:number [:integer "10"]]]
+               [:expr [:number [:integer "10"]]]]]]]]]]]
        [:fn
         [:tell
          [:cond-expr
@@ -96,8 +96,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "5"]]
-            [:number [:integer "30"]]]]]]]
+            [:expr [:number [:integer "5"]]]
+            [:expr [:number [:integer "30"]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "delayed-gratification"]]]]]]]
@@ -114,8 +114,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "10"]]
-               [:number [:integer "10"]]]]]]]]]]
+               [:expr [:number [:integer "10"]]]
+               [:expr [:number [:integer "10"]]]]]]]]]]]
        [:fn
         [:tell
          [:cond-expr
