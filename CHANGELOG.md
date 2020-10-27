@@ -4,9 +4,6 @@ All notable ### Changes to this project will be documented in this file. This ch
 
 ## [Unreleased]
 
-* Added grammar to add propositions to conditions.
-* Added grammar to add limited arithmetic to bounds (+ x y) (- x y) (* x y) (/ x y)
-
 ### Changes
 * Grammar ambiguity fixed in a previous commit (Closes #144)
 * Fixed argument values with field references (Closes #150)
@@ -34,7 +31,8 @@ All notable ### Changes to this project will be documented in this file. This ch
 * Add support for inheritance (`:inherit`)
 * Extend conditions with `same`, `wm`, `ltm`, and `recency`
 * Added inequalities for comparing numbers: >, <=, >, >=  These are added to allow, for example, searching for an object representing a person whose age is between 18 and 21, for example.
-
+* Added grammar to add propositions to conditions.
+* Added grammar to add limited arithmetic to bounds `(+ x y)` `(- x y)` `(* x y)` `(/ x y)`
 
 ## [0.6.2] - 2017-08-28
 
