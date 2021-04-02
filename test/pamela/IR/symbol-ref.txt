@@ -112,13 +112,13 @@
      [:field-type
       [:pclass-ctor
        [:symbol "pclass1"]
-       [:pclass-ctor-arg [:number [:integer "42"]]]]]]
+       [:pclass-ctor-arg [:expr [:number [:integer "42"]]]]]]]
     [:field
      [:symbol "field2"]
      [:field-type
       [:pclass-ctor
        [:symbol "pclass1"]
-       [:pclass-ctor-arg [:number [:integer "43"]]]]]]
+       [:pclass-ctor-arg [:expr [:number [:integer "43"]]]]]]]
     [:field
      [:symbol "field3"]
      [:field-init
@@ -128,7 +128,7 @@
      [:field-type
       [:pclass-ctor
        [:symbol "pclass1"]
-       [:pclass-ctor-arg [:number [:integer "44"]]]]]]
+       [:pclass-ctor-arg [:expr [:number [:integer "44"]]]]]]]
     [:field
      [:symbol "field4"]
      [:field-type
@@ -271,10 +271,7 @@
          [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
          [:argval [:number [:integer "4"]]]
          [:argval [:number [:integer "5"]]]
-         [:argval
-          [:mode-ref
-           [:symbol-ref [:symbol "this"]]
-           [:keyword ":stopped"]]]]]
+         [:argval [:safe-keyword [:keyword ":stopped"]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "field4"] [:symbol "method3"]]

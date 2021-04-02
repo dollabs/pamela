@@ -1,0 +1,100 @@
+[:pamela
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:methods [:defpmethod [:symbol "do-c"] [:args]]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args [:symbol "id"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "c1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "c"]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "part-1"]]]]]]]
+    [:field
+     [:symbol "c2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "c"]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "part-2"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-b"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "c1"] [:symbol "do-c"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "c2"] [:symbol "do-c"]]]]]]]]]]
+ [:defpclass
+  [:symbol "a"]
+  [:args [:symbol "id1"] [:symbol "id2"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "b1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "b"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "id1"]]]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id1"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "b-one"]]]]]]]
+    [:field
+     [:symbol "b2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "b"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "id2"]]]
+       [:pclass-ctor-option
+        [:id [:argval [:symbol-ref [:symbol "id2"]]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "b-two"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "do-a"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "b1"] [:symbol "do-b"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "b2"] [:symbol "do-b"]]]]]]]]]]
+ [:defpclass
+  [:symbol "demo"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "a1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "a"]
+       [:pclass-ctor-arg [:string "111"]]
+       [:pclass-ctor-arg [:string "222"]]
+       [:pclass-ctor-option [:id [:argval [:string "000"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "a-one"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "a1"] [:symbol "do-a"]]]]]]]]]]]

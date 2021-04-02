@@ -1,0 +1,86 @@
+[:pamela
+ [:defpclass
+  [:symbol "a1"]
+  [:args]
+  [:option
+   [:fields
+    [:field [:symbol "fa"] [:field-type [:literal [:string "fa"]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":moa1"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "fa"]]]
+        [:cond-operand [:literal [:string "fa"]]]]]]
+     [:mode-init
+      [:keyword ":moa2"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "fa"]]]
+        [:cond-operand [:literal [:boolean [:FALSE]]]]]]]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword ":moa1:moa2"]
+     [:trans-map
+      [:trans [:pre [:keyword ":moa1"]]]
+      [:trans [:post [:keyword ":moa2"]]]
+      [:trans [:doc [:string "transition :moa1 -> :moa2"]]]]]
+    [:transition
+     [:keyword ":moa2:moa1"]
+     [:trans-map
+      [:trans [:pre [:keyword ":moa2"]]]
+      [:trans [:post [:keyword ":moa1"]]]
+      [:trans [:doc [:string "transition :moa2 -> :moa1"]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "ma"]
+     [:args [:symbol "arg1"] [:symbol "arg2"]]]]]]
+ [:defpclass [:symbol "a"] [:args] [:option [:inherit [:symbol "a1"]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args]
+  [:option
+   [:fields
+    [:field [:symbol "fa"] [:field-type [:literal [:string "fb"]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":moa1"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "fa"]]]
+        [:cond-operand [:literal [:string "fb"]]]]]]
+     [:mode-init
+      [:keyword ":moa2"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "fa"]]]
+        [:cond-operand [:literal [:boolean [:TRUE]]]]]]]]]]
+  [:option
+   [:transitions
+    [:transition
+     [:keyword ":moa1:moa2"]
+     [:trans-map
+      [:trans [:pre [:keyword ":moa1"]]]
+      [:trans [:post [:keyword ":moa2"]]]
+      [:trans [:doc [:string "transition :mob1 -> :mob2"]]]]]
+    [:transition
+     [:keyword ":moa2:moa1"]
+     [:trans-map
+      [:trans [:pre [:keyword ":moa2"]]]
+      [:trans [:post [:keyword ":moa1"]]]
+      [:trans [:doc [:string "transition :mob2 -> :mob1"]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "ma"]
+     [:args [:symbol "arg1"] [:symbol "arg2"]]]]]]
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]]]

@@ -16,8 +16,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "150"]]
-          [:number [:integer "180"]]]]]]]
+          [:expr [:number [:integer "150"]]]
+          [:expr [:number [:integer "180"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "watch-right-hemisphere"]
@@ -27,8 +27,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "watch-left-hemisphere"]
@@ -42,8 +42,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "take-high-res-images"]
@@ -53,8 +53,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "move-high-res-images"]
@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "take-medium-res-images"]
@@ -75,8 +75,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "move-medium-res-images"]
@@ -86,8 +86,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-1"]
@@ -97,8 +97,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "6"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "6"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-2-fast"]
@@ -108,8 +108,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "10"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "10"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-2-slow"]
@@ -119,8 +119,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "10"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "10"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-3"]
@@ -130,8 +130,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "7"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "7"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-distribution"]
@@ -141,8 +141,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "pre-picture-distribution"]
@@ -152,16 +152,24 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "tpn"]
-  [:args [:symbol "plant"]]
+  [:args]
   [:option
    [:meta
     [:meta-entry [:version [:string "0.2.0"]]]
     [:meta-entry [:doc [:string "TPN Demo"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "plant"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant"]
+       [:pclass-ctor-option [:id [:argval [:string "100"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -177,8 +185,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "160"]]
-             [:number [:integer "170"]]]]]]]]
+             [:expr [:number [:integer "160"]]]
+             [:expr [:number [:integer "170"]]]]]]]]]
        [:fn
         [:parallel
          [:fn
@@ -188,8 +196,8 @@
              [:opt-bounds
               [:bounds
                [:bounds-literal
-                [:number [:integer "20"]]
-                [:number [:integer "25"]]]]]]]
+                [:expr [:number [:integer "20"]]]
+                [:expr [:number [:integer "25"]]]]]]]]
            [:fn
             [:method-fn
              [:symbol-ref
@@ -207,8 +215,8 @@
              [:opt-bounds
               [:bounds
                [:bounds-literal
-                [:number [:integer "123"]]
-                [:number [:integer "456"]]]]]]]
+                [:expr [:number [:integer "123"]]]
+                [:expr [:number [:integer "456"]]]]]]]]
            [:fn
             [:choose
              [:choice
@@ -223,8 +231,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "3"]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "3"]]]]]]]]]
                 [:fn
                  [:method-fn
                   [:symbol-ref
@@ -234,8 +242,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "4"]]]]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "4"]]]]]]]]]]]]
              [:choice
               [:fn
                [:method-fn
@@ -246,15 +254,15 @@
                  [:opt-bounds
                   [:bounds
                    [:bounds-literal
-                    [:number [:integer "0"]]
-                    [:number [:integer "3"]]]]]]]]]
+                    [:expr [:number [:integer "0"]]]
+                    [:expr [:number [:integer "3"]]]]]]]]]]
              [:choice
               [:choice-opt
                [:opt-bounds
                 [:bounds
                  [:bounds-literal
-                  [:number [:integer "78"]]
-                  [:number [:integer "90"]]]]]]
+                  [:expr [:number [:integer "78"]]]
+                  [:expr [:number [:integer "90"]]]]]]]
               [:fn
                [:sequence
                 [:fn
@@ -266,8 +274,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "3"]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "3"]]]]]]]]]
                 [:fn
                  [:method-fn
                   [:symbol-ref
@@ -277,8 +285,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "4"]]]]]]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "4"]]]]]]]]]]]]]]
            [:fn
             [:method-fn
              [:symbol-ref
@@ -295,8 +303,8 @@
                 [:opt-bounds
                  [:bounds
                   [:bounds-literal
-                   [:number [:integer "0"]]
-                   [:number [:integer "6"]]]]]]]]
+                   [:expr [:number [:integer "0"]]]
+                   [:expr [:number [:integer "6"]]]]]]]]]
              [:fn
               [:choose
                [:choice
@@ -309,8 +317,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "10"]]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "10"]]]]]]]]]]
                [:choice
                 [:fn
                  [:method-fn
@@ -321,8 +329,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "0"]]
-                      [:number [:integer "10"]]]]]]]]]]]
+                      [:expr [:number [:integer "0"]]]
+                      [:expr [:number [:integer "10"]]]]]]]]]]]]
              [:fn
               [:method-fn
                [:symbol-ref
@@ -332,8 +340,8 @@
                 [:opt-bounds
                  [:bounds
                   [:bounds-literal
-                   [:number [:integer "0"]]
-                   [:number [:integer "7"]]]]]]]]]]
+                   [:expr [:number [:integer "0"]]]
+                   [:expr [:number [:integer "7"]]]]]]]]]]]
            [:fn
             [:method-fn
              [:symbol-ref
@@ -343,5 +351,16 @@
               [:opt-bounds
                [:bounds
                 [:bounds-literal
-                 [:number [:integer "0"]]
-                 [:number [:integer "5"]]]]]]]]]]]]]]]]]]]
+                 [:expr [:number [:integer "0"]]]
+                 [:expr [:number [:integer "5"]]]]]]]]]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "tpn"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "tpn"]
+       [:pclass-ctor-option [:id [:argval [:string "100"]]]]]]]]]]]

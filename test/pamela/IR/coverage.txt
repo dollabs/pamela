@@ -15,8 +15,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "time"]]]
     [:defpmethod
      [:symbol "scp"]
@@ -26,8 +26,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "fromfile"] [:symbol "tofile"]]]
     [:defpmethod
      [:symbol "cp"]
@@ -43,8 +43,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args
       [:symbol "cmd"]
       [:symbol "arg1"]
@@ -67,8 +67,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "1"]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "1"]]]]]]]
       [:cond [:controllable [:boolean [:TRUE]]]]]
      [:args [:symbol "area"]]]]]]
  [:defpclass
@@ -100,8 +100,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "3"]]
-               [:number [:integer "3"]]]]]]]]
+               [:expr [:number [:integer "3"]]]
+               [:expr [:number [:integer "3"]]]]]]]]]
          [:delay-opt [:fn-opt [:label [:keyword ":initial-delay"]]]]
          [:delay-opt [:controllable [:boolean [:FALSE]]]]
          [:delay-opt
@@ -119,8 +119,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "30"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "30"]]]]]]]
          [:method-opt [:label [:keyword ":xfer"]]]]]
        [:fn
         [:method-fn
@@ -129,8 +129,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "10"]]
-             [:number [:integer "40"]]]]]]
+             [:expr [:number [:integer "10"]]]
+             [:expr [:number [:integer "40"]]]]]]]
          [:method-opt [:label [:keyword ":work"]]]]]
        [:fn
         [:method-fn
@@ -139,8 +139,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "20"]]
-             [:number [:integer "50"]]]]]]
+             [:expr [:number [:integer "20"]]]
+             [:expr [:number [:integer "50"]]]]]]]
          [:method-opt [:label [:keyword ":copy"]]]]]]]
      [:between-stmt
       [:between
@@ -150,8 +150,8 @@
         [:opt-bounds
          [:bounds
           [:bounds-literal
-           [:number [:integer "13"]]
-           [:number [:integer "17"]]]]]]
+           [:expr [:number [:integer "13"]]]
+           [:expr [:number [:integer "17"]]]]]]]
        [:between-opt [:cost-le [:number-ref [:number [:integer "7"]]]]]
        [:between-opt
         [:reward-ge [:number-ref [:number [:integer "1"]]]]]]]]
@@ -181,8 +181,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "0"]]
-              [:number [:integer "9"]]]]]]
+              [:expr [:number [:integer "0"]]]
+              [:expr [:number [:integer "9"]]]]]]]
           [:argval [:string "bigfile"]]
           [:argval [:string "me@192.168.11.100:~me/copyofbigfile"]]]]]
        [:choice
@@ -195,8 +195,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "10"]]
-              [:number [:integer "19"]]]]]]
+              [:expr [:number [:integer "10"]]]
+              [:expr [:number [:integer "19"]]]]]]]
           [:argval [:string "bigfile"]]
           [:argval [:string "copyofbigfile"]]]]]
        [:choice
@@ -209,8 +209,8 @@
            [:opt-bounds
             [:bounds
              [:bounds-literal
-              [:number [:integer "20"]]
-              [:number [:integer "29"]]]]]]
+              [:expr [:number [:integer "20"]]]
+              [:expr [:number [:integer "29"]]]]]]]
           [:argval [:string "ls"]]
           [:argval [:string "-lart"]]
           [:argval [:string ">"]]
@@ -233,8 +233,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "10"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "10"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:method-opt [:label [:keyword ":hardwork"]]]
          [:argval [:number [:integer "10"]]]]]
        [:fn
@@ -244,8 +244,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "99"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "99"]]]]]]]
          [:method-opt [:label [:keyword ":python"]]]
          [:argval [:string "myscript.py"]]
          [:argval [:string "2"]]
@@ -259,7 +259,9 @@
        [:between-opt
         [:opt-bounds
          [:bounds
-          [:bounds-literal [:number [:integer "50"]] [:INFINITY]]]]]]]
+          [:bounds-literal
+           [:expr [:number [:integer "50"]]]
+           [:INFINITY]]]]]]]
      [:between-stmt
       [:between-ends
        [:keyword ":hardwork"]
@@ -268,8 +270,8 @@
         [:opt-bounds
          [:bounds
           [:bounds-literal
-           [:number [:integer "0"]]
-           [:number [:integer "5"]]]]]]]]]
+           [:expr [:number [:integer "0"]]]
+           [:expr [:number [:integer "5"]]]]]]]]]]
     [:defpmethod
      [:symbol "copy"]
      [:args]
@@ -316,9 +318,9 @@
      [:field-type
       [:pclass-ctor
        [:symbol "simpleplant"]
-       [:pclass-ctor-option [:id [:string "sp1"]]]
-       [:pclass-ctor-option [:plant-part [:string "mypart"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "sp1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "mypart"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "run"]
      [:field-type

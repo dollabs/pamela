@@ -50,8 +50,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "2"]]
-               [:number [:integer "8"]]]]]]]]
+               [:expr [:number [:integer "2"]]]
+               [:expr [:number [:integer "8"]]]]]]]]]
          [:delay-opt [:controllable [:boolean [:FALSE]]]]]]
        [:fn
         [:method-fn
@@ -60,6 +60,6 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "1"]]
-             [:number [:integer "10"]]]]]]
+             [:expr [:number [:integer "1"]]]
+             [:expr [:number [:integer "10"]]]]]]]
          [:method-opt [:controllable [:boolean [:FALSE]]]]]]]]]]]]]

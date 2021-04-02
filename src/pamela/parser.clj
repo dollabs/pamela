@@ -248,7 +248,9 @@
     (apply merge ms)))
 
 (defn ir-k-merge [k & ms]
-  {k (apply merge ms)})
+  {k (if (empty? ms)
+       {}
+       (apply merge ms))})
 
 (defn ir-methods [& methods]
   {:methods (if (empty? methods)
@@ -267,6 +269,15 @@
         expr))
     {:type op
      :args (vec operands)}))
+
+(defn ir-arith-expr [op & operands]
+  {:type :expr
+   :operation op
+   :args (vec operands)})
+
+(defn arith-expr?
+  [ast]
+  (some #{:add :subtract :multiply :divide} #{(first ast)}))
 
 (defn ir-vec [& vs]
   (if (empty? vs)
@@ -318,6 +329,11 @@
 
 (defn ir-bounds-literal [lb ub]
   [lb (if (= ub [:INFINITY]) :infinity ub)])
+
+;(defn de-expr [aval]
+;  (if (and (vector? aval) (= (first aval) :expr))
+;    (second aval)
+;    aval))
 
 (defn ir-opt-bounds [bounds]
   {:temporal-constraints
@@ -511,11 +527,38 @@
   {:type :sequence
    :body (vec (repeat times fn))})
 
+(declare pamela-ir)
+
+(defn ir-expr [arg]
+  ;; translate ARG to IR here +++
+  (cond (vector? arg)
+        (case (first arg)
+          :number (second arg)
+
+          else {:error (str "ir-expr don't know how to handle:" arg)})
+
+        (number? arg)
+        arg
+
+        (map? arg)
+        arg
+
+        :otherwise
+        {:error (str "ir-expr don't know how to handle:" arg)}))
+
+(defn propositions-ref?
+  [operand]
+  (= (first operand) :propositions-expr))
+
+(defn search-constraints?
+  [operand]
+  (and (vector? operand) (= (first operand) :search-constraints)))
 
 ;; If you're doing some REPL-based development, and change any of the above
 ;; helper functions: Don't forget to re-eval pamela-ir !!!
 (def pamela-ir {
                 ;; :access handled in ir-field
+                :add-expr (partial ir-arith-expr :add)
                 :and-expr (partial ir-cond-expr :and)
                 :args ir-vec
                 :argval ir-argval
@@ -549,10 +592,16 @@
                 :dep hash-map
                 :depends (partial ir-k-merge :depends)
                 :display-name (partial hash-map :display-name)
+                :divide-expr (partial ir-arith-expr :divide)
                 :doc (partial hash-map :doc)
                 :dotimes ir-dotimes
                 ;; :enter handled by ir-choice
                 :equal-expr (partial ir-cond-expr :equal)
+                :expr ir-expr
+                :gt-expr (partial ir-cond-expr :gt)
+                :ge-expr (partial ir-cond-expr :ge)
+                :lt-expr (partial ir-cond-expr :lt)
+                :le-expr (partial ir-cond-expr :le)
                 :exactly ir-vec
                 :field ir-field
                 ;; :field-init handled in ir-field
@@ -586,6 +635,7 @@
                 :mode-init ir-mode-init
                 :mode-map ir-merge
                 :modes (partial hash-map :modes)
+                :multiply-expr (partial ir-arith-expr :multiply)
                 :natural ir-integer
                 :not-expr (partial ir-cond-expr :not)
                 :number identity
@@ -608,6 +658,7 @@
                 :pre (partial hash-map :pre)
                 :primitive (partial hash-map :primitive)
                 :probability (partial hash-map :probability)
+                :propositions-expr (partial ir-cond-expr :propositions-expr)
                 ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
                 ;; reserved-string only for grammer disambiguation
@@ -615,6 +666,7 @@
                 :reward (partial hash-map :reward)
                 :reward-ge (partial hash-map :reward>=)
                 :safe-keyword identity
+                :same-expr (partial ir-cond-expr :same)
                 :sequence (partial ir-fn :sequence)
                 :slack-parallel (partial ir-slack-fn :slack-parallel)
                 :slack-sequence (partial ir-slack-fn :slack-sequence)
@@ -622,6 +674,7 @@
                 :soft-sequence (partial ir-slack-fn :soft-sequence)
                 ;; stop-token only for grammer disambiguation
                 :string identity
+                :subtract-expr (partial ir-arith-expr :subtract)
                 :symbol symbol
                 :symbol-ref ir-symbol-ref
                 :tell ir-tell
@@ -659,10 +712,12 @@
       {:type :mode-ref
        :mode-ref {:type :symbol-ref :names ['this]}
        :mode operand})
+
     (and (mode-ref? operand)
       (= (get-in operand [:mode-ref :names]) '[this])
       (not (get modes (:mode operand))))
     {:error (str "mode " (:mode operand) " is not defined in pclass " pclass)}
+
     (mode-ref? operand)
     (let [{:keys [mode-ref]} operand
           {:keys [names]} mode-ref
@@ -693,6 +748,7 @@
       (if (:error vmode-ref)
         vmode-ref
         (assoc operand :mode-ref vmode-ref)))
+
     (symbol-ref? operand)
     (let [{:keys [names]} operand
           [n0 & more] names
@@ -716,9 +772,12 @@
         (do
           (swap! state-vars assoc n0 {:type :state-variable})
           {:type :state-variable :name n0})))
+
+    (string? operand)
+    {:type :literal, :value operand}
+
     :else
-    {:error (str "unknown conditional operand: " operand)}
-    ))
+    {:error (str "unknown conditional operand: " operand)}))
 
 ;; returns a validated method-ref map
 ;; or an {:error msg}
@@ -798,10 +857,12 @@
                    (literal? a)
                    ;; {:type :literal, :value a}
                    a
+
                    (mode-ref? a)
                    (validate-cond-operand ir state-vars in-pclass
                      fields modes context
                      pclass-args method-args a)
+
                    (symbol-ref? a)
                    (let [a-names (:names a)
                          [n0 & more] a-names
@@ -824,6 +885,10 @@
                        (do
                          (swap! state-vars assoc n0 {:type :state-variable})
                          {:type :state-variable :name n0})))
+
+                   (map? a)
+                   a
+
                    :else
                    {:error (str "unknown argument type: " a)})
               vargs (if (:error va) va (conj vargs va))]
@@ -852,7 +917,7 @@
           (validate-cond-operand ir state-vars pclass fields modes context
                                  pclass-args method-args condition)
 
-          (#{:equal :function-call} type)
+          (#{:equal :gt :ge :lt :le :same :function-call} type)
           (loop [vcond {:type type} vargs [] a (first args) more (rest args)]
             (if (nil? a)
               (assoc-if vcond :args vargs)
@@ -863,12 +928,42 @@
                       vcond (if (:error va) va vcond)
                       vargs (if (:error va) nil (conj vargs va))]
                   (recur vcond vargs (first more) (rest more)))
+
                 (map? a) ;; already specified by instaparse
                 (recur vcond (conj vargs a) (first more) (rest more))
+
                 :else ;; must be a literal
                 ;; (recur vcond (conj vargs {:type :literal :value a})
                 (recur vcond (conj vargs a)
                        (first more) (rest more)))))
+
+          (#{:propositions-expr} type)
+          (do
+            (let [propositions (if (vector? (last args)) args (butlast args))
+                  where (if (vector? (last args)) nil (last args))]
+              (let [result
+                    {:type :lookup-propositions
+                     :where (if where (validate-condition ir state-vars pclass fields modes context where))
+                     :propositions (into []
+                                         (map (fn [pp]
+                                                (let [search (if (search-constraints? (second pp)) (rest (second pp)) [])
+                                                      proppart (if (search-constraints? (second pp)) (rest (rest pp)) (rest pp))]
+                                                  {:type :proposition-pattern
+                                                   :look-where (into [] (map (fn [sc]
+                                                                               (case (first sc)
+                                                                                 :wm {:type :wm}
+                                                                                 :ltm {:type :ltm}
+                                                                                 :recency {:type :recency :value (second sc)}
+
+                                                                                 (log/error "Invalid search constraint: %s" (first sc))))
+                                                                             search))
+                                                   :prop-name (first proppart)
+                                                   :args (into [] (map (fn [anarg]
+                                                                         (validate-cond-operand ir state-vars pclass fields modes
+                                                                                                context pclass-args method-args anarg))
+                                                                       (rest proppart)))}))
+                                              propositions))}]
+                result)))
 
           (#{:and :or :not :implies} type)  ;; => recurse on args
           (let [vargs (mapv
@@ -929,10 +1024,13 @@
             vmbody (cond
                      error
                      {:error error}
+
                      (:error condition)
                      condition
+
                      (:error body)
                      body
+
                      :else
                      (conj vmbody vb))]
         (recur vmbody (inc bi) (first more) (rest more))))))
@@ -945,21 +1043,26 @@
         n0 (first names)
         rv (cond
              (and (= :symbol-ref type)
-               (some #(= n0 %) (get-in ir [scope-pclass :args])))
+                  (some #(= n0 %) (get-in ir [scope-pclass :args])))
              (do
                (dbg-println :trace "    promote to :pclass-arg-ref")
                (assoc argval :type :pclass-arg-ref))
+
              (and (= :symbol-ref type)
-               (not= n0 field) (get fields n0))
+                  (not= n0 field) (get fields n0))
              (do
                (dbg-println :trace "    promote to :field-ref")
                (assoc argval :type :field-ref))
+
              (= :symbol-ref type)
              {:error
               (str "Symbol argument to " field
                 " pamela class constructor arg " n0
                 " is neither a formal argument to, "
                 "nor another field of the pclass " scope-pclass)}
+
+             ;;+++ validate-arith-expr here +++
+
              :else
              argval)]
     (dbg-println :trace "    =>" rv)

@@ -1,0 +1,40 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Test of the proposition precondition
+
+(defpclass TypicalAttacker [pos dmcpobj]
+  :modes [ :ready ]
+  :fields {TA-location pos
+           dmcp dmcpobj
+           connected "Unconnected"
+           foo 42
+           bar 43
+           p1 (lvar "Proposition-arg1")
+           p2 (lvar "proposition-arg2")
+           p3 (lvar "proposition-arg3")}
+  :methods [(defpmethod lateral
+              {:doc "Multiple propositions, no search constraints."
+               :bounds [ (- 6 (+ 2 (* 2 2))) (/ 8 (lvar "UPBOUND")) ]
+               :pre (propositions [(:connects-with p1 newloc)
+                                   (:bar p1 newloc)]
+                     where (and (= connected p1) (same TA-location p1)))
+               :post (= TA-location newloc)}
+              [newloc])
+            (defpmethod down
+              {:doc "Single proposition with search constraints"
+               :pre (propositions [([wm ltm (recency 5)] :is-part-of newloc p2)]
+                     where (= TA-location newloc))
+               :post (= TA-location newloc)}
+              [newloc])
+            (defpmethod up
+              {:doc "Single proposition without 'where'"
+               :pre (propositions [(:is-part-of p3 newloc)])
+               :post (= TA-location newloc)}
+              [newloc])
+             (defpmethod inequalities
+              {:doc "Single proposition without 'where'"
+               :pre (or (> foo 41)
+                        (>= bar 42)
+                        (< foo 50)
+                        (<= bar 51))
+               :post (= TA-location newloc)}
+              [newloc])])

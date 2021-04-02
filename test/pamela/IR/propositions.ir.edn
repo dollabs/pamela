@@ -1,0 +1,180 @@
+{TypicalAttacker
+ {:args [pos dmcpobj],
+  :fields
+  {TA-location
+   {:access :private,
+    :initial {:names [pos], :type :pclass-arg-ref},
+    :observable false},
+   bar {:access :private, :initial 43, :observable false},
+   connected
+   {:access :private, :initial "Unconnected", :observable false},
+   dmcp
+   {:access :private,
+    :initial {:names [dmcpobj], :type :pclass-arg-ref},
+    :observable false},
+   foo {:access :private, :initial 42, :observable false},
+   p1
+   {:access :private,
+    :initial {:name "Proposition-arg1", :type :lvar},
+    :observable false},
+   p2
+   {:access :private,
+    :initial {:name "proposition-arg2", :type :lvar},
+    :observable false},
+   p3
+   {:access :private,
+    :initial {:name "proposition-arg3", :type :lvar},
+    :observable false}},
+  :methods
+  {down
+   [{:args [newloc],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [newloc],
+     :display-name "Down",
+     :doc "Single proposition with search constraints",
+     :post
+     {:type :equal,
+      :args
+      [{:type :field-ref, :names [TA-location]}
+       {:type :method-arg-ref, :names [newloc]}]},
+     :pre
+     {:type :lookup-propositions,
+      :where
+      {:type :equal,
+       :args
+       [{:type :field-ref, :names [TA-location]}
+        {:type :method-arg-ref, :names [newloc]}]},
+      :propositions
+      [{:type :proposition-pattern,
+        :look-where
+        [{:type :wm} {:type :ltm} {:type :recency, :value 5}],
+        :prop-name :is-part-of,
+        :args
+        [{:type :method-arg-ref, :names [newloc]}
+         {:type :field-ref, :names [p2]}]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   inequalities
+   [{:args [newloc],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [newloc],
+     :display-name "Inequalities",
+     :doc "Single proposition without 'where'",
+     :post
+     {:type :equal,
+      :args
+      [{:type :field-ref, :names [TA-location]}
+       {:type :method-arg-ref, :names [newloc]}]},
+     :pre
+     {:type :or,
+      :args
+      [{:type :gt, :args [{:type :field-ref, :names [foo]} 41]}
+       {:type :ge, :args [{:type :field-ref, :names [bar]} 42]}
+       {:type :lt, :args [{:type :field-ref, :names [foo]} 50]}
+       {:type :le, :args [{:type :field-ref, :names [bar]} 51]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}],
+   lateral
+   [{:args [newloc],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [newloc],
+     :display-name "Lateral",
+     :doc "Multiple propositions, no search constraints.",
+     :post
+     {:type :equal,
+      :args
+      [{:type :field-ref, :names [TA-location]}
+       {:type :method-arg-ref, :names [newloc]}]},
+     :pre
+     {:type :lookup-propositions,
+      :where
+      {:type :and,
+       :args
+       [{:type :equal,
+         :args
+         [{:type :field-ref, :names [connected]}
+          {:type :field-ref, :names [p1]}]}
+        {:type :same,
+         :args
+         [{:type :field-ref, :names [TA-location]}
+          {:type :field-ref, :names [p1]}]}]},
+      :propositions
+      [{:type :proposition-pattern,
+        :look-where [],
+        :prop-name :connects-with,
+        :args
+        [{:type :field-ref, :names [p1]}
+         {:type :method-arg-ref, :names [newloc]}]}
+       {:type :proposition-pattern,
+        :look-where [],
+        :prop-name :bar,
+        :args
+        [{:type :field-ref, :names [p1]}
+         {:type :method-arg-ref, :names [newloc]}]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints
+     [{:type :bounds,
+       :value
+       [{:type :expr,
+         :operation :subtract,
+         :args
+         [6
+          {:type :expr,
+           :operation :add,
+           :args
+           [2 {:type :expr, :operation :multiply, :args [2 2]}]}]}
+        {:type :expr,
+         :operation :divide,
+         :args [8 {:type :lvar, :name "UPBOUND"}]}]}]}],
+   up
+   [{:args [newloc],
+     :betweens [],
+     :body nil,
+     :controllable false,
+     :cost 0,
+     :display-args [newloc],
+     :display-name "Up",
+     :doc "Single proposition without 'where'",
+     :post
+     {:type :equal,
+      :args
+      [{:type :field-ref, :names [TA-location]}
+       {:type :method-arg-ref, :names [newloc]}]},
+     :pre
+     {:type :lookup-propositions,
+      :where nil,
+      :propositions
+      [{:type :proposition-pattern,
+        :look-where [],
+        :prop-name :is-part-of,
+        :args
+        [{:type :field-ref, :names [p3]}
+         {:type :method-arg-ref, :names [newloc]}]}]},
+     :primitive true,
+     :probability 1.0,
+     :reward 0,
+     :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
+  :modes {:ready true},
+  :type :pclass},
+ pamela/lvars
+ {:lvars
+  {"Proposition-arg1" :unset,
+   "UPBOUND" :unset,
+   "proposition-arg2" :unset,
+   "proposition-arg3" :unset},
+  :type :lvars}}

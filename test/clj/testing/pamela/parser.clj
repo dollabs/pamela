@@ -22,6 +22,11 @@
             [pamela.utils :refer [output-file]]
             [plan-schema.utils :refer [fs-get-path fs-basename]]))
 
+(def update-mismatched-txt-rubrics?
+  "Instead of signalling a test failure, any mismatches in the rubric for 'check' operations will
+  cause the 'correct' rubric to be updated to the current value."
+  false)
+
 (deftest testing-pamela-parser
   (testing "testing-pamela-parser"
     (is (= [0 0] zero-bounds))
@@ -32,33 +37,34 @@
           errors (fs/file pamela "errors")
           errors-ir (fs/file errors "IR")
           examples (filter #(string/ends-with? (fs-basename %) ".pamela")
-                     (concat
-                       (sort-by fs/base-name (fs/list-dir pamela))
-                       (sort-by fs/base-name (fs/list-dir regression))))
+                           (concat
+                            (sort-by fs/base-name (fs/list-dir pamela))
+                            (sort-by fs/base-name (fs/list-dir regression))))
           neg-examples (filter #(string/ends-with? (fs-basename %) ".pamela")
-                         (sort-by fs/base-name (fs/list-dir errors-ir)))
-          pamela-ir (fs/file top "target" "parser" "IR")
-          regression-ir (fs/file top "target" "parser" "regression" "IR")]
-      (if-not (fs/exists? pamela-ir)
-        (fs/mkdirs pamela-ir))
-      (if-not (fs/exists? regression-ir)
-        (fs/mkdirs regression-ir))
+                               (sort-by fs/base-name (fs/list-dir errors-ir)))
+          pamela-ir-dir (fs/file top "target" "parser" "IR")
+          regression-ir-dir (fs/file top "target" "parser" "regression" "IR")]
+      (if-not (fs/exists? pamela-ir-dir)
+        (fs/mkdirs pamela-ir-dir))
+      (if-not (fs/exists? regression-ir-dir)
+        (fs/mkdirs regression-ir-dir))
       (doseq [example examples]
         (reset-gensym-generator)
         (let [example-name (fs-basename example)
               example-path (fs-get-path example)
               regression? (string/includes? example-path "/regression/")
+              ;; Build IR testing
               example-ir-name (string/replace example-name
-                                #"\.pamela$" ".ir.edn")
+                                              #"\.pamela$" ".ir.edn")
               example-ir-file (fs/file (fs/parent example) "IR" example-ir-name)
               example-ir-path (fs-get-path example-ir-file top-path)
               example-ir (if (fs/exists? example-ir-file)
                            (read-string (slurp example-ir-path))
                            {:error (str "Rubrique does not exist: "
-                                     example-ir-path)})
+                                        example-ir-path)})
               specimen-ir-file (fs/file
-                                 (if regression? regression-ir pamela-ir)
-                                 example-ir-name)
+                                (if regression? regression-ir-dir pamela-ir-dir)
+                                example-ir-name)
               specimen-ir-path (fs-get-path specimen-ir-file top-path)
               options {:input [example-path]}
               specimen-ir (parse options)
@@ -66,10 +72,37 @@
               specimen-ir (if (fs/exists? specimen-ir-file)
                             (read-string (slurp specimen-ir-path))
                             {:error (str "Specimen does not exist: "
-                                      specimen-ir-path)})]
+                                         specimen-ir-path)})
+              ;; Check Parse (TXT) testing
+              example-txt-name (string/replace example-name
+                                               #"\.pamela$" ".txt")
+              example-txt-file (fs/file (fs/parent example) "IR" example-txt-name)
+              example-txt-path (fs-get-path example-txt-file top-path)
+              example-txt (if (fs/exists? example-txt-file)
+                            (read-string (slurp example-txt-path))
+                            {:error (str "Rubrique does not exist: "
+                                         example-txt-path)})
+              specimen-txt-file (fs/file
+                                 (if regression? regression-ir-dir pamela-ir-dir)
+                                 example-txt-name)
+              specimen-txt-path (fs-get-path specimen-txt-file top-path)
+              specimen-txt (parse-pamela-file example-path)
+              _ (output-file specimen-txt-path "edn" specimen-txt)
+              specimen-txt (if (fs/exists? specimen-txt-file)
+                            (read-string (slurp specimen-txt-path))
+                            {:error (str "Specimen does not exist: "
+                                         specimen-txt-path)})]
+          (println "CHECK" example-name
+                   "\n  RUBRIC" example-txt-path
+                   "\n  SPECIMEN" specimen-txt-path)
+          (if update-mismatched-txt-rubrics?
+            (when (not (= example-txt specimen-txt))
+              (println "Updating the incorrect RUBRIC" example-txt-path)
+              (output-file example-txt-path "edn" specimen-txt))
+            (is (= example-txt specimen-txt)))
           (println "BUILD" example-name
-             "\n  RUBRIC" example-ir-path
-             "\n  SPECIMEN" specimen-ir-path)
+                   "\n  RUBRIC" example-ir-path
+                   "\n  SPECIMEN" specimen-ir-path)
           (is (= example-ir specimen-ir))))
       ;; Negative examples that are *expected* to FAIL
       (doseq [neg-example neg-examples]

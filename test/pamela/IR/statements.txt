@@ -56,8 +56,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "3"]]
-            [:number [:integer "5"]]]]]]]
+            [:expr [:number [:integer "3"]]]
+            [:expr [:number [:integer "5"]]]]]]]]
        [:fn
         [:ask
          [:cond-expr
@@ -67,8 +67,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "4"]]
-            [:number [:integer "7"]]]]]]]
+            [:expr [:number [:integer "4"]]]
+            [:expr [:number [:integer "7"]]]]]]]]
        [:fn
         [:ask
          [:cond-expr
@@ -79,8 +79,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "4"]]
-            [:number [:integer "7"]]]]]]]
+            [:expr [:number [:integer "4"]]]
+            [:expr [:number [:integer "7"]]]]]]]]
        [:fn
         [:tell
          [:cond-expr

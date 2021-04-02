@@ -1,0 +1,51 @@
+[:pamela
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option [:modes [:mode-enum [:keyword ":on"] [:keyword ":off"]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "turn-on"]
+     [:cond-map
+      [:cond [:pre [:keyword ":off"]]]
+      [:cond [:post [:keyword ":on"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]
+      [:cond [:doc [:string "turns on the power supply type a"]]]
+      [:cond [:display-name [:string "turn-on/a"]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args]
+  [:option [:modes [:mode-enum [:keyword ":on"] [:keyword ":off"]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "turn-on"]
+     [:cond-map
+      [:cond [:pre [:keyword ":off"]]]
+      [:cond [:post [:keyword ":on"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "3"]]]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "2"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "5"]]]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]
+      [:cond [:doc [:string "turns on the power supply type b"]]]
+      [:cond [:display-name [:string "turn-on/b"]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]]]

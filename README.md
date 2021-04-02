@@ -1,3 +1,6 @@
+[![Clojars Project](https://img.shields.io/clojars/v/dollabs/pamela.svg)](https://clojars.org/dollabs/pamela)
+
+
 # PAMELA
 
 Probabalistic Advanced Modeling and Execution Learning Architecture (PAMELA).
@@ -22,7 +25,7 @@ The [DOLL](http://dollabs.com/) team (including
 [Paul Robertson](https://twitter.com/DrPaulRobertson),
 [Dan Cerys](https://twitter.com/dcerys),
 [Prakash Manghwani](https://twitter.com/manghwani), and
-[Tom Marble](https://twitter.com/tmarble)) recently presented
+[Tom Marble](https://twitter.com/tmarble)) presented
 the talk **In situ model-based learning in PAMELA** at
 [Clojure Conj 2016](http://2016.clojure-conj.org/model-based-learning-in-pamela/).
 Check out the [ClojureTV](https://youtu.be/i84i1X9k8_g) video
@@ -33,7 +36,7 @@ See also our talk **Model based programming in PAMELA** from
 Check out the [ClojureTV](https://youtu.be/WLovW6hlYHM) video
 and the [slides](doc/slides/ClojureWestHelloPamela.pdf).
 
-For more details visit the [PAMELA project page](http://dollabs.com/projects/pamela).
+For more details visit the [PAMELA project page](https://dollabs.com/projects/pamela).
 
 ## TPN Example
 
@@ -50,29 +53,32 @@ high resolution, perform image analysis at high speed or low speed to conserve p
 addition to video sensors, our QC is also equipped with two additional sensors for self defensive
 maneuvering actions from other wild birds who mistake QC for prey.
 
-This mission is described in ./test/pamela/tpn-demo.pamela
+This mission is described in `./test/pamela/tpn-demo.pamela`
 
-Example command line to visualize this TPN is below. Before trying out the command line, please run the **pamela-setup** script below first.
+Before using the `pamela` command, be sure that you have run the `pamela-setup` script (see below).
 
+Create the Temporal Plan Network (TPN) plan from the Pamela file:
 
-`./bin/pamela -i test/pamela/tpn-demo.pamela -o tpn-demo.tpn.edn tpn`
+`./bin/pamela -i test/pamela/tpn-demo.pamela -c main:tpn:elephant -o tpn-demo.tpn.json tpn`
 
 
 This network rendering was created with PLANVIZ as follows:
 
 1. `../planviz/bin/planviz -i tpn-demo.tpn.edn`
-2. When you see `PLANVIZ server ready` then open your browser to [http://localhost:8080](http://localhost:8080)
+2. When you see `PLANVIZ server ready`, then open your browser to [http://localhost:8080](http://localhost:8080)
 3. Click into the command box and type `/show tpn-demo.tpn` and press return.
 4. When you see the TPN graph, type the command `/export` and you will be prompted to save **tpn-demo.tpn.svg** as a file (which you can view in your browser or any SVG capable tool).
 
-<img alt="[tpn-demo.tpn.svg]" src="http://dollabs.github.io/pamela/doc/tpn-demo.tpn.svg" width="100%" height="auto/>
+<img alt="[tpn-demo.tpn.png]" src="http://dollabs.github.io/pamela/doc/figures/tpn-demo.tpn.png" width="100%" height="auto">
+
 
 ## Installing PAMELA tools with pamela-setup
 
 The **pamela-setup** script is intended as an tool to help you
-get started quickly with the pamela tools (including planviz).
+get started quickly with the Pamela tools (including planviz).
 
 This script will:
+
 * Verify that **java** is installed
 * Verify that **git** is installed
 * Ensure that the `~/bin` directory exists (and create it if necessary)

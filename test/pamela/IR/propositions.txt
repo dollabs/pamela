@@ -1,0 +1,164 @@
+[:pamela
+ [:defpclass
+  [:symbol "TypicalAttacker"]
+  [:args [:symbol "pos"] [:symbol "dmcpobj"]]
+  [:option [:modes [:mode-enum [:keyword ":ready"]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "TA-location"]
+     [:field-type [:symbol-ref [:symbol "pos"]]]]
+    [:field
+     [:symbol "dmcp"]
+     [:field-type [:symbol-ref [:symbol "dmcpobj"]]]]
+    [:field
+     [:symbol "connected"]
+     [:field-type [:literal [:string "Unconnected"]]]]
+    [:field
+     [:symbol "foo"]
+     [:field-type [:literal [:number [:integer "42"]]]]]
+    [:field
+     [:symbol "bar"]
+     [:field-type [:literal [:number [:integer "43"]]]]]
+    [:field
+     [:symbol "p1"]
+     [:field-type [:lvar-ctor [:string "Proposition-arg1"]]]]
+    [:field
+     [:symbol "p2"]
+     [:field-type [:lvar-ctor [:string "proposition-arg2"]]]]
+    [:field
+     [:symbol "p3"]
+     [:field-type [:lvar-ctor [:string "proposition-arg3"]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "lateral"]
+     [:cond-map
+      [:cond
+       [:doc
+        [:string "Multiple propositions, no search constraints."]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr
+           [:subtract-expr
+            [:expr [:number [:integer "6"]]]
+            [:expr
+             [:add-expr
+              [:expr [:number [:integer "2"]]]
+              [:expr
+               [:multiply-expr
+                [:expr [:number [:integer "2"]]]
+                [:expr [:number [:integer "2"]]]]]]]]]
+          [:expr
+           [:divide-expr
+            [:expr [:number [:integer "8"]]]
+            [:expr [:lvar-ctor [:string "UPBOUND"]]]]]]]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:propositions-expr
+          [:prop-search
+           [:keyword ":connects-with"]
+           [:cond-operand [:symbol-ref [:symbol "p1"]]]
+           [:cond-operand [:symbol-ref [:symbol "newloc"]]]]
+          [:prop-search
+           [:keyword ":bar"]
+           [:cond-operand [:symbol-ref [:symbol "p1"]]]
+           [:cond-operand [:symbol-ref [:symbol "newloc"]]]]
+          [:cond-expr
+           [:and-expr
+            [:cond-expr
+             [:equal-expr
+              [:cond-operand [:symbol-ref [:symbol "connected"]]]
+              [:cond-operand [:symbol-ref [:symbol "p1"]]]]]
+            [:cond-expr
+             [:same-expr
+              [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+              [:cond-operand [:symbol-ref [:symbol "p1"]]]]]]]]]]]
+      [:cond
+       [:post
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+          [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+     [:args [:symbol "newloc"]]]
+    [:defpmethod
+     [:symbol "down"]
+     [:cond-map
+      [:cond
+       [:doc [:string "Single proposition with search constraints"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:propositions-expr
+          [:prop-search
+           [:search-constraints
+            [:wm]
+            [:ltm]
+            [:recency [:number-ref [:number [:integer "5"]]]]]
+           [:keyword ":is-part-of"]
+           [:cond-operand [:symbol-ref [:symbol "newloc"]]]
+           [:cond-operand [:symbol-ref [:symbol "p2"]]]]
+          [:cond-expr
+           [:equal-expr
+            [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+            [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]]
+      [:cond
+       [:post
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+          [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+     [:args [:symbol "newloc"]]]
+    [:defpmethod
+     [:symbol "up"]
+     [:cond-map
+      [:cond [:doc [:string "Single proposition without 'where'"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:propositions-expr
+          [:prop-search
+           [:keyword ":is-part-of"]
+           [:cond-operand [:symbol-ref [:symbol "p3"]]]
+           [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+      [:cond
+       [:post
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+          [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+     [:args [:symbol "newloc"]]]
+    [:defpmethod
+     [:symbol "inequalities"]
+     [:cond-map
+      [:cond [:doc [:string "Single proposition without 'where'"]]]
+      [:cond
+       [:pre
+        [:cond-expr
+         [:or-expr
+          [:cond-expr
+           [:gt-expr
+            [:cond-operand [:symbol-ref [:symbol "foo"]]]
+            [:cond-operand [:literal [:number [:integer "41"]]]]]]
+          [:cond-expr
+           [:ge-expr
+            [:cond-operand [:symbol-ref [:symbol "bar"]]]
+            [:cond-operand [:literal [:number [:integer "42"]]]]]]
+          [:cond-expr
+           [:lt-expr
+            [:cond-operand [:symbol-ref [:symbol "foo"]]]
+            [:cond-operand [:literal [:number [:integer "50"]]]]]]
+          [:cond-expr
+           [:le-expr
+            [:cond-operand [:symbol-ref [:symbol "bar"]]]
+            [:cond-operand [:literal [:number [:integer "51"]]]]]]]]]]
+      [:cond
+       [:post
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "TA-location"]]]
+          [:cond-operand [:symbol-ref [:symbol "newloc"]]]]]]]]
+     [:args [:symbol "newloc"]]]]]]]

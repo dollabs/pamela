@@ -13,8 +13,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "unbounded"]

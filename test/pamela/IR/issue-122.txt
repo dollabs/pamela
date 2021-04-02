@@ -23,8 +23,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "0"]]
-            [:number [:integer "1"]]]]]]]
+            [:expr [:number [:integer "0"]]]
+            [:expr [:number [:integer "1"]]]]]]]]
        [:fn
         [:assert
          [:cond-expr
@@ -34,8 +34,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "2"]]
-            [:number [:integer "3"]]]]]]]
+            [:expr [:number [:integer "2"]]]
+            [:expr [:number [:integer "3"]]]]]]]]
        [:fn
         [:maintain
          [:cond-expr
@@ -45,8 +45,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "4"]]
-            [:number [:integer "5"]]]]]
+            [:expr [:number [:integer "4"]]]
+            [:expr [:number [:integer "5"]]]]]]
          [:fn [:delay]]]]
        [:fn
         [:tell
@@ -63,8 +63,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "6"]]
-            [:number [:integer "7"]]]]]
+            [:expr [:number [:integer "6"]]]
+            [:expr [:number [:integer "7"]]]]]]
          [:fn [:delay]]]]
        [:fn
         [:when
@@ -75,8 +75,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "8"]]
-            [:number [:integer "9"]]]]]
+            [:expr [:number [:integer "8"]]]
+            [:expr [:number [:integer "9"]]]]]]
          [:fn [:delay]]]]
        [:fn
         [:whenever
@@ -87,6 +87,6 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "10"]]
-            [:number [:integer "11"]]]]]
+            [:expr [:number [:integer "10"]]]
+            [:expr [:number [:integer "11"]]]]]]
          [:fn [:delay]]]]]]]]]]]

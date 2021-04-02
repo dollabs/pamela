@@ -1,10 +1,10 @@
 # Change Log
 
-All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
+All notable ### Changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-### [Unreleased]
+## [Unreleased]
 
-Changes
+### Changes
 * Grammar ambiguity fixed in a previous commit (Closes #144)
 * Fixed argument values with field references (Closes #150)
 * Fixed method-opts in plant function invocations (Closes #151)
@@ -25,10 +25,18 @@ Changes
 * Instantiating an unknown class now produces an error. (Closes #133).
 * Implement :depends meta declaration (Closes #180).
 * Incorrect arity of pclass-ctor call now errors at `build` (Closes #190).
+* Allow empty maps to be specified for defpclass :fields and :modes (Closes #175).
+* Extend conditions to include search and to add object equality (`same`)
+* Add tests of the 'check' operation for all of the Pamela files.  We had many of the txt file rubrics in place, but there were no tests that previously used them.
+* Add support for inheritance (`:inherit`)
+* Extend conditions with `same`, `wm`, `ltm`, and `recency`
+* Added inequalities for comparing numbers: >, <=, >, >=  These are added to allow, for example, searching for an object representing a person whose age is between 18 and 21, for example.
+* Added grammar to add propositions to conditions.
+* Added grammar to add limited arithmetic to bounds `(+ x y)` `(- x y)` `(* x y)` `(/ x y)`
 
-### [0.6.2] - 2017-08-28
+## [0.6.2] - 2017-08-28
 
-Changes
+### Changes
 * Fixed pamela launch script (Closes #72)
 * Changed default output to json (Closes #74)
 * Ensure that jenkins.sh will pass
@@ -71,11 +79,11 @@ Changes
 * Plant functions can begin with any of the reserved function symbols (Closes #121)
 * Convert all field references to symbols (Closes #136)
 
-### [0.6.0] - 2017-03-08
+## [0.6.0] - 2017-03-08
 
-Changes
-* Grammar changes: allow underscores in symbols
-* Parsing changes: allow plant-function symbols to refer to fields
+### Changes
+* Grammar ### Changes: allow underscores in symbols
+* Parsing ### Changes: allow plant-function symbols to refer to fields
   (if not present in method or pclass args)
 * Validate pclass-ctor args
   - keywords must be one of #{:id :interface :plant-part} or a field
@@ -117,9 +125,9 @@ Changes
 - Updated TPN object hierarchy to include :cost<=-constraint and :reward>=-constraint
 - Move constraints from Nodes to Activities when appropriate
 
-### [0.5.0] - 2016-12-08
+## [0.5.0] - 2016-12-08
 
-Changes
+### Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
 * Switched build tool from lein to boot
 * Streamlined the directory layout
@@ -132,9 +140,9 @@ Changes
 * Updated documentation
 * Fixed jenkins.sh
 
-### [0.4.3] - 2016-11-18
+## [0.4.3] - 2016-11-18
 
-Added
+### Added
 - Better support for magic files (including --output-magic)
 - Fixed minor bugs with the pamela launcher
 - Ensured top level actions properly return an exit code
@@ -157,15 +165,15 @@ Added
 - This is planned to be the last version with pamelad and database
   functionality
 
-### [0.4.2] - 2016-10-18
+## [0.4.2] - 2016-10-18
 
-Changes
+### Changes
 - Added :primitive #23
 - Added dotimes #24
 
-### [0.4.1] - 2016-10-17
+## [0.4.1] - 2016-10-17
 
-Changes
+### Changes
 * Fixed HTN generation for elaborated primitive methods (Closes #39)
 * Fixed parser bug with floating point numbers
 - Updated dependencies
@@ -175,9 +183,9 @@ Changes
 - Added command line switch --strict to enforce schema checking
 - Expand home in pathnames properly
 
-### 0.4.0 - 2016-09-29
+## 0.4.0 - 2016-09-29
 
-Changes
+### Changes
 - New PAMELA intermediate representation
 - Reset non-passing tests as functionality is replaced with the new IR
 - Complete conversion to the new Instaparse based parser
@@ -187,9 +195,9 @@ Changes
 - Changed method invocation to use '.' instead of '$'
 - Updated dependencies
 
-### [0.3.0] - 2016-07-11
+## [0.3.0] - 2016-07-11
 
-Added
+### Added
 * Added support for new grammar features
   * slack-sequence
   * slack-parallel
@@ -200,17 +208,17 @@ Added
 * Updated dependencies
 * Changed some language features (see [grammar/doc/CHANGELOG.md](grammar/doc/CHANGELOG.md))
 
-### [0.2.6] - 2016-05-27
+## [0.2.6] - 2016-05-27
 
-Added
+### Added
 - Add :controllable feature to plant functions
-- Grammar changes
+- Grammar ### Changes
  * Change built in function noop to delay (to better mesh with planners)
  * Updated insta2w3c script and railroad diagram
 
-### 0.2.5 - 2016-05-16
+## 0.2.5 - 2016-05-16
 
-Added
+### Added
 * Updated dependencies
 * Added gh-pages and API docs
 * Re-implemented http-get using clj-http (as it is required by elastisch)

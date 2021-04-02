@@ -21,8 +21,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "15"]]
-               [:number [:integer "15"]]]]]]]]]]
+               [:expr [:number [:integer "15"]]]
+               [:expr [:number [:integer "15"]]]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "video"]]
@@ -65,15 +65,17 @@
      [:field-type
       [:pclass-ctor
        [:symbol "host"]
-       [:pclass-ctor-option [:id [:string "actuator"]]]
-       [:pclass-ctor-option [:plant-part [:string "host0101"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "actuator"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "host0101"]]]]]]]
     [:field
      [:symbol "e7h1"]
      [:field-type
       [:pclass-ctor
        [:symbol "host"]
-       [:pclass-ctor-option [:id [:string "actuator"]]]
-       [:pclass-ctor-option [:plant-part [:string "host0701"]]]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "actuator"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "host0701"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -100,8 +102,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "1"]]
-             [:number [:integer "7"]]]]]]
+             [:expr [:number [:integer "1"]]]
+             [:expr [:number [:integer "7"]]]]]]]
          [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:string "100MB"]]]]
        [:fn
@@ -111,8 +113,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "20"]]
-             [:number [:integer "35"]]]]]]
+             [:expr [:number [:integer "20"]]]
+             [:expr [:number [:integer "35"]]]]]]]
          [:argval [:symbol-ref [:symbol "client-host"]]]
          [:argval [:symbol-ref [:symbol "server-host"]]]
          [:argval [:string "1"]]]]]]]]]]]

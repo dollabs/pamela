@@ -15,8 +15,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "time"]]]
     [:defpmethod
      [:symbol "scp"]
@@ -26,8 +26,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args [:symbol "fromfile"] [:symbol "tofile"]]]
     [:defpmethod
      [:symbol "cp"]
@@ -41,8 +41,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args
       [:symbol "cmd"]
       [:symbol "arg1"]
@@ -65,8 +65,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "1"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "1"]]]]]]]]
      [:args [:symbol "area"]]]]]]
  [:defpclass
   [:symbol "planttest"]
@@ -87,8 +87,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "10"]]
-             [:number [:integer "20"]]]]]]
+             [:expr [:number [:integer "10"]]]
+             [:expr [:number [:integer "20"]]]]]]]
          [:argval [:number [:integer "10"]]]]]
        [:fn
         [:method-fn
@@ -97,8 +97,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "99"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "99"]]]]]]]
          [:argval [:string "bigfile"]]
          [:argval [:string "me@192.168.11.100:~me/copyofbigfile"]]]]
        [:fn
@@ -108,8 +108,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "99"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "99"]]]]]]]
          [:argval [:string "bigfile"]]
          [:argval [:string "copyofbigfile"]]]]
        [:fn
@@ -119,8 +119,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "99"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "99"]]]]]]]
          [:argval [:string "ls"]]
          [:argval [:string "-lart"]]
          [:argval [:string ">"]]
@@ -132,8 +132,8 @@
           [:opt-bounds
            [:bounds
             [:bounds-literal
-             [:number [:integer "0"]]
-             [:number [:integer "99"]]]]]]
+             [:expr [:number [:integer "0"]]]
+             [:expr [:number [:integer "99"]]]]]]]
          [:argval [:string "myscript.py"]]
          [:argval [:string "2"]]
          [:argval [:string "3"]]
@@ -147,8 +147,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "3"]]
-               [:number [:integer "3"]]]]]]]]]]
+               [:expr [:number [:integer "3"]]]
+               [:expr [:number [:integer "3"]]]]]]]]]]]
        [:fn
         [:method-fn
          [:symbol-ref [:symbol "plant"] [:symbol "stop"]]
@@ -163,9 +163,9 @@
      [:field-type
       [:pclass-ctor
        [:symbol "simpleplant"]
-       [:pclass-ctor-option [:id [:string "myplant"]]]
-       [:pclass-ctor-option [:plant-part [:string "mypart"]]]
-       [:pclass-ctor-option [:interface [:string "RMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "myplant"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "mypart"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
     [:field
      [:symbol "run"]
      [:field-type

@@ -13,8 +13,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "unbounded"]
@@ -43,4 +43,18 @@
          [:method-fn
           [:symbol-ref
            [:symbol "plant"]
-           [:symbol "unbounded"]]]]]]]]]]]]
+           [:symbol "unbounded"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "p"]
+     [:field-type [:pclass-ctor [:symbol "plant"]]]]
+    [:field
+     [:symbol "tpn"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "choice-tpn"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "p"]]]]]]]]]]

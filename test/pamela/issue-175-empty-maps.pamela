@@ -1,0 +1,11 @@
+;; These should be equivalent in the IR generated
+
+(defpclass myClass1 []
+  :modes {}
+  :fields {}
+)
+
+(defpclass myClass2 []
+  :modes []
+  :fields {}
+)

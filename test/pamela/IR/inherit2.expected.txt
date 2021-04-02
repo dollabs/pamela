@@ -1,0 +1,76 @@
+[:pamela
+ [:defpclass
+  [:symbol "a"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "breathing"]
+     [:field-type [:literal [:string "true"]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":alive"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "breathing"]]]
+        [:cond-operand [:literal [:boolean [:TRUE]]]]]]]
+     [:mode-init
+      [:keyword ":dead"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "breathing"]]]
+        [:cond-operand [:literal [:boolean [:FALSE]]]]]]]]]]]
+ [:defpclass
+  [:symbol "b"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "temperature"]
+     [:field-type [:literal [:number [:integer "25"]]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":alive"]
+      [:cond-expr
+       [:not-expr
+        [:cond-expr
+         [:equal-expr
+          [:cond-operand [:symbol-ref [:symbol "temperature"]]]
+          [:cond-operand [:literal [:number [:integer "0"]]]]]]]]]
+     [:mode-init
+      [:keyword ":dead"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "temperature"]]]
+        [:cond-operand [:literal [:number [:integer "0"]]]]]]]]]]]
+ [:defpclass
+  [:symbol "c"]
+  [:args]
+  [:option [:inherit [:symbol "a"] [:symbol "b"]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "breathing"]
+     [:field-type [:literal [:string "true"]]]]
+    [:field
+     [:symbol "temperature"]
+     [:field-type [:literal [:number [:integer "25"]]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":alive"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "breathing"]]]
+        [:cond-operand [:literal [:boolean [:TRUE]]]]]]]
+     [:mode-init
+      [:keyword ":dead"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "breathing"]]]
+        [:cond-operand [:literal [:boolean [:FALSE]]]]]]]]]]]]

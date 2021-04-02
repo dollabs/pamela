@@ -1,0 +1,181 @@
+[:pamela
+ [:defpclass
+  [:symbol "simpleplant"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "data1"]
+     [:field-type [:literal [:number [:integer "123"]]]]]
+    [:field
+     [:symbol "data2"]
+     [:field-type [:literal [:string "fred"]]]]]]
+  [:option
+   [:modes
+    [:mode-map
+     [:mode-init
+      [:keyword ":bykw"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "data1"]]]
+        [:cond-operand [:literal [:number [:integer "123"]]]]]]]
+     [:mode-init
+      [:keyword ":bysym"]
+      [:cond-expr
+       [:equal-expr
+        [:cond-operand [:symbol-ref [:symbol "data2"]]]
+        [:cond-operand [:literal [:string "fred"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "hardwork"]
+     [:cond-map
+      [:cond
+       [:doc [:string "Simulated work with a simulated failure"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
+     [:args [:symbol "time"]]]
+    [:defpmethod
+     [:symbol "scp"]
+     [:cond-map
+      [:cond [:doc [:string "Secure network file copy"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
+     [:args [:symbol "fromfile"] [:symbol "tofile"]]]
+    [:defpmethod
+     [:symbol "cp"]
+     [:cond-map
+      [:cond [:doc [:string "local file copy"]]]
+      [:cond [:display-name [:string "Copy"]]]]
+     [:args [:symbol "fromfile"] [:symbol "tofile"]]]
+    [:defpmethod
+     [:symbol "shell"]
+     [:cond-map
+      [:cond [:doc [:string "Runs a command-line program"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
+     [:args
+      [:symbol "cmd"]
+      [:symbol "arg1"]
+      [:symbol "arg2"]
+      [:symbol "arg3"]]]
+    [:defpmethod
+     [:symbol "python"]
+     [:cond-map [:cond [:doc [:string "Runs a python script"]]]]
+     [:args
+      [:symbol "script"]
+      [:symbol "options"]
+      [:symbol "arg1"]
+      [:symbol "arg2"]
+      [:symbol "arg3"]]]
+    [:defpmethod
+     [:symbol "stop"]
+     [:cond-map
+      [:cond [:doc [:string "Stops the plant"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "1"]]]]]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]]
+     [:args [:symbol "area"]]]]]]
+ [:defpclass
+  [:symbol "coverage-test"]
+  [:args [:symbol "plant1"] [:symbol "plant2"]]
+  [:option [:meta [:meta-entry [:doc [:string "Coverage Test"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "p1"]
+     [:field-type [:symbol-ref [:symbol "plant1"]]]]
+    [:field
+     [:symbol "p2"]
+     [:field-type [:symbol-ref [:symbol "plant2"]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:cond-map [:cond [:doc [:string "The HTN"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn [:method-fn [:symbol-ref [:symbol "via-pargs"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "via-margs"]]
+         [:argval [:symbol-ref [:symbol "plant1"]]]
+         [:argval [:symbol-ref [:symbol "plant2"]]]]]
+       [:fn [:method-fn [:symbol-ref [:symbol "via-fields"]]]]]]]
+    [:defpmethod
+     [:symbol "via-pargs"]
+     [:cond-map
+      [:cond [:doc [:string "dereference via pclass arguments"]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "plant2"] [:symbol "scp"]]
+       [:argval [:symbol-ref [:symbol "plant2"] [:symbol "data1"]]]
+       [:argval [:symbol-ref [:symbol "plant2"] [:symbol "data2"]]]]]]
+    [:defpmethod
+     [:symbol "via-margs"]
+     [:cond-map
+      [:cond [:doc [:string "dereference via method arguments"]]]]
+     [:args [:symbol "a"] [:symbol "b"]]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "a"] [:symbol "cp"]]
+       [:argval [:symbol-ref [:symbol "a"] [:symbol "data1"]]]
+       [:argval [:symbol-ref [:symbol "b"] [:symbol "data2"]]]]]]
+    [:defpmethod
+     [:symbol "via-fields"]
+     [:cond-map [:cond [:doc [:string "dereference via fields"]]]]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "p2"] [:symbol "shell"]]
+       [:argval [:string "echo"]]
+       [:argval [:safe-keyword [:keyword ":myoptions"]]]
+       [:argval [:symbol-ref [:symbol "p1"] [:symbol "data1"]]]
+       [:argval [:symbol-ref [:symbol "p2"] [:symbol "data2"]]]]]]]]]
+ [:defpclass
+  [:symbol "coverage-demo"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "sp1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "simpleplant"]
+       [:pclass-ctor-option [:id [:argval [:string "sp1"]]]]
+       [:pclass-ctor-option [:plant-part [:argval [:string "mypart"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
+    [:field
+     [:symbol "sp2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "simpleplant"]
+       [:pclass-ctor-option [:id [:argval [:string "sp2"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "mypart2"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "RMQ"]]]]]]]
+    [:field
+     [:symbol "run"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "coverage-test"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "sp1"]]]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "sp2"]]]]]]]]]]

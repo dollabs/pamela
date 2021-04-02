@@ -16,8 +16,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "150"]]
-          [:number [:integer "180"]]]]]]]
+          [:expr [:number [:integer "150"]]]
+          [:expr [:number [:integer "180"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "watch-right-hemisphere"]
@@ -27,8 +27,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "20"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "20"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "watch-left-hemisphere"]
@@ -42,8 +42,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "take-high-res-images"]
@@ -53,8 +53,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "move-high-res-images"]
@@ -64,8 +64,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "take-medium-res-images"]
@@ -75,8 +75,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "3"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "3"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "move-medium-res-images"]
@@ -86,8 +86,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "4"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "4"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-1"]
@@ -97,8 +97,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "6"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "6"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-2-fast"]
@@ -108,8 +108,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "10"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "10"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-2-slow"]
@@ -119,8 +119,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "10"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "10"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-analysis-type-3"]
@@ -130,8 +130,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "7"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "7"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "picture-distribution"]
@@ -141,8 +141,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "0"]]
-          [:number [:integer "5"]]]]]]]
+          [:expr [:number [:integer "0"]]]
+          [:expr [:number [:integer "5"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "tpn"]

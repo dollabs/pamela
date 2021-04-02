@@ -74,8 +74,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "12"]]
-          [:number [:integer "34"]]]]]]
+          [:expr [:number [:integer "12"]]]
+          [:expr [:number [:integer "34"]]]]]]]
       [:trans [:cost [:number-ref [:number [:integer "10"]]]]]
       [:trans [:reward [:number-ref [:number [:integer "100"]]]]]
       [:trans
@@ -98,8 +98,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "123"]]
-          [:number [:integer "456"]]]]]]
+          [:expr [:number [:integer "123"]]]
+          [:expr [:number [:integer "456"]]]]]]]
       [:cond [:cost [:number-ref [:number [:integer "100"]]]]]
       [:cond [:reward [:number-ref [:number [:integer "1000"]]]]]
       [:cond [:controllable [:boolean [:TRUE]]]]]
@@ -136,8 +136,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "1"]]
-          [:number [:integer "2"]]]]]]]
+          [:expr [:number [:integer "1"]]]
+          [:expr [:number [:integer "2"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "game"]
@@ -149,8 +149,8 @@
      [:field-type
       [:pclass-ctor
        [:symbol "cannon"]
-       [:pclass-ctor-option [:id [:string "first-cannon"]]]
-       [:pclass-ctor-option [:interface [:string "ZMQ"]]]]]]
+       [:pclass-ctor-option [:id [:argval [:string "first-cannon"]]]]
+       [:pclass-ctor-option [:interface [:argval [:string "ZMQ"]]]]]]]
     [:field
      [:symbol "box-f"]
      [:field-type [:pclass-ctor [:symbol "box"]]]]]]
@@ -200,8 +200,8 @@
          [:opt-bounds
           [:bounds
            [:bounds-literal
-            [:number [:integer "1"]]
-            [:number [:integer "60"]]]]]]]
+            [:expr [:number [:integer "1"]]]
+            [:expr [:number [:integer "60"]]]]]]]]
        [:fn
         [:whenever
          [:cond-expr
@@ -237,8 +237,8 @@
              [:opt-bounds
               [:bounds
                [:bounds-literal
-                [:number [:integer "2"]]
-                [:number [:integer "20"]]]]]
+                [:expr [:number [:integer "2"]]]
+                [:expr [:number [:integer "20"]]]]]]
              [:fn
               [:sequence
                [:fn
@@ -267,8 +267,8 @@
                      [:opt-bounds
                       [:bounds
                        [:bounds-literal
-                        [:number [:integer "98"]]
-                        [:number [:integer "101"]]]]]]]
+                        [:expr [:number [:integer "98"]]]
+                        [:expr [:number [:integer "101"]]]]]]]]
                    [:fn-opt
                     [:between-opt
                      [:cost-le
@@ -286,8 +286,8 @@
                       [:opt-bounds
                        [:bounds
                         [:bounds-literal
-                         [:number [:integer "1"]]
-                         [:number [:integer "7"]]]]]]
+                         [:expr [:number [:integer "1"]]]
+                         [:expr [:number [:integer "7"]]]]]]]
                      [:argval [:number [:float "123.45"]]]
                      [:argval [:string "456"]]]]
                    [:fn
@@ -300,8 +300,8 @@
                      [:opt-bounds
                       [:bounds
                        [:bounds-literal
-                        [:number [:integer "200"]]
-                        [:number [:integer "300"]]]]]]]]]]]
+                        [:expr [:number [:integer "200"]]]
+                        [:expr [:number [:integer "300"]]]]]]]]]]]]
                [:fn
                 [:method-fn
                  [:symbol-ref
@@ -316,8 +316,8 @@
                     [:opt-bounds
                      [:bounds
                       [:bounds-literal
-                       [:number [:integer "36"]]
-                       [:number [:integer "37"]]]]]]]]
+                       [:expr [:number [:integer "36"]]]
+                       [:expr [:number [:integer "37"]]]]]]]]]
                  [:choose-opt
                   [:fn-opt
                    [:between-opt
@@ -346,8 +346,8 @@
                    [:opt-bounds
                     [:bounds
                      [:bounds-literal
-                      [:number [:integer "7"]]
-                      [:number [:integer "8"]]]]]]
+                      [:expr [:number [:integer "7"]]]
+                      [:expr [:number [:integer "8"]]]]]]]
                   [:choice-opt
                    [:guard
                     [:cond-expr
@@ -382,8 +382,9 @@
                     [:opt-bounds
                      [:bounds
                       [:bounds-literal
-                       [:number [:integer "30"]]
-                       [:number [:integer "30"]]]]]]]]]]]]]]]]]]
+                       [:expr [:number [:integer "30"]]]
+                       [:expr
+                        [:number [:integer "30"]]]]]]]]]]]]]]]]]]]
        [:fn
         [:slack-sequence
          [:fn-opt [:label [:keyword ":slack-sequence"]]]
@@ -433,7 +434,9 @@
        [:between-opt
         [:opt-bounds
          [:bounds
-          [:bounds-literal [:number [:integer "50"]] [:INFINITY]]]]]]]
+          [:bounds-literal
+           [:expr [:number [:integer "50"]]]
+           [:INFINITY]]]]]]]
      [:between-stmt
       [:between-starts
        [:keyword ":doit"]

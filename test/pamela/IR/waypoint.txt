@@ -16,8 +16,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "wp2"]
@@ -27,8 +27,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "wp3"]
@@ -38,8 +38,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "wp4"]
@@ -49,8 +49,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]]
     [:defpmethod
      [:symbol "wp5"]
@@ -60,8 +60,8 @@
        [:opt-bounds
         [:bounds
          [:bounds-literal
-          [:number [:integer "10"]]
-          [:number [:integer "50"]]]]]]]
+          [:expr [:number [:integer "10"]]]
+          [:expr [:number [:integer "50"]]]]]]]]
      [:args]]]]]
  [:defpclass
   [:symbol "waypoints-test"]
@@ -96,4 +96,28 @@
         [:method-fn
          [:symbol-ref
           [:symbol "quadcopter-plant"]
-          [:symbol "wp5"]]]]]]]]]]]
+          [:symbol "wp5"]]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "qc"]
+     [:field-type [:pclass-ctor [:symbol "quadcopter-plant"]]]]
+    [:field
+     [:symbol "wp"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "waypoints-test"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "qc"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "wp"] [:symbol "waypoints"]]]]]]]]]]]

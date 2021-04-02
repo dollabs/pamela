@@ -1,0 +1,88 @@
+[:pamela
+ [:defpclass
+  [:symbol "plant"]
+  [:args]
+  [:option [:meta [:meta-entry [:doc [:string "The Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "action1"]
+     [:cond-map [:cond [:doc [:string "Take action 1"]]]]
+     [:args]]
+    [:defpmethod
+     [:symbol "action2"]
+     [:cond-map
+      [:cond [:doc [:string "Take action 2"]]]
+      [:cond
+       [:opt-bounds
+        [:bounds
+         [:bounds-literal
+          [:expr [:number [:integer "2"]]]
+          [:expr [:number [:integer "20"]]]]]]]
+      [:cond [:controllable [:boolean [:TRUE]]]]
+      [:cond [:cost [:number-ref [:number [:integer "3"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "5"]]]]]]
+     [:args]]]]]
+ [:defpclass
+  [:symbol "controllable"]
+  [:args]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc [:string "An example of invoking plant functions."]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "p"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "plant"]
+       [:pclass-ctor-option [:id [:argval [:string "Plant 1"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:cond-map [:cond [:doc [:string "Demo method"]]]]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "p"] [:symbol "action1"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "p"] [:symbol "action1"]]
+         [:method-opt [:controllable [:boolean [:TRUE]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:expr [:number [:integer "1"]]]
+             [:expr [:number [:integer "10"]]]]]]]
+         [:method-opt [:cost [:number-ref [:number [:integer "9"]]]]]
+         [:method-opt
+          [:reward [:number-ref [:number [:integer "13"]]]]]
+         [:method-opt [:label [:keyword ":override1"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "p"] [:symbol "action1"]]
+         [:method-opt [:controllable [:boolean [:FALSE]]]]]]
+       [:fn
+        [:method-fn [:symbol-ref [:symbol "p"] [:symbol "action2"]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "p"] [:symbol "action2"]]
+         [:method-opt [:controllable [:boolean [:TRUE]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "p"] [:symbol "action2"]]
+         [:method-opt [:controllable [:boolean [:FALSE]]]]
+         [:method-opt
+          [:opt-bounds
+           [:bounds
+            [:bounds-literal
+             [:expr [:number [:integer "3"]]]
+             [:expr [:number [:integer "30"]]]]]]]
+         [:method-opt [:cost [:number-ref [:number [:integer "15"]]]]]
+         [:method-opt
+          [:reward [:number-ref [:number [:integer "19"]]]]]
+         [:method-opt [:label [:keyword ":override2"]]]]]]]]]]]]

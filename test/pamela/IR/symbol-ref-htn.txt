@@ -1,0 +1,242 @@
+[:pamela
+ [:defpclass
+  [:symbol "simple-pclass"]
+  [:args [:symbol "simple2-initial"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "simple1"]
+     [:field-init [:observable [:boolean [:TRUE]]]]
+     [:field-init
+      [:initial [:field-type [:literal [:string "white"]]]]]]
+    [:field
+     [:symbol "simple2"]
+     [:field-init [:observable [:boolean [:TRUE]]]]
+     [:field-init
+      [:initial
+       [:field-type [:symbol-ref [:symbol "simple2-initial"]]]]]]]]
+  [:option [:methods [:defpmethod [:symbol "simple-method"] [:args]]]]]
+ [:defpclass
+  [:symbol "example"]
+  [:args [:symbol "pclass-arg"]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field1"]
+     [:field-type [:literal [:number [:float "3.14"]]]]]
+    [:field
+     [:symbol "field2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "simple-pclass"]
+       [:pclass-ctor-arg [:string "black"]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "my-method"]]
+       [:argval [:symbol-ref [:symbol "pclass-arg"]]]
+       [:argval [:symbol-ref [:symbol "field1"]]]
+       [:argval
+        [:symbol-ref [:symbol "field2"] [:symbol "simple2"]]]]]]
+    [:defpmethod
+     [:symbol "my-method"]
+     [:args [:symbol "a"] [:symbol "b"] [:symbol "c"]]]]]]
+ [:defpclass
+  [:symbol "locations"]
+  [:args]
+  [:option
+   [:meta [:meta-entry [:doc [:string "Enumeration of locations"]]]]]
+  [:option
+   [:modes
+    [:mode-enum
+     [:keyword ":land"]
+     [:keyword ":sea"]
+     [:keyword ":air"]]]]]
+ [:defpclass
+  [:symbol "pclass1"]
+  [:args [:symbol "p-arg1"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc [:string "Within this example, field1-1 is a number"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field1-1"]
+     [:field-init
+      [:initial [:field-type [:symbol-ref [:symbol "p-arg1"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "method1"]
+     [:args [:symbol "x"] [:symbol "y"]]]]]]
+ [:defpclass
+  [:symbol "pclass2"]
+  [:args [:symbol "p-arg2"]]
+  [:option
+   [:meta
+    [:meta-entry
+     [:doc
+      [:string
+       "Within this example, field2-1 is an instance of pclass1"]]]]]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field2-1"]
+     [:field-init
+      [:initial [:field-type [:symbol-ref [:symbol "p-arg2"]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "method2"]
+     [:args [:symbol "x"] [:symbol "y"]]]
+    [:defpmethod
+     [:symbol "method3"]
+     [:args [:symbol "a"] [:symbol "b"] [:symbol "c"]]
+     [:fn
+      [:method-fn
+       [:symbol-ref [:symbol "p-arg2"] [:symbol "method1"]]
+       [:argval [:symbol-ref [:symbol "a"]]]
+       [:argval [:symbol-ref [:symbol "b"]]]]]]]]]
+ [:defpclass
+  [:symbol "main"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "field1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "pclass1"]
+       [:pclass-ctor-arg [:expr [:number [:integer "42"]]]]]]]
+    [:field
+     [:symbol "field2"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "pclass1"]
+       [:pclass-ctor-arg [:expr [:number [:integer "43"]]]]]]]
+    [:field
+     [:symbol "field3"]
+     [:field-init
+      [:initial [:field-type [:literal [:number [:integer "100"]]]]]]]
+    [:field
+     [:symbol "pclass1-44"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "pclass1"]
+       [:pclass-ctor-arg [:expr [:number [:integer "44"]]]]]]]
+    [:field
+     [:symbol "field4"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "pclass2"]
+       [:pclass-ctor-arg [:symbol-ref [:symbol "pclass1-44"]]]]]]]]
+  [:option
+   [:modes [:mode-enum [:keyword ":running"] [:keyword ":stopped"]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "main"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "reference-tests"]]
+         [:argval [:symbol-ref [:symbol "field1"]]]
+         [:argval [:number [:integer "42"]]]]]]]]
+    [:defpmethod
+     [:symbol "reference-tests"]
+     [:args [:symbol "pclass-instance-arg"] [:symbol "method-arg"]]
+     [:fn
+      [:sequence
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "state-var"]]]
+           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand [:symbol-ref [:symbol "field3"]]]
+           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand
+            [:symbol-ref [:symbol "field2"] [:symbol "field1-1"]]]
+           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
+       [:fn
+        [:tell
+         [:cond-expr
+          [:equal-expr
+           [:cond-operand
+            [:symbol-ref
+             [:symbol "pclass-instance-arg"]
+             [:symbol "field1-1"]]]
+           [:cond-operand [:symbol-ref [:symbol "method-arg"]]]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "simple-method"]]
+         [:argval [:symbol-ref [:symbol "method-arg"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "simple-method"]]
+         [:argval [:symbol-ref [:symbol "state-var"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "simple-method"]]
+         [:argval [:symbol-ref [:symbol "field3"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "simple-method"]]
+         [:argval
+          [:symbol-ref [:symbol "field2"] [:symbol "field1-1"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "simple-method"]]
+         [:argval
+          [:symbol-ref
+           [:symbol "pclass-instance-arg"]
+           [:symbol "field1-1"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field2"] [:symbol "method1"]]
+         [:argval [:number [:integer "1"]]]
+         [:argval [:number [:integer "2"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref
+          [:symbol "pclass-instance-arg"]
+          [:symbol "method1"]]
+         [:argval [:number [:integer "1"]]]
+         [:argval [:number [:integer "2"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval [:safe-keyword [:keyword ":running"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval [:safe-keyword [:keyword ":stopped"]]]]]
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "field4"] [:symbol "method3"]]
+         [:argval [:number [:integer "4"]]]
+         [:argval [:number [:integer "5"]]]
+         [:argval
+          [:mode-ref
+           [:symbol-ref [:symbol "locations"]]
+           [:keyword ":sea"]]]]]]]]
+    [:defpmethod [:symbol "simple-method"] [:args [:symbol "arg"]]]]]]]

@@ -1,0 +1,54 @@
+[:pamela
+ [:defpclass
+  [:symbol "camera"]
+  [:args]
+  [:option
+   [:meta [:meta-entry [:doc [:string "The Camera Plant API"]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "aquire"]
+     [:cond-map
+      [:cond [:doc [:string "Aquire image: low resolution"]]]
+      [:cond [:probability [:number-ref [:number [:float "0.5"]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "3"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "6"]]]]]]
+     [:args [:symbol "location"]]]
+    [:defpmethod
+     [:symbol "aquire"]
+     [:cond-map
+      [:cond [:doc [:string "Aquire image: medium resolution"]]]
+      [:cond [:probability [:number-ref [:number [:float "0.3"]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "5"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "7"]]]]]]
+     [:args [:symbol "location"]]]
+    [:defpmethod
+     [:symbol "aquire"]
+     [:cond-map
+      [:cond [:doc [:string "Aquire image: high resolution"]]]
+      [:cond [:probability [:number-ref [:number [:float "0.2"]]]]]
+      [:cond [:cost [:number-ref [:number [:integer "8"]]]]]
+      [:cond [:reward [:number-ref [:number [:integer "9"]]]]]]
+     [:args [:symbol "location"]]]]]]
+ [:defpclass
+  [:symbol "mission"]
+  [:args]
+  [:option
+   [:fields
+    [:field
+     [:symbol "camera1"]
+     [:field-type
+      [:pclass-ctor
+       [:symbol "camera"]
+       [:pclass-ctor-option [:id [:argval [:string "Camera 1"]]]]]]]]]
+  [:option
+   [:methods
+    [:defpmethod
+     [:symbol "start"]
+     [:args]
+     [:fn
+      [:sequence
+       [:fn
+        [:method-fn
+         [:symbol-ref [:symbol "camera1"] [:symbol "aquire"]]
+         [:argval [:string "A"]]]]]]]]]]]

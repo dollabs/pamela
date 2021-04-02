@@ -19,20 +19,33 @@ inherit ::= INHERIT LB symbol+ RB
 
 modes ::= MODES ( mode-enum | mode-map )
 mode-enum ::= LB keyword* RB
-mode-map ::= LM mode-init+ RM
+mode-map ::= LM mode-init* RM
 mode-init ::= keyword cond-expr
-cond-expr ::= ( TRUE | FALSE | and-expr | or-expr | implies-expr |
-              not-expr | equal-expr | call-expr )
+cond-expr ::= ( TRUE | FALSE |
+              not-expr | and-expr | or-expr | implies-expr |
+              equal-expr | gt-expr | ge-expr | lt-expr | le-expr |
+              call-expr | same-expr | propositions-expr )
 and-expr ::= LP AND ( cond-expr | cond-operand )+ RP
 or-expr ::= LP OR ( cond-expr | cond-operand )+ RP
 implies-expr ::= LP IMPLIES ( cond-expr | cond-operand )+ RP
 not-expr ::= LP NOT ( cond-expr | cond-operand )+ RP
 equal-expr ::= LP EQUAL cond-operand+ RP
+gt-expr ::= LP GT cond-operand+ RP
+ge-expr ::= LP GE cond-operand+ RP
+lt-expr ::= LP LT cond-operand+ RP
+le-expr ::= LP LE cond-operand+ RP
+same-expr ::= LP SAME cond-operand+ RP
 call-expr ::= LP CALL cond-operand+ RP
+propositions-expr ::= LP PROPOSITIONS LB prop-search+ RB (WHERE cond-expr)? RP
+prop-search ::= LP search-constraints? keyword cond-operand+ RP
+search-constraints ::= LB (wm  | ltm | recency)* RB
 cond-operand ::= ( literal | mode-ref | symbol-ref )
 mode-ref ::= LP MODE_OF symbol-ref keyword RP
+wm ::= WM
+ltm ::= LTM
+recency ::= LP RECENCY number-ref RP
 
-fields ::= FIELDS LM field+ RM
+fields ::= FIELDS LM field* RM
 field ::= symbol ( LM field-init+ RM | field-type )
 field-type ::= ( literal | lvar-ctor |  pclass-ctor |
                mode-ref | symbol-ref )
@@ -122,7 +135,7 @@ lvar-ctor ::= ( LP LVAR RP | LP LVAR string lvar-init? RP )
 lvar-init ::= literal | bounds-literal
 
 pclass-ctor ::= LP symbol pclass-ctor-arg* pclass-ctor-option* RP
-pclass-ctor-arg ::= ( string | number | pclass-arg-keyword | boolean | symbol-ref )
+pclass-ctor-arg ::= ( string | expr | pclass-arg-keyword | boolean | symbol-ref )
 pclass-ctor-option ::= ( id | plant-part | interface )
 pclass-arg-keyword ::=  keyword
 reserved-pclass-ctor-keyword ::= ( ID | INTERFACE | PLANT_PART ) stop-token
@@ -131,7 +144,7 @@ plant-part ::= PLANT_PART argval
 interface ::= INTERFACE argval
 
 bounds ::= bounds-literal | lvar-ctor
-bounds-literal ::= LB number ( number | INFINITY ) RB
+bounds-literal ::= LB expr ( expr | INFINITY ) RB
 
 symbol-ref ::= symbol ( '.' symbol )*
 symbol ::=  [A-Za-z][A-Za-z0-9-]*
@@ -148,6 +161,7 @@ reserved-string ::= ( AND | ASK | ASSERT | BETWEEN | BETWEEN_ENDS |
 stop-token ::= (whitespace | '.' | LP | RP | LB | RB | LM | RM )
 
 literal ::= ( boolean | string | keyword | number )
+expr-argval ::= ( string | expr | safe-keyword | boolean | mode-ref | symbol-ref )
 argval ::= ( string | number | safe-keyword | boolean | mode-ref | symbol-ref )
 safe-keyword ::=  keyword
 reserved-keyword ::= ( LABEL | BOUNDS | COST | REWARD | CONTROLLABLE )
@@ -155,6 +169,12 @@ reserved-keyword ::= ( LABEL | BOUNDS | COST | REWARD | CONTROLLABLE )
 keyword ::= ':' [A-Za-z0-9:*._-]+
 boolean ::= ( TRUE | FALSE )
 string ::= '"'  [^"]* '"'
+expr ::= number | lvar-ctor | LP ( multiply-expr | divide-expr | add-expr | subtract-expr ) RP
+multiply-expr ::= STAR expr+
+divide-expr ::= DIV expr+
+add-expr ::= PLUS expr+
+subtract-expr ::= MINUS expr+
+
 number ::= ( float | integer )
 float ::= ( [-]?[0-9]+.[0-9]+ | [-]?[0-9].[0-9]+E[+-][0-9]+)
 integer ::= [-]?[0-9]+
@@ -186,12 +206,17 @@ DOC ::= ':doc'
 DOTIMES ::= 'dotimes'
 ENTER ::= ':enter'
 EQUAL ::= '='
+GT ::= '>'
+GE ::= '>='
+LT ::= '<'
+LE ::= '<='
 EXACTLY ::= ':exactly'
 FALSE ::= 'false'
 FIELDS ::= ':fields'
 GUARD ::= ':guard'
 ICON ::= ':icon'
 ID ::= ':id'
+SAME ::= 'same'
 IMPLIES ::= 'implies'
 INFINITY ::= ':infinity'
 INHERIT ::= ':inherit'
@@ -199,6 +224,7 @@ INITIAL ::= ':initial'
 INTERFACE ::= ':interface'
 LABEL ::= ':label'
 LEAVE ::= ':leave'
+LTM ::= 'ltm'
 LVAR ::= 'lvar'
 MAINTAIN ::= 'maintain'
 MAX ::= ':max'
@@ -218,6 +244,8 @@ PRE ::= ':pre'
 PRIMITIVE ::= ':primitive'
 PROBABILITY ::= ':probability'
 PRODUCER ::= ':producer'
+PROPOSITIONS ::= 'propositions'
+RECENCY ::= 'recency'
 REWARD ::= ':reward'
 REWARD_GE ::= ':reward>='
 SEQUENCE ::= 'sequence'
@@ -233,6 +261,8 @@ UNLESS ::= 'unless'
 VERSION ::= ':version'
 WHEN ::= 'when'
 WHENEVER ::= 'whenever'
+WHERE ::= 'where'
+WM ::= 'wm'
 
 LP ::= '('
 RP ::= ')'
@@ -240,5 +270,9 @@ LB ::= '['
 RB ::= ']'
 LM ::= '{'
 RM ::= '}'
+STAR ::= '*'
+DIV ::= '/'
+PLUS ::= '+'
+MINUS ::= '-'
 
 whitespace ::= ([, ]+| ';' .*)+

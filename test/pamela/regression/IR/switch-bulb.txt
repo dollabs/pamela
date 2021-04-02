@@ -22,8 +22,10 @@
      [:field-type
       [:pclass-ctor
        [:symbol "psw"]
-       [:pclass-ctor-option [:id [:string "switchedcircuit"]]]
-       [:pclass-ctor-option [:plant-part [:string "psw1"]]]]]]]]
+       [:pclass-ctor-option
+        [:id [:argval [:string "switchedcircuit"]]]]
+       [:pclass-ctor-option
+        [:plant-part [:argval [:string "psw1"]]]]]]]]]
   [:option
    [:methods
     [:defpmethod
@@ -52,8 +54,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "10"]]
-               [:number [:integer "10"]]]]]]]]]]
+               [:expr [:number [:integer "10"]]]
+               [:expr [:number [:integer "10"]]]]]]]]]]]
        [:fn [:method-fn [:symbol-ref [:symbol "turn-off-switch"]]]]
        [:fn
         [:delay
@@ -63,8 +65,8 @@
             [:opt-bounds
              [:bounds
               [:bounds-literal
-               [:number [:integer "10"]]
-               [:number [:integer "10"]]]]]]]]]]]]]
+               [:expr [:number [:integer "10"]]]
+               [:expr [:number [:integer "10"]]]]]]]]]]]]]]
     [:defpmethod
      [:symbol "demo"]
      [:args]

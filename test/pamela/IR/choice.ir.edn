@@ -31,6 +31,21 @@
      :reward 0,
      :temporal-constraints [{:type :bounds, :value [0 :infinity]}]}]},
   :type :pclass},
+ main
+ {:args [],
+  :fields
+  {p
+   {:access :private,
+    :initial {:args [], :pclass plant, :type :pclass-ctor},
+    :observable false},
+   tpn
+   {:access :private,
+    :initial
+    {:args [{:type :field-ref, :names [p]}],
+     :pclass choice-tpn,
+     :type :pclass-ctor},
+    :observable false}},
+  :type :pclass},
  plant
  {:args [],
   :meta {:doc "The Plant API"},
