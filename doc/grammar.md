@@ -19,6 +19,15 @@ If the Pamela source file parses correctly the parse tree will
 be saved in the output file, else the source of the error
 will be shown.
 
+A deeper analysis is done when generating the Pamela Intermediate Representation (IR).  This can be done by running the `build` command.  For example:
+
+```
+pamela -i test/pamela/circuit.pamela -o circuit.ir.edn build
+```
+
+**Note**: when using Pamela programmatically, it is recommended that you use the IR representation, since it eliminates the need to deal with syntax and provides useful context for most Pamela symbols.
+
+
 ## insta2w3c
 
 There are multiple variants of EBNF in use [[See XKCD on standards]](https://xkcd.com/927/).  It may be useful to convert from the flavor of EBNF used by

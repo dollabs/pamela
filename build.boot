@@ -46,6 +46,12 @@
  '[adzerk.boot-test :refer [test]])
 (require
  '[adzerk.bootlaces :refer [push-snapshot push-release]])
+;; (require
+;;  '[adzerk.bootlaces :refer :all])
+
+;;(def +version+ "0.0-2371-5")
+;; (def +version+ "0.6.3-SNAPSHOT")
+;; (bootlaces! +version+)
 
 (task-options!
   pom {:project     project
@@ -56,6 +62,7 @@
        :license     {"Apache-2.0" "http://opensource.org/licenses/Apache-2.0"}}
   aot {:namespace   #{main}}
   jar {:main        main}
+  push {:ensure-clean false} ;;For clojars deployment
   test {:namespaces #{'testing.pamela.cli 'testing.pamela.utils
                       'testing.pamela.parser 'testing.pamela.unparser
                       'testing.pamela.tpn 'testing.pamela.htn
