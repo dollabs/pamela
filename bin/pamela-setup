@@ -139,7 +139,7 @@ for repo in $repos; do
             ;;
         (pamela)
             vlog "building jar and testing $repo..."
-            boot all-tests
+            boot build-jar
             ;;
     esac
 done
