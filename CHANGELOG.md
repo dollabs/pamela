@@ -5,6 +5,11 @@ All notable ### Changes to this project will be documented in this file. This ch
 ## [Unreleased]
 
 ### Changes
+* _TBD_
+
+## [0.6.3] - 2021-06-30
+
+### Changes
 * Grammar ambiguity fixed in a previous commit (Closes #144)
 * Fixed argument values with field references (Closes #150)
 * Fixed method-opts in plant function invocations (Closes #151)
@@ -242,4 +247,5 @@ All notable ### Changes to this project will be documented in this file. This ch
 [0.5.0]: https://github.com/dollabs/pamela/compare/0.4.3...0.5.0
 [0.6.0]: https://github.com/dollabs/pamela/compare/0.5.0...pre-ir-updates-04-2017
 [0.6.2]: https://github.com/dollabs/pamela/compare/pre-ir-updates-04-2017...0.6.2
-[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.2...HEAD
+[0.6.3]: https://github.com/dollabs/pamela/compare/0.6.2...0.6.3
+[Unreleased]: https://github.com/dollabs/pamela/compare/0.6.3...HEAD
