@@ -257,6 +257,17 @@
               []
               (apply merge-keys methods))})
 
+(defn ir-propositions [& propositions]
+  (def props propositions)
+  {:propositions (if (empty? propositions)
+                   []
+                   (vec (map (fn [[ebnf-type prop-name & args]]
+                               (assert (= ebnf-type :prop-search)) ;;Don't know what to do otherwise
+                               {:type :proposition
+                                :prop-name prop-name
+                                :args (if args (vec args) args)})
+                             propositions)))})
+
 (defn ir-cond-expr [op & operands]
   (if (= op :COND-EXPR)
     (let [expr (first operands)]
@@ -287,6 +298,10 @@
 (defn ir-defpclass [pclass args & options]
   {pclass
    (apply merge {:type :pclass} {:args args} options)})
+
+(defn ir-defproposition [proposition args & options]
+  {proposition
+   (apply merge {:type :proposition} {:args args} options)})
 
 (defn default-mdef [method]
   (let [cond-map {:pre true-type
@@ -587,6 +602,7 @@
                 :cost-le (partial hash-map :cost<=)
                 :defpclass ir-defpclass
                 :defpmethod ir-defpmethod
+                :defproposition ir-defproposition
                 :delay (partial ir-fn :delay)
                 ;; :delay-opt handled in ir-fn
                 :dep hash-map
@@ -658,6 +674,7 @@
                 :pre (partial hash-map :pre)
                 :primitive (partial hash-map :primitive)
                 :probability (partial hash-map :probability)
+                :propositions ir-propositions
                 :propositions-expr (partial ir-cond-expr :propositions-expr)
                 ;; reserved-keyword  only for grammer disambiguation
                 ;; reserved-pclass-ctor-keyword only for grammer disambiguation
@@ -774,7 +791,11 @@
           {:type :state-variable :name n0})))
 
     (string? operand)
-    {:type :literal, :value operand}
+    ;;{:type :literal, :value operand}
+    operand
+
+    (number? operand)
+    operand
 
     :else
     {:error (str "unknown conditional operand: " operand)}))
@@ -1200,6 +1221,22 @@
                              (assoc vtransitions from-to transition))]
           (recur vtransitions (first more) (rest more)))))))
 
+;; return Validated propositions or {:error "message"}
+(defn validate-propositions [ir state-vars pclass fields modes propositions]
+  (dbg-println :trace "VALIDATE-PROPOSITIONS" pclass)
+  (let [pclass-args (get-in ir [pclass :args])
+        method-args []
+        context []]
+    (let [new-propositions (map (fn [prop]
+                                  (let [new-args (map (fn [arg]
+                                                        (validate-cond-operand ir state-vars pclass fields modes
+                                                                        context pclass-args method-args
+                                                                        arg))
+                                                      (:args prop))]
+                                    (assoc prop :args new-args)))
+                                propositions)]
+      (vec new-propositions))))
+
 ;; return Validated methods or {:error "message"}
 (defn validate-methods [ir state-vars pclass fields modes methods]
   (dbg-println :trace "VALIDATE-METHODS" pclass)
@@ -1269,7 +1306,7 @@
           vir
           (merge vir @state-vars))
         (let [[sym val] sym-val
-              {:keys [type args fields modes transitions methods]} val
+              {:keys [type args fields modes transitions methods propositions]} val
               pclass? (= type :pclass)
               fields (if (and pclass? fields)
                        (validate-fields ir state-vars sym fields))
@@ -1278,7 +1315,13 @@
               transitions (if (and pclass? transitions
                                 (not (:error fields)) (not (:error modes)))
                             (validate-transitions ir state-vars
-                              sym fields modes transitions))
+                                                  sym fields modes transitions))
+              propositions (if (and pclass? methods
+                                    (not (:error fields))
+                                    (not (:error modes))
+                                    (not (:error transitions)))
+                             (validate-propositions ir state-vars
+                                                    sym fields modes propositions))
               methods (if (and pclass? methods
                             (not (:error fields))
                             (not (:error modes))
@@ -1289,6 +1332,7 @@
                     :fields fields
                     :modes modes
                     :transitions transitions
+                    :propositions (if-not (empty? propositions) propositions) ;;minimize clutter
                     :methods methods)
               vir (cond
                     (:error fields)

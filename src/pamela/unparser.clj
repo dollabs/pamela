@@ -26,7 +26,8 @@
   "Dissoc k from m if the current value is equal to default"
   [m k default]
   (let [v (get m k)]
-    (if (= v default)
+    (if (or (= v default)
+            (and (number? v) (number? default) (== v default)))
       (dissoc m k)
       m)))
 
@@ -417,6 +418,14 @@
               transitions (assoc transitions from-to trans-map-source)]
           (recur transitions (first more) (rest more)))))))
 
+(defmethod unparse-option :propositions [option def]
+  (pprint-option option
+                 (vec (map (fn [prop]
+                             (list* (:prop-name prop)
+                                    (map unparse-cond-operand
+                                         (:args prop))))
+                           def))))
+
 (defn unparse-fn [fn]
   (let [{:keys [type body probability name method-ref args
                 condition field temporal-constraints
@@ -605,29 +614,48 @@
 ;; unparse-pclass -------------------------
 
 (defn unparse-pclass [pclass pdef]
-  (let [{:keys [meta inherit fields modes transitions methods]} pdef]
+  (let [{:keys [meta inherit fields modes transitions propositions methods]} pdef]
     (str
       (if meta (unparse-option :meta meta))
       (if inherit (unparse-option :inherit inherit))
       (if fields (unparse-option :fields fields))
       (if modes (unparse-option :modes modes))
       (if transitions (unparse-option :transitions transitions))
+      (if propositions (unparse-option :propositions propositions))
       (if methods (unparse-option :methods methods)))))
+
+(defn unparse-proposition [pname pdef]
+  (let [{:keys [meta]} pdef]
+    (str
+      (if meta (unparse-option :meta meta)))))
 
 ;; unparse -------------------------
 
 ;; converts from ir back to pamela source
 (defn unparse [ir]
   (apply str
-    (interpose "\n\n"
-      (cons
-        ";; PAMELA source generated from IR"
-        (for [pclass (keys ir)
-              :let [pdef (get ir pclass)
-                    {:keys [type args]} pdef
-                    pclass-str (if (= type :pclass)
-                                 (str "(defpclass " pclass " " args
-                                   (unparse-pclass pclass pdef)
-                                   ")"))]
-              :when pclass-str]
-          pclass-str)))))
+         (interpose "\n\n"
+                    (cons
+                     ";; PAMELA source generated from IR"
+                     (for [pname (keys ir)
+                           :let [pdef (get ir pname)
+                                 {:keys [type args]} pdef
+                                 pname-str (cond
+                                             (= type :pclass)
+                                             (str "(defpclass " pname " " args
+                                                  (unparse-pclass pname pdef)
+                                                  ")")
+
+                                             (= type :proposition)
+                                             (str "(defproposition " pname " " args
+                                                  (unparse-proposition pname pdef)
+                                                  ")")
+
+                                             ;; :lvars and :state-variable are valid,
+                                             ;; but unparseable
+                                             ;;
+                                             ;; :else
+                                             ;; (str ";; UNKNOWN TYPE found in IR: " type)
+                                             )]
+                           :when pname-str]
+                       pname-str)))))

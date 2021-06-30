@@ -30,7 +30,7 @@ The `pamela` executable supports 2 primary operations: `build` and `htn`.  The `
 
 ### defpclass
 
-The `defpclass` command is the top level Pamela construct which
+The `defpclass` command is the primary top level Pamela construct which
 defines a Pamela class and defines a model symbol which is
 bound to a the class constructor method.
 
@@ -153,21 +153,21 @@ A conditional expression may be comprised, recursively, of the following:
 * `(<= h j)`
 * `(same f g)`
 * `(call "foo/bar" d e)`
-* `(propositions [(wm ltm (recency 5)) :is-connected-to a b) ...]
+* `(propositions [([wm ltm (recency 5)] :is-connected-to a b) ...]
    where conditional-expression)`
 
 In the case of `call` conditional expressions, the first argument (`"foo/bar"` in this example) specifies the name of a Clojure (or Java) function that can be dynamically called with the remaining arguments, in order to determine the *truthy* value of the condition.
 
 For two objects `d` and `e`, (= d e) is true if the two objects are believed to have the same mode. If `d` and `e` are objects of a switch class that has modes `on` and `off`, (= d e) is true if both switches are on or if both switches are off. (same f g) is true if f and g are the same switch.  This is an essential form of comparison for retrieving objects linked by propositions.  The inequalities <, <=, >, >= can be used to compare numbers in pre and post conditions.
 
-A proposition has the form (:proposition-type arg1 ... argn), the most common of which is the two argument case. It is useful to lookup propositions in the preconditions to methods.
+A proposition has the form (:proposition-type arg1 ... argn), the most common of which is the two argument case. It is useful to lookup propositions in the preconditions of methods.
 
 For example, to find a man who is married to a woman who was born in the same town as him, we can use the following:
 
 ```
-(propositions [:is-a X man]
-              [:is-married-to X Y]
-              [:is-a Y woman]
+(propositions [(:is-a X man)
+               (:is-married-to X Y)
+               (:is-a Y woman)]
    where (same X.city-of-birth Y.city-of-birth))
 ```
 
@@ -251,7 +251,7 @@ Lastly, following the main body of the method, there may be zero or more `betwee
 -->
 
 
-### <a name="bounds"></a>bounds
+#### <a name="bounds"></a>bounds
 
 Bounds values are a vector which contain a lower bound and an upper bound.
 Each of the bounds are a number (integer or floating point) which represent
@@ -271,6 +271,25 @@ conditional expressions inside defpmethod's
 
 ### functions
 -->
+
+### defproposition
+
+The `defproposition` command is a top level Pamela construct which
+defines a Pamela global proposition that can be used by any pclass.
+
+```
+(defproposition :connects-with [a b]
+  :meta {:doc "a is connected to b"})
+  
+(defproposition :many-arg-prop [a b c d e])
+```
+The first argument to `defproposition` is the Pamela proposition keyword
+being defined.
+
+Then, there is a vector formal arguments to the *proposition* (which may be empty).
+
+The *proposition* is then optionally defined with the `:meta` option, just as in `defpclass` (see above).
+
 
 # <a name="builtins"></a>Pamela Built-In Methods
 The following is the set of the built-in methods defined in Pamela. All of these are supported by the Pamela parser (i.e., via the `build` operation).  However methods marked with *"[Not yet supported]"* are not supported for the Pamela `htn` operation in the current Pamela release.
