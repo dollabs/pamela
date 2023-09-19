@@ -53,6 +53,7 @@
 ;;(def +version+ "0.0-2371-5")
 ;; (def +version+ "0.6.3-SNAPSHOT")
 ;; (bootlaces! +version+)
+;; (bootlaces! version)
 
 (task-options!
   pom {:project     project
@@ -78,17 +79,17 @@
   (with-post-wrap [_]
     (apply (resolve 'app/-main) args)))
 
-(deftask build-jar
-  "Build the project locally as an uberjar."
-  [d dir PATH #{str} "the set of directories to write to (target)."]
-  (let [dir (if (seq dir) dir #{"target"})]
-    (comp
-      ;; do not include these files...
-      (sift :include #{#"~$" #"\.xhtml$"  #"\.w3c$"} :invert true)
-      (aot)
-      (uber)
-      (jar :file (str (name project) ".jar"))
-      (target :dir dir))))
+;; (deftask build-jar
+;;   "Build the project locally as an uberjar."
+;;   [d dir PATH #{str} "the set of directories to write to (target)."]
+;;   (let [dir (if (seq dir) dir #{"target"})]
+;;     (comp
+;;       ;; do not include these files...
+;;       (sift :include #{#"~$" #"\.xhtml$"  #"\.w3c$"} :invert true)
+;;       (aot)
+;;       (uber)
+;;       (jar :file (str (name project) ".jar"))
+;;       (target :dir dir))))
 
 (deftask local
   "Build jar and install to local repo."

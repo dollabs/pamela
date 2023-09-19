@@ -1,0 +1,47 @@
+{:paths ["src"] ;; project paths
+ :deps
+ {org.clojure/data.codec {:mvn/version "0.1.1"} ;; was "0.1.0" - still 2 yrs old
+  org.clojure/tools.cli {:mvn/version "1.0.214"} ;; was "0.3.5"
+  org.clojure/data.json {:mvn/version "2.4.0"} ;; was "0.2.6"
+  ;; org.clojure/data.csv {:mvn/version "1.0.1"} ;; was "0.1.4"
+  org.clojure/data.xml {:mvn/version "0.0.8"}
+  ;; logging
+  com.taoensso/timbre {:mvn/version "6.1.0"} ;; was "4.7.4"
+  org.slf4j/slf4j-api {:mvn/version "1.7.21"}
+  com.fzakaria/slf4j-timbre {:mvn/version "0.3.21"} ;; was "0.3.19"
+  org.clojure/tools.logging {:mvn/version "1.2.4"} ;; was "0.3.1"
+
+  environ/environ {:mvn/version "1.2.0"} ;; was "1.1.0
+  instaparse/instaparse {:mvn/version "1.4.12"} ;; was "1.4.7"
+  avenir/avenir {:mvn/version "0.2.2"}
+  me.raynes/fs {:mvn/version "1.4.6"} ;; 7 years old!
+  ;; Look into replacing the fs dependency with clj-commons/fs "1.6.310"
+  ;; Another option is https://github.com/babashka/fs
+  camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"} ;; was "0.4.0"
+  dollabs/plan-schema {:mvn/version "0.3.8"}
+
+  ;; The following aren't needed by Pamela
+  ;;  clojure.java-time/clojure.java-time {:mvn/version "1.2.0"} ;; was "0.3.2"
+  ;;  clojure-future-spec/clojure-future-spec {:mvn/version "1.9.0"} ;; Remove this backward compatibility
+  ;; metosin/scjsv {:mvn/version "0.6.2"} ;; was "0.4.1"
+  ;; com.novemberain/langohr {:mvn/version "5.4.0"} ;; was "3.3.0"
+  ;; random-seed/random-seed {:mvn/version "1.0.0"} ;; 7 years old
+  ;; clojurewerkz/machine_head {:mvn/version "1.0.0"}
+
+  ;;Testing
+  clojure.java-time/clojure.java-time {:mvn/version "1.3.0"}
+
+  }
+
+ :aliases
+ {;; Run with clj -T:build function-in-build
+  :build {:deps {io.github.clojure/tools.build {:git/tag "v0.9.5" :git/sha "24f2894"}}
+          :ns-default build}
+  :test {:extra-paths ["test"]}
+  ;; Consider using https://github.com/cognitect-labs/test-runner
+  ;; :extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+  ;; :main-opts ["-m" "cognitect.test-runner"]
+  ;; :exec-fn cognitect.test-runner.api/test
+  }}
+
+;; clj -T:build uber
