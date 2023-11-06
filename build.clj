@@ -1,4 +1,3 @@
-
 (ns build
   (:require [clojure.tools.build.api :as b]))
 
@@ -27,6 +26,14 @@
                :target-dir class-dir})
   (b/jar {:class-dir class-dir
           :jar-file jar-file}))
+
+(defn install [_]
+  ;; Assumes that you already have the jar file and friends
+  (b/install {:basis basis
+              :lib lib
+              :version version
+              :jar-file jar-file
+              :class-dir class-dir}))
 
 (defn uber [_]
   (clean nil)
